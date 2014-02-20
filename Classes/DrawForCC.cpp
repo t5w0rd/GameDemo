@@ -258,6 +258,7 @@ CUnitDrawForCC::FRM_INFO* CUnitDrawForCC::getFrameInfo( FRM_ID id )
 // CCUnitLayer
 CCUnitLayer::CCUnitLayer()
     : m_pWorld(NULL)
+    , m_fWorldInterval(0.0f)
 {
 }
 
@@ -268,6 +269,47 @@ bool CCUnitLayer::initWithWorld( CUnitWorldForCC* pWorld )
     setWorld(pWorld);
 
     return CCLayer::init();
+}
+
+void CCUnitLayer::onEnter()
+{
+    CCLayer::onEnter();
+    schedule(schedule_selector(CCUnitLayer::onWorldInterval), m_fWorldInterval);
+}
+
+void CCUnitLayer::onExit()
+{
+    unschedule(schedule_selector(CCUnitLayer::onWorldInterval));
+    CCLayer::onExit();
+}
+
+void CCUnitLayer::setWorldInterval( float fInterval )
+{
+    if (m_fWorldInterval == fInterval)
+    {
+        return;
+    }
+    m_fWorldInterval = fInterval;
+    if (fInterval != 0)
+    {
+        schedule(schedule_selector(CCUnitLayer::onWorldInterval), m_fWorldInterval);
+    }
+    else
+    {
+        unschedule(schedule_selector(CCUnitLayer::onWorldInterval));
+    }
+}
+
+void CCUnitLayer::onWorldInterval( float dt )
+{
+    CWorld* w = getWorld();
+    if (w == NULL)
+    {
+        setWorldInterval(0);
+        return;
+    }
+
+    w->step(dt);
 }
 
 // CUnitWorldForCC

@@ -88,6 +88,14 @@ public:
     M_CREATEWITH_FUNC_PARAM(World, CCUnitLayer, (CUnitWorldForCC* pWorld), pWorld);
 
     M_SYNTHESIZE(CUnitWorldForCC*, m_pWorld, World);
+
+    virtual void onEnter();
+    virtual void onExit();
+
+    M_SYNTHESIZE_READONLY(float, m_fWorldInterval, WorldInterval);
+    virtual void setWorldInterval(float fInterval);
+
+    virtual void onWorldInterval(float dt);
 };
 
 class CUnitWorldForCC : public CWorld
