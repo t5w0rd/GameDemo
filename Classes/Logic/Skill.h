@@ -89,9 +89,9 @@ public:
     
     // 限定施法参数
     M_SYNTHESIZE(CCommandTarget::TARGET_TYPE, m_eCastTargetType, CastTargetType);
-    M_SYNTHESIZE(uint32_t, m_dwEffectiveTypeFlags, EffectiveTypeFlags)
-    M_SYNTHESIZE(float, m_fCastRange, CastRange);  // 施法距离
+    M_SYNTHESIZE(uint32_t, m_dwEffectiveTypeFlags, EffectiveTypeFlags);
     M_SYNTHESIZE(float, m_fCastMinRange, CastMinRange);  // 最小施法距离
+    M_SYNTHESIZE(float, m_fCastRange, CastRange);  // 施法距离
     M_SYNTHESIZE(float, m_fCastTargetRadius, CastTargetRadius);  // 作用范围
     
     // 传递施法参数，并可能在技能后续持续中使用
@@ -100,10 +100,10 @@ public:
     
     M_SYNTHESIZE(int, m_iTemplateProjectile, TemplateProjectile);
 
-    M_SYNTHESIZE_BOOL(Horizontal);
+    M_SYNTHESIZE_BOOL(CastHorizontal);
 
     void addCastAnimation(int id);
-    int getRandomAnimation() const;
+    int getCastRandomAnimation() const;
     
 };
 

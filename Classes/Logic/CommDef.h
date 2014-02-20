@@ -180,7 +180,7 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
 #define INFINITE 0xFFFFFFFF
 #endif
 
-#define CONDITION(func) ((CUnitGroup::CONDITIONFUNC)(func))
+#define CONDITION(func) ((FUNC_UNIT_CONDITION)(&func))
 
 template <typename TYPE, typename ASTYPE = TYPE>
 class CInitArray

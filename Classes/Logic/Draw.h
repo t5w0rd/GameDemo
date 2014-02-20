@@ -34,16 +34,16 @@ public:
 
     enum ANI_ID
     {
-        kActMove = 0x2000,
-        kActDie,
-        kAct1,
-        kAct2,
-        kAct3,
-        kAct4,
-        kAct5,
-        kAct6,
-        kAct7,
-        kAct8
+        kAniMove = 0x2000,
+        kAniDie,
+        kAniAct1,
+        kAniAct2,
+        kAniAct3,
+        kAniAct4,
+        kAniAct5,
+        kAniAct6,
+        kAniAct7,
+        kAniAct8
     };
 
     // 返回actionTag
@@ -121,14 +121,12 @@ public:
 
     M_SYNTHESIZE(int, m_iMoveToActionId, MoveToActionId);
     M_SYNTHESIZE(int, m_iMoveActionId, MoveActionId);
+    void cmdMove(const CPoint& roPos);
     void move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
     void follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
     //virtual void moveAlongPath(CUnitPath* pPath, bool bIntended = true, bool bRestart = false, float fBufArrive = 5.0);
     void stopMove();
     void onMoveDone(CMultiRefObject* pUnit, CCallFuncData* pData);
-
-    void startMoveAct(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
-    void stopMoveAct();
 
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oLastMoveToTarget, LastMoveToTarget);
     //M_SYNTHESIZE(uint32_t, m_dwPathCurPos, PathCurPos);
@@ -138,10 +136,61 @@ public:
     
     // /////////////////////// cast /////////////////////////////
     M_SYNTHESIZE_PASS_BY_REF(CCommandTarget, m_oCastTarget, CastTarget);
+    M_SYNTHESIZE(int, m_iCastActionId, CastActionId);
     int cmdCastSpell(int iActiveSkillId);  // 可能是施法失败，施法中，施法追逐中，所以返回类型为int
     int castSpell(CActiveSkill* pSkill);
     bool checkCastTargetDistance(CActiveSkill* pSkill, const CPoint& roPos, CUnitDraw2D* td);
     void moveToCastPosition(CActiveSkill* pSkill, CUnitDraw2D* td);
+
+    void stopCast();
+    void onCastEffect(CMultiRefObject* pUnit, CCallFuncData* pData);
+    void onCastDone(CMultiRefObject* pUnit, CCallFuncData* pData);
+
+    void cmdStop();
+    void stop(bool bDefaultFrame = true);
+};
+
+typedef bool (*FUNC_UNIT_CONDITION)(CUnit* pUnit, void* pParam);
+
+class CUnitGroup : public CMultiRefObject
+{
+public:
+    typedef CMultiRefVec<CUnit*> VEC_UNITS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_UNITS, m_vecUnits, Units);
+
+public:
+    CUnitGroup();
+    CUnitGroup(CWorld* pWorld, const CPoint& roPos, float fRadius, int iMaxCount = INFINITE, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
+    CUnitGroup(CWorld* pWorld, int iMaxCount = INFINITE, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
+
+    CUnit* getUnitByIndex(int iIndex);
+    CUnit* getRandomUnit();
+    CUnit* getNearestUnitInRange(const CPoint& roPos, float fRadius, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
+    void addUnit(CUnit* pUnit);
+
+    static CUnit* getNearestUnitInRange(CWorld* pWorld, const CPoint& roPos, float fRadius, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
+
+    void cleanUnits();
+    int getUnitsCount();
+
+    //virtual void setRangePosition(const CPoint& roPos, float fRadius);
+    //virtual void turnTo(bool bLeft);
+    //virtual void move(const CPoint& roPos, const CUnit::UNIT_MOVE_PARAMS& roMoveParams = CUnit::CONST_DEFAULT_MOVE_PARAMS);
+    //virtual void followTo(int iTargetKey, const CUnit::UNIT_MOVE_PARAMS& roMoveParams = CUnit::CONST_DEFAULT_MOVE_PARAMS);
+    //virtual void stopMove();
+    //virtual void attack(int iTargetKey, bool bIntended = true);
+    //virtual void stopAttack();
+    //virtual void moveAlongPath(CUnitPath* pPath, bool bIntended = true, bool bRestart = false, float fBufArrive = 5.0);
+
+    //void damagedAdv(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
+    //void damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
+    //void damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
+    //void addActiveSkill(CSkill* pSkill);
+    //void addBuff(CBuffSkill* pBuff, bool bForce = false);
+
+    static bool isLivingAllyOf(CUnit* pUnit, CUnitForce* pParam);
+    static bool isLivingEnemyOf(CUnit* pUnit, CUnitForce* pParam);
+
 };
 
 #endif	/* __UNITDRAW_H__ */

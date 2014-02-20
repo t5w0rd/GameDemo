@@ -143,13 +143,23 @@ void CUnitDraw2D::updateMoveSpeedDelta()
 	
 }
 
-void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
+void CUnitDraw2D::cmdMove( const CPoint& roPos )
 {
     CUnit* u = getUnit();
     if (u->isDead() || u->isSuspended() || isFixed())
     {
         return;
     }
+
+    UNIT_MOVE_PARAMS mp;
+    mp.bAutoFlipX = true;
+    move(roPos);
+}
+
+void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
+{
+    CUnit* u = getUnit();
+
     m_oLastMoveToTarget = roPos;
     
     if (roMoveParams.bAutoFlipX)
@@ -180,7 +190,7 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
     setMoveToActionId(id);
     if (getMoveActionId() == 0 && u->isDoingOr(CUnit::kSpinning) == false)
     {
-        int id = doAnimation(kActMove,
+        int id = doAnimation(kAniMove,
                              NULL,
                              INFINITE,
                              NULL,
@@ -207,7 +217,7 @@ void CUnitDraw2D::follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams /
         return;
     }
     M_DEF_GM(pGm);
-    CGameUnit* pTarget = getUnitLayer()->getUnitByKey(iTargetKey);
+    CUnit* pTarget = getUnitLayer()->getUnitByKey(iTargetKey);
     if (!pTarget)
     {
         return;
@@ -325,15 +335,7 @@ void CUnitDraw2D::stopMove()
 
 void CUnitDraw2D::onMoveDone(CMultiRefObject* pUnit, CCallFuncData* pData)
 {
-    stopMove();
-}
-
-void CUnitDraw2D::startMoveAct(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams/* = CONST_DEFAULT_MOVE_PARAMS*/)
-{
-}
-
-void CUnitDraw2D::stopMoveAct()
-{
+    stop();
 }
 
 int CUnitDraw2D::cmdCastSpell( int iActiveSkillId )
@@ -403,9 +405,14 @@ int CUnitDraw2D::cmdCastSpell( int iActiveSkillId )
             return -1;
         }
         moveToCastPosition(pSkill, td);
+        return 0;
     }
 
     // 施法
+    if (getCastTarget().getTargetType() != CCommandTarget::kNoTarget)
+    {
+        setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
+    }
     castSpell(pSkill);
 
     return 0;
@@ -413,7 +420,22 @@ int CUnitDraw2D::cmdCastSpell( int iActiveSkillId )
 
 int CUnitDraw2D::castSpell(CActiveSkill* pSkill)
 {
-    //stopAction()
+    stop(false);
+
+    CUnit* u = getUnit();
+    
+    CUnitDraw::ANI_ID aniId = (CUnitDraw::ANI_ID)pSkill->getCastRandomAnimation();
+    int id = doAnimation(aniId,
+                         new CCallFuncData(this,
+                                           (FUNC_CALLFUNC_ND)&CUnitDraw2D::onCastEffect),
+                         1,
+                         new CCallFuncData(this,
+                                           (FUNC_CALLFUNC_ND)&CUnitDraw2D::onCastDone),
+                         1.0f);
+    setCastActionId(id);
+
+    u->startDoing(CUnit::kCasting);
+
     return 0;
 }
 
@@ -436,12 +458,12 @@ bool CUnitDraw2D::checkCastTargetDistance( CActiveSkill* pSkill, const CPoint& r
 
                                                               
     //CCLOG("dis: %.2f, %.2f, %.2f | %.2f", pGm->getDistance(roPos, roPos2) - getHalfOfWidth() - pTarget->getHalfOfWidth(), getAttackMinRange(), getAttackRange(), abs(roPos.y - roPos2.y));
-    if (pSkill->isHorizontal() && abs(roPos.y - roPos2.y) > CActiveSkill::CONST_MAX_HOR_CAST_Y_RANGE)
+    if (pSkill->isCastHorizontal() && abs(roPos.y - roPos2.y) > CActiveSkill::CONST_MAX_HOR_CAST_Y_RANGE)
     {
         return false;
     }
 
-    float fDis = max(roPos.getDistance(roPos2) - getHalfOfWidth() - (td != NULL ? td->getHalfOfWidth() : 0.0f), 0.5f);
+    float fDis = roPos.getDistance(roPos2) - getHalfOfWidth() - (td != NULL ? td->getHalfOfWidth() : 0.0f);
     if (fDis < pSkill->getCastMinRange() || fDis > pSkill->getCastRange())
     {
         return false;
@@ -453,13 +475,13 @@ bool CUnitDraw2D::checkCastTargetDistance( CActiveSkill* pSkill, const CPoint& r
 void CUnitDraw2D::moveToCastPosition(CActiveSkill* pSkill, CUnitDraw2D* td)
 {
     //stopAllActions();
-    float fDis = td != NULL ? td->getHalfOfWidth() : 0.0f + getHalfOfWidth() + (pSkill->getCastMinRange() + pSkill->getCastRange()) * 0.5;
+    float fDis = (td != NULL ? td->getHalfOfWidth() : 0.0f) + getHalfOfWidth() + (pSkill->getCastMinRange() + pSkill->getCastRange()) * 0.5;
     const CPoint& roPos1 = getPosition();
-    const CPoint& roPos2 = td != NULL ? td->getPosition() : getCastTarget().getTargetPoint();
+    const CPoint& roPos2 = (td != NULL ? td->getPosition() : getCastTarget().getTargetPoint());
 
     UNIT_MOVE_PARAMS oMp;
     oMp.bIntended = false;
-    if (pSkill->isHorizontal())
+    if (pSkill->isCastHorizontal())
     {
         // 近战攻击位置修正
         move(CPoint(roPos2.x + ((roPos1.x > roPos2.x) ? fDis : -fDis), roPos2.y), oMp);
@@ -470,4 +492,186 @@ void CUnitDraw2D::moveToCastPosition(CActiveSkill* pSkill, CUnitDraw2D* td)
         float fA = -(roPos1 - roPos2).getAngle();
         move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis), oMp);
     }
+}
+
+void CUnitDraw2D::onCastEffect( CMultiRefObject* pUnit, CCallFuncData* pData )
+{
+
+}
+
+void CUnitDraw2D::onCastDone( CMultiRefObject* pUnit, CCallFuncData* pData )
+{
+    stop();
+}
+
+void CUnitDraw2D::stopCast()
+{
+}
+
+void CUnitDraw2D::cmdStop()
+{
+    CUnit* u = getUnit();
+    if (u->isDead() || u->isSuspended() || isFixed())
+    {
+        return;
+    }
+
+    stop();
+}
+
+void CUnitDraw2D::stop(bool bDefaultFrame)
+{
+    stopAction(getMoveToActionId());
+    setMoveToActionId(0);
+
+    stopAction(getMoveActionId());
+    setMoveActionId(0);
+
+    stopAction(getCastActionId());
+    setCastActionId(0);
+
+    CUnit* u = getUnit();
+    u->endDoing(CUnit::kMoving | CUnit::kCasting);
+
+    if (bDefaultFrame)
+    {
+        setFrame(kFrmDefault);
+    }
+    
+}
+
+CUnitGroup::CUnitGroup()
+{
+}
+
+CUnitGroup::CUnitGroup( CWorld* pWorld, const CPoint& roPos, float fRadius, int iMaxCount /*= INFINITE*/, FUNC_UNIT_CONDITION pBoolFunc /*= NULL*/, void* pParam /*= NULL*/ )
+{
+    if (fRadius < FLT_EPSILON)
+    {
+        return;
+    }
+
+    CWorld::MAP_UNITS& units = pWorld->getUnits();
+    M_MAP_FOREACH(units)
+    {
+        CUnit* u = M_MAP_EACH;
+        CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+        if ((int)m_vecUnits.size() >= iMaxCount)
+        {
+            return;
+        }
+        if (d->getPosition().getDistance(roPos) < fRadius && (!pBoolFunc || (pBoolFunc && pBoolFunc(u, pParam))))
+        {
+            m_vecUnits.addObject(u);
+        }
+
+        M_MAP_NEXT;
+    }
+
+    return;
+}
+
+CUnitGroup::CUnitGroup( CWorld* pWorld, int iMaxCount /*= INFINITE*/, FUNC_UNIT_CONDITION pBoolFunc /*= NULL*/, void* pParam /*= NULL*/ )
+{
+    CWorld::MAP_UNITS& units = pWorld->getUnits();
+    M_MAP_FOREACH(units)
+    {
+        CUnit* u = M_MAP_EACH;
+        CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+        if ((int)m_vecUnits.size() >= iMaxCount)
+        {
+            return;
+        }
+
+        if (!pBoolFunc || (pBoolFunc && pBoolFunc(u, pParam)))
+        {
+            m_vecUnits.addObject(u);
+        }
+
+        M_MAP_NEXT;
+    }
+}
+
+CUnit* CUnitGroup::getUnitByIndex( int iIndex )
+{
+    if (iIndex < 0 || iIndex >= (int)m_vecUnits.size())
+    {
+
+        return NULL;
+    }
+
+    return m_vecUnits[iIndex];
+}
+
+CUnit* CUnitGroup::getRandomUnit()
+{
+    return m_vecUnits[rand() % m_vecUnits.size()];
+}
+
+CUnit* CUnitGroup::getNearestUnitInRange( const CPoint& roPos, float fRadius, FUNC_UNIT_CONDITION pBoolFunc /*= NULL*/, void* pParam /*= NULL*/ )
+{
+    CUnit* pTarget = NULL;
+    float fMinDis = FLT_MAX;
+    float fDis;
+
+    M_VEC_FOREACH(m_vecUnits)
+    {
+        CUnit* u = M_VEC_EACH;
+        CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+        if ((fDis = d->getPosition().getDistance(roPos)) < fRadius && fMinDis > fDis && (!pBoolFunc || (pBoolFunc && pBoolFunc(u, pParam))))
+        {
+            pTarget = u;
+            fMinDis = fDis;
+        }
+        M_VEC_NEXT;
+    }
+
+    return pTarget;
+}
+
+void CUnitGroup::addUnit( CUnit* pUnit )
+{
+    m_vecUnits.addObject(pUnit);
+}
+
+CUnit* CUnitGroup::getNearestUnitInRange( CWorld* pWorld, const CPoint& roPos, float fRadius, FUNC_UNIT_CONDITION pBoolFunc /*= NULL*/, void* pParam /*= NULL*/ )
+{
+    CUnit* pTarget = NULL;
+    float fMinDis = FLT_MAX;
+    float fDis;
+
+    CWorld::MAP_UNITS& units = pWorld->getUnits();
+    M_MAP_FOREACH(units)
+    {
+        CUnit* u = M_MAP_EACH;
+        CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+        if ((fDis = d->getPosition().getDistance(roPos)) < fRadius && fMinDis > fDis && (!pBoolFunc || (pBoolFunc && pBoolFunc(u, pParam))))
+        {
+            pTarget = u;
+            fMinDis = fDis;
+        }
+        M_MAP_NEXT;
+    }
+
+    return pTarget;
+}
+
+void CUnitGroup::cleanUnits()
+{
+    m_vecUnits.delAllObjects();
+}
+
+int CUnitGroup::getUnitsCount()
+{
+    return m_vecUnits.size();
+}
+
+bool CUnitGroup::isLivingAllyOf( CUnit* pUnit, CUnitForce* pParam )
+{
+    return !pUnit->isDead() && pUnit->isAllyOf(pParam);
+}
+
+bool CUnitGroup::isLivingEnemyOf( CUnit* pUnit, CUnitForce* pParam )
+{
+    return !pUnit->isDead() && pUnit->isEnemyOf(pParam);
 }

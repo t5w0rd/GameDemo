@@ -70,11 +70,13 @@ public:
     M_SYNTHESIZE_READONLY(CCSprite*, m_pSprite, Sprite);
     CCSprite* createSprite();
 
-    M_SYNTHESIZE(CCPoint, m_oAnchorPoint, AnchorPoint);
-    M_SYNTHESIZE(CCPoint, m_oFirePoint, FirePoint);
+    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
+    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oFirePoint, FirePoint);
 
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();
+
+    void setSpriteProperty(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint);
 
 };
 

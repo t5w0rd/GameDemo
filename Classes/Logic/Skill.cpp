@@ -155,11 +155,11 @@ CActiveSkill::CActiveSkill(const char* pRootId, const char* pName, float fCoolDo
 : CSkill(pRootId, pName, fCoolDown)
 , m_eCastTargetType(eCastType)
 , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
-, m_fCastRange(0.0f)
 , m_fCastMinRange(0.0f)
+, m_fCastRange(0.0f)
 , m_fCastTargetRadius(0.0f)
 , m_iTemplateProjectile(0)
-, m_bHorizontal(false)
+, m_bCastHorizontal(false)
 {
     setDbgClassName("CActiveSkill");
 }
@@ -206,7 +206,7 @@ void CActiveSkill::addCastAnimation( int id )
     m_vecCastAnis.push_back(id);
 }
 
-int CActiveSkill::getRandomAnimation() const
+int CActiveSkill::getCastRandomAnimation() const
 {
     if (m_vecCastAnis.empty())
     {
@@ -265,9 +265,12 @@ CMultiRefObject* CAttackAct::copy() const
     CAttackAct* pRet = new CAttackAct(getRootId(), getName(), m_fCoolDown, m_oAttackValue, m_fAttackValueRandomRange);
     pRet->setCastTargetType(getCastTargetType());
     pRet->setEffectiveTypeFlags(getEffectiveTypeFlags());
+    pRet->setCastMinRange(getCastMinRange());
     pRet->setCastRange(getCastRange());
     pRet->setCastTargetRadius(getCastTargetRadius());
     pRet->setTemplateProjectile(getTemplateProjectile());
+    pRet->setCastHorizontal(isCastHorizontal());
+    pRet->m_vecCastAnis = m_vecCastAnis;
     return pRet;
 }
 
@@ -627,11 +630,20 @@ CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName,
 
 CMultiRefObject* CAttackBuffMakerPas::copy() const
 {
-    return new CAttackBuffMakerPas(getRootId(), getName(), m_fProbability, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
+    CAttackBuffMakerPas* ret = new CAttackBuffMakerPas(getRootId(), getName(), m_fProbability, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
+    ret->setCoolDown(getCoolDown());
+    return ret;
 }
 
 CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
+    if (isCoolingDown())
+    {
+        return pAttack;
+    }
+
+    coolDown();
+
     if (M_RAND_HIT(m_fProbability) == false)
     {
         return pAttack;
@@ -821,7 +833,7 @@ CMultiRefObject* CHpChangeBuff::copy() const
 void CHpChangeBuff::onUnitAddSkill()
 {
     CUnit* o = getOwner();
-    LOG("%s获得%s状态(%.1f%s/s)\n", o->getName(), getName(), isPercentile() ? getHpChange() * 100 / getInterval() : getHpChange() / getInterval(), isPercentile() ? "%" : "");
+    LOG("%s获得%s状态(%.1f%s/s)\n", o->getName(), getName(), isPercentile() ? (getHpChange() * 100 / getInterval()) : (getHpChange() / getInterval()), isPercentile() ? "%" : "");
 }
 
 void CHpChangeBuff::onUnitDelSkill()

@@ -66,6 +66,7 @@ void CCUnitSprite::onAnimationDone( CCNode*, void* pCallFuncData )
 CUnitDrawForCC::CUnitDrawForCC( const char* pName )
     : CUnitDraw2D(pName)
     , m_pSprite(NULL)
+    , m_oAnchorPoint(0.5f, 0.5f)
 {
     setDbgClassName("CUnitDrawForCC");
 }
@@ -231,6 +232,8 @@ CCSprite* CUnitDrawForCC::createSprite()
 
     m_pSprite->retain();
 
+    m_pSprite->setAnchorPoint(getAnchorPoint());
+
     return m_pSprite;
 }
 
@@ -253,6 +256,18 @@ CUnitDrawForCC::FRM_INFO* CUnitDrawForCC::getFrameInfo( FRM_ID id )
     assert(it != m_mapFrmInfos.end());
 
     return &it->second;
+}
+
+void CUnitDrawForCC::setSpriteProperty( float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint )
+{
+    setHalfOfWidth(fHalfOfWidth);
+    setHalfOfHeight(fHalfOfHeight);
+    setAnchorPoint(anchorPoint);
+    setFirePoint(firePoint);
+    if (getSprite() != NULL)
+    {
+        getSprite()->setAnchorPoint(getAnchorPoint());
+    }
 }
 
 // CCUnitLayer

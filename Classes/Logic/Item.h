@@ -85,10 +85,6 @@ protected:
     
 };
 
-class CPackage : public CMultiRefObject
-{
-public:
-};
 
 #endif	/* ITEM_H */
 
