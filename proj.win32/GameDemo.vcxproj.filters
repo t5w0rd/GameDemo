@@ -42,9 +42,6 @@
     <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Skill.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\Logic\Unit.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
@@ -56,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="..\Classes\DrawForCC.cpp">
       <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Ability.cpp">
+      <Filter>Classes\Logic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,9 +95,6 @@
     <ClInclude Include="..\Classes\Logic\MultiRefObject.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Skill.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\Logic\Unit.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
@@ -112,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\DrawForCC.h">
       <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Ability.h">
+      <Filter>Classes\Logic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

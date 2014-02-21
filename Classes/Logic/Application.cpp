@@ -89,15 +89,3 @@ void CLogicApplication::applicationTick(float fDt)
 {
 }
 
-
-// CApplicationLog
-void CApplicationLog::Log(const char* pFormat, ...)
-{
-    fprintf(stdout, "[%03.2f] ", CLogicApplication::sharedApplication()->getElapsedTime());
-    va_list argv;
-    va_start(argv, pFormat);
-    vfprintf(stdout, pFormat, argv);
-    va_end(argv);
-    fprintf(stdout, "\n");
-}
-

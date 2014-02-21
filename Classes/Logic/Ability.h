@@ -1,12 +1,12 @@
 /* 
- * File:   Skill.h
+ * File:   Ability.h
  * Author: thunderliu
  *
  * Created on 2013年12月8日, 下午11:45
  */
 
-#ifndef __SKILL_H__
-#define	__SKILL_H__
+#ifndef __ABILITY_H__
+#define	__ABILITY_H__
 
 #include "MultiRefObject.h"
 #include "Level.h"
@@ -15,14 +15,14 @@
 #include "Unit.h"
 
 
-class CSkill : public CMultiRefObject, public CLevelExp
+class CAbility : public CMultiRefObject, public CLevelExp
 {
 protected:
     const string CONST_ROOT_ID;
     
 public:
-    CSkill(const char* pRootId, const char* pName, float fCoolDown = 0.0f);
-    virtual ~CSkill();
+    CAbility(const char* pRootId, const char* pName, float fCoolDown = 0.0f);
+    virtual ~CAbility();
     
     virtual const char* getDbgTag() const;
     
@@ -47,9 +47,9 @@ public:
     
     // 技能持有者事件响应，只覆被注册的触发器相应的事件函数即可
     // @override
-    virtual void onUnitAddSkill();
-    virtual void onUnitDelSkill();
-    virtual void onUnitSkillReady();
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
+    virtual void onUnitAbilityReady();
     virtual void onUnitRevive();
     virtual void onUnitDie();
     virtual void onUnitChangeHp(float fChanged);
@@ -64,7 +64,7 @@ public:
     virtual void onUnitDestroyProjectile(CProjectile* pProjectile);
     
 public:
-    // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddSkill，通常这种情况在Buff被覆盖的时候发生
+    // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生
     void onAddToUnit(CUnit* pOwner);
     void onDelFromUnit();
     
@@ -74,18 +74,18 @@ public:
     
 };
 
-class CActiveSkill : public CSkill
+class CActiveAbility : public CAbility
 {
 public:
-    CActiveSkill(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType = CCommandTarget::kNoTarget, uint32_t dwEffectiveTypeFlags = CUnitForce::kSelf | CUnitForce::kOwn | CUnitForce::kAlly | CUnitForce::kEnemy);
-    virtual ~CActiveSkill();
+    CActiveAbility(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType = CCommandTarget::kNoTarget, uint32_t dwEffectiveTypeFlags = CUnitForce::kSelf | CUnitForce::kOwn | CUnitForce::kAlly | CUnitForce::kEnemy);
+    virtual ~CActiveAbility();
     
     static const float CONST_MAX_CAST_BUFFER_RANGE;
     static const float CONST_MAX_HOR_CAST_Y_RANGE;
 
     virtual bool cast();
     virtual bool checkConditions();
-    virtual void onUnitCastSkill();
+    virtual void onUnitCastAbility();
     
     // 限定施法参数
     M_SYNTHESIZE(CCommandTarget::TARGET_TYPE, m_eCastTargetType, CastTargetType);
@@ -107,20 +107,20 @@ public:
     
 };
 
-class CPassiveSkill : public CSkill
+class CPassiveAbility : public CAbility
 {
 public:
-    CPassiveSkill(const char* pRootId, const char* pName, float fCoolDown = 0);
-    virtual ~CPassiveSkill();
+    CPassiveAbility(const char* pRootId, const char* pName, float fCoolDown = 0);
+    virtual ~CPassiveAbility();
     
     
 };
 
-class CBuffSkill : public CPassiveSkill
+class CBuffAbility : public CPassiveAbility
 {
 public:
-    CBuffSkill(const char* pRootId, const char* pName, float fDuration, bool bStackable);
-    virtual ~CBuffSkill();
+    CBuffAbility(const char* pRootId, const char* pName, float fDuration, bool bStackable);
+    virtual ~CBuffAbility();
 
     M_SYNTHESIZE(float, m_fDuration, Duration);
     M_SYNTHESIZE(float, m_fElapsed, Elapsed);
@@ -131,10 +131,10 @@ public:
     
 };
 
-/////////////////////// ActiveSkills ///////////////////////
+/////////////////////// ActiveAbilitys ///////////////////////
 
 // 攻击，默认以单位作为目标
-class CAttackAct : public CActiveSkill
+class CAttackAct : public CActiveAbility
 {
 public:
     static const float CONST_MIN_ATTACK_SPEED_INTERVAL;
@@ -145,10 +145,10 @@ public:
     CAttackAct(const char* pRootId, const char* pName, float fCoolDown, const CAttackValue& rAttackValue, float fAttackValueRandomRange = 0.15f);
     virtual CMultiRefObject* copy() const;
     
-    virtual void onUnitAddSkill();
-    virtual void onUnitDelSkill();
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
     virtual bool checkConditions();
-    virtual void onUnitCastSkill();
+    virtual void onUnitCastAbility();
         
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, AttackValue);
     M_SYNTHESIZE(float, m_fAttackValueRandomRange, AttackValueRandomRange);
@@ -187,14 +187,14 @@ protected:
 };
 
 // 主动型BUFF附加器，支持所有目标种类
-class CBuffMakerAct : public CActiveSkill
+class CBuffMakerAct : public CActiveAbility
 {
 public:
     CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, int iTemplateBuff, CCommandTarget::TARGET_TYPE eCastType = CCommandTarget::kNoTarget, uint32_t dwEffectiveTypeFlags = CUnitForce::kSelf);
     virtual CMultiRefObject* copy() const;
     
     virtual bool checkConditions();
-    virtual void onUnitCastSkill();
+    virtual void onUnitCastAbility();
     
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
     
@@ -202,10 +202,10 @@ protected:
     CUnit* m_pTarget;
 };
 
-/////////////////////// PassiveSkills & BuffSkills ///////////////////////
+/////////////////////// PassiveAbilitys & BuffAbilitys ///////////////////////
 
 // 光环，范围型BUFF附加器
-class CAuraPas : public CPassiveSkill
+class CAuraPas : public CPassiveAbility
 {
 public:
     CAuraPas(const char* pRootId, const char* pName, float fInterval, int iTemplateBuff, float fRange, uint32_t dwEffectiveTypeFlags);
@@ -220,7 +220,7 @@ public:
 };
 
 // 攻击数据变更，攻击时机会型BUFF附加器
-class CAttackBuffMakerPas : public CPassiveSkill
+class CAttackBuffMakerPas : public CPassiveAbility
 {
 public:
     CAttackBuffMakerPas(const char* pRootId, const char* pName, float fProbability, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
@@ -234,7 +234,7 @@ public:
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
 };
 
-class CVampirePas : public CPassiveSkill
+class CVampirePas : public CPassiveAbility
 {
 public:
     CVampirePas(const char* pRootId, const char* pName, float fPercentConversion);
@@ -245,48 +245,48 @@ public:
     M_SYNTHESIZE(float, m_fPercentConversion, PercentConversion);
 };
 
-class CStunBuff : public CBuffSkill
+class CStunBuff : public CBuffAbility
 {
 public:
     CStunBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable);
     virtual CMultiRefObject* copy() const;
     
-    virtual void onUnitAddSkill();
-    virtual void onUnitDelSkill();
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
 };
 
-class CDoubleAttackBuff : public CBuffSkill
+class CDoubleAttackBuff : public CBuffAbility
 {
 public:
     CDoubleAttackBuff(const char* pRootId, const char* pName);
     virtual CMultiRefObject* copy() const;
     
-    virtual void onUnitAddSkill();
+    virtual void onUnitAddAbility();
     
 };
 
-class CSpeedBuff : public CBuffSkill
+class CSpeedBuff : public CBuffAbility
 {
 public:
     CSpeedBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, const CExtraCoeff& roExMoveSpeedDelta, const CExtraCoeff& roExAttackSpeedDelta);
     virtual CMultiRefObject* copy() const;
     
-    virtual void onUnitAddSkill();
-    virtual void onUnitDelSkill();
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
     
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExMoveSpeedDelta, ExMoveSpeedDelta);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackSpeedDelta, ExAttackSpeedDelta);
     
 };
 
-class CHpChangeBuff : public CBuffSkill
+class CHpChangeBuff : public CBuffAbility
 {
 public:
     CHpChangeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fInterval, float fHpChange, bool bPercentile, float fMinHp = -1.0f);
     virtual CMultiRefObject* copy() const;
     
-    virtual void onUnitAddSkill();
-    virtual void onUnitDelSkill();
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
     virtual void onUnitInterval();
     
     M_SYNTHESIZE(float, m_fHpChange, HpChange);
@@ -295,5 +295,5 @@ public:
     
 };
 
-#endif	/* __SKILL_H__ */
+#endif	/* __ABILITY_H__ */
 

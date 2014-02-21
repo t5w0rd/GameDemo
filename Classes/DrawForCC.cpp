@@ -401,7 +401,7 @@ const float CCWinUnitLayer::CONST_MIN_MOVE_DELTA = 10.0f;
 const float CCWinUnitLayer::CONST_MAX_CAN_MOVE_DURATION = 0.15f;
 
 CCWinUnitLayer::CCWinUnitLayer()
-    : m_iPendingSkillOwner(0)
+    : m_iPendingAbilityOwner(0)
     , m_bIsTouching(false)
     , m_fMoveK(0.0f)
     , m_fBuffRange(0.0f)
@@ -605,7 +605,7 @@ int CCWinUnitLayer::touchActionIndex() const
     }
     else if (isClickAction())
     {
-        return m_iPendingSkillOwner != 0 ? kUnitCastTarget : kClickPoint;
+        return m_iPendingAbilityOwner != 0 ? kUnitCastTarget : kClickPoint;
     }
-    return m_iPendingSkillOwner != 0 ? kUnitCastTarget : kNormalTouch;
+    return m_iPendingAbilityOwner != 0 ? kUnitCastTarget : kNormalTouch;
 }

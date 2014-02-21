@@ -159,7 +159,7 @@ public:
     void adjustWinPos(CCPoint& roPos);
 
 protected:
-    int m_iPendingSkillOwner;
+    int m_iPendingAbilityOwner;
     bool m_bIsTouching;
     float m_fMoveK;
     float m_fBuffRange;

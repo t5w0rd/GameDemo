@@ -143,13 +143,13 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
 
 #define M_PTM_RATIO 32
 
-#define M_SKILL_PATH(name)                                      name "/BTN" name ".png"
-#define M_SKILL_PAS_PATH(name)                                  name "/PASBTN" name ".png"
-#define M_SKILL_DOWN_PATH(name)                                 name "/BTN" name "DOWN.png"
-#define M_SKILL_DIS_PATH(name)                                  name "/DISBTN" name ".png"
-#define M_SKILL_ON_PATH(name)                                   name "/BTN" name "ON.png"
-#define M_CREATE_SKILL(name, unit, skill, layer)                CCSkillButtonAdvance::create(M_SKILL_PATH(name), M_SKILL_DOWN_PATH(name), M_SKILL_DIS_PATH(name), M_SKILL_PATH("white"), "mask/mask.png", (unit), (skill), (layer))
-#define M_CREATE_SKILL_PAS(name, unit, skill, layer)            CCSkillButtonAdvance::create(M_SKILL_PAS_PATH(name), M_SKILL_PAS_PATH(name), M_SKILL_DIS_PATH(name), NULL, NULL, (unit), (skill), (layer))
+#define M_ABILITY_PATH(name)                                      name "/BTN" name ".png"
+#define M_ABILITY_PAS_PATH(name)                                  name "/PASBTN" name ".png"
+#define M_ABILITY_DOWN_PATH(name)                                 name "/BTN" name "DOWN.png"
+#define M_ABILITY_DIS_PATH(name)                                  name "/DISBTN" name ".png"
+#define M_ABILITY_ON_PATH(name)                                   name "/BTN" name "ON.png"
+#define M_CREATE_ABILITY(name, unit, ability, layer)                CCAbilityButtonAdvance::create(M_ABILITY_PATH(name), M_ABILITY_DOWN_PATH(name), M_ABILITY_DIS_PATH(name), M_ABILITY_PATH("white"), "mask/mask.png", (unit), (ability), (layer))
+#define M_CREATE_ABILITY_PAS(name, unit, ability, layer)            CCAbilityButtonAdvance::create(M_ABILITY_PAS_PATH(name), M_ABILITY_PAS_PATH(name), M_ABILITY_DIS_PATH(name), NULL, NULL, (unit), (ability), (layer))
 
 #define M_RAND_HIT(probability) (rand() % 100 < (int)((probability) * 100))
 
@@ -160,20 +160,20 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
         return iTypeKey; \
     }
 
-#define M_SKILL_BUTTON_CANCEL(node) dynamic_cast<CCSkillButtonBase*>((node))->setClickRetCode(-1)
+#define M_ABILITY_BUTTON_CANCEL(node) dynamic_cast<CCAbilityButtonBase*>((node))->setClickRetCode(-1)
 
 #define M_DEF_DR(var) CCDirector* var = CCDirector::sharedDirector()
 #define M_DEF_FU(var) CCFileUtils* var = CCFileUtils::sharedFileUtils()
 #define M_DEF_GM(var) CGameManager* var = CGameManager::sharedGameManager()
 #define M_DEF_FC(var) CCSpriteFrameCache* var = CCSpriteFrameCache::sharedSpriteFrameCache()
 #define M_DEF_AC(var) CCAnimationCache* var = CCAnimationCache::sharedAnimationCache()
-#define M_DEF_SM(var) CCSkillManager* var = CCSkillManager::sharedSkillManager()
+#define M_DEF_SM(var) CCAbilityManager* var = CCAbilityManager::sharedAbilityManager()
 #define M_DEF_PM(var) CProjectileManager* var = CProjectileManager::sharedProjectileManager()
 #define M_DEF_UM(var) CUnitManager* var = CUnitManager::sharedUnitManager()
 #define M_DEF_UPM(var) CUnitInfoPatchManager* var = CUnitInfoPatchManager::sharedUnitInfoPatchManager()
 #define M_DEF_TB(var) CTowerBuilder* var = CTowerBuilder::sharedTowerBuilder()
 #define M_DEF_OU(var) COrgUnitInfo* var = COrgUnitInfo::sharedOrgUnitInfo()
-#define M_DEF_OS(var) COrgSkillInfo* var = COrgSkillInfo::sharedOrgSkillInfo()
+#define M_DEF_OS(var) COrgAbilityInfo* var = COrgAbilityInfo::sharedOrgAbilityInfo()
 #define M_DEF_PI(var) CPlayerInfo* var = CPlayerInfo::sharedPlayerInfo()
 
 #ifndef INFINITE

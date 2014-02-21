@@ -181,10 +181,10 @@ protected:
 
 
 class CProjectile;
-class CSkill;
-class CPassiveSkill;
-class CBuffSkill;
-class CActiveSkill;
+class CAbility;
+class CPassiveAbility;
+class CBuffAbility;
+class CActiveAbility;
 class CWorld;
 class CItem;
 
@@ -225,13 +225,13 @@ public:
     inline virtual void onUnitDamagedDone(float fDamage, CUnit* pSource) {}
     inline virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget) {}
     inline virtual void onUnitDestroyProjectile(CProjectile* pProjectile) {}
-    inline virtual void onUnitAddActiveSkill(CActiveSkill* pSkill) {}
-    inline virtual void onUnitDelActiveSkill(CActiveSkill* pSkill) {}
-    inline virtual void onUnitAddPassiveSkill(CPassiveSkill* pSkill) {}
-    inline virtual void onUnitDelPassiveSkill(CPassiveSkill* pSkill) {}
-    inline virtual void onUnitAddBuffSkill(CBuffSkill* pSkill) {}
-    inline virtual void onUnitDelBuffSkill(CBuffSkill* pSkill) {}
-    inline virtual void onUnitSkillReady(CSkill* pSkill) {}
+    inline virtual void onUnitAddActiveAbility(CActiveAbility* pAbility) {}
+    inline virtual void onUnitDelActiveAbility(CActiveAbility* pAbility) {}
+    inline virtual void onUnitAddPassiveAbility(CPassiveAbility* pAbility) {}
+    inline virtual void onUnitDelPassiveAbility(CPassiveAbility* pAbility) {}
+    inline virtual void onUnitAddBuffAbility(CBuffAbility* pAbility) {}
+    inline virtual void onUnitDelBuffAbility(CBuffAbility* pAbility) {}
+    inline virtual void onUnitAbilityReady(CAbility* pAbility) {}
     inline virtual void onUnitAddItem(int iIndex) {}
     inline virtual void onUnitDelItem(int iIndex) {}
     //inline virtual void onUnitChangeItemStackCount(CItem* pItem, int iChange) {}
@@ -255,8 +255,8 @@ public:
     M_SYNTHESIZE(CWorld*, m_pWorld, World);
     
     CUnit* getUnit(int id);
-    void skillCD(CSkill* pSkill);
-    void updateSkillCD(int id);
+    void abilityCD(CAbility* pAbility);
+    void updateAbilityCD(int id);
     
     M_SYNTHESIZE_STR(Name);
     
@@ -295,15 +295,15 @@ public:
     // 攻击数据消除时被通知，通常由投射物携带攻击数据，二者生存期一致
     virtual void onDestroyProjectile(CProjectile* pProjectile);
     
-    virtual void onAddActiveSkill(CActiveSkill* pSkill);
-    virtual void onDelActiveSkill(CActiveSkill* pSkill);
-    virtual void onAddPassiveSkill(CPassiveSkill* pSkill);
-    virtual void onDelPassiveSkill(CPassiveSkill* pSkill);
-    virtual void onAddBuffSkill(CBuffSkill* pSkill);
-    virtual void onDelBuffSkill(CBuffSkill* pSkill);
+    virtual void onAddActiveAbility(CActiveAbility* pAbility);
+    virtual void onDelActiveAbility(CActiveAbility* pAbility);
+    virtual void onAddPassiveAbility(CPassiveAbility* pAbility);
+    virtual void onDelPassiveAbility(CPassiveAbility* pAbility);
+    virtual void onAddBuffAbility(CBuffAbility* pAbility);
+    virtual void onDelBuffAbility(CBuffAbility* pAbility);
     
     // 技能CD结束时被通知
-    virtual void onSkillReady(CSkill* pSkill);  // 以后将区分出onItemReady
+    virtual void onAbilityReady(CAbility* pAbility);  // 以后将区分出onItemReady
     
     virtual void onAddItem(int iIndex);
     virtual void onDelItem(int iIndex);
@@ -377,63 +377,63 @@ public:
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
     
     
-    typedef CMultiRefMap<CActiveSkill*> MAP_ACTIVE_SKILLS;
-    typedef CMultiRefMap<CPassiveSkill*> MAP_PASSIVE_SKILLS;
-    typedef CMultiRefMap<CBuffSkill*> MAP_BUFF_SKILLS;
+    typedef CMultiRefMap<CActiveAbility*> MAP_ACTIVE_ABILITYS;
+    typedef CMultiRefMap<CPassiveAbility*> MAP_PASSIVE_ABILITYS;
+    typedef CMultiRefMap<CBuffAbility*> MAP_BUFF_ABILITYS;
     
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ACTIVE_SKILLS, m_mapActSkills, ActiveSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PASSIVE_SKILLS, m_mapPasSkills, PassiveSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_BUFF_SKILLS, m_mapBuffSkills, BuffSkills);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ACTIVE_ABILITYS, m_mapActAbilitys, ActiveAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PASSIVE_ABILITYS, m_mapPasAbilitys, PassiveAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_BUFF_ABILITYS, m_mapBuffAbilitys, BuffAbilitys);
 
 
-    M_SYNTHESIZE(int, m_iAttackSkillId, AttackSkillId);
+    M_SYNTHESIZE(int, m_iAttackAbilityId, AttackAbilityId);
     // 下列函数将安全的增删触发器
     
-    void addActiveSkill(CActiveSkill* pSkill, bool bNotify = true);
-    void addActiveSkill(int id, int iLevel = 1);
-    void delActiveSkill(int id, bool bNotify = true);
-    CActiveSkill* getActiveSkill(int id);
+    void addActiveAbility(CActiveAbility* pAbility, bool bNotify = true);
+    void addActiveAbility(int id, int iLevel = 1);
+    void delActiveAbility(int id, bool bNotify = true);
+    CActiveAbility* getActiveAbility(int id);
     
-    void addPassiveSkill(CPassiveSkill* pSkill, bool bNotify = true);
-    void addPassiveSkill(int id, int iLevel = 1);
-    void delPassiveSkill(int id, bool bNotify = true);
-    CPassiveSkill* getPassiveSkill(int id);
+    void addPassiveAbility(CPassiveAbility* pAbility, bool bNotify = true);
+    void addPassiveAbility(int id, int iLevel = 1);
+    void delPassiveAbility(int id, bool bNotify = true);
+    CPassiveAbility* getPassiveAbility(int id);
     
-    void addBuffSkill(CBuffSkill* pSkill, bool bNotify = true);
-    void addBuffSkill(int id, int iSrcUnit, int iLevel = 1);
-    void delBuffSkill(int id, bool bNotify = true);
-    CBuffSkill* getBuffSkill(int id);
+    void addBuffAbility(CBuffAbility* pAbility, bool bNotify = true);
+    void addBuffAbility(int id, int iSrcUnit, int iLevel = 1);
+    void delBuffAbility(int id, bool bNotify = true);
+    CBuffAbility* getBuffAbility(int id);
     
 protected:
-    void updateBuffSkillElapsed(float dt);
+    void updateBuffAbilityElapsed(float dt);
     
 public:
-    typedef CMultiRefMap<CSkill*> MAP_TRIGGER_SKILLS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnAttackTargetTriggerSkills, OnAttackTargetTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnAttackedTriggerSkills, OnAttackedTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnDamagedSurfaceTriggerSkills, OnDamagedSurfaceTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnDamagedInnerTriggerSkills, OnDamagedInnerTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnDamagedDoneTriggerSkills, OnDamagedDoneTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnDamageTargetDoneTriggerSkills, OnDamageTargetDoneTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnHpChangeTriggerSkills, OnHpChangeTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnReviveTriggerSkills, OnReviveTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnDieTriggerSkills, OnDieTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnTickTriggerSkills, OnTickTriggerSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapOnDestroyProjectileTriggerSkills, OnDestroyProjectileTriggerSkills);
+    typedef CMultiRefMap<CAbility*> MAP_TRIGGER_ABILITYS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnAttackTargetTriggerAbilitys, OnAttackTargetTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnAttackedTriggerAbilitys, OnAttackedTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedSurfaceTriggerAbilitys, OnDamagedSurfaceTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedInnerTriggerAbilitys, OnDamagedInnerTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedDoneTriggerAbilitys, OnDamagedDoneTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamageTargetDoneTriggerAbilitys, OnDamageTargetDoneTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnHpChangeTriggerAbilitys, OnHpChangeTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnReviveTriggerAbilitys, OnReviveTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDieTriggerAbilitys, OnDieTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnTickTriggerAbilitys, OnTickTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDestroyProjectileTriggerAbilitys, OnDestroyProjectileTriggerAbilitys);
     
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapTriggerSkillsToAdd, TriggerSkillsToAdd);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_SKILLS, m_mapTriggerSkillsToDel, TriggerSkillsToDel);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToAdd, TriggerAbilitysToAdd);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToDel, TriggerAbilitysToDel);
     
 public:
     // 添加触发器
-    void addSkillToTriggers(CSkill* pSkill);
+    void addAbilityToTriggers(CAbility* pAbility);
     
     // 删除触发器
-    void delSkillFromTriggers(CSkill* pSkill);
+    void delAbilityFromTriggers(CAbility* pAbility);
     
 protected:
     // 只能在triggerFree的时候调用
-    void updateTriggerSkillsWhenTriggerFree();
+    void updateTriggerAbilitysWhenTriggerFree();
     
     // trigger之间是有可能存在嵌套关系的
     // 为了安全增删trigger，需要维护一个引用计数
@@ -456,13 +456,13 @@ protected:
     void triggerOnDestroyProjectile(CProjectile* pProjectile);
     
     // 为单位添加/删除技能
-    //void addSkill(CSkill* pSkill);
-    //void delSkill(CSkill* pSkill);
+    //void addAbility(CAbility* pAbility);
+    //void delAbility(CAbility* pAbility);
     
     // 为单位添加/删除/覆盖删除BUFF
-    //void addBuff(CBuffSkill* pBuff, bool bForce = false);
-    //void delBuff(CBuffSkill* pBuff, bool bAfterTriggerLoop = true);
-    //void coverBuff(CBuffSkill* pBuff);
+    //void addBuff(CBuffAbility* pBuff, bool bForce = false);
+    //void delBuff(CBuffAbility* pBuff, bool bAfterTriggerLoop = true);
+    //void coverBuff(CBuffAbility* pBuff);
         
 public:
     M_SYNTHESIZE_READONLY(int, m_iSuspendRef, SuspendRef);
@@ -591,26 +591,26 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnitsToRevive, UnitsToRevive);
     void reviveUnit(int id, float fHp);
     
-    typedef CMultiRefMap<CSkill*> MAP_SKILLS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_SKILLS, m_mapSkillsCD, SkillsCD);
-    void addSkillCD(CSkill* pSkill);
-    void delSkillCD(int id);
-    bool isSkillCD(int id) const;
-    CSkill* getSkillCD(int id) const;
-    void updateSkillCD(int id);
+    typedef CMultiRefMap<CAbility*> MAP_ABILITYS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapAbilitysCD, AbilitysCD);
+    void addAbilityCD(CAbility* pAbility);
+    void delAbilityCD(int id);
+    bool isAbilityCD(int id) const;
+    CAbility* getAbilityCD(int id) const;
+    void updateAbilityCD(int id);
     
 protected:
-    void cleanSkillsCD(CUnit* pUnit);
-    void skillReady(CSkill* pSkill);
+    void cleanAbilitysCD(CUnit* pUnit);
+    void abilityReady(CAbility* pAbility);
     
 public:
     virtual void step(float dt);
 
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_SKILLS, m_mapTemplateSkills, TemplateSkills);
-    int addTemplateSkill(CSkill* pSkill);
-    void loadTemplateSkills();
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapTemplateAbilitys, TemplateAbilitys);
+    int addTemplateAbility(CAbility* pAbility);
+    void loadTemplateAbilitys();
     
-    CSkill* copySkill(int id) const;
+    CAbility* copyAbility(int id) const;
 
 };
 

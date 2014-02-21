@@ -8,7 +8,7 @@
 #include "CommInc.h"
 #include "Item.h"
 #include "Unit.h"
-#include "Skill.h"
+#include "Ability.h"
 #include "Application.h"
 
 
@@ -58,14 +58,14 @@ unsigned int CItem::decStatckCount(unsigned int uDecrease)
     return uRet;
 }
 
-void CItem::addActiveSkill(int id)
+void CItem::addActiveAbility(int id)
 {
-    m_vecActSkillIds.push_back(id);
+    m_vecActAbilityIds.push_back(id);
 }
 
-void CItem::addPassiveSkill(int id)
+void CItem::addPassiveAbility(int id)
 {
-    m_vecPasSkillIds.push_back(id);
+    m_vecPasAbilityIds.push_back(id);
 }
 
 void CItem::onUnitAddItem()
@@ -94,7 +94,7 @@ bool CItem::use()
     {
         // 直接可以使用
         LOG("%s使用了%s", o->getName(), getName());
-        if (m_vecActSkills.front()->cast() == false)
+        if (m_vecActAbilitys.front()->cast() == false)
         {
             return false;
         }
@@ -127,15 +127,15 @@ bool CItem::checkConditions()
     else
     {
         // 直接可以使用
-        if (m_vecActSkills.empty())
+        if (m_vecActAbilitys.empty())
         {
             // 无主动技能，直接返回
             return false;
         }
         
-        if (m_vecActSkills.front()->getCastTargetType() != CCommandTarget::kNoTarget ||
-            m_vecActSkills.front()->isCoolingDown() ||
-            m_vecActSkills.front()->checkConditions() == false)
+        if (m_vecActAbilitys.front()->getCastTargetType() != CCommandTarget::kNoTarget ||
+            m_vecActAbilitys.front()->isCoolingDown() ||
+            m_vecActAbilitys.front()->checkConditions() == false)
         {
             return false;
         }
@@ -154,7 +154,7 @@ void CItem::onAddToNewSlot(CUnit* pOwner)
     
     if (m_eItemType != kEquipment)
     {
-        addSkillToOwner(pOwner);
+        addAbilityToOwner(pOwner);
     }
     
     onUnitAddItem();
@@ -164,7 +164,7 @@ void CItem::onDelFromSlot()
 {
     if (m_eItemType != kEquipment)
     {
-        delSkillFromOwner();
+        delAbilityFromOwner();
     }
     
     onUnitDelItem();
@@ -172,66 +172,66 @@ void CItem::onDelFromSlot()
     setOwner(NULL);
 }
 
-void CItem::addSkillToOwner(CUnit* pOwner, bool bNotify)
+void CItem::addAbilityToOwner(CUnit* pOwner, bool bNotify)
 {
     CWorld* w = pOwner->getWorld();
 
-    if (m_vecActSkills.empty())
+    if (m_vecActAbilitys.empty())
     {
-        for (auto it = m_vecActSkillIds.begin(); it != m_vecActSkillIds.end(); ++it)
+        for (auto it = m_vecActAbilityIds.begin(); it != m_vecActAbilityIds.end(); ++it)
         {
-            CActiveSkill* pActSkill = NULL;
-            w->copySkill(*it)->dcast(pActSkill);
-            if (pActSkill != NULL)
+            CActiveAbility* pActAbility = NULL;
+            w->copyAbility(*it)->dcast(pActAbility);
+            if (pActAbility != NULL)
             {
-                m_vecActSkills.addObject(pActSkill);
+                m_vecActAbilitys.addObject(pActAbility);
             }
         }
     }
     
-    M_VEC_FOREACH(m_vecActSkills)
+    M_VEC_FOREACH(m_vecActAbilitys)
     {
-        CActiveSkill* pActSkill = M_VEC_EACH;
-        pOwner->addActiveSkill(pActSkill, bNotify);
+        CActiveAbility* pActAbility = M_VEC_EACH;
+        pOwner->addActiveAbility(pActAbility, bNotify);
         M_VEC_NEXT;
     }
     
-    if (m_vecPasSkills.empty())
+    if (m_vecPasAbilitys.empty())
     {
-        for (auto it = m_vecPasSkillIds.begin(); it != m_vecPasSkillIds.end(); ++it)
+        for (auto it = m_vecPasAbilityIds.begin(); it != m_vecPasAbilityIds.end(); ++it)
         {
-            CPassiveSkill* pPasSkill = NULL;
-            w->copySkill(*it)->dcast(pPasSkill);
-            if (pPasSkill != NULL)
+            CPassiveAbility* pPasAbility = NULL;
+            w->copyAbility(*it)->dcast(pPasAbility);
+            if (pPasAbility != NULL)
             {
-                m_vecPasSkills.addObject(pPasSkill);
+                m_vecPasAbilitys.addObject(pPasAbility);
             }
         }
     }
     
-    M_VEC_FOREACH(m_vecPasSkills)
+    M_VEC_FOREACH(m_vecPasAbilitys)
     {
-        CPassiveSkill* pPasSkill = M_VEC_EACH;
-        pOwner->addPassiveSkill(pPasSkill, bNotify);
+        CPassiveAbility* pPasAbility = M_VEC_EACH;
+        pOwner->addPassiveAbility(pPasAbility, bNotify);
         M_VEC_NEXT;
     }
 }
 
-void CItem::delSkillFromOwner(bool bNotify)
+void CItem::delAbilityFromOwner(bool bNotify)
 {
     CUnit* o = getOwner();
     
-    M_VEC_FOREACH(m_vecActSkills)
+    M_VEC_FOREACH(m_vecActAbilitys)
     {
-        CActiveSkill* pActSkill = M_VEC_EACH;
-        o->delActiveSkill(pActSkill->getId(), bNotify);
+        CActiveAbility* pActAbility = M_VEC_EACH;
+        o->delActiveAbility(pActAbility->getId(), bNotify);
         M_VEC_NEXT;
     }
     
-    M_VEC_FOREACH(m_vecPasSkills)
+    M_VEC_FOREACH(m_vecPasAbilitys)
     {
-        CPassiveSkill* pPasSkill = M_VEC_EACH;
-        o->delPassiveSkill(pPasSkill->getId(), bNotify);
+        CPassiveAbility* pPasAbility = M_VEC_EACH;
+        o->delPassiveAbility(pPasAbility->getId(), bNotify);
         M_VEC_NEXT;
     }
 }

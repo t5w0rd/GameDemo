@@ -38,13 +38,5 @@ public:
     
 };
 
-class CApplicationLog
-{
-public:
-    static void Log(const char* pFormat, ...);
-};
-
-#define LOG(...) CApplicationLog::Log(__VA_ARGS__)
-
 #endif	/* __APPLICATION_H__ */
 

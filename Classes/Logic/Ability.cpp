@@ -1,5 +1,5 @@
 /* 
- * File:   Skill.cpp
+ * File:   Ability.cpp
  * Author: thunderliu
  * 
  * Created on 2013年12月8日, 下午11:45
@@ -7,14 +7,14 @@
 
 #include "CommInc.h"
 #include "Unit.h"
-#include "Skill.h"
+#include "Ability.h"
 #include "MultiRefObject.h"
 #include "Application.h"
 #include "Draw.h"
 
 
-// CSkill
-CSkill::CSkill(const char* pRootId, const char* pName, float fCoolDown)
+// CAbility
+CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 : CONST_ROOT_ID(pRootId)
 , m_sName(pName)
 , m_pOwner(NULL)
@@ -24,45 +24,45 @@ CSkill::CSkill(const char* pRootId, const char* pName, float fCoolDown)
 , m_fIntervalElapsed(0.0f)
 , m_dwTriggerFlags(0)
 {
-    setDbgClassName("CSkill");
+    setDbgClassName("CAbility");
 }
 
-CSkill::~CSkill()
+CAbility::~CAbility()
 {
 }
 
-const char* CSkill::getDbgTag() const
+const char* CAbility::getDbgTag() const
 {
     return getName();
 }
 
-const char* CSkill::getRootId() const
+const char* CAbility::getRootId() const
 {
     return CONST_ROOT_ID.c_str();
 }
 
-bool CSkill::isCoolingDown() const
+bool CAbility::isCoolingDown() const
 {
     return m_fCoolingDownElapsed < getCoolDown();
 }
 
-void CSkill::resetCD()
+void CAbility::resetCD()
 {
     m_fCoolingDownElapsed = FLT_MAX;
-    getOwner()->updateSkillCD(getId());
+    getOwner()->updateAbilityCD(getId());
 }
 
-void CSkill::coolDown()
+void CAbility::coolDown()
 {
     setCoolingDownElapsed(0.0f);
-    getOwner()->skillCD(this);
+    getOwner()->abilityCD(this);
 }
 
-void CSkill::onUnitAddSkill()
+void CAbility::onUnitAddAbility()
 {
 }
 
-void CSkill::setInterval(float fInterval)
+void CAbility::setInterval(float fInterval)
 {
     if (fInterval <= FLT_EPSILON)
     {
@@ -74,85 +74,85 @@ void CSkill::setInterval(float fInterval)
     m_fInterval = fInterval;
 }
 
-void CSkill::onUnitDelSkill()
+void CAbility::onUnitDelAbility()
 {
 }
 
-void CSkill::onUnitSkillReady()
+void CAbility::onUnitAbilityReady()
 {
 }
 
-void CSkill::onUnitRevive()
+void CAbility::onUnitRevive()
 {
 }
 
-void CSkill::onUnitDie()
+void CAbility::onUnitDie()
 {
 }
 
-void CSkill::onUnitChangeHp(float fChanged)
+void CAbility::onUnitChangeHp(float fChanged)
 {
 }
 
-void CSkill::onUnitTick(float dt)
+void CAbility::onUnitTick(float dt)
 {
 }
 
-void CSkill::onUnitInterval()
+void CAbility::onUnitInterval()
 {
 }
 
-CAttackData* CSkill::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
-{
-    return pAttack;
-}
-
-CAttackData* CSkill::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
+CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     return pAttack;
 }
 
-void CSkill::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
+CAttackData* CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
+{
+    return pAttack;
+}
+
+void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
 {
 }
 
-void CSkill::onUnitDamagedDone(float fDamage, CUnit* pSource)
+void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
 {
 }
 
-void CSkill::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
+void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 {
 }
 
-void CSkill::onUnitDestroyProjectile(CProjectile* pProjectile)
+void CAbility::onUnitDestroyProjectile(CProjectile* pProjectile)
 {
 }
 
-void CSkill::onAddToUnit(CUnit* pOwner)
+void CAbility::onAddToUnit(CUnit* pOwner)
 {
     setOwner(pOwner);
-    onUnitAddSkill();
+    onUnitAddAbility();
 }
 
-void CSkill::onDelFromUnit()
+void CAbility::onDelFromUnit()
 {
-    onUnitDelSkill();
+    onUnitDelAbility();
     setOwner(NULL);
 }
 
-void CSkill::setTriggerFlags(uint32_t dwTriggerFlags)
+void CAbility::setTriggerFlags(uint32_t dwTriggerFlags)
 {
     m_dwTriggerFlags |= dwTriggerFlags;
 }
 
-void CSkill::unsetTriggerFlags(uint32_t dwTriggerFlags)
+void CAbility::unsetTriggerFlags(uint32_t dwTriggerFlags)
 {
     m_dwTriggerFlags &= ~dwTriggerFlags;
 }
 
-// CActiveSkill
-CActiveSkill::CActiveSkill(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags)
-: CSkill(pRootId, pName, fCoolDown)
+// CActiveAbility
+CActiveAbility::CActiveAbility(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags)
+: CAbility(pRootId, pName, fCoolDown)
 , m_eCastTargetType(eCastType)
 , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
 , m_fCastMinRange(0.0f)
@@ -161,17 +161,17 @@ CActiveSkill::CActiveSkill(const char* pRootId, const char* pName, float fCoolDo
 , m_iTemplateProjectile(0)
 , m_bCastHorizontal(false)
 {
-    setDbgClassName("CActiveSkill");
+    setDbgClassName("CActiveAbility");
 }
 
-CActiveSkill::~CActiveSkill()
+CActiveAbility::~CActiveAbility()
 {
 }
 
-const float CActiveSkill::CONST_MAX_CAST_BUFFER_RANGE = 50.0f;
-const float CActiveSkill::CONST_MAX_HOR_CAST_Y_RANGE = 5.0f;
+const float CActiveAbility::CONST_MAX_CAST_BUFFER_RANGE = 50.0f;
+const float CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE = 5.0f;
 
-bool CActiveSkill::cast()
+bool CActiveAbility::cast()
 {
     if (isCoolingDown())
     {
@@ -185,28 +185,28 @@ bool CActiveSkill::cast()
     }
     
     CUnit* o = getOwner();
-    LOG("%s%s%s..", o->getName(), o->getAttackSkillId() == getId() ? "的" : "施放了", getName());
+    LOG("%s%s%s..", o->getName(), o->getAttackAbilityId() == getId() ? "的" : "施放了", getName());
     coolDown();
-    onUnitCastSkill();  // onCastSkill在cd变化下面，所以可以添加重置cd的逻辑
+    onUnitCastAbility();  // onCastAbility在cd变化下面，所以可以添加重置cd的逻辑
     
     return true;
 }
 
-bool CActiveSkill::checkConditions()
+bool CActiveAbility::checkConditions()
 {
     return true;
 }
 
-void CActiveSkill::onUnitCastSkill()
+void CActiveAbility::onUnitCastAbility()
 {
 }
 
-void CActiveSkill::addCastAnimation( int id )
+void CActiveAbility::addCastAnimation( int id )
 {
     m_vecCastAnis.push_back(id);
 }
 
-int CActiveSkill::getCastRandomAnimation() const
+int CActiveAbility::getCastRandomAnimation() const
 {
     if (m_vecCastAnis.empty())
     {
@@ -216,33 +216,33 @@ int CActiveSkill::getCastRandomAnimation() const
     return m_vecCastAnis[rand() % m_vecCastAnis.size()];
 }
 
-// CPassiveSkill
-CPassiveSkill::CPassiveSkill(const char* pRootId, const char* pName, float fCoolDown)
-: CSkill(pRootId, pName, fCoolDown)
+// CPassiveAbility
+CPassiveAbility::CPassiveAbility(const char* pRootId, const char* pName, float fCoolDown)
+: CAbility(pRootId, pName, fCoolDown)
 {
-    setDbgClassName("CPassiveSkill");
+    setDbgClassName("CPassiveAbility");
 }
 
-CPassiveSkill::~CPassiveSkill()
+CPassiveAbility::~CPassiveAbility()
 {
 }
 
-// CBuffSkill
-CBuffSkill::CBuffSkill(const char* pRootId, const char* pName, float fDuration, bool bStackable)
-: CPassiveSkill(pRootId, pName, 0.0f)
+// CBuffAbility
+CBuffAbility::CBuffAbility(const char* pRootId, const char* pName, float fDuration, bool bStackable)
+: CPassiveAbility(pRootId, pName, 0.0f)
 , m_fDuration(fDuration)
 , m_fElapsed(0.0f)
 , m_bStackable(bStackable)
 , m_iSrcUnit(0)
 {
-    setDbgClassName("CBuffSkill");
+    setDbgClassName("CBuffAbility");
 }
 
-CBuffSkill::~CBuffSkill()
+CBuffAbility::~CBuffAbility()
 {
 }
 
-bool CBuffSkill::isDone() const
+bool CBuffAbility::isDone() const
 {
     return m_fElapsed >= m_fDuration;
 }
@@ -253,7 +253,7 @@ const float CAttackAct::CONST_MIN_ATTACK_SPEED_MULRIPLE = 0.2f; // 20%
 const float CAttackAct::CONST_MAX_ATTACK_SPEED_MULRIPLE = 5.0f; // 500%
 
 CAttackAct::CAttackAct(const char* pRootId, const char* pName, float fCoolDown, const CAttackValue& rAttackValue, float fAttackValueRandomRange)
-: CActiveSkill(pRootId, pName, fCoolDown, CCommandTarget::kUnitTarget, CUnitForce::kEnemy)
+: CActiveAbility(pRootId, pName, fCoolDown, CCommandTarget::kUnitTarget, CUnitForce::kEnemy)
 , m_oAttackValue(rAttackValue)
 , m_fAttackValueRandomRange(fAttackValueRandomRange)
 {
@@ -274,14 +274,14 @@ CMultiRefObject* CAttackAct::copy() const
     return pRet;
 }
 
-void CAttackAct::onUnitAddSkill()
+void CAttackAct::onUnitAddAbility()
 {
-    getOwner()->setAttackSkillId(getId());
+    getOwner()->setAttackAbilityId(getId());
 }
 
-void CAttackAct::onUnitDelSkill()
+void CAttackAct::onUnitDelAbility()
 {
-    getOwner()->setAttackSkillId(0);
+    getOwner()->setAttackAbilityId(0);
 }
 
 bool CAttackAct::checkConditions()
@@ -299,7 +299,7 @@ bool CAttackAct::checkConditions()
     return true;
 }
 
-void CAttackAct::onUnitCastSkill()
+void CAttackAct::onUnitCastAbility()
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
@@ -412,7 +412,7 @@ const CExtraCoeff& CAttackAct::getExAttackSpeed() const
 void CAttackAct::updateAttackSpeed()
 {
     CUnit* o = getOwner();
-    o->updateSkillCD(getId());
+    o->updateAbilityCD(getId());
 }
 
 void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
@@ -435,7 +435,7 @@ void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
 
 // CBuffMakerAct
 CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, int iTemplateBuff, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags)
-: CActiveSkill(pRootId, pName, fCoolDown, eCastType, dwEffectiveTypeFlags)
+: CActiveAbility(pRootId, pName, fCoolDown, eCastType, dwEffectiveTypeFlags)
 , m_iTemplateBuff(iTemplateBuff)
 , m_pTarget(NULL)
 {
@@ -490,7 +490,7 @@ bool CBuffMakerAct::checkConditions()
     return true;
 }
 
-void CBuffMakerAct::onUnitCastSkill()
+void CBuffMakerAct::onUnitCastAbility()
 {
     CUnit* o = getOwner();
     switch (getCastTargetType())
@@ -499,7 +499,7 @@ void CBuffMakerAct::onUnitCastSkill()
     case CCommandTarget::kUnitTarget:
         if (o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
         {
-            m_pTarget->addBuffSkill(getTemplateBuff(), o->getId(), getLevel());
+            m_pTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
         break;
         
@@ -515,7 +515,7 @@ void CBuffMakerAct::onUnitCastSkill()
     CWorld* w = o->getWorld();
     CUnitDraw2D* od  = DCAST(o->getDraw(), CUnitDraw2D*);
     assert(od != NULL);
-    CBuffSkill* pBuff = NULL;
+    CBuffAbility* pBuff = NULL;
     CWorld::MAP_UNITS& mapUnits = w->getUnits();
     M_MAP_FOREACH(mapUnits)
     {
@@ -541,20 +541,20 @@ void CBuffMakerAct::onUnitCastSkill()
         
         if (pBuff == NULL)
         {
-            w->copySkill(getTemplateBuff())->dcast(pBuff);
+            w->copyAbility(getTemplateBuff())->dcast(pBuff);
         }
         else
         {
             pBuff->copy()->dcast(pBuff);
         }
         
-        u->addBuffSkill(pBuff);
+        u->addBuffAbility(pBuff);
     }
 }
 
 // CAuraPas
 CAuraPas::CAuraPas(const char* pRootId, const char* pName, float fInterval, int iTemplateBuff, float fRange, uint32_t dwEffectiveTypeFlags)
-: CPassiveSkill(pRootId, pName)
+: CPassiveAbility(pRootId, pName)
 , m_iTemplateBuff(iTemplateBuff)
 , m_fRange(fRange)
 , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
@@ -576,7 +576,7 @@ void CAuraPas::onUnitInterval()
 {
     CUnit* o = getOwner();
     CWorld* w = o->getWorld();
-    CBuffSkill* pBuff = NULL;
+    CBuffAbility* pBuff = NULL;
     
     CUnitDraw2D* od = DCAST(o->getDraw(), CUnitDraw2D*);
     assert(od != NULL);
@@ -605,20 +605,20 @@ void CAuraPas::onUnitInterval()
         
         if (pBuff == NULL)
         {
-            w->copySkill(m_iTemplateBuff)->dcast(pBuff);
+            w->copyAbility(m_iTemplateBuff)->dcast(pBuff);
         }
         else
         {
             pBuff->copy()->dcast(pBuff);
         }
         
-        u->addBuffSkill(pBuff);
+        u->addBuffAbility(pBuff);
     }
 }
 
 // CAttackBuffMakerPas
 CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName, float fProbability, int iTemplateBuff, bool bToSelf, const CExtraCoeff& roExAttackValue)
-: CPassiveSkill(pRootId, pName)
+: CPassiveAbility(pRootId, pName)
 , m_fProbability(fProbability)
 , m_iTemplateBuff(iTemplateBuff)
 , m_bToSelf(bToSelf)
@@ -663,7 +663,7 @@ CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit
         if (isToSelf())
         {
             CUnit* o = getOwner();
-            o->addBuffSkill(m_iTemplateBuff, o->getId(), getLevel());
+            o->addBuffAbility(m_iTemplateBuff, o->getId(), getLevel());
         }
         else
         {
@@ -676,7 +676,7 @@ CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit
 
 // CVampirePas
 CVampirePas::CVampirePas(const char* pRootId, const char* pName, float fPercentConversion)
-: CPassiveSkill(pRootId, pName)
+: CPassiveAbility(pRootId, pName)
 , m_fPercentConversion(fPercentConversion)
 {
     setDbgClassName("CVampirePas");
@@ -698,7 +698,7 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 
 // CStunBuff
 CStunBuff::CStunBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable)
-: CBuffSkill(pRootId, pName, fDuration, bStackable)
+: CBuffAbility(pRootId, pName, fDuration, bStackable)
 {
     setDbgClassName("CStunBuff");
 }
@@ -708,7 +708,7 @@ CMultiRefObject* CStunBuff::copy() const
     return new CStunBuff(getRootId(), getName(), m_fDuration, m_bStackable);
 }
 
-void CStunBuff::onUnitAddSkill()
+void CStunBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     o->suspend();
@@ -716,7 +716,7 @@ void CStunBuff::onUnitAddSkill()
     LOG("%s%s中", o->getName(), getName());
 }
 
-void CStunBuff::onUnitDelSkill()
+void CStunBuff::onUnitDelAbility()
 {
     CUnit* o = getOwner();
     o->resume();
@@ -729,7 +729,7 @@ void CStunBuff::onUnitDelSkill()
 
 // CDoubleAttackBuff
 CDoubleAttackBuff::CDoubleAttackBuff(const char* pRootId, const char* pName)
-: CBuffSkill(pRootId, pName, 0.0f, true)
+: CBuffAbility(pRootId, pName, 0.0f, true)
 {
     setDbgClassName("CDoubleAttackBuff");
 }
@@ -739,16 +739,16 @@ CMultiRefObject* CDoubleAttackBuff::copy() const
     return new CDoubleAttackBuff(getRootId(), getName());
 }
 
-void CDoubleAttackBuff::onUnitAddSkill()
+void CDoubleAttackBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
-    if (o->getAttackSkillId() == 0)
+    if (o->getAttackAbilityId() == 0)
     {
         return;
     }
     
     CAttackAct* pAtk = NULL;
-    o->getActiveSkill(o->getAttackSkillId())->dcast(pAtk);
+    o->getActiveAbility(o->getAttackAbilityId())->dcast(pAtk);
     
     pAtk->resetCD();
     
@@ -757,7 +757,7 @@ void CDoubleAttackBuff::onUnitAddSkill()
 
 // CSpeedBuff
 CSpeedBuff::CSpeedBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, const CExtraCoeff& roExMoveSpeedDelta, const CExtraCoeff& roExAttackSpeedDelta)
-: CBuffSkill(pRootId, pName, fDuration, bStackable)
+: CBuffAbility(pRootId, pName, fDuration, bStackable)
 , m_oExMoveSpeedDelta(roExMoveSpeedDelta)
 , m_oExAttackSpeedDelta(roExAttackSpeedDelta)
 {
@@ -769,7 +769,7 @@ CMultiRefObject* CSpeedBuff::copy() const
     return new CSpeedBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_oExMoveSpeedDelta, m_oExAttackSpeedDelta);
 }
 
-void CSpeedBuff::onUnitAddSkill()
+void CSpeedBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     
@@ -779,7 +779,7 @@ void CSpeedBuff::onUnitAddSkill()
     od->setExMoveSpeed(CExtraCoeff(rExMs.getMulriple() + m_oExMoveSpeedDelta.getMulriple(), rExMs.getAddend() + m_oExMoveSpeedDelta.getAddend()));
     
     CAttackAct* pAtkAct = NULL;
-    o->getActiveSkill(o->getAttackSkillId())->dcast(pAtkAct);
+    o->getActiveAbility(o->getAttackAbilityId())->dcast(pAtkAct);
     if (pAtkAct == NULL)
     {
         return;
@@ -792,7 +792,7 @@ void CSpeedBuff::onUnitAddSkill()
     LOG("%s攻击速度变慢(%.1fs->%.1fs)\n", o->getName(), fTestOld, pAtkAct->getRealAttackInterval());
 }
 
-void CSpeedBuff::onUnitDelSkill()
+void CSpeedBuff::onUnitDelAbility()
 {
     CUnit* o = getOwner();
     
@@ -801,7 +801,7 @@ void CSpeedBuff::onUnitDelSkill()
     d->setExMoveSpeed(CExtraCoeff(rExMs.getMulriple() - m_oExMoveSpeedDelta.getMulriple(), rExMs.getAddend() - m_oExMoveSpeedDelta.getAddend()));
     
     CAttackAct* pAtkAct = NULL;
-    o->getActiveSkill(o->getAttackSkillId())->dcast(pAtkAct);
+    o->getActiveAbility(o->getAttackAbilityId())->dcast(pAtkAct);
     if (pAtkAct == NULL)
     {
         return;
@@ -816,7 +816,7 @@ void CSpeedBuff::onUnitDelSkill()
 
 // CHpChangeBuff
 CHpChangeBuff::CHpChangeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fInterval, float fHpChange, bool bPercentile, float fMinHp)
-: CBuffSkill(pRootId, pName, fDuration, bStackable)
+: CBuffAbility(pRootId, pName, fDuration, bStackable)
 , m_fHpChange(fHpChange)
 , m_bPercentile(bPercentile)
 , m_fMinHp(fMinHp)
@@ -830,13 +830,13 @@ CMultiRefObject* CHpChangeBuff::copy() const
     return new CHpChangeBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_fInterval, m_fHpChange, m_bPercentile, m_fMinHp);
 }
 
-void CHpChangeBuff::onUnitAddSkill()
+void CHpChangeBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     LOG("%s获得%s状态(%.1f%s/s)\n", o->getName(), getName(), isPercentile() ? (getHpChange() * 100 / getInterval()) : (getHpChange() / getInterval()), isPercentile() ? "%" : "");
 }
 
-void CHpChangeBuff::onUnitDelSkill()
+void CHpChangeBuff::onUnitDelAbility()
 {
     CUnit* o = getOwner();
     LOG("%s失去%s状态\n", o->getName(), getName());

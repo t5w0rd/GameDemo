@@ -4,7 +4,7 @@
 #include "GameControl.h"
 #include "DrawForCC.h"
 #include "Logic/Unit.h"
-#include "Logic/Skill.h"
+#include "Logic/Ability.h"
 
 
 // CBattleWorld
@@ -52,19 +52,19 @@ void CBattleWorld::onInit()
     addUnit(u);
 
     CAttackAct* atk = new CAttackAct("NormalAttack",
-        "¹¥»÷",
-        1.25,
-        CAttackValue(1,
-        CAttackValue::kPhysical,
-        30.0),
-        0.5);
+                                     "¹¥»÷",
+                                     3.25,
+                                     CAttackValue(1,
+                                     CAttackValue::kPhysical,
+                                     30.0),
+                                     0.5);
     atk->setCastMinRange(-3.0f);
     atk->setCastRange(15.0f);
     atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
-    int id = addTemplateSkill(atk);
-    u->addActiveSkill(id);
+    int id = addTemplateAbility(atk);
+    u->addActiveAbility(id);
 
     ud->setBaseMoveSpeed(80.0f);
     ud->setPosition(CPoint(vs.width * 0.5, vs.height * 0.5));
@@ -207,7 +207,7 @@ void CCBattleSceneLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
     if (t != NULL && hero != t)
     {
         d->setCastTarget(CCommandTarget(t->getId()));
-        d->cmdCastSpell(hero->getAttackSkillId());
+        d->cmdCastSpell(hero->getAttackAbilityId());
         
     }
     else

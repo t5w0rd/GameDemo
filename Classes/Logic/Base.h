@@ -9,6 +9,14 @@
 #define	__BASE_H__
 
 
+class CDebugLog
+{
+public:
+    static void Log(const char* pFormat, ...);
+};
+
+#define LOG(...) CDebugLog::Log(__VA_ARGS__)
+
 class CPoint
 {
 public:

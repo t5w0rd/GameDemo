@@ -12,13 +12,13 @@
 #include "MultiRefObject.h"
 #include "Level.h"
 #include "Base.h"
-#include "Skill.h"
+#include "Ability.h"
 
 
 class CPackage;
-class CSkill;
-class CPassSkill;
-class CActiveSkill;
+class CAbility;
+class CPassAbility;
+class CActiveAbility;
 
 class CItem : public CMultiRefObject
 {
@@ -53,17 +53,17 @@ public:
     unsigned int decStatckCount(unsigned int uDecrease);
     
 protected:
-    typedef vector<int> VEC_SKILLIDS;
-    VEC_SKILLIDS m_vecActSkillIds;
-    VEC_SKILLIDS m_vecPasSkillIds;
+    typedef vector<int> VEC_ABILITYIDS;
+    VEC_ABILITYIDS m_vecActAbilityIds;
+    VEC_ABILITYIDS m_vecPasAbilityIds;
     
 public:
-    typedef CMultiRefVec<CActiveSkill*> VEC_ACT_SKILLS;
-    typedef CMultiRefVec<CPassiveSkill*> VEC_PAS_SKILLS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ACT_SKILLS, m_vecActSkills, ActiveSkills);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_PAS_SKILLS, m_vecPasSkills, PassiveSkills);
-    void addActiveSkill(int id);
-    void addPassiveSkill(int id);
+    typedef CMultiRefVec<CActiveAbility*> VEC_ACT_ABILITYS;
+    typedef CMultiRefVec<CPassiveAbility*> VEC_PAS_ABILITYS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ACT_ABILITYS, m_vecActAbilitys, ActiveAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_PAS_ABILITYS, m_vecPasAbilitys, PassiveAbilitys);
+    void addActiveAbility(int id);
+    void addPassiveAbility(int id);
     M_SYNTHESIZE(CUnit*, m_pOwner, Owner);
     
     // @overide
@@ -80,8 +80,8 @@ public:
     void onDelFromSlot();
     
 protected:
-    void addSkillToOwner(CUnit* pOwner, bool bNotify = false);
-    void delSkillFromOwner(bool bNotify = false);
+    void addAbilityToOwner(CUnit* pOwner, bool bNotify = false);
+    void delAbilityFromOwner(bool bNotify = false);
     
 };
 

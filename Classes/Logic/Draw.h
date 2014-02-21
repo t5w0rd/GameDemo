@@ -52,6 +52,7 @@ public:
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
+    virtual void onTick(float dt);
 
     enum FRM_ID
     {
@@ -75,6 +76,8 @@ public:
 
     M_SYNTHESIZE(float, m_fHalfOfWidth, HalfOfWidth);
     M_SYNTHESIZE(float, m_fHalfOfHeight, HalfOfHeight);
+
+    virtual void onTick(float dt);
 
     /////////////////////// move //////////////////////////////
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
@@ -137,10 +140,11 @@ public:
     // /////////////////////// cast /////////////////////////////
     M_SYNTHESIZE_PASS_BY_REF(CCommandTarget, m_oCastTarget, CastTarget);
     M_SYNTHESIZE(int, m_iCastActionId, CastActionId);
-    int cmdCastSpell(int iActiveSkillId);  // 可能是施法失败，施法中，施法追逐中，所以返回类型为int
-    int castSpell(CActiveSkill* pSkill);
-    bool checkCastTargetDistance(CActiveSkill* pSkill, const CPoint& roPos, CUnitDraw2D* td);
-    void moveToCastPosition(CActiveSkill* pSkill, CUnitDraw2D* td);
+    M_SYNTHESIZE(int, m_iCastActiveAbilityId, CastActiveAbilityId);
+    int cmdCastSpell(int iActiveAbilityId);  // 可能是施法失败，施法中，施法追逐中，所以返回类型为int
+    int castSpell(CActiveAbility* pAbility);
+    bool checkCastTargetDistance(CActiveAbility* pAbility, const CPoint& roPos, CUnitDraw2D* td);
+    void moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td);
 
     void stopCast();
     void onCastEffect(CMultiRefObject* pUnit, CCallFuncData* pData);
@@ -185,8 +189,8 @@ public:
     //void damagedAdv(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
     //void damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
     //void damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
-    //void addActiveSkill(CSkill* pSkill);
-    //void addBuff(CBuffSkill* pBuff, bool bForce = false);
+    //void addActiveAbility(CAbility* pAbility);
+    //void addBuff(CBuffAbility* pBuff, bool bForce = false);
 
     static bool isLivingAllyOf(CUnit* pUnit, CUnitForce* pParam);
     static bool isLivingEnemyOf(CUnit* pUnit, CUnitForce* pParam);
