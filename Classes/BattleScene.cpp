@@ -7,6 +7,39 @@
 #include "Logic/Ability.h"
 
 
+class CMyAI : public CUnitEventAdapter
+{
+public:
+    CMyAI()
+        : m_bFirstTick(true)
+    {
+    }
+
+    virtual void onUnitTick(float dt)
+    {
+        CUnitDraw2D* d = DCAST(getNotifyUnit()->getDraw(), CUnitDraw2D*);
+        if (isFirstTick())
+        {
+            setFirstTick(false);
+            setDstPoint(d->getPosition());
+            setOrgPoint(getDstPoint() + CPoint(300.0f, 300.0f));
+            return;
+        }
+
+        if (getDstPoint().getDistance(d->getPosition()) < 10.0f)
+        {
+            CPoint tmp = getOrgPoint();
+            setOrgPoint(getDstPoint());
+            setDstPoint(tmp);
+            d->cmdMove(getDstPoint());
+        }
+    }
+
+    M_SYNTHESIZE_BOOL(FirstTick);
+    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oOrgPoint, OrgPoint);
+    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oDstPoint, DstPoint);
+};
+
 // CBattleWorld
 CBattleWorld::CBattleWorld()
     : m_iHeroUnit(0)
@@ -32,6 +65,9 @@ void CBattleWorld::onInit()
     gc->loadAnimation("Units/Matchstick/act1", "Units/Matchstick/act1", 0.08f);
     gc->loadAnimation("Units/Matchstick/act2", "Units/Matchstick/act2", 0.08f);
 
+    CAbility* a = NULL;
+    int id = 0;
+
     // 创建Draw
     CUnitDrawForCC* ud = new CUnitDrawForCC("Malik");
     ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
@@ -39,7 +75,7 @@ void CBattleWorld::onInit()
     ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 4);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 4);
 
-    ud->setSpriteProperty(7.0f, 10.0f, ccp(0.5f, 0.1125f), ccp(10.0f, 10.0f));
+    ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), ccp(10.0f, 10.0f));
 
     // 创建hero
     CUnit* u = new CUnit("CUnit");
@@ -51,20 +87,37 @@ void CBattleWorld::onInit()
 
     addUnit(u);
 
-    CAttackAct* atk = new CAttackAct("NormalAttack",
-                                     "攻击",
-                                     3.25,
-                                     CAttackValue(1,
-                                     CAttackValue::kPhysical,
-                                     30.0),
-                                     0.5);
+    CAttackAct* atk = new CAttackAct(
+        "NormalAttack",
+        "攻击",
+        1.25,
+        CAttackValue(1,
+        CAttackValue::kPhysical,
+        180.0),
+        0.5);
     atk->setCastMinRange(-3.0f);
     atk->setCastRange(15.0f);
     atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
-    int id = addTemplateAbility(atk);
-    u->addActiveAbility(id);
+    u->addActiveAbility(atk);
+
+    a = new CSpeedBuff(
+        "SlowDown",
+        "残废",
+        5.0f,
+        true,
+        CExtraCoeff(-0.2f, 0.0f),
+        CExtraCoeff(-0.2f, 0.0f));
+    id = addTemplateAbility(a);
+
+    a = new CAttackBuffMakerPas(
+        "AttackBuffMaker.[SlowDown]",
+        "致残",
+        0.5f,
+        id);
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(id);
 
     ud->setBaseMoveSpeed(80.0f);
     ud->setPosition(CPoint(vs.width * 0.5, vs.height * 0.5));
@@ -75,17 +128,19 @@ void CBattleWorld::onInit()
     ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 3);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
-    ud->setSpriteProperty(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
+    ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
 
     u = new CUnit("CUnit");
     u->setDraw(ud);
     u->setName("Matchstick");
     u->setMaxHp(1000.0001f);
     u->setForceByIndex(2);
+    u->setAI(CMyAI());
 
     addUnit(u);
+    u->addPassiveAbility(new CRebirthPas("Rebirth500", "重生", 5.0f));
 
-    ud->setBaseMoveSpeed(80.0f);
+    ud->setBaseMoveSpeed(50.0f);
     ud->setPosition(CPoint(vs.width * 0.7, vs.height * 0.5));
 
 }
@@ -126,7 +181,7 @@ CCScene* CCBattleSceneLayer::scene()
 {
     // 'scene' is an autorelease object
     CCBattleScene* pScene = CCBattleScene::create();
-    
+
     CUnitWorldForCC* pWorld = pScene->getWorld();
     // 'layer' is an autorelease object
     CCUnitLayer* layer = CCBattleSceneLayer::create();
@@ -153,7 +208,7 @@ bool CCBattleSceneLayer::init()
 
     setBackGroundSprite(CCSprite::create("BackgroundHD.png"));
     setBufferEffectParam(0.9f, 10.0f, 0.1f);
-    
+
     CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
 
@@ -162,19 +217,19 @@ bool CCBattleSceneLayer::init()
 
     // add a label shows "Hello World"
     // create and initialize a label
-    
+
     CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Arial", 24);
-    
+
     // position the label on the center of the screen
     pLabel->setPosition(ccp(org.x + vs.width/2,
-                            org.y + vs.height - pLabel->getContentSize().height));
+        org.y + vs.height - pLabel->getContentSize().height));
 
     // add the label as a child to this layer
     this->addChild(pLabel, 1);
 
-    setWorldInterval(0.1f);
-    
-    
+    setWorldInterval(0.02f);
+
+
     return true;
 }
 
@@ -208,14 +263,11 @@ void CCBattleSceneLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
     {
         d->setCastTarget(CCommandTarget(t->getId()));
         d->cmdCastSpell(hero->getAttackAbilityId());
-        
+
     }
     else
     {
-        CUnitDraw2D::UNIT_MOVE_PARAMS mp;
-        mp.bAutoFlipX = true;
-        d->move(p, mp);
+        d->cmdMove(p);
     }
 }
-
 

@@ -366,7 +366,6 @@ CUnit* CUnit::getUnit(int id)
 
 void CUnit::abilityCD(CAbility* pAbility)
 {
-    LOG("%s的%s技能开始冷却(%.1fs)", getName(), pAbility->getName(), pAbility->getCoolDown());
     getWorld()->addAbilityCD(pAbility);
 }
 
@@ -403,7 +402,7 @@ bool CUnit::setHp(float fHp)
 
     if (m_fHp <= 0)
     {
-        onDie();
+        //onDie();
     }
 
     return true;
@@ -1640,6 +1639,7 @@ void CWorld::addAbilityCD(CAbility* pAbility)
         return;
     }
     m_mapAbilitysCD.addObject(pAbility);
+    LOG("%s的%s技能开始冷却(%.1fs)", pAbility->getOwner()->getName(), pAbility->getName(), pAbility->getCoolDown());
 }
 
 void CWorld::delAbilityCD(int id)
@@ -1749,29 +1749,15 @@ void CWorld::step(float dt)
         if (pUnit->isDead())
         {
             // 单位已经死亡
-#if 1
-            delUnit(it++, pUnit->isRevivable());
-#else
-            if (pUnit->isRevivable())
+            pUnit->onDie();
+            if (pUnit->isDead())
             {
-                // 如果单位可以复活，拖进灵魂域
-                m_mapUnitsToRevive.addObject(pUnit);
+                delUnit(M_MAP_IT++, pUnit->isRevivable());
+                continue;
             }
-            else
-            {
-                // 如果不可以复活，该单位将不再拥有世界，清除该单位的所有CD中的技能
-                pUnit->setWorld(NULL);
-                cleanAbilitysCD(pUnit);
-            }
-            pUnit->release();
-            
-            M_MAP_DEL_CUR_NEXT(m_mapUnits);
-#endif
         }
-        else
-        {
-            M_MAP_NEXT;
-        }
+
+        M_MAP_NEXT;
     }
     
     onTick(dt);

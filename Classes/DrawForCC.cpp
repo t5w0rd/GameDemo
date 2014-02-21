@@ -258,7 +258,7 @@ CUnitDrawForCC::FRM_INFO* CUnitDrawForCC::getFrameInfo( FRM_ID id )
     return &it->second;
 }
 
-void CUnitDrawForCC::setSpriteProperty( float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint )
+void CUnitDrawForCC::setGeometry( float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint )
 {
     setHalfOfWidth(fHalfOfWidth);
     setHalfOfHeight(fHalfOfHeight);
@@ -350,7 +350,7 @@ void CUnitWorldForCC::onAddUnit( CUnit* pUnit )
         pLayer = createLayer();
     }
     
-    CUnitDrawForCC* pDraw = dynamic_cast<CUnitDrawForCC*>(pUnit->getDraw());
+    CUnitDrawForCC* pDraw = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
     CCSprite* pSprite = pDraw->getSprite();
     if (pSprite == NULL)
     {
@@ -362,7 +362,7 @@ void CUnitWorldForCC::onAddUnit( CUnit* pUnit )
 
 void CUnitWorldForCC::onDelUnit( CUnit* pUnit )
 {
-    CUnitDrawForCC* pDraw = dynamic_cast<CUnitDrawForCC*>(pUnit->getDraw());
+    CUnitDrawForCC* pDraw = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
 
     getLayer()->removeChild(pDraw->getSprite());
 }

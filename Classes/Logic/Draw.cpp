@@ -96,28 +96,40 @@ void CUnitDraw2D::onTick(float dt)
     CUnit* u = getUnit();
     if (u->isDoingAnd(CUnit::kCasting) && isDoingAction(getCastActionId()) == false)
     {
-        LOG("move to cast..");
         CUnit* u = getUnit();
         CUnitDraw2D* td = NULL;
         CActiveAbility* pAbility = u->getActiveAbility(getCastActiveAbilityId());
         if (pAbility != NULL)
         {
-            if (getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+            bool bUnitTarget = getCastTarget().getTargetType() == CCommandTarget::kUnitTarget;
+            if (bUnitTarget)
             {
                 CUnit* t = u->getUnit(getCastTarget().getTargetUnit());
-                td = DCAST(t->getDraw(), CUnitDraw2D*);
-                if (checkCastTargetDistance(pAbility, getPosition(), td))
+                if (t != NULL && t->isDead() == false)
                 {
-                    // 施法
-                    setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
-                    castSpell(pAbility);
+                    td = DCAST(t->getDraw(), CUnitDraw2D*);
+                    assert(td != NULL);
+                    getCastTarget().setTargetPoint(td->getPosition());
                 }
-                else if (checkCastTargetDistance(pAbility, getLastMoveToTarget(), td) == false)
+                else
                 {
-                    moveToCastPosition(pAbility, td);
+                    u->endDoing(CUnit::kCasting);
+                    setCastActiveAbilityId(0);
+                    return;
                 }
+                
             }
-            
+
+            if (checkCastTargetDistance(pAbility, getPosition(), td))
+            {
+                // 施法
+                setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
+                castSpell(pAbility);
+            }
+            else if (bUnitTarget && checkCastTargetDistance(pAbility, getLastMoveToTarget(), td) == false)
+            {
+                moveToCastPosition(pAbility, td);
+            }
         }
         
     }
@@ -178,7 +190,9 @@ void CUnitDraw2D::updateMoveSpeedDelta()
         stopMove();
         return;
     }
-	
+	float spd = getRealMoveSpeed() / fMoveSpeed;
+    setActionSpeed(getMoveActionId(), spd);
+    setActionSpeed(getMoveToActionId(), spd);
 }
 
 void CUnitDraw2D::cmdMove( const CPoint& roPos )
@@ -187,6 +201,12 @@ void CUnitDraw2D::cmdMove( const CPoint& roPos )
     if (u->isDead() || u->isSuspended() || isFixed())
     {
         return;
+    }
+
+    if (u->isDoingOr(CUnit::kCasting))
+    {
+        u->endDoing(CUnit::kCasting);
+        setCastActiveAbilityId(0);
     }
 
     UNIT_MOVE_PARAMS mp;
@@ -210,14 +230,15 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
     float fSpeed = getRealMoveSpeed() / fMoveSpeed;
 
     // 突发移动指令，打断旧移动，打断攻击，打断施法
-    if (u->isDoingOr(CUnit::kMoving))
+    if (isDoingAction(getMoveToActionId()))
     {
         stopAction(getMoveToActionId());
         setMoveToActionId(0);
     }
-    if (u->isDoingOr(CUnit::kCasting) && roMoveParams.bCancelCast)
+    if (isDoingAction(getCastActionId()))
     {
-        //stopCast();
+        stopAction(getCastActionId());
+        setCastActionId(0);
     }
     
     int id = doMoveTo(roPos,
@@ -226,6 +247,7 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
                       (FUNC_CALLFUNC_ND)&CUnitDraw2D::onMoveDone),
                       fSpeed);
     setMoveToActionId(id);
+
     if (getMoveActionId() == 0 && u->isDoingOr(CUnit::kSpinning) == false)
     {
         int id = doAnimation(kAniMove,
@@ -249,67 +271,6 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
 
 void CUnitDraw2D::follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
 {
-    /*
-    if (isDead() || isFixed())
-    {
-        return;
-    }
-    M_DEF_GM(pGm);
-    CUnit* pTarget = getUnitLayer()->getUnitByKey(iTargetKey);
-    if (!pTarget)
-    {
-        return;
-    }
-    const CCPoint& roPos = pTarget->getPosition();
-    m_oLastMoveToTarget = roPos;
-    if (isDoingOr(kSuspended))
-    {
-        return;
-    }
-    CCPoint roOrg = getPosition();
-    if (roMoveParams.bAutoFlipX)
-    {
-        turnTo(roOrg.x > roPos.x);
-    }
-
-    float fMoveSpeed = getBaseMoveSpeed();
-    float fDur = pGm->getDistance(roOrg, roPos) / fMoveSpeed;
-    CCActionInterval* pSeq = CCSequence::createWithTwoActions(
-                                                              CCMoveToNode::create(fDur, pTarget->getSprite(), true, roMoveParams.fMaxOffsetY, 1, pTarget->getHalfOfHeight()),
-                                                              CCCallFuncN::create(this, callfuncN_selector(CUnit::onActMoveEnd))
-                                                             );
-    float fDelta = getRealMoveSpeed() / fMoveSpeed;
-    CCSpeed* pActMoveTo = CCSpeed::create(pSeq, fDelta);
-    pActMoveTo->setTag(kActMoveTo);
-    // 突发移动指令，打断旧移动，打断攻击
-    if (isDoingOr(kMoving))
-    {
-        m_oSprite.stopActionByTag(kActMoveTo);
-    }
-    if (isDoingOr(kAttacking) && roMoveParams.bCancelAttack)
-    {
-        stopAttack();
-    }
-    if (isDoingOr(kCasting) && roMoveParams.bCancelCast)
-    {
-        stopCast();
-    }
-    m_oSprite.runAction(pActMoveTo);
-    if (!isDoingOr(kSpinning))
-    {
-        setAnimation(kAnimationMove, -1, fDelta, kActMove, NULL);
-    }
-
-    startDoing(kMoving);
-    if (roMoveParams.bIntended)
-    {
-        startDoing(kIntended);
-    }
-    else
-    {
-        endDoing(kIntended);
-    }
-    */
 }
 
 //void CUnitDrawForCC::moveAlongPath(CUnitPath* pPath, bool bIntended /*= true*/, bool bRestart /*= false*/, float fBufArrive /*= 5.0*/)
@@ -418,8 +379,6 @@ int CUnitDraw2D::cmdCastSpell( int iActiveAbilityId )
             return -1;
         }
 
-        getCastTarget().setTargetPoint(td->getPosition());
-        
     case CCommandTarget::kPointTarget:
         if (getCastTarget().getTargetType() != pAbility->getCastTargetType())
         {
@@ -434,21 +393,36 @@ int CUnitDraw2D::cmdCastSpell( int iActiveAbilityId )
         return -1;
     }
 
-    setCastActiveAbilityId(iActiveAbilityId);
     // 施法距离合法性
-    if (checkCastTargetDistance(pAbility, getPosition(), td) == false)
+    bool bDisOk = checkCastTargetDistance(pAbility, getPosition(), td);
+    if (bDisOk == false && isFixed())
     {
-        // 施法移动
-        if (isFixed())
-        {
-            return -1;
-        }
+        return -1;
+    }
+
+    // 可以进行施法动画动作 或 追逐动作
+    bool bSameAbility = (getCastActiveAbilityId() == iActiveAbilityId);
+    setCastActiveAbilityId(iActiveAbilityId);
+    u->startDoing(CUnit::kCasting);
+
+    if (bDisOk == false)
+    {
         moveToCastPosition(pAbility, td);
-        return 0;
+        return 1;
     }
 
     // 施法
-    if (getCastTarget().getTargetType() != CCommandTarget::kNoTarget)
+    getCastTarget().setTargetPoint(td->getPosition());
+    bool bNeedFlipX = getCastTarget().getTargetType() != CCommandTarget::kNoTarget &&
+                      isFlipX() != (getCastTarget().getTargetPoint().x < getPosition().x);
+
+    if (bSameAbility && isDoingAction(getCastActionId()) && bNeedFlipX == false)
+    {
+        // 如果是同一个技能正在释放，并且面向同一个方向，则不用重新施法
+        return 0;
+    }
+
+    if (bNeedFlipX)
     {
         setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
     }
@@ -464,10 +438,18 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
         return -1;
     }
 
-    CUnit* u = getUnit();
-
-    stopMove();
+    // 可以施展动画并作用
+    if (isDoingAction(getCastActionId()))
+    {
+        stopAction(getCastActionId());
+    }
     
+    CUnit* u = getUnit();
+    if (u->isDoingOr(CUnit::kMoving))
+    {
+        stopMove();
+    }
+
     CUnitDraw::ANI_ID aniId = (CUnitDraw::ANI_ID)pAbility->getCastRandomAnimation();
     int id = doAnimation(aniId,
                          new CCallFuncData(this,
@@ -477,8 +459,6 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
                                            (FUNC_CALLFUNC_ND)&CUnitDraw2D::onCastDone),
                          1.0f);
     setCastActionId(id);
-
-    u->startDoing(CUnit::kCasting);
 
     return 0;
 }
@@ -500,8 +480,6 @@ bool CUnitDraw2D::checkCastTargetDistance( CActiveAbility* pAbility, const CPoin
             break;
     }
 
-                                                              
-    //CCLOG("dis: %.2f, %.2f, %.2f | %.2f", pGm->getDistance(roPos, roPos2) - getHalfOfWidth() - pTarget->getHalfOfWidth(), getAttackMinRange(), getAttackRange(), abs(roPos.y - roPos2.y));
     if (pAbility->isCastHorizontal() && abs(roPos.y - roPos2.y) > CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE)
     {
         return false;
@@ -518,7 +496,6 @@ bool CUnitDraw2D::checkCastTargetDistance( CActiveAbility* pAbility, const CPoin
 
 void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
 {
-    //stopAllActions();
     float fDis = (td != NULL ? td->getHalfOfWidth() : 0.0f) + getHalfOfWidth() + (pAbility->getCastMinRange() + pAbility->getCastRange()) * 0.5;
     const CPoint& roPos1 = getPosition();
     const CPoint& roPos2 = (td != NULL ? td->getPosition() : getCastTarget().getTargetPoint());
@@ -538,7 +515,6 @@ void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
     }
 
     CUnit* u = getUnit();
-    u->startDoing(CUnit::kCasting);
 }
 
 void CUnitDraw2D::onCastEffect( CMultiRefObject* pUnit, CCallFuncData* pData )
@@ -549,7 +525,10 @@ void CUnitDraw2D::onCastEffect( CMultiRefObject* pUnit, CCallFuncData* pData )
     {
         return;
     }
-    pAbility->cast();
+
+    LOG("%s%s%s..", getUnit()->getName(), getUnit()->getAttackAbilityId() == pAbility->getId() ? "的" : "施放了", pAbility->getName());
+    pAbility->coolDown();
+    pAbility->onUnitCastAbility();  // onCastAbility在cd变化下面，所以可以添加重置cd的逻辑
 }
 
 void CUnitDraw2D::onCastDone( CMultiRefObject* pUnit, CCallFuncData* pData )
@@ -563,6 +542,7 @@ void CUnitDraw2D::onCastDone( CMultiRefObject* pUnit, CCallFuncData* pData )
 
     if (u->getAttackAbilityId() != 0 && pAbility->getId() == u->getAttackAbilityId())
     {
+        setFrame(kFrmDefault);
         return;
     }
 

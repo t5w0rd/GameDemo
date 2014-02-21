@@ -173,17 +173,16 @@ const float CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE = 5.0f;
 
 bool CActiveAbility::cast()
 {
-    if (isCoolingDown())
+    if (isCoolingDown() == true)
     {
         return false;
     }
-    
+
     if (checkConditions() == false)
     {
         return false;
-    
     }
-    
+
     CUnit* o = getOwner();
     LOG("%s%s%s..", o->getName(), o->getAttackAbilityId() == getId() ? "的" : "施放了", getName());
     coolDown();
@@ -413,6 +412,13 @@ void CAttackAct::updateAttackSpeed()
 {
     CUnit* o = getOwner();
     o->updateAbilityCD(getId());
+    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    if (d->getCastActiveAbilityId() == o->getAttackAbilityId())
+    {
+        float spd = getBaseAttackInterval() / max(FLT_EPSILON, getRealAttackInterval());
+        d->setActionSpeed(d->getCastActionId(), spd);
+    }
+    
 }
 
 void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
@@ -690,6 +696,13 @@ CMultiRefObject* CVampirePas::copy() const
 
 void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 {
+    if (isCoolingDown())
+    {
+        return;
+    }
+
+    coolDown();
+
     CUnit* o = getOwner();
     float fDtHp = fDamage * getPercentConversion();
     o->setHp(o->getHp() + fDtHp);
@@ -796,7 +809,7 @@ void CSpeedBuff::onUnitDelAbility()
 {
     CUnit* o = getOwner();
     
-    CUnitDraw2D* d = dynamic_cast<CUnitDraw2D*>(o->getDraw());
+    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
     const CExtraCoeff& rExMs = d->getExMoveSpeed();
     d->setExMoveSpeed(CExtraCoeff(rExMs.getMulriple() - m_oExMoveSpeedDelta.getMulriple(), rExMs.getAddend() - m_oExMoveSpeedDelta.getAddend()));
     
@@ -862,3 +875,51 @@ void CHpChangeBuff::onUnitInterval()
     o->setHp(fNewHp);
 }
 
+// CRebirthPas
+CRebirthPas::CRebirthPas( const char* pRootId, const char* pName, float fCoolDown )
+    : CPassiveAbility(pRootId, pName, fCoolDown)
+    , m_bRevivableBefore(false)
+{
+    setTriggerFlags(CUnit::kDieTrigger);
+}
+
+CMultiRefObject* CRebirthPas::copy() const
+{
+    return new CRebirthPas(getRootId(), getName(), getCoolDown());
+}
+
+void CRebirthPas::onUnitAddAbility()
+{
+    CUnit* o = getOwner();
+    setRevivableBefore(o->isRevivable());
+    o->setRevivable();
+}
+
+void CRebirthPas::onUnitDelAbility()
+{
+    CUnit* o = getOwner();
+    o->setRevivable(isRevivableBefore());
+}
+
+void CRebirthPas::onUnitDie()
+{
+    if (isCoolingDown())
+    {
+        return;
+    }
+
+    coolDown();
+
+    CUnit* o = getOwner();
+    CWorld* w = o->getWorld();
+
+    CUnit* oo = w->getUnit(o->getId());
+    if (oo != NULL)
+    {
+        oo->revive(500);
+    }
+    else
+    {
+        w->reviveUnit(o->getId(), 500);
+    }
+}

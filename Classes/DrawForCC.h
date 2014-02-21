@@ -76,7 +76,7 @@ public:
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();
 
-    void setSpriteProperty(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint);
+    void setGeometry(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint);
 
 };
 
