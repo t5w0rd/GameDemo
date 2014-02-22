@@ -57,6 +57,12 @@
     <ClCompile Include="..\Classes\Logic\Ability.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\ComponentForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\AbilityForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -112,6 +118,12 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Logic\Ability.h">
       <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\ComponentForCC.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AbilityForCC.h">
+      <Filter>Classes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

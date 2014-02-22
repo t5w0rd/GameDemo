@@ -26,3 +26,5 @@ USING_NS_CC;
     }
 
 #define M_DEF_GC(var) CCGameControler* var = CCGameControler::sharedGameControler()
+#define M_BASE_Z 10000
+

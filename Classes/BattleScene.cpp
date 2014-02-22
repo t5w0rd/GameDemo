@@ -1,22 +1,29 @@
 #include "CommHeader.h"
 
+#include "Logic/Unit.h"
+#include "Logic/Ability.h"
 #include "BattleScene.h"
 #include "GameControl.h"
 #include "DrawForCC.h"
-#include "Logic/Unit.h"
-#include "Logic/Ability.h"
+#include "AbilityForCC.h"
+#include "ActionForCC.h"
 
 
-class CMyAI : public CUnitEventAdapter
+class CMyAI : public CDefaultAI
 {
 public:
     CMyAI()
         : m_bFirstTick(true)
+        , m_iBaseTag(CKeyGen::nextKey() * 10)
+        , m_iCurTag(m_iBaseTag)
     {
     }
 
     virtual void onUnitTick(float dt)
     {
+        CDefaultAI::onUnitTick(dt);
+        return;
+
         CUnitDraw2D* d = DCAST(getNotifyUnit()->getDraw(), CUnitDraw2D*);
         if (isFirstTick())
         {
@@ -38,6 +45,8 @@ public:
     M_SYNTHESIZE_BOOL(FirstTick);
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oOrgPoint, OrgPoint);
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oDstPoint, DstPoint);
+    M_SYNTHESIZE(int, m_iBaseTag, BaseTag);
+    M_SYNTHESIZE(int, m_iCurTag, CurTag);
 };
 
 // CBattleWorld
@@ -84,16 +93,21 @@ void CBattleWorld::onInit()
     u->setName("Malik");
     u->setMaxHp(1000.0001f);
     u->setForceByIndex(1);
+    u->setAI(CMyAI());
 
     addUnit(u);
+
+    CStatusShowPas* hpb = new CStatusShowPas(
+        );
+    u->addPassiveAbility(hpb, false);
 
     CAttackAct* atk = new CAttackAct(
         "NormalAttack",
         "¹¥»÷",
-        1.25,
+        1.75,
         CAttackValue(1,
         CAttackValue::kPhysical,
-        180.0),
+        30.0),
         0.5);
     atk->setCastMinRange(-3.0f);
     atk->setCastRange(15.0f);
@@ -104,7 +118,7 @@ void CBattleWorld::onInit()
 
     a = new CSpeedBuff(
         "SlowDown",
-        "²Ð·Ï",
+        "Slow",
         5.0f,
         true,
         CExtraCoeff(-0.2f, 0.0f),
@@ -114,13 +128,73 @@ void CBattleWorld::onInit()
     a = new CAttackBuffMakerPas(
         "AttackBuffMaker.[SlowDown]",
         "ÖÂ²Ð",
-        0.5f,
+        0.2f,
         id);
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(id);
+
+    a = new CSpeedBuff(
+        "SpeedUp",
+        "SpeedUp",
+        600.0f,
+        true,
+        CExtraCoeff(0.2f, 0.0f),
+        CExtraCoeff(0.2f, 0.0f));
+    id = addTemplateAbility(a);
+
+    a = new CAttackBuffMakerPas(
+        "AttackBuffMaker.[SlowDown]",
+        "ÐË·Ü",
+        0.2f,
+        id,
+        true);
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(id);
+
+    a = new CEvadeBuff(
+        "EvadeBuff",
+        "Evade",
+        5.0,
+        true,
+        0.3f);
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(id);
+
+    a = new CEvadePas(
+        "EvadePas",
+        "Evade",
+        0.3f,
+        id);
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(id);
+
+    a = new CStunBuff(
+        "Stun2s",
+        "Stun",
+        2.0f,
+        false);
+    id = addTemplateAbility(a);
+
+    a = new CAttackBuffMakerPas(
+        "AttackBuffMaker.[Stun]",
+        "ÖØ»÷",
+        0.2f,
+        id,
+        false,
+        CExtraCoeff(1.0f, 50.0f));
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(id);
+
+    a = new CVampirePas(
+        "Vampire20%",
+        "ÎüÑª",
+        0.2f);
     id = addTemplateAbility(a);
     u->addPassiveAbility(id);
 
     ud->setBaseMoveSpeed(80.0f);
     ud->setPosition(CPoint(vs.width * 0.5, vs.height * 0.5));
+    ud->setFlightHeight(30);
 
     // create other units
     ud = new CUnitDrawForCC("Matchstick");
@@ -138,7 +212,31 @@ void CBattleWorld::onInit()
     u->setAI(CMyAI());
 
     addUnit(u);
-    u->addPassiveAbility(new CRebirthPas("Rebirth500", "ÖØÉú", 5.0f));
+
+    hpb = new CStatusShowPas(
+        );
+    u->addPassiveAbility(hpb, false);
+
+    atk = new CAttackAct(
+        "NormalAttack",
+        "¹¥»÷",
+        2.00,
+        CAttackValue(1,
+        CAttackValue::kPhysical,
+        40.0),
+        0.5);
+    atk->setCastMinRange(-3.0f);
+    atk->setCastRange(15.0f);
+    atk->setCastHorizontal();
+    atk->addCastAnimation(CUnitDraw::kAniAct1);
+    atk->addCastAnimation(CUnitDraw::kAniAct2);
+    u->addActiveAbility(atk);
+
+    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 2.0f, CExtraCoeff(0.5, 0)));
+    
+    a = new CDoubleAttackBuff("DoubleAttack", "¹¥»÷CDÖØÖÃ");
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(new CAttackBuffMakerPas("abm.DoubleAttack", "Á¬»÷", 0.5f, id, true));
 
     ud->setBaseMoveSpeed(50.0f);
     ud->setPosition(CPoint(vs.width * 0.7, vs.height * 0.5));
@@ -270,4 +368,10 @@ void CCBattleSceneLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
         d->cmdMove(p);
     }
 }
+
+void CCBattleSceneLayer::onMovePreviousLabel( CCNode* pCurLble, void* PreLbl )
+{
+
+}
+
 

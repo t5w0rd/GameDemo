@@ -45,6 +45,8 @@ public:
 
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
 
+    void onMovePreviousLabel(CCNode* pCurLble, void* PreLbl);
+
 };
 
 #endif // __BATTLE_SCENE_H__

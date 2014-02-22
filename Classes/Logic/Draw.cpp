@@ -77,6 +77,7 @@ CUnitDraw2D::CUnitDraw2D( const char* pName )
     : CUnitDraw(pName)
     , m_fHalfOfWidth(0.0f)
     , m_fHalfOfHeight(0.0f)
+    , m_fFlightHeight(0.0f)
     , m_fBaseMoveSpeed(CONST_MIN_MOVE_SPEED)
     , m_bFixed(false)
     , m_iMoveToActionId(0)
@@ -115,9 +116,9 @@ void CUnitDraw2D::onTick(float dt)
                 {
                     u->endDoing(CUnit::kCasting);
                     setCastActiveAbilityId(0);
+                    u->endDoing(CUnit::kObstinate);  // 没有成功施法，需要取出固执状态
                     return;
                 }
-                
             }
 
             if (checkCastTargetDistance(pAbility, getPosition(), td))
@@ -130,8 +131,12 @@ void CUnitDraw2D::onTick(float dt)
             {
                 moveToCastPosition(pAbility, td);
             }
+            return;
         }
-        
+        else
+        {
+            u->endDoing(CUnit::kObstinate);  // 没有成功施法，需要取出固执状态
+        }
     }
 
 }
@@ -195,7 +200,7 @@ void CUnitDraw2D::updateMoveSpeedDelta()
     setActionSpeed(getMoveToActionId(), spd);
 }
 
-void CUnitDraw2D::cmdMove( const CPoint& roPos )
+void CUnitDraw2D::cmdMove( const CPoint& roPos, bool bObstinate )
 {
     CUnit* u = getUnit();
     if (u->isDead() || u->isSuspended() || isFixed())
@@ -209,6 +214,15 @@ void CUnitDraw2D::cmdMove( const CPoint& roPos )
         setCastActiveAbilityId(0);
     }
 
+    if (bObstinate)
+    {
+        u->startDoing(CUnit::kObstinate);
+    }
+    else
+    {
+        u->endDoing(CUnit::kObstinate);
+    }
+
     UNIT_MOVE_PARAMS mp;
     mp.bAutoFlipX = true;
     move(roPos);
@@ -217,6 +231,11 @@ void CUnitDraw2D::cmdMove( const CPoint& roPos )
 void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
 {
     CUnit* u = getUnit();
+
+    if (u->isSuspended())
+    {
+        return;
+    }
 
     m_oLastMoveToTarget = roPos;
     
@@ -240,6 +259,7 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
         stopAction(getCastActionId());
         setCastActionId(0);
     }
+    u->startDoing(CUnit::kMoving);
     
     int id = doMoveTo(roPos,
                       fDur,
@@ -257,23 +277,13 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
                              fSpeed);
         setMoveActionId(id);
     }
-
-    u->startDoing(CUnit::kMoving);
-    if (roMoveParams.bIntended)
-    {
-        u->startDoing(CUnit::kIntended);
-    }
-    else
-    {
-        u->endDoing(CUnit::kIntended);
-    }
 }
 
 void CUnitDraw2D::follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
 {
 }
 
-//void CUnitDrawForCC::moveAlongPath(CUnitPath* pPath, bool bIntended /*= true*/, bool bRestart /*= false*/, float fBufArrive /*= 5.0*/)
+//void CUnitDrawForCC::moveAlongPath(CUnitPath* pPath, bool bObstinate /*= true*/, bool bRestart /*= false*/, float fBufArrive /*= 5.0*/)
 //{
 //    if (pPath != m_pMovePath)
 //    {
@@ -297,25 +307,25 @@ void CUnitDraw2D::follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams /
 //        m_fPathBufArrive = MAX(FLT_EPSILON, fBufArrive);
 //    }
 //
-//    setPathIntended(bIntended);
+//    setPathObstinate(bObstinate);
 //
 //    const CCPoint* pTarget = m_pMovePath->getCurTargetPoint(m_dwPathCurPos);
 //    if (pTarget)
 //    {
 //        UNIT_MOVE_PARAMS oMp;
-//        oMp.bIntended = m_bPathIntended;
+//        oMp.bObstinate = m_bPathObstinate;
 //        moveTo(*pTarget, oMp);
 //    }
 //}
 #if 0
-void CUnitDraw2D::setPathIntended(bool bPathIntended /*= true*/)
+void CUnitDraw2D::setPathObstinate(bool bPathObstinate /*= true*/)
 {
-    m_bPathIntended = bPathIntended;
+    m_bPathObstinate = bPathObstinate;
 }
 
-bool CUnitDraw2D::isPathIntended() const
+bool CUnitDraw2D::isPathObstinate() const
 {
-    return m_bPathIntended;
+    return m_bPathObstinate;
 }
 #endif
 void CUnitDraw2D::stopMove()
@@ -334,10 +344,12 @@ void CUnitDraw2D::stopMove()
 
 void CUnitDraw2D::onMoveDone(CMultiRefObject* pUnit, CCallFuncData* pData)
 {
+    CUnit* u = getUnit();
+    u->endDoing(CUnit::kObstinate);  // 移动自行停止后，需要取出固执状态
     stopMove();
 }
 
-int CUnitDraw2D::cmdCastSpell( int iActiveAbilityId )
+int CUnitDraw2D::cmdCastSpell( int iActiveAbilityId, bool bObstinate )
 {
     CUnit* u = getUnit();
     
@@ -400,7 +412,17 @@ int CUnitDraw2D::cmdCastSpell( int iActiveAbilityId )
         return -1;
     }
 
+
     // 可以进行施法动画动作 或 追逐动作
+    if (bObstinate)
+    {
+        u->startDoing(CUnit::kObstinate);
+    }
+    else
+    {
+        u->endDoing(CUnit::kObstinate);
+    }
+
     bool bSameAbility = (getCastActiveAbilityId() == iActiveAbilityId);
     setCastActiveAbilityId(iActiveAbilityId);
     u->startDoing(CUnit::kCasting);
@@ -445,11 +467,19 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
     }
     
     CUnit* u = getUnit();
-    if (u->isDoingOr(CUnit::kMoving))
+    if (isDoingAction(getMoveActionId()))
     {
         stopMove();
     }
 
+    float spd = 1.0f;
+    if (getCastActiveAbilityId() == u->getAttackAbilityId())
+    {
+        CAttackAct* atk = NULL;
+        u->getActiveAbility(getCastActiveAbilityId())->dcast(atk);
+        spd = atk->getBaseAttackInterval() / max(FLT_EPSILON, atk->getRealAttackInterval());
+    }
+    
     CUnitDraw::ANI_ID aniId = (CUnitDraw::ANI_ID)pAbility->getCastRandomAnimation();
     int id = doAnimation(aniId,
                          new CCallFuncData(this,
@@ -457,7 +487,7 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
                          1,
                          new CCallFuncData(this,
                                            (FUNC_CALLFUNC_ND)&CUnitDraw2D::onCastDone),
-                         1.0f);
+                         spd);
     setCastActionId(id);
 
     return 0;
@@ -501,7 +531,6 @@ void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
     const CPoint& roPos2 = (td != NULL ? td->getPosition() : getCastTarget().getTargetPoint());
 
     UNIT_MOVE_PARAMS oMp;
-    oMp.bIntended = false;
     if (pAbility->isCastHorizontal())
     {
         // 近战施法位置修正
@@ -546,7 +575,18 @@ void CUnitDraw2D::onCastDone( CMultiRefObject* pUnit, CCallFuncData* pData )
         return;
     }
 
+    int iCastedActiveAbilityId = getCastActiveAbilityId();
     stopCast();
+
+    if (iCastedActiveAbilityId == u->getAttackAbilityId())
+    {
+        cmdCastSpell(iCastedActiveAbilityId, isDoingAction(CUnit::kObstinate));
+    }
+    else
+    {
+        // 施法(非攻击)结束，去除固执状态
+        u->endDoing(CUnit::kObstinate);
+    }
 }
 
 void CUnitDraw2D::stopCast()

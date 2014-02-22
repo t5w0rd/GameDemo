@@ -42,3 +42,15 @@ protected:
     CCallFuncData* m_pData;
 };
 
+class CCFadeInOutScale4 : public CCSequence
+{
+public:
+    virtual bool init(float fScaleStart, float fScaleMid, float fScaleEnd, float fDurToMid, float fDurToNormal, float fDurKeep, float fDurToEnd);
+    M_CREATE_FUNC_PARAM(CCFadeInOutScale4, (float fScaleStart, float fScaleMid, float fScaleEnd, float fDurToMid, float fDurToNormal, float fDurKeep, float fDurToEnd), fScaleStart, fScaleMid, fScaleEnd, fDurToMid, fDurToNormal, fDurKeep, fDurToEnd);
+
+    virtual void startWithTarget(CCNode *pTarget);
+
+protected:
+    float m_fScaleStart;
+};
+

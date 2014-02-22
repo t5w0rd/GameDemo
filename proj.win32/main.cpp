@@ -24,7 +24,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     AppDelegate app;
     CCEGLView* eglView = CCEGLView::sharedOpenGLView();
     eglView->setViewName("GameDemo");
-    eglView->setFrameSize(1024, 768);
-    eglView->setFrameZoomFactor(0.8f);
+#if 0
+    //eglView->setFrameSize(1024, 768);
+    //eglView->setFrameZoomFactor(0.8f);
+#else
+    eglView->setFrameSize(800, 600);
+    eglView->setFrameZoomFactor(1.0f);
+#endif
     return CCApplication::sharedApplication()->run();
 }

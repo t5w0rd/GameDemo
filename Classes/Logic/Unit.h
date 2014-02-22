@@ -239,6 +239,13 @@ public:
     M_SYNTHESIZE(CUnit*, m_pNotifyUnit, NotifyUnit);
 };
 
+class CDefaultAI : public CUnitEventAdapter
+{
+public:
+    virtual void onUnitTick(float dt);
+    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+};
+
 class CUnitDraw;
 
 class CUnit : public CMultiRefObject, public CUnitForce, public CLevelExp
@@ -322,7 +329,7 @@ public:
     {
         kReviveTrigger = 1 << 0,
         kDieTrigger = 1 << 1,
-        kHpChangeTrigger = 1 << 2,
+        kChangeHpTrigger = 1 << 2,
         kTickTrigger = 1 << 3,
         kAttackTargetTrigger = 1 << 4,
         kAttackedTrigger = 1 << 5,
@@ -371,7 +378,7 @@ public:
     
     // 底层伤害函数，直接扣除指定量的HP值
     // 触发伤害源的 onDamaeTarget
-    // 调用 setHp，从而会触发 onHpChange，可能会触发onDie
+    // 调用 setHp，从而会触发 onChangeHp，可能会触发onDie
     void damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
@@ -415,7 +422,7 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedInnerTriggerAbilitys, OnDamagedInnerTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedDoneTriggerAbilitys, OnDamagedDoneTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamageTargetDoneTriggerAbilitys, OnDamageTargetDoneTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnHpChangeTriggerAbilitys, OnHpChangeTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnChangeHpTriggerAbilitys, OnChangeHpTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnReviveTriggerAbilitys, OnReviveTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDieTriggerAbilitys, OnDieTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnTickTriggerAbilitys, OnTickTriggerAbilitys);
@@ -445,7 +452,7 @@ protected:
     // 触发器链的触发，内部调用
     void triggerOnRevive();
     void triggerOnDie();
-    void triggerOnHpChange(float fChanged);
+    void triggerOnChangeHp(float fChanged);
     void triggerOnTick(float dt);
     CAttackData* triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget);
     CAttackData* triggerOnAttacked(CAttackData* pAttack, CUnit* pSource);
@@ -477,7 +484,7 @@ public:
     
     M_SYNTHESIZE_BOOL(Revivable);
     
-    ///////////////////////// Item //////////////////////
+    ///////////////////////// item //////////////////////
     typedef CMultiRefVec<CItem*> VEC_ITEMS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ITEMS, m_vecItems, Items);
     void setPackageSize(int iSize);
@@ -491,7 +498,7 @@ public:
     {
         kSuspended = 1 << 16,
         kMoving = 1 << 17,
-        kIntended = 1 << 18,
+        kObstinate = 1 << 18,
         kAttacking = 1 << 19,
         kCasting = 1 << 20,
         kSpinning = 1 << 21
