@@ -107,7 +107,7 @@ public:
 template <typename PTYPE>
 inline PTYPE CMultiRefObject::dcast(PTYPE& rTo)
 {
-    rTo = dynamic_cast<PTYPE>(this);
+    rTo = DCAST(this, PTYPE);
     return rTo;
 }
 

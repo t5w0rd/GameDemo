@@ -112,8 +112,7 @@ class CPassiveAbility : public CAbility
 public:
     CPassiveAbility(const char* pRootId, const char* pName, float fCoolDown = 0);
     virtual ~CPassiveAbility();
-    
-    
+
 };
 
 class CBuffAbility : public CPassiveAbility
@@ -293,6 +292,20 @@ public:
     M_SYNTHESIZE_BOOL(Percentile);
     M_SYNTHESIZE(float, m_fMinHp, MinHp);
     
+};
+
+// ÖØÉú
+class CRebirthPas : public CPassiveAbility
+{
+public:
+    CRebirthPas(const char* pRootId, const char* pName, float fCoolDown);
+    virtual CMultiRefObject* copy() const;
+
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
+    virtual void onUnitDie();
+
+    M_SYNTHESIZE_BOOL(RevivableBefore);
 };
 
 #endif	/* __ABILITY_H__ */

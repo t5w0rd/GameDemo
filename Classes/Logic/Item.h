@@ -5,8 +5,8 @@
  * Created on 2014年2月11日, 上午1:08
  */
 
-#ifndef ITEM_H
-#define	ITEM_H
+#ifndef __ITEM_H__
+#define	__ITEM_H__
 
 
 #include "MultiRefObject.h"
@@ -86,5 +86,5 @@ protected:
 };
 
 
-#endif	/* ITEM_H */
+#endif	/* __ITEM_H__ */
 
