@@ -107,6 +107,8 @@ int CUnitDrawForCC::doAnimation( ANI_ID id, CCallFuncData* pOnNotifyFrame, int i
                                                    callfuncND_selector(CCUnitSprite::onNotifyFrame),
                                                    pOnNotifyFrame);
 
+    
+
     if (iRepeatTimes == INFINITE)
     {
         act = CCRepeatForever::create(act);
@@ -118,6 +120,7 @@ int CUnitDrawForCC::doAnimation( ANI_ID id, CCallFuncData* pOnNotifyFrame, int i
                                                CCCallFuncNMultiObj::create(getSprite(),
                                                                            callfuncND_selector(CCUnitSprite::onAnimationDone),
                                                                            pOnAnimationDone));
+
     }
 
     CCSpeed* spd = CCSpeed::create(act, fSpeed);

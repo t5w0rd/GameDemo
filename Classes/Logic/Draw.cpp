@@ -94,6 +94,10 @@ CUnitDraw2D::~CUnitDraw2D()
 void CUnitDraw2D::onTick(float dt)
 {
     CUnit* u = getUnit();
+    if (u->isDoingAnd(CUnit::kMoving))
+    {
+        return;
+    }
     if (u->isDoingAnd(CUnit::kCasting) && isDoingAction(getCastActionId()) == false)
     {
         LOG("move to cast..");
@@ -114,7 +118,8 @@ void CUnitDraw2D::onTick(float dt)
                 }
                 else if (checkCastTargetDistance(pAbility, getLastMoveToTarget(), td) == false)
                 {
-                    moveToCastPosition(pAbility, td);
+                    if(getPosition().getDistance(getCastTarget().getTargetPoint()) < 100)
+                        moveToCastPosition(pAbility, td);
                 }
             }
             
@@ -476,9 +481,12 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
                          new CCallFuncData(this,
                                            (FUNC_CALLFUNC_ND)&CUnitDraw2D::onCastDone),
                          1.0f);
+
+    
     setCastActionId(id);
 
     u->startDoing(CUnit::kCasting);
+    
 
     return 0;
 }
