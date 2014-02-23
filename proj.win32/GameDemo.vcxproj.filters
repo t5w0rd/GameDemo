@@ -57,6 +57,9 @@
     <ClCompile Include="..\Classes\Logic\Ability.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Logic\BingAbility.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -111,6 +114,9 @@
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Logic\Ability.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\BingAbility.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
   </ItemGroup>

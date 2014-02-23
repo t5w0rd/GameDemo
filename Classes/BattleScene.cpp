@@ -5,6 +5,7 @@
 #include "DrawForCC.h"
 #include "Logic/Unit.h"
 #include "Logic/Ability.h"
+#include "Logic/BingAbility.h"
 
 
 class CMyAI : public CUnitEventAdapter
@@ -101,6 +102,15 @@ void CBattleWorld::onInit()
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
     u->addActiveAbility(atk);
+
+    a = new CNotKillPas(
+        "NotKill",
+        "É±²»ËÀµÄ",
+        1.0,
+        CExtraCoeff(1.0, 10.0));
+    id = addTemplateAbility(a);
+    u->addPassiveAbility(id);
+
 
     a = new CSpeedBuff(
         "SlowDown",

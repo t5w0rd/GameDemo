@@ -141,6 +141,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\Logic\Ability.cpp" />
     <ClCompile Include="..\Classes\Logic\Unit.cpp" />
     <ClCompile Include="..\Classes\DrawForCC.cpp" />
+    <ClCompile Include="..\Classes\Logic\BingAbility.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,6 +162,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\Logic\Ability.h" />
     <ClInclude Include="..\Classes\Logic\Unit.h" />
     <ClInclude Include="..\Classes\DrawForCC.h" />
+    <ClInclude Include="..\Classes\Logic\BingAbility.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
