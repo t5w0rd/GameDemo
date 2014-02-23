@@ -216,7 +216,8 @@ public:
     
     inline virtual void onUnitChangeLevel(int iChanged) {}
     inline virtual void onUnitRevive() {}
-    inline virtual void onUnitDie() {}
+    inline virtual void onUnitDying() {}
+    inline virtual void onUnitDead() {}
     inline virtual void onUnitChangeHp(float fChanged) {}
     inline virtual void onUnitTick(float dt) {}
     inline virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget) { return pAttack; }
@@ -283,7 +284,9 @@ public:
     // 复活时被通知
     virtual void onRevive();
     // 死亡时被通知
-    virtual void onDie();
+    virtual void onDying();
+    // 死亡后被通知
+    virtual void onDead();
     // 血量变化时被通知
     virtual void onChangeHp(float fChanged);
     // 每个游戏刻被通知
@@ -328,16 +331,17 @@ public:
     enum TRIGGER_FLAG_BIT
     {
         kReviveTrigger = 1 << 0,
-        kDieTrigger = 1 << 1,
-        kChangeHpTrigger = 1 << 2,
-        kTickTrigger = 1 << 3,
-        kAttackTargetTrigger = 1 << 4,
-        kAttackedTrigger = 1 << 5,
-        kDamagedSurfaceTrigger = 1 << 6,
-        kDamagedInnerTrigger = 1 << 7,
-        kDamagedDoneTrigger = 1 << 8,
-        kDamageTargetDoneTrigger = 1 << 9,
-        kDestroyProjectileTrigger = 1 << 10
+        kDyingTrigger = 1 << 1,
+        kDeadTrigger = 1 << 2,
+        kChangeHpTrigger = 1 << 3,
+        kTickTrigger = 1 << 4,
+        kAttackTargetTrigger = 1 << 5,
+        kAttackedTrigger = 1 << 6,
+        kDamagedSurfaceTrigger = 1 << 7,
+        kDamagedInnerTrigger = 1 << 8,
+        kDamagedDoneTrigger = 1 << 9,
+        kDamageTargetDoneTrigger = 1 << 10,
+        kDestroyProjectileTrigger = 1 << 11
     };
     
     enum TRIGGER_MASK
@@ -378,7 +382,7 @@ public:
     
     // 底层伤害函数，直接扣除指定量的HP值
     // 触发伤害源的 onDamaeTarget
-    // 调用 setHp，从而会触发 onChangeHp，可能会触发onDie
+    // 调用 setHp，从而会触发 onChangeHp，可能会触发onDying
     void damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
@@ -424,7 +428,8 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamageTargetDoneTriggerAbilitys, OnDamageTargetDoneTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnChangeHpTriggerAbilitys, OnChangeHpTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnReviveTriggerAbilitys, OnReviveTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDieTriggerAbilitys, OnDieTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDyingTriggerAbilitys, OnDyingTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDeadTriggerAbilitys, OnDeadTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnTickTriggerAbilitys, OnTickTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDestroyProjectileTriggerAbilitys, OnDestroyProjectileTriggerAbilitys);
     
@@ -451,7 +456,8 @@ protected:
     
     // 触发器链的触发，内部调用
     void triggerOnRevive();
-    void triggerOnDie();
+    void triggerOnDying();
+    void triggerOnDead();
     void triggerOnChangeHp(float fChanged);
     void triggerOnTick(float dt);
     CAttackData* triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget);
@@ -496,7 +502,7 @@ public:
     /////////////////////// doing - begin ////////////////////////////
     enum DOING_FLAG_BIT
     {
-        kSuspended = 1 << 16,
+        kDying = 1 << 16,
         kMoving = 1 << 17,
         kObstinate = 1 << 18,
         kAttacking = 1 << 19,
@@ -526,7 +532,7 @@ public:
         kActMove,
         kActAttack,
         kActAttackEffect,
-        kActDie,
+        kActDying,
         kActCast,
         kActCastEffect,
         kActSpin
@@ -563,7 +569,7 @@ public:
     
     enum PENALTY_FLAG_BIT
     {
-        kOnDie = 1 << 0,
+        kOnDying = 1 << 0,
         kOnContact = 1 << 1
     };
     
@@ -597,6 +603,7 @@ public:
     
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnitsToRevive, UnitsToRevive);
     void reviveUnit(int id, float fHp);
+    CUnit* getUnitToRevive(int id);
     
     typedef CMultiRefMap<CAbility*> MAP_ABILITYS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapAbilitysCD, AbilitysCD);

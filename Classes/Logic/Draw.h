@@ -52,7 +52,9 @@ public:
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
-    virtual void onTick(float dt);
+
+    virtual void onUnitDying();
+    virtual void onUnitTick(float dt);
 
     enum FRM_ID
     {
@@ -78,7 +80,8 @@ public:
     M_SYNTHESIZE(float, m_fHalfOfWidth, HalfOfWidth);
     M_SYNTHESIZE(float, m_fHalfOfHeight, HalfOfHeight);
 
-    virtual void onTick(float dt);
+    virtual void onUnitDying();
+    virtual void onUnitTick(float dt);
 
     M_SYNTHESIZE(float, m_fFlightHeight, FlightHeight);
 
@@ -150,11 +153,14 @@ public:
     void moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td);
 
     void stopCast();
-    void onCastEffect(CMultiRefObject* pUnit, CCallFuncData* pData);
-    void onCastDone(CMultiRefObject* pUnit, CCallFuncData* pData);
+    void onCastEffect(CMultiRefObject* pDraw, CCallFuncData* pData);
+    void onCastDone(CMultiRefObject* pDraw, CCallFuncData* pData);
 
     void cmdStop();
     void stop(bool bDefaultFrame = true);
+
+    void die();
+    void onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData);
 };
 
 typedef bool (*FUNC_UNIT_CONDITION)(CUnit* pUnit, void* pParam);

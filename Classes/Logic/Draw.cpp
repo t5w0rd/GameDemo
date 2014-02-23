@@ -52,7 +52,11 @@ void CUnitDraw::stopAllActions()
 {
 }
 
-void CUnitDraw::onTick( float dt )
+void CUnitDraw::onUnitDying()
+{
+}
+
+void CUnitDraw::onUnitTick( float dt )
 {
 }
 
@@ -92,22 +96,37 @@ CUnitDraw2D::~CUnitDraw2D()
 {
 }
 
-void CUnitDraw2D::onTick(float dt)
+void CUnitDraw2D::onUnitDying()
+{
+    CUnit* u = getUnit();
+    if (u->isDead() == false)
+    {
+        return;
+    }
+
+    die();
+}
+
+void CUnitDraw2D::onUnitTick(float dt)
 {
     CUnit* u = getUnit();
     if (u->isDoingAnd(CUnit::kCasting) && isDoingAction(getCastActionId()) == false)
     {
+        // 正在施法，且不是在施法动画中
         CUnit* u = getUnit();
         CUnitDraw2D* td = NULL;
         CActiveAbility* pAbility = u->getActiveAbility(getCastActiveAbilityId());
         if (pAbility != NULL)
         {
+            // 如果施法技能仍存在
             bool bUnitTarget = getCastTarget().getTargetType() == CCommandTarget::kUnitTarget;
             if (bUnitTarget)
             {
+                // 如果是以单位为目标的技能
                 CUnit* t = u->getUnit(getCastTarget().getTargetUnit());
                 if (t != NULL && t->isDead() == false)
                 {
+                    // 单位存在且单位没有死亡
                     td = DCAST(t->getDraw(), CUnitDraw2D*);
                     assert(td != NULL);
                     getCastTarget().setTargetPoint(td->getPosition());
@@ -342,7 +361,7 @@ void CUnitDraw2D::stopMove()
     setFrame(kFrmDefault);
 }
 
-void CUnitDraw2D::onMoveDone(CMultiRefObject* pUnit, CCallFuncData* pData)
+void CUnitDraw2D::onMoveDone(CMultiRefObject* pDraw, CCallFuncData* pData)
 {
     CUnit* u = getUnit();
     u->endDoing(CUnit::kObstinate);  // 移动自行停止后，需要取出固执状态
@@ -546,7 +565,7 @@ void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
     CUnit* u = getUnit();
 }
 
-void CUnitDraw2D::onCastEffect( CMultiRefObject* pUnit, CCallFuncData* pData )
+void CUnitDraw2D::onCastEffect( CMultiRefObject* pDraw, CCallFuncData* pData )
 {
     CUnit* u = getUnit();
     CActiveAbility* pAbility = u->getActiveAbility(getCastActiveAbilityId());
@@ -560,7 +579,7 @@ void CUnitDraw2D::onCastEffect( CMultiRefObject* pUnit, CCallFuncData* pData )
     pAbility->onUnitCastAbility();  // onCastAbility在cd变化下面，所以可以添加重置cd的逻辑
 }
 
-void CUnitDraw2D::onCastDone( CMultiRefObject* pUnit, CCallFuncData* pData )
+void CUnitDraw2D::onCastDone( CMultiRefObject* pDraw, CCallFuncData* pData )
 {
     CUnit* u = getUnit();
     CActiveAbility* pAbility = u->getActiveAbility(getCastActiveAbilityId());
@@ -633,6 +652,40 @@ void CUnitDraw2D::stop(bool bDefaultFrame)
     
 }
 
+void CUnitDraw2D::die()
+{
+    stop();
+    CUnit* u = getUnit();
+    u->startDoing(CUnit::kDying);
+    doAnimation(CUnitDraw::kAniDie, NULL, 1, new CCallFuncData(this, (FUNC_CALLFUNC_ND)&CUnitDraw2D::onDyingDone), 1.0f);
+}
+
+void CUnitDraw2D::onDyingDone( CMultiRefObject* pDraw, CCallFuncData* pData )
+{
+    CUnit* u = getUnit();
+    CWorld* w = u->getWorld();
+    if (u->isDead() == false)
+    {
+        return;
+    }
+
+    CWorld::MAP_UNITS& units = w->getUnits();
+    auto it = units.find(u->getId());
+    if (it == units.end())
+    {
+        return;
+    }
+
+    u->endDoing(0xFFFFFFFF);
+    int id = u->getId();
+    w->delUnit(it, u->isRevivable());
+
+    if (w->getUnitToRevive(id) != NULL)
+    {
+        u->onDead();
+    }
+}
+
 CUnitGroup::CUnitGroup()
 {
 }
@@ -660,8 +713,6 @@ CUnitGroup::CUnitGroup( CWorld* pWorld, const CPoint& roPos, float fRadius, int 
 
         M_MAP_NEXT;
     }
-
-    return;
 }
 
 CUnitGroup::CUnitGroup( CWorld* pWorld, int iMaxCount /*= INFINITE*/, FUNC_UNIT_CONDITION pBoolFunc /*= NULL*/, void* pParam /*= NULL*/ )

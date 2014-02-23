@@ -3,9 +3,6 @@
 #include "Logic/Draw.h"
 
 
-
-const char* GBKToUTF8(const char *pGBKStr);
-
 class CUnitDrawForCC;
 
 class CCUnitSprite : public CCSprite

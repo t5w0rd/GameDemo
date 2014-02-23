@@ -90,7 +90,11 @@ void CAbility::onUnitRevive()
 {
 }
 
-void CAbility::onUnitDie()
+void CAbility::onUnitDying()
+{
+}
+
+void CAbility::onUnitDead()
 {
 }
 
@@ -306,9 +310,10 @@ void CAttackAct::onUnitCastAbility()
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    assert(getCastTargetType() == CCommandTarget::kUnitTarget);
     CUnit* t = o->getUnit(d->getCastTarget().getTargetUnit());
     
-    if (t == NULL)
+    if (t == NULL || t->isDead())
     {
         return;
     }
@@ -326,12 +331,19 @@ void CAttackAct::onUnitCastAbility()
     {
         return;
     }
-    
+
+#if 1
+    if (getTemplateProjectile() == 0)
+    {
+        t->damagedAdv(ad, o);
+    }
+#else
     ad->retain();
     TEST_ATTACK_INFO* pAi = new TEST_ATTACK_INFO;
     pAi->iTarget = t->getId();
     pAi->pAttackData = ad;
     o->runAction(new CCallFunc(this, (FUNC_CALLFUNC_ND)&CAttackAct::onTestAttackEffect, pAi));
+#endif
 }
 
 float CAttackAct::getBaseAttackValue(CAttackValue::ATTACK_TYPE eAttackType) const
@@ -415,6 +427,7 @@ const CExtraCoeff& CAttackAct::getExAttackSpeed() const
 void CAttackAct::updateAttackSpeed()
 {
     CUnit* o = getOwner();
+    assert(o != NULL);
     o->updateAbilityCD(getId());
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
     if (d->getCastActiveAbilityId() == o->getAttackAbilityId())
@@ -919,7 +932,7 @@ CRebirthPas::CRebirthPas( const char* pRootId, const char* pName, float fCoolDow
     , m_bRevivableBefore(false)
 {
     setDbgClassName("CRebirthPas");
-    setTriggerFlags(CUnit::kDieTrigger);
+    setTriggerFlags(CUnit::kDeadTrigger);
 }
 
 CMultiRefObject* CRebirthPas::copy() const
@@ -940,7 +953,7 @@ void CRebirthPas::onUnitDelAbility()
     o->setRevivable(isRevivableBefore());
 }
 
-void CRebirthPas::onUnitDie()
+void CRebirthPas::onUnitDead()
 {
     if (isCoolingDown())
     {
@@ -974,7 +987,7 @@ void CRebirthPas::onUnitDie()
         ccd->addBattleTip(sz, "Comic Book", 18, ccc3(217, 47, 111));
     }
 
-    //ccd->setFlightHeight(ccd->getFlightHeight() + 20.0f);
+    LOG("Doing: %u", o->getDoingFlags());
 }
 
 // CEvadePas

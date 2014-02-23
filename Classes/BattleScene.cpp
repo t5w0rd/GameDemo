@@ -68,30 +68,53 @@ void CBattleWorld::onInit()
     M_DEF_GC(gc);
     gc->loadTexture("Global");
     gc->loadAnimation("Units/Malik/move", "Units/Malik/move", 0.08f);
-    gc->loadAnimation("Units/Malik/act1", "Units/Malik/act1", 0.08f);
-    gc->loadAnimation("Units/Malik/act2", "Units/Malik/act2", 0.08f);
+    gc->loadAnimation("Units/Malik/die", "Units/Malik/die", 0.18f);
+    gc->loadAnimation("Units/Malik/act1", "Units/Malik/act1", 0.05f);
+    gc->loadAnimation("Units/Malik/act2", "Units/Malik/act2", 0.05f);
     gc->loadAnimation("Units/Matchstick/move", "Units/Matchstick/move", 0.08f);
+    gc->loadAnimation("Units/Matchstick/die", "Units/Matchstick/die", 0.08f);
     gc->loadAnimation("Units/Matchstick/act1", "Units/Matchstick/act1", 0.08f);
     gc->loadAnimation("Units/Matchstick/act2", "Units/Matchstick/act2", 0.08f);
+    gc->loadAnimation("Units/Matchstick/act3", "Units/Matchstick/act3", 0.08f);
+    gc->loadAnimation("Units/Matchstick/act4", "Units/Matchstick/act4", 0.08f);
+
+    CUnit* u = NULL;
+    CUnitDrawForCC* ud = NULL;
+
+#if 0
+    u = createUnit(kDemonHunter);
+    u->getDraw()->dcast(ud);
+    u->setForceByIndex(1);
+    ud->setPosition(CPoint(vs.width * 1.2, vs.height * 1.2));
+
+    u = createUnit(kMountainKing);
+    m_iHeroUnit = u->getId();
+    u->getDraw()->dcast(ud);
+    u->setForceByIndex(2);
+    ud->setPosition(CPoint(vs.width * 1.5, vs.height * 1.2));
+
+    return;
+#endif
 
     CAbility* a = NULL;
     int id = 0;
 
     // 创建Draw
-    CUnitDrawForCC* ud = new CUnitDrawForCC("Malik");
+    ud = new CUnitDrawForCC("Malik");
     ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
     ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
+    ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 4);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 4);
 
     ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), ccp(10.0f, 10.0f));
 
     // 创建hero
-    CUnit* u = new CUnit("CUnit");
+    u = new CUnit("CUnit");
     m_iHeroUnit = u->getId();
     u->setDraw(ud);
     u->setName("Malik");
-    u->setMaxHp(1000.0001f);
+    u->setMaxHp(500.0f);
     u->setForceByIndex(1);
     u->setAI(CMyAI());
 
@@ -136,7 +159,7 @@ void CBattleWorld::onInit()
     a = new CSpeedBuff(
         "SpeedUp",
         "SpeedUp",
-        600.0f,
+        10.0f,
         true,
         CExtraCoeff(0.2f, 0.0f),
         CExtraCoeff(0.2f, 0.0f));
@@ -192,14 +215,17 @@ void CBattleWorld::onInit()
     id = addTemplateAbility(a);
     u->addPassiveAbility(id);
 
+    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 2.0f, CExtraCoeff(0.5, 0)));
+
     ud->setBaseMoveSpeed(80.0f);
-    ud->setPosition(CPoint(vs.width * 0.5, vs.height * 0.5));
-    ud->setFlightHeight(30);
+    ud->setPosition(CPoint(vs.width * 1.4, vs.height * 1.2));
+    //ud->setFlightHeight(30);
 
     // create other units
     ud = new CUnitDrawForCC("Matchstick");
     ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
     ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
+    ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 3);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
     ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
@@ -207,7 +233,7 @@ void CBattleWorld::onInit()
     u = new CUnit("CUnit");
     u->setDraw(ud);
     u->setName("Matchstick");
-    u->setMaxHp(1000.0001f);
+    u->setMaxHp(500.0f);
     u->setForceByIndex(2);
     u->setAI(CMyAI());
 
@@ -223,7 +249,7 @@ void CBattleWorld::onInit()
         2.00,
         CAttackValue(1,
         CAttackValue::kPhysical,
-        40.0),
+        50.0),
         0.5);
     atk->setCastMinRange(-3.0f);
     atk->setCastRange(15.0f);
@@ -239,9 +265,186 @@ void CBattleWorld::onInit()
     u->addPassiveAbility(new CAttackBuffMakerPas("abm.DoubleAttack", "连击", 0.5f, id, true));
 
     ud->setBaseMoveSpeed(50.0f);
-    ud->setPosition(CPoint(vs.width * 0.7, vs.height * 0.5));
+    ud->setPosition(CPoint(vs.width * 1.2, vs.height * 1.2));
 
 }
+
+CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
+{
+    CUnit* u = NULL;
+    CUnitDrawForCC* ud = NULL;
+    CAbility* a = NULL;
+    int id = 0;
+    CAttackAct* atk = NULL;
+
+    switch (eId)
+    {
+    case kBladeMaster:
+        ud = new CUnitDrawForCC("Matchstick");
+        ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
+        ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
+        ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
+        ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
+        ud->prepareAnimation(CUnitDrawForCC::kAniAct4, "act4", 1);
+        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
+
+        u = new CUnit("CUnit");
+        m_iHeroUnit = u->getId();
+        u->setDraw(ud);
+        u->setAI(CMyAI());
+        addUnit(u);
+
+        u->setName("BladeMaster");
+        u->setMaxHp(1000);
+        u->setBaseArmorValue(9.0f);
+
+        ud->setBaseMoveSpeed(80.0f);
+
+        u->addPassiveAbility(new CStatusShowPas(), false);
+
+        // 40~62 = 51~43.1%
+        atk = new CAttackAct(
+            "NormalAttack",
+            "攻击",
+            1.77f,
+            CAttackValue(1,
+            CAttackValue::kPhysical,
+            51.0),
+            0.431f);
+        u->addActiveAbility(atk);
+        atk->setCastMinRange(-3.0f);
+        atk->setCastRange(15.0f);
+        atk->setCastHorizontal();
+        atk->addCastAnimation(CUnitDraw::kAniAct2);
+        atk->addCastAnimation(CUnitDraw::kAniAct4);
+        atk->setExAttackSpeed(CExtraCoeff(1.38f));
+
+        // Critical 15% x4
+        a = new CAttackBuffMakerPas(
+            "Criticalx4",
+            "Critical",
+            0.15f,
+            0,
+            false,
+            CExtraCoeff(4.0f));
+        id = addTemplateAbility(a);
+        u->addPassiveAbility(id);
+        break;
+
+    case kDemonHunter:
+        ud = new CUnitDrawForCC("Matchstick");
+        ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
+        ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
+        ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
+        ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 3);
+        ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
+        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
+
+        u = new CUnit("CUnit");
+        m_iHeroUnit = u->getId();
+        u->setDraw(ud);
+        u->setAI(CMyAI());
+        addUnit(u);
+
+        u->setName("DemonHunter");
+        u->setMaxHp(1100);
+        u->setBaseArmorValue(9.0f);
+
+        ud->setBaseMoveSpeed(80.0f);
+
+        u->addPassiveAbility(new CStatusShowPas(), false);
+
+        // 37~59 = 48~45.8%
+        atk = new CAttackAct(
+            "NormalAttack",
+            "攻击",
+            1.7f,
+            CAttackValue(1,
+            CAttackValue::kPhysical,
+            48.0),
+            0.458f);
+        u->addActiveAbility(atk);
+        atk->setCastMinRange(-3.0f);
+        atk->setCastRange(15.0f);
+        atk->setCastHorizontal();
+        atk->addCastAnimation(CUnitDraw::kAniAct1);
+        atk->addCastAnimation(CUnitDraw::kAniAct2);
+        atk->setExAttackSpeed(CExtraCoeff(1.35f));
+
+        // Critical 15% x4
+        a = new CEvadePas(
+            "Evade30%",
+            "Evade",
+            0.3f);
+        id = addTemplateAbility(a);
+        u->addPassiveAbility(id);
+        break;
+
+    case kMountainKing:
+        ud = new CUnitDrawForCC("Malik");
+        ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
+        ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
+        ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
+        ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 4);
+        ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 4);
+
+        ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), ccp(10.0f, 10.0f));
+        
+        u = new CUnit("CUnit");
+        m_iHeroUnit = u->getId();
+        u->setDraw(ud);
+        u->setAI(CMyAI());
+        addUnit(u);
+
+        u->setName("MountainKing");
+        u->setMaxHp(1375.0f);
+        u->setBaseArmorValue(6.0f);
+
+        ud->setBaseMoveSpeed(80.0f);
+
+        u->addPassiveAbility(new CStatusShowPas(), false);
+
+        // 53~63 = 58~17.2%
+        atk = new CAttackAct(
+            "NormalAttack",
+            "攻击",
+            2.22f,
+            CAttackValue(1,
+            CAttackValue::kPhysical,
+            58.0),
+            0.172f);
+        u->addActiveAbility(atk);
+        atk->setCastMinRange(-3.0f);
+        atk->setCastRange(15.0f);
+        atk->setCastHorizontal();
+        atk->addCastAnimation(CUnitDraw::kAniAct1);
+        atk->addCastAnimation(CUnitDraw::kAniAct2);
+        atk->setExAttackSpeed(CExtraCoeff(1.24f));
+
+        // Thump 40% +25 1s
+        a = new CStunBuff(
+            "Stun",
+            "Stun",
+            1.0f,
+            true);
+        id = addTemplateAbility(a);
+        a = new CAttackBuffMakerPas(
+            "ABM.Stun",
+            "Thump",
+            0.4f,
+            id,
+            false,
+            CExtraCoeff(1.0f, 25.0f));
+        id = addTemplateAbility(a);
+        u->addPassiveAbility(id);
+
+        break;
+
+    }
+
+    return u;
+}
+
 
 // CCBattleScene
 CCBattleScene::CCBattleScene()
