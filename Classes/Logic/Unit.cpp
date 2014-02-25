@@ -356,6 +356,7 @@ void CDefaultAI::onUnitTick( float dt )
     CUnit* t = CUnitGroup::getNearestUnitInRange(u->getWorld(), d->getPosition(), 200.0, (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
     if (t == NULL || t->isDead())
     {
+        d->stop();
         return;
     }
 
@@ -433,12 +434,16 @@ CUnit* CUnit::getUnit(int id)
 
 void CUnit::abilityCD(CAbility* pAbility)
 {
-    getWorld()->addAbilityCD(pAbility);
+    CWorld* w = getWorld();
+    assert(w != NULL);
+    w->addAbilityCD(pAbility);
 }
 
 void CUnit::updateAbilityCD(int id)
 {
-    getWorld()->updateAbilityCD(id);
+    CWorld* w = getWorld();
+    assert(w != NULL);
+    w->updateAbilityCD(id);
 }
 
 bool CUnit::revive(float fHp)
@@ -470,7 +475,7 @@ bool CUnit::setHp(float fHp)
 
     if (m_fHp <= 0)
     {
-        //onDie();
+        //onDying();
     }
 
     return true;
@@ -511,13 +516,31 @@ void CUnit::onRevive()
     }
 }
 
-void CUnit::onDie()
+void CUnit::onDying()
 {
-    triggerOnDie();
+    CUnitDraw* d = getDraw();
+    if (d != NULL)
+    {
+        d->onUnitDying();
+    }
+
+    triggerOnDying();
     
     if (m_pAI)
     {
-        m_pAI->onUnitDie();
+        m_pAI->onUnitDying();
+    }
+}
+
+void CUnit::onDead()
+{
+    CUnitDraw* d = getDraw();
+
+    triggerOnDead();
+
+    if (m_pAI)
+    {
+        m_pAI->onUnitDead();
     }
 }
 
@@ -533,21 +556,21 @@ void CUnit::onChangeHp(float fChanged)
 
 void CUnit::step(float dt)
 {
-    m_oActMgr.onTick(dt);
+    //m_oActMgr.onTick(dt);
     
     updateBuffAbilityElapsed(dt);
-    
-    CUnitDraw* d = getDraw();
-    if (d != NULL)
-    {
-        d->onTick(dt);
-    }
     
     onTick(dt);
 }
 
 void CUnit::onTick(float dt)
 {
+    CUnitDraw* d = getDraw();
+    if (d != NULL)
+    {
+        d->onUnitTick(dt);
+    }
+
     triggerOnTick(dt);
     
     if (m_pAI)
@@ -1063,11 +1086,16 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
         m_mapOnReviveTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDieTrigger)
+    if (dwTriggerFlags & kDyingTrigger)
     {
-        m_mapOnDieTriggerAbilitys.addObject(pAbility);
+        m_mapOnDyingTriggerAbilitys.addObject(pAbility);
     }
-    
+
+    if (dwTriggerFlags & kDeadTrigger)
+    {
+        m_mapOnDeadTriggerAbilitys.addObject(pAbility);
+    }
+
     if (dwTriggerFlags & kChangeHpTrigger)
     {
         m_mapOnChangeHpTriggerAbilitys.addObject(pAbility);
@@ -1136,11 +1164,16 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
         m_mapOnReviveTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDieTrigger)
+    if (dwTriggerFlags & kDyingTrigger)
     {
-        m_mapOnDieTriggerAbilitys.delObject(id);
+        m_mapOnDyingTriggerAbilitys.delObject(id);
     }
-    
+
+    if (dwTriggerFlags & kDeadTrigger)
+    {
+        m_mapOnDeadTriggerAbilitys.delObject(id);
+    }
+
     if (dwTriggerFlags & kChangeHpTrigger)
     {
         m_mapOnChangeHpTriggerAbilitys.delObject(id);
@@ -1241,13 +1274,25 @@ void CUnit::triggerOnRevive()
     endTrigger();
 }
 
-void CUnit::triggerOnDie()
+void CUnit::triggerOnDying()
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDieTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnDyingTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAbility->onUnitDie();
+        pAbility->onUnitDying();
+        M_MAP_NEXT;
+    }
+    endTrigger();
+}
+
+void CUnit::triggerOnDead()
+{
+    beginTrigger();
+    M_MAP_FOREACH(m_mapOnDeadTriggerAbilitys)
+    {
+        CAbility* pAbility = M_MAP_EACH;
+        pAbility->onUnitDead();
         M_MAP_NEXT;
     }
     endTrigger();
@@ -1591,25 +1636,6 @@ CAction* CUnit::getActionByTag(int iTag)
     return m_oActMgr.getActionByTag(iTag);
 }
 
-// CProjectile 
-CProjectile::CProjectile(const char* pRootId)
-: CUnit(pRootId)
-, m_iSourceUnit(0)
-, m_iStartUnit(0)
-, m_iTargetUnit(0)
-{
-    setDbgClassName("CProjectile");
-}
-
-CProjectile::~CProjectile()
-{
-}
-
-bool CProjectile::hasPenaltyType(PENALTY_FLAG_BIT ePenaltyType) const
-{
-    return (m_dwPenaltyFlags & (uint32_t)ePenaltyType) != 0;
-}
-
 // CWorld
 CWorld::CWorld()
 {
@@ -1636,6 +1662,14 @@ void CWorld::onDelUnit( CUnit* pUnit )
 {
 }
 
+void CWorld::onAddProjectile(CProjectile* pProjectile)
+{
+}
+
+void CWorld::onDelProjectile(CProjectile* pProjectile)
+{
+}
+
 void CWorld::init()
 {
     onInit();
@@ -1649,35 +1683,31 @@ void CWorld::addUnit(CUnit* pUnit)
     m_mapUnits.addObject(pUnit);
 }
 
-void CWorld::delUnit(int id)
+void CWorld::delUnit( int id, bool bRevivable /*= false*/ )
 {
     auto it = m_mapUnits.find(id);
     if (it == m_mapUnits.end())
     {
         return;
     }
-    
-    delUnit(it, false);
-}
 
-void CWorld::delUnit( MAP_UNITS::iterator it, bool bRevivable /*= false*/ )
-{
-    onDelUnit(it->second);
+    CUnit* pUnit = it->second;
 
-    CUnit* pDel = it->second;
+    onDelUnit(pUnit);
+
     if (bRevivable)
     {
         // 如果单位可以复活，拖进灵魂域
-        m_mapUnitsToRevive.addObject(pDel);
+        m_mapUnitsToRevive.addObject(pUnit);
     }
     else
     {
         // 如果不可以复活，该单位将不再拥有世界，清除该单位的所有CD中的技能
-        pDel->setWorld(NULL);
-        cleanAbilitysCD(pDel);
+        pUnit->setWorld(NULL);
+        cleanAbilitysCD(pUnit);
     }
 
-    pDel->release();
+    pUnit->release();
     m_mapUnits.erase(it);
 }
 
@@ -1704,6 +1734,11 @@ void CWorld::reviveUnit(int id, float fHp)
     pUnit->revive(fHp);
     
     m_mapUnitsToRevive.delObject(it);
+}
+
+CUnit* CWorld::getUnitToRevive(int id)
+{
+    return m_mapUnitsToRevive.getObject(id);
 }
 
 void CWorld::addAbilityCD(CAbility* pAbility)
@@ -1791,6 +1826,8 @@ void CWorld::abilityReady(CAbility* pAbility)
     {
         // 存在于主世界中，则触发事件
         o->onAbilityReady(pAbility);
+        // 防止BUFF更改CD而导技能在致脱离CD管理器后CD大于Elapsed
+        pAbility->setCoolingDownElapsed(FLT_MAX);
     }
 }
 
@@ -1820,15 +1857,24 @@ void CWorld::step(float dt)
         CUnit* pUnit = M_MAP_EACH;
         pUnit->step(dt);
         
-        if (pUnit->isDead())
+        if (pUnit->isDead() && !pUnit->isDoingOr(CUnit::kDying))  // terrible code
         {
-            // 单位已经死亡
-            pUnit->onDie();
-            if (pUnit->isDead())
-            {
-                delUnit(M_MAP_IT++, pUnit->isRevivable());
-                continue;
-            }
+            // 刚死，计划最后移除该单位
+            pUnit->onDying();
+        }
+
+        M_MAP_NEXT;
+    }
+
+    M_MAP_FOREACH(m_mapProjectiles)
+    {
+        CProjectile* pProjectiles = M_MAP_EACH;
+        pProjectiles->step(dt);
+
+        if (pProjectiles->isDead() && !pProjectiles->isEffecting())  // terrible code
+        {
+            // 刚死，计划最后移除该抛射物
+            pProjectiles->die();
         }
 
         M_MAP_NEXT;
@@ -1856,4 +1902,46 @@ CAbility* CWorld::copyAbility(int id) const
     }
     
     return pAbility->copy()->dcast(pAbility);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
+}
+
+int CWorld::addTemplateProjectile( CProjectile* pProjectile )
+{
+    m_mapTemplateProjectiles.addObject(pProjectile);
+    return pProjectile->getId();
+}
+
+CProjectile* CWorld::copyProjectile(int id) const
+{
+    CProjectile* pProjectile = m_mapTemplateProjectiles.getObject(id);
+    if (pProjectile == NULL)
+    {
+        return NULL;
+    }
+
+    return pProjectile->copy()->dcast(pProjectile);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
+}
+
+void CWorld::addProjectile( CProjectile* pProjectile )
+{
+    onAddProjectile(pProjectile);
+
+    pProjectile->setWorld(this);
+    m_mapProjectiles.addObject(pProjectile);
+}
+
+
+void CWorld::delProjectile( int id )
+{
+    auto it = m_mapProjectiles.find(id);
+    if (it == m_mapProjectiles.end())
+    {
+        return;
+    }
+
+    CProjectile* pProjectile = it->second;
+    onDelProjectile(pProjectile);
+
+    pProjectile->setWorld(NULL);
+    pProjectile->release();
+    m_mapProjectiles.erase(it);
 }

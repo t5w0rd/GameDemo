@@ -34,7 +34,7 @@ public:
 
     enum ANI_ID
     {
-        kAniMove = 0x2000,
+        kAniMove,
         kAniDie,
         kAniAct1,
         kAniAct2,
@@ -52,7 +52,9 @@ public:
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
-    virtual void onTick(float dt);
+
+    virtual void onUnitDying();
+    virtual void onUnitTick(float dt);
 
     enum FRM_ID
     {
@@ -77,10 +79,12 @@ public:
 
     M_SYNTHESIZE(float, m_fHalfOfWidth, HalfOfWidth);
     M_SYNTHESIZE(float, m_fHalfOfHeight, HalfOfHeight);
+    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oFirePoint, FirePoint);
 
-    virtual void onTick(float dt);
+    virtual void onUnitDying();
+    virtual void onUnitTick(float dt);
 
-    M_SYNTHESIZE(float, m_fFlightHeight, FlightHeight);
+    M_SYNTHESIZE(float, m_fHeight, Height);
 
     /////////////////////// move //////////////////////////////
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
@@ -150,11 +154,14 @@ public:
     void moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td);
 
     void stopCast();
-    void onCastEffect(CMultiRefObject* pUnit, CCallFuncData* pData);
-    void onCastDone(CMultiRefObject* pUnit, CCallFuncData* pData);
+    void onCastEffect(CMultiRefObject* pDraw, CCallFuncData* pData);
+    void onCastDone(CMultiRefObject* pDraw, CCallFuncData* pData);
 
     void cmdStop();
     void stop(bool bDefaultFrame = true);
+
+    void die();
+    void onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData);
 };
 
 typedef bool (*FUNC_UNIT_CONDITION)(CUnit* pUnit, void* pParam);
@@ -199,6 +206,104 @@ public:
     static bool isLivingEnemyOf(CUnit* pUnit, CUnitForce* pParam);
 
 };
+
+class CProjectile : public CMultiRefObject
+{
+public:
+    CProjectile(const char* pName);
+    virtual ~CProjectile();
+    virtual CMultiRefObject* copy() const;
+
+    M_SYNTHESIZE_STR(Name);
+
+    M_SYNTHESIZE(CWorld*, m_pWorld, World);
+
+    M_SYNTHESIZE_BOOL(Dead);
+    M_SYNTHESIZE_BOOL(Effecting);
+
+    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oPosition, Position);
+    M_SYNTHESIZE(float, m_fHeight, Height);
+
+    M_SYNTHESIZE(float, m_fMoveSpeed, MoveSpeed);
+    M_SYNTHESIZE(float, m_fMaxHeightDelta, MaxHeightDelta);
+
+    enum ANI_ID
+    {
+        kAniMove,
+        kAniDie
+    };
+
+    virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone);
+    virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone);
+    virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
+    virtual void stopAction(int tag);
+    virtual bool isDoingAction(int id);
+    virtual void stopAllActions();
+
+    enum FRM_ID
+    {
+        kFrmDefault
+    };
+
+    void die();
+
+    virtual void step(float dt);
+    virtual void onTick(float dt);
+    void onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData);
+    void onEffect(CMultiRefObject* pProjectile, CCallFuncData* pData);
+    void onDyingDone(CMultiRefObject* pProjectile, CCallFuncData* pData);
+
+    // 单位和抛射物非紧密联系，即单位死亡后抛射物不一定会释放，所以必须通过ID引用
+    M_SYNTHESIZE(int, m_iSourceUnit, SourceUnit);  // 抛射物所属单位
+    M_SYNTHESIZE(int, m_iFromUnit, FromUnit);  // 发射单位
+    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oFromPoint, FromPoint);
+    M_SYNTHESIZE(int, m_iToUnit, ToUnit);  // 目标位点
+    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oToPoint, ToPoint);
+
+    M_SYNTHESIZE_READONLY(CAttackData*, m_pAttackData, AttackData);
+    void setAttackData(CAttackData* pAttackData);
+
+    enum PENALTY_FLAG_BIT
+    {
+        kOnDying = 1 << 0,
+        kOnContact = 1 << 1
+    };
+
+    M_SYNTHESIZE(uint32_t, m_dwPenaltyFlags, PenaltyFlags);
+    bool hasPenaltyType(PENALTY_FLAG_BIT ePenaltyType) const;
+
+    enum FROM_TO_TYPE
+    {
+        kPointToUnit,
+        kPointToPoint,
+        kUnitToUnit,
+        kUnitToPoint
+    };
+
+    M_SYNTHESIZE(FROM_TO_TYPE, m_eFromToType, FromToType);
+
+    enum FIRE_TYPE
+    {
+        kFireFollow,
+        kFireChain,
+        kFireStraight
+    };
+
+    M_SYNTHESIZE(FIRE_TYPE, m_eFireType, FireType);
+
+    virtual void fireFollow(const CPoint& rFromPoint, int iToUnit, float fDuration, float fMaxHeightDelta);
+    
+    virtual void fireChain(const CPoint& rFromPoint, int iToUnit);  // 点-单位
+    virtual void fireChain(const CPoint& rFromPoint, const CPoint& rToPoint);  // 点-点
+    virtual void fireChain(int iFromUnit, int iToUnit);  // 单位-单位
+    virtual void fireChain(int iFromUnit, const CPoint& rToPoint);  // 单位-点
+
+    virtual void fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint, float fDuration, float fMaxHeightDelta);
+
+protected:
+
+};
+
 
 #endif	/* __UNITDRAW_H__ */
 

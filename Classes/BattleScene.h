@@ -14,6 +14,15 @@ public:
     virtual void onInit();
 
     M_SYNTHESIZE(int, m_iHeroUnit, HeroUnit);
+
+    enum UNIT_INDEX
+    {
+        kBladeMaster,
+        kDemonHunter,
+        kMountainKing
+    };
+
+    CUnit* createUnit(UNIT_INDEX eId);
 };
 
 class CCBattleScene : public CCScene

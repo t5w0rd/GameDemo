@@ -90,7 +90,11 @@ void CAbility::onUnitRevive()
 {
 }
 
-void CAbility::onUnitDie()
+void CAbility::onUnitDying()
+{
+}
+
+void CAbility::onUnitDead()
 {
 }
 
@@ -306,9 +310,10 @@ void CAttackAct::onUnitCastAbility()
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    assert(getCastTargetType() == CCommandTarget::kUnitTarget);
     CUnit* t = o->getUnit(d->getCastTarget().getTargetUnit());
     
-    if (t == NULL)
+    if (t == NULL || t->isDead())
     {
         return;
     }
@@ -320,18 +325,48 @@ void CAttackAct::onUnitCastAbility()
     }
     
     ad = o->attackAdv(ad, t);
-    
-    // 这里模拟命中
     if (ad == NULL)
     {
         return;
     }
-    
+
+#if 1
+    if (getTemplateProjectile() == 0)
+    {
+        t->damagedAdv(ad, o);
+    }
+    else
+    {
+        CWorld* w = o->getWorld();
+        CProjectile* p = NULL;
+        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+        assert(td != NULL);
+
+        w->copyProjectile(getTemplateProjectile())->dcast(p);
+        w->addProjectile(p);
+
+        switch (p->getFireType())
+        {
+        case CProjectile::kFireFollow:
+            p->setSourceUnit(o->getId());
+            p->setAttackData(ad);
+            CPoint from(d->getPosition() + CPoint(d->isFixed() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y));
+            float fDis = from.getDistance(td->getPosition() + CPoint(0.0f, td->getHalfOfHeight()));
+            p->fireFollow(
+                from,
+                t->getId(),
+                fDis / max(FLT_EPSILON, p->getMoveSpeed()),
+                p->getMaxHeightDelta());
+            break;
+        }
+    }
+#else
     ad->retain();
     TEST_ATTACK_INFO* pAi = new TEST_ATTACK_INFO;
     pAi->iTarget = t->getId();
     pAi->pAttackData = ad;
     o->runAction(new CCallFunc(this, (FUNC_CALLFUNC_ND)&CAttackAct::onTestAttackEffect, pAi));
+#endif
 }
 
 float CAttackAct::getBaseAttackValue(CAttackValue::ATTACK_TYPE eAttackType) const
@@ -415,6 +450,7 @@ const CExtraCoeff& CAttackAct::getExAttackSpeed() const
 void CAttackAct::updateAttackSpeed()
 {
     CUnit* o = getOwner();
+    assert(o != NULL);
     o->updateAbilityCD(getId());
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
     if (d->getCastActiveAbilityId() == o->getAttackAbilityId())
@@ -919,7 +955,7 @@ CRebirthPas::CRebirthPas( const char* pRootId, const char* pName, float fCoolDow
     , m_bRevivableBefore(false)
 {
     setDbgClassName("CRebirthPas");
-    setTriggerFlags(CUnit::kDieTrigger);
+    setTriggerFlags(CUnit::kDeadTrigger);
 }
 
 CMultiRefObject* CRebirthPas::copy() const
@@ -940,7 +976,7 @@ void CRebirthPas::onUnitDelAbility()
     o->setRevivable(isRevivableBefore());
 }
 
-void CRebirthPas::onUnitDie()
+void CRebirthPas::onUnitDead()
 {
     if (isCoolingDown())
     {
@@ -974,7 +1010,7 @@ void CRebirthPas::onUnitDie()
         ccd->addBattleTip(sz, "Comic Book", 18, ccc3(217, 47, 111));
     }
 
-    //ccd->setFlightHeight(ccd->getFlightHeight() + 20.0f);
+    LOG("Doing: %u", o->getDoingFlags());
 }
 
 // CEvadePas

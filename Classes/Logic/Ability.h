@@ -51,7 +51,8 @@ public:
     virtual void onUnitDelAbility();
     virtual void onUnitAbilityReady();
     virtual void onUnitRevive();
-    virtual void onUnitDie();
+    virtual void onUnitDying();
+    virtual void onUnitDead();
     virtual void onUnitChangeHp(float fChanged);
     virtual void onUnitTick(float dt);
     virtual void onUnitInterval();
@@ -303,7 +304,7 @@ public:
 
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
-    virtual void onUnitDie();
+    virtual void onUnitDead();
 
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExMaxHp, ExMaxHp)
     M_SYNTHESIZE_BOOL(RevivableBefore);

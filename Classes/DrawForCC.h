@@ -3,12 +3,17 @@
 #include "Logic/Draw.h"
 
 
-
-const char* GBKToUTF8(const char *pGBKStr);
-
 class CUnitDrawForCC;
 
-class CCUnitSprite : public CCSprite
+class CCActionSprite : public CCSprite
+{
+public:
+    virtual void onMoveToDone(CCNode*, void* pCallFuncData);
+    virtual void onNotifyFrame(CCNode*, void* pCallFuncData);
+    virtual void onAnimationDone(CCNode*, void* pCallFuncData);
+};
+
+class CCUnitSprite : public CCActionSprite
 {
 public:
     CCUnitSprite();
@@ -18,10 +23,6 @@ public:
     M_CREATEWITH_FUNC_PARAM(Draw, CCUnitSprite, (CUnitDrawForCC* pDraw), pDraw);
 
     M_SYNTHESIZE(CUnitDrawForCC*, m_pDraw, Draw);
-
-    void onMoveToDone(CCNode*, void* pCallFuncData);
-    void onNotifyFrame(CCNode*, void* pCallFuncData);
-    void onAnimationDone(CCNode*, void* pCallFuncData);
 
     M_SYNTHESIZE(CCNode*, m_pShadow, Shadow);
     CCNode* createShadow();
@@ -75,17 +76,15 @@ public:
 
     FRM_INFO* getFrameInfo(FRM_ID id);
 
+    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
     M_SYNTHESIZE_READONLY(CCUnitSprite*, m_pSprite, Sprite);
     CCUnitSprite* createSprite();
 
-    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
-    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oFirePoint, FirePoint);
-
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();
-    virtual void setFlightHeight(float fHeight);
+    virtual void setHeight(float fHeight);
 
-    void setGeometry(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint);
+    void setGeometry(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CPoint& firePoint);
 
     M_SYNTHESIZE(int, m_iMaxTips, MaxTips);
     M_SYNTHESIZE(int, m_iBaseTipId, BaseTipId);
@@ -122,6 +121,8 @@ public:
 
     virtual void onAddUnit(CUnit* pUnit);
     virtual void onDelUnit(CUnit* pUnit);
+    virtual void onAddProjectile(CProjectile* pProjectile);
+    virtual void onDelProjectile(CProjectile* pProjectile);
 
     M_SYNTHESIZE_READONLY(CCUnitLayer*, m_pLayer, Layer);
     virtual void setLayer(CCUnitLayer* pLayer);
@@ -184,3 +185,67 @@ protected:
     float m_fMoveR;
     bool m_bCanMove;
 };
+
+class CProjectileForCC;
+
+class CCProjectileSprite : public CCActionSprite
+{
+public:
+    CCProjectileSprite();
+
+    virtual bool initWithProjectile(CProjectileForCC* pProjectile);
+    M_CREATEWITH_FUNC_PARAM(Projectile, CCProjectileSprite, (CProjectileForCC* pProjectile), pProjectile);
+
+    M_SYNTHESIZE(CProjectileForCC*, m_pProjectile, Projectile);
+
+    virtual void setPosition(const CCPoint& roPos);
+};
+
+class CProjectileForCC : public CProjectile
+{
+public:
+    CProjectileForCC(const char* pName);
+    virtual ~CProjectileForCC();
+    virtual CMultiRefObject* copy() const;
+
+    virtual void setPosition(const CPoint& p);
+    virtual CPoint& getPosition();
+    virtual void setHeight(float fHeight);
+
+    virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone);
+    virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone);
+    virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
+    virtual void stopAction(int tag);
+    virtual bool isDoingAction(int id);
+    virtual void stopAllActions();
+
+    struct ANI_INFO
+    {
+        int iNotifyFrameIndex;
+        CCAnimation* pAni;
+    };
+
+    typedef map<ANI_ID, ANI_INFO> MAP_ANI_INFOS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ANI_INFOS, m_mapAniInfos, AnimationInfos);
+
+    void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex);
+
+    ANI_INFO* getAnimationInfo(ANI_ID id);
+    
+    struct FRM_INFO
+    {
+        CCSpriteFrame* pSf;
+    };
+
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(FRM_INFO, m_stFrmInfo, FrameInfo);
+
+    void prepareFrame(FRM_ID id, const char* pName);
+
+    FRM_INFO* getFrameInfo(FRM_ID id);
+
+    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
+    M_SYNTHESIZE_READONLY(CCProjectileSprite*, m_pSprite, Sprite);
+    CCProjectileSprite* createSprite();
+    
+};
+

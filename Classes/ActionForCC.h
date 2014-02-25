@@ -54,3 +54,40 @@ protected:
     float m_fScaleStart;
 };
 
+class CUnitDrawForCC;
+
+class CCMoveToNode : public CCActionInterval
+{
+public:
+    enum NODE_TYPE
+    {
+        kNormal,
+        kUnit,
+        kProjectile
+    };
+
+public:
+    CCMoveToNode();
+    virtual ~CCMoveToNode();
+    virtual bool init(float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta = 0.0f);
+    M_CREATE_FUNC_PARAM(CCMoveToNode, (float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta), fDuration, pToNode, bFixRotation, fMaxHeightDelta);
+    virtual void startWithTarget(CCNode *pTarget);
+
+    virtual void update(float time);
+    virtual CCObject* copyWithZone(CCZone* pZone);
+
+protected:
+    CCPoint m_oStartPos;
+    CCPoint m_oEndPos;
+    CCPoint m_oDeltaPos;
+    CCNode* m_pToNode;
+    NODE_TYPE m_eFromType;
+    NODE_TYPE m_eToType;
+    float m_fMinSpeed;
+    float m_fFromHeight;
+    float m_fToHeight;
+    float m_fDeltaHeight;
+    float m_fMaxHeightDelta;
+    float m_fA;
+    bool m_bFixRotation;
+};

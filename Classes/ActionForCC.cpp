@@ -1,6 +1,7 @@
 #include "CommHeader.h"
 
 #include "ActionForCC.h"
+#include "DrawForCC.h"
 #include "Logic/Draw.h"
 
 
@@ -156,4 +157,234 @@ void CCFadeInOutScale4::startWithTarget( CCNode *pTarget )
 {
     CCSequence::startWithTarget(pTarget);
     m_pTarget->setScale(m_fScaleStart);
+}
+
+// CCMoveToNode
+CCMoveToNode::CCMoveToNode()
+    : m_pToNode(NULL)
+    , m_eFromType(kNormal)
+    , m_eToType(kNormal)
+    , m_fMinSpeed(0.0f)
+    , m_fFromHeight(0.0f)
+    , m_fToHeight(0.0f)
+    , m_fDeltaHeight(0.0f)
+    , m_fMaxHeightDelta(0.0f)
+    , m_fA(0.0f)
+    , m_bFixRotation(false)
+{
+}
+
+CCMoveToNode::~CCMoveToNode()
+{
+    if (m_pToNode != NULL)
+    {
+        switch (m_eToType)
+        {
+        case kNormal:
+            m_pToNode->release();
+            break;
+
+        case kUnit:
+            ((CCUnitSprite*)m_pToNode)->getDraw()->release();
+            break;
+
+        case kProjectile:
+            ((CCProjectileSprite*)m_pToNode)->getProjectile()->release();
+            break;
+        }
+    }
+}
+
+bool CCMoveToNode::init( float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta /*= 0.0f*/ )
+{
+    if (CCActionInterval::initWithDuration(fDuration) == false)
+    {
+        return false;
+    }
+
+    assert(pToNode != NULL);
+    if (DCAST(pToNode, CCUnitSprite*) != NULL)
+    {
+        m_eToType = kUnit;
+        ((CCUnitSprite*)pToNode)->getDraw()->retain();
+    }
+    else if (DCAST(pToNode, CCProjectileSprite*) != NULL)
+    {
+        m_eToType = kProjectile;
+        ((CCProjectileSprite*)pToNode)->getProjectile()->retain();
+    }
+    else
+    {
+        m_eToType = kNormal;
+        pToNode->retain();
+    }
+    m_pToNode = pToNode;
+
+    m_bFixRotation = bFixRotation;
+    m_fMaxHeightDelta = fMaxHeightDelta;
+    m_fMinSpeed = 0;
+
+    return true;
+}
+
+void CCMoveToNode::startWithTarget( CCNode *pTarget )
+{
+    assert(pTarget != NULL);
+    if (DCAST(pTarget, CCUnitSprite*) != NULL)
+    {
+        m_eFromType = kUnit;
+        CUnitDrawForCC* d = ((CCUnitSprite*)pTarget)->getDraw();
+        const CPoint& p = d->getPosition();
+        m_oStartPos.setPoint(p.x, p.y);
+        m_fFromHeight = d->getHeight();
+    }
+    else if (DCAST(pTarget, CCProjectileSprite*) != NULL)
+    {
+        m_eFromType = kProjectile;
+        CProjectileForCC* d = ((CCProjectileSprite*)pTarget)->getProjectile();
+        const CPoint& p = d->getPosition();
+        m_oStartPos.setPoint(p.x, p.y);
+        m_fFromHeight = d->getHeight();
+    }
+    else
+    {
+        m_eFromType = kNormal;
+        m_oStartPos = pTarget->getPosition();
+        m_fFromHeight = 0.0f;
+    }
+
+    switch (m_eToType)
+    {
+    case kNormal:
+        m_oEndPos = m_pToNode->getPosition();
+        m_fToHeight = 0.0f;
+        break;
+
+    case kUnit:
+        {
+            CUnitDrawForCC* d = ((CCUnitSprite*)m_pToNode)->getDraw();
+            const CPoint& p = d->getPosition();
+            m_oEndPos.setPoint(p.x, p.y);
+            m_fToHeight = d->getHeight();
+        }
+        break;
+        
+    case kProjectile:
+        {
+            CProjectileForCC* d = ((CCProjectileSprite*)m_pToNode)->getProjectile();
+            const CPoint& p = d->getPosition();
+            m_oEndPos.setPoint(p.x, p.y);
+            m_fToHeight = d->getHeight();
+        }
+        break;
+    }
+
+    m_oDeltaPos = ccpSub(m_oEndPos, m_oStartPos);
+    m_fDeltaHeight = m_fToHeight - m_fFromHeight;
+
+    m_fMinSpeed = sqrt(m_oDeltaPos.x * m_oDeltaPos.x + m_oDeltaPos.y * m_oDeltaPos.y) / m_fDuration;
+
+    CCActionInterval::startWithTarget(pTarget);
+}
+
+void CCMoveToNode::update( float time )
+{
+    if (m_pTarget == NULL)
+    {
+        return;
+    }
+
+    switch (m_eToType)
+    {
+    case kNormal:
+        m_oEndPos = m_pToNode->getPosition();
+        m_fToHeight = 0.0f;
+        break;
+
+    case kUnit:
+        {
+            CUnitDrawForCC* d = ((CCUnitSprite*)m_pToNode)->getDraw();
+            const CPoint& p = d->getPosition();
+            m_oEndPos.setPoint(p.x, p.y);
+            m_fToHeight = d->getHeight() + d->getHalfOfHeight();
+        }
+        break;
+
+    case kProjectile:
+        {
+            CProjectileForCC* d = ((CCProjectileSprite*)m_pToNode)->getProjectile();
+            const CPoint& p = d->getPosition();
+            m_oEndPos.setPoint(p.x, p.y);
+            m_fToHeight = d->getHeight();
+        }
+        break;
+    }
+
+    m_oDeltaPos = ccpSub(m_oEndPos, m_oStartPos);
+    m_fDeltaHeight = m_fToHeight - m_fFromHeight;
+
+    setDuration(sqrt(m_oDeltaPos.x * m_oDeltaPos.x + m_oDeltaPos.y * m_oDeltaPos.y) / m_fMinSpeed);
+
+    // 抛物线
+    float fA = ccpDistance(m_oStartPos, m_oEndPos);
+    float fX = time * fA - fA / 2;
+    fA = -4 * m_fMaxHeightDelta / (fA * fA);
+    float fHeightDelta = fA * fX * fX + m_fMaxHeightDelta;
+
+    //m_pTarget->setPosition(ccp(m_oStartPos.x + m_oDeltaPos.x * time, m_oStartPos.y + m_oDeltaPos.y * time));
+    switch (m_eFromType)
+    {
+    case kNormal:
+        m_pTarget->setPosition(ccp(m_oStartPos.x + m_oDeltaPos.x * time, m_oStartPos.y + m_oDeltaPos.y * time));
+        m_pTarget->setZOrder(M_BASE_Z + m_fFromHeight + m_fDeltaHeight * time + fHeightDelta - m_pTarget->getPosition().y);
+        break;
+
+    case kUnit:
+        {
+            CUnitDrawForCC* d = ((CCUnitSprite*)m_pTarget)->getDraw();
+            d->setPosition(CPoint(m_oStartPos.x + m_oDeltaPos.x * time, m_oStartPos.y + m_oDeltaPos.y * time));
+            d->setHeight(m_fFromHeight + m_fDeltaHeight * time + fHeightDelta);
+        }
+        break;
+
+    case kProjectile:
+        {
+            CProjectileForCC* d = ((CCProjectileSprite*)m_pTarget)->getProjectile();
+            d->setPosition(CPoint(m_oStartPos.x + m_oDeltaPos.x * time, m_oStartPos.y + m_oDeltaPos.y * time));
+            d->setHeight(m_fFromHeight + m_fDeltaHeight * time + fHeightDelta);
+        }
+        break;
+    }
+
+    if (m_bFixRotation)
+    {
+        // 修正角度
+        float fOffsetR = atan(fA * fX);
+        m_pTarget->setRotation(CC_RADIANS_TO_DEGREES((m_oStartPos.x > m_oEndPos.x ? fOffsetR : -fOffsetR) - ccpToAngle(ccpSub(m_oEndPos, m_oStartPos))));
+    }
+    //m_pTarget->setRotation(CC_RADIANS_TO_DEGREES(-ccpToAngle(ccpSub(m_oEndPos, m_oStartPos))) + (m_oStartPos.x > m_oEndPos.x ? CC_RADIANS_TO_DEGREES(fOffsetR) : -CC_RADIANS_TO_DEGREES(fOffsetR)));
+    //CCLOG("%.2f, %.2f", CC_RADIANS_TO_DEGREES(-ccpToAngle(ccpSub(m_oEndPos, m_oStartPos))), (m_oStartPos.x > m_oEndPos.x ? CC_RADIANS_TO_DEGREES(fOffsetR) : CC_RADIANS_TO_DEGREES(fOffsetR)));
+}
+
+CCObject* CCMoveToNode::copyWithZone( CCZone* pZone )
+{
+    CCZone* pNewZone = NULL;
+    CCMoveToNode* pCopy = NULL;
+    if(pZone && pZone->m_pCopyObject) 
+    {
+        //in case of being called at sub class
+        pCopy = (CCMoveToNode*)(pZone->m_pCopyObject);
+    }
+    else
+    {
+        pCopy = new CCMoveToNode();
+        pZone = pNewZone = new CCZone(pCopy);
+    }
+
+    CCActionInterval::copyWithZone(pZone);
+
+    pCopy->init(m_fDuration, m_pToNode, m_bFixRotation, m_fMaxHeightDelta);
+
+    CC_SAFE_DELETE(pNewZone);
+    return pCopy;
 }
