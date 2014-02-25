@@ -14,28 +14,10 @@
 #include "Application.h"
 #include "Draw.h"
 
+// for cocos2d
+#include "../CommHeader.h"
+#include "../DrawForCC.h"
 
-CEvadeBuff::CEvadeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance)
-    :CBuffAbility(pRootId, pName, fDuration, bStackable),m_fChance(fChance)
-{
-    
-}
-
-CMultiRefObject* CEvadeBuff::copy() const
-{
-    CEvadeBuff* pRet = new CEvadeBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_fChance);
-    return pRet;
-}
-
-
-CAttackData* CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
-{
-    if(M_RAND_HIT(m_fChance))
-    {
-        return NULL;
-    }
-    return pAttack;
-}
 
 CIceLanceBuff::CIceLanceBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, int iIncreaseTimes, const CAttackValue& pAttackValue)
     :CBuffAbility(pRootId, pName, fDuration, bStackable),m_iIncreaseTimes(iIncreaseTimes)
@@ -96,16 +78,34 @@ CMultiRefObject* CRelievePainBuff::copy() const
 
 void CRelievePainBuff::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
 {
-    m_fDamageReduce = m_fDamageReduce + pAttack->getAttackValue().getValue(CAttackValue::kMagical) * m_fReduce;
-    pAttack->setAttackValue(CAttackValue::kMagical, pAttack->getAttackValue().getValue(CAttackValue::kMagical) *(1 - m_fReduce) );
+    m_fDamageReduce = m_fDamageReduce + pAttack->getAttackValue().getValue(CAttackValue::kPhysical) * m_fReduce;
+    pAttack->setAttackValue(CAttackValue::kPhysical, pAttack->getAttackValue().getValue(CAttackValue::kPhysical) *(1 - m_fReduce) );
     LOG("痛苦压制！%d", toInt(m_fDamageReduce));
 }
 
 void CRelievePainBuff::onUnitDelAbility()
 {
-    CAttackData* t = new CAttackData;
-    t->setAttackValue(CAttackValue::kMagical, m_fDamageReduce);
-    LOG("%s压不住了,受到%d伤害", getOwner()->getName(), toInt(m_fDamageReduce));
+    CUnit* o = getOwner();
+    float f = o->getHp();
+    float f2 = m_fDamageReduce;
+    if (f - f2 <= 0)
+    {
+        f2 = f - 1;        
+    }
+    o->setHp(f - f2);
+
+    // for cocos2d
+    CUnitDrawForCC* ccd = NULL;
+    o->getDraw()->dcast(ccd);
+
+    if (ccd != NULL)
+    {
+        char sz[64];
+        sprintf(sz, "CallBack -%d", toInt(f2));
+        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(56, 24, 128));
+    }
+
+    LOG("%s压不住了,受到%d伤害(实际%d伤害)", o->getName(), toInt(m_fDamageReduce), toInt(f2));
 }
 
 void CRelievePainBuff::onUnitAddAbility()
@@ -115,10 +115,10 @@ void CRelievePainBuff::onUnitAddAbility()
 
 
 CNotKillPas::CNotKillPas(const char* pRootId, const char* pName, float fStartPercent /* = 1.0 */, const CExtraCoeff& roDeltaExAttackValue)
-    :CPassiveAbility(pRootId, pName)
+    :CPassiveAbility(pRootId, pName), m_fStartPercent(fStartPercent), m_oDeltaExAttackValue(roDeltaExAttackValue)
 {
     m_iTimesCount = 0;
-    setTriggerFlags(CUnit::kHpChangeTrigger);
+    setTriggerFlags(CUnit::kChangeHpTrigger);
 }
 
 CMultiRefObject* CNotKillPas::copy() const
@@ -129,12 +129,13 @@ CMultiRefObject* CNotKillPas::copy() const
 
 void CNotKillPas::onUnitChangeHp(float fChanged)
 {
-    CUnit* o = getOwner();
+     CUnit* o = getOwner();
     float f =  m_fStartPercent - o->getHp()/o->getMaxHp();
     int iTimesChange = 0;
+    LOG("StartIf");
     if (f>0 || m_iTimesCount != 0)
     {
-        iTimesChange = m_iTimesCount - int(f/0.10) ;
+        iTimesChange = int(f/0.10) - m_iTimesCount;
         m_iTimesCount = int(f/0.10);
         //o->setExArmorValue(getExAttackValue());
 

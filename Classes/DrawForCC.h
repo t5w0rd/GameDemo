@@ -3,6 +3,9 @@
 #include "Logic/Draw.h"
 
 
+
+const char* GBKToUTF8(const char *pGBKStr);
+
 class CUnitDrawForCC;
 
 class CCUnitSprite : public CCSprite
@@ -19,6 +22,11 @@ public:
     void onMoveToDone(CCNode*, void* pCallFuncData);
     void onNotifyFrame(CCNode*, void* pCallFuncData);
     void onAnimationDone(CCNode*, void* pCallFuncData);
+
+    M_SYNTHESIZE(CCNode*, m_pShadow, Shadow);
+    CCNode* createShadow();
+    virtual void setPosition(const CCPoint& roPos);
+    virtual void draw();
 
 };
 
@@ -67,16 +75,22 @@ public:
 
     FRM_INFO* getFrameInfo(FRM_ID id);
 
-    M_SYNTHESIZE_READONLY(CCSprite*, m_pSprite, Sprite);
-    CCSprite* createSprite();
+    M_SYNTHESIZE_READONLY(CCUnitSprite*, m_pSprite, Sprite);
+    CCUnitSprite* createSprite();
 
     M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
     M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oFirePoint, FirePoint);
 
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();
+    virtual void setFlightHeight(float fHeight);
 
     void setGeometry(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint);
+
+    M_SYNTHESIZE(int, m_iMaxTips, MaxTips);
+    M_SYNTHESIZE(int, m_iBaseTipId, BaseTipId);
+    M_SYNTHESIZE(int, m_iCurTipId, CurTipId);
+    void addBattleTip(const char* pTip, const char* pFont, float fFontSize, ccColor3B color);
 
 };
 

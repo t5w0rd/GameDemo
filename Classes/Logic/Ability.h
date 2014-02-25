@@ -278,19 +278,19 @@ public:
     
 };
 
-class CHpChangeBuff : public CBuffAbility
+// hp变化，CExTraCoeff是以MaxHp为基准的
+class CChangeHpBuff : public CBuffAbility
 {
 public:
-    CHpChangeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fInterval, float fHpChange, bool bPercentile, float fMinHp = -1.0f);
+    CChangeHpBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fInterval, const CExtraCoeff& roChangeHp, const CExtraCoeff& roMinHp = CExtraCoeff(0.0, -1.0f));
     virtual CMultiRefObject* copy() const;
     
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
     virtual void onUnitInterval();
     
-    M_SYNTHESIZE(float, m_fHpChange, HpChange);
-    M_SYNTHESIZE_BOOL(Percentile);
-    M_SYNTHESIZE(float, m_fMinHp, MinHp);
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oChangeHp, ChangeHp);
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oMinHp, MinHp);
     
 };
 
@@ -298,14 +298,40 @@ public:
 class CRebirthPas : public CPassiveAbility
 {
 public:
-    CRebirthPas(const char* pRootId, const char* pName, float fCoolDown);
+    CRebirthPas(const char* pRootId, const char* pName, float fCoolDown, const CExtraCoeff& rExMaxHp = CExtraCoeff(1.0f, 0.0f));
     virtual CMultiRefObject* copy() const;
 
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
     virtual void onUnitDie();
 
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExMaxHp, ExMaxHp)
     M_SYNTHESIZE_BOOL(RevivableBefore);
+};
+
+// 闪避
+class CEvadePas : public CPassiveAbility
+{
+public:
+    CEvadePas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff = 0);
+    virtual CMultiRefObject* copy() const;
+
+    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+
+    M_SYNTHESIZE(float, m_fChance, Chance);
+    M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
+};
+
+// 闪避
+class CEvadeBuff : public CBuffAbility
+{
+public:
+    CEvadeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance);
+    virtual CMultiRefObject* copy() const;
+
+    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+
+    M_SYNTHESIZE(float, m_fChance, Chance);
 };
 
 #endif	/* __ABILITY_H__ */

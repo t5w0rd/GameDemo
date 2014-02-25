@@ -12,6 +12,10 @@
 #include "Application.h"
 #include "Draw.h"
 
+// for cocos2d
+#include "../CommHeader.h"
+#include "../DrawForCC.h"
+
 
 // CAbility
 CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
@@ -416,6 +420,7 @@ void CAttackAct::updateAttackSpeed()
     if (d->getCastActiveAbilityId() == o->getAttackAbilityId())
     {
         float spd = getBaseAttackInterval() / max(FLT_EPSILON, getRealAttackInterval());
+        LOG("ATK SPD: %.1f", spd);
         d->setActionSpeed(d->getCastActionId(), spd);
     }
     
@@ -707,6 +712,18 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     float fDtHp = fDamage * getPercentConversion();
     o->setHp(o->getHp() + fDtHp);
     LOG("%s恢复%d点HP", o->getName(), toInt(fDtHp));
+
+    // for cocos2d
+    CUnit* u = getOwner();
+    CUnitDrawForCC* d = NULL;
+    u->getDraw()->dcast(d);
+
+    if (d != NULL)
+    {
+        char sz[64];
+        sprintf(sz, "+%d", toInt(fDtHp));
+        d->addBattleTip(sz, "Comic Book", 18, ccc3(113, 205, 44));
+    }
 }
 
 // CStunBuff
@@ -724,9 +741,23 @@ CMultiRefObject* CStunBuff::copy() const
 void CStunBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
+    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    assert(d != NULL);
+    d->cmdStop();
     o->suspend();
     
     LOG("%s%s中", o->getName(), getName());
+
+    // for cocos2d
+    CUnitDrawForCC* ccd = NULL;
+    o->getDraw()->dcast(ccd);
+
+    if (ccd != NULL)
+    {
+        char sz[64];
+        sprintf(sz, "%s!", getName());
+        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
+    }
 }
 
 void CStunBuff::onUnitDelAbility()
@@ -803,6 +834,17 @@ void CSpeedBuff::onUnitAddAbility()
     pAtkAct->setExAttackSpeed(CExtraCoeff(rExAs.getMulriple() + m_oExAttackSpeedDelta.getMulriple(), rExAs.getAddend() + m_oExAttackSpeedDelta.getAddend()));
     
     LOG("%s攻击速度变慢(%.1fs->%.1fs)\n", o->getName(), fTestOld, pAtkAct->getRealAttackInterval());
+
+    // for cocos2d
+    CUnitDrawForCC* ccd = NULL;
+    o->getDraw()->dcast(ccd);
+
+    if (ccd != NULL)
+    {
+        char sz[64];
+        sprintf(sz, "%s!", getName());
+        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(72, 130, 200));
+    }
 }
 
 void CSpeedBuff::onUnitDelAbility()
@@ -827,65 +869,62 @@ void CSpeedBuff::onUnitDelAbility()
     LOG("%s攻击速度恢复(%.1fs->%.1fs)\n", o->getName(), fTestOld, pAtkAct->getRealAttackInterval());
 }
 
-// CHpChangeBuff
-CHpChangeBuff::CHpChangeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fInterval, float fHpChange, bool bPercentile, float fMinHp)
+// CChangeHpBuff
+CChangeHpBuff::CChangeHpBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fInterval, const CExtraCoeff& roChangeHp, const CExtraCoeff& roMinHp)
 : CBuffAbility(pRootId, pName, fDuration, bStackable)
-, m_fHpChange(fHpChange)
-, m_bPercentile(bPercentile)
-, m_fMinHp(fMinHp)
+, m_oChangeHp(roChangeHp)
+, m_oMinHp(roMinHp)
 {
-    setDbgClassName("CHpChangeBuff");
+    setDbgClassName("CChangeHpBuff");
     setInterval(fInterval);
 }
 
-CMultiRefObject* CHpChangeBuff::copy() const
+CMultiRefObject* CChangeHpBuff::copy() const
 {
-    return new CHpChangeBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_fInterval, m_fHpChange, m_bPercentile, m_fMinHp);
+    return new CChangeHpBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_fInterval, m_oChangeHp, m_oMinHp);
 }
 
-void CHpChangeBuff::onUnitAddAbility()
+void CChangeHpBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
-    LOG("%s获得%s状态(%.1f%s/s)\n", o->getName(), getName(), isPercentile() ? (getHpChange() * 100 / getInterval()) : (getHpChange() / getInterval()), isPercentile() ? "%" : "");
+    LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), getChangeHp().getValue(o->getMaxHp()));
 }
 
-void CHpChangeBuff::onUnitDelAbility()
+void CChangeHpBuff::onUnitDelAbility()
 {
     CUnit* o = getOwner();
     LOG("%s失去%s状态\n", o->getName(), getName());
 }
 
-void CHpChangeBuff::onUnitInterval()
+void CChangeHpBuff::onUnitInterval()
 {
     CUnit* o = getOwner();
     float fNewHp = o->getHp();
-    if (isPercentile())
+    float fChangeHp = getChangeHp().getValue(o->getMaxHp());
+    fNewHp += fChangeHp;
+
+    float fMinHp = getMinHp().getValue(o->getMaxHp());
+    if (fNewHp < fMinHp)
     {
-        fNewHp += o->getMaxHp() * m_fHpChange;
-    }
-    else
-    {
-        fNewHp += m_fHpChange;
+        fNewHp = fMinHp;
     }
 
-    if (fNewHp < m_fMinHp)
-    {
-        fNewHp = m_fMinHp;
-    }
     o->setHp(fNewHp);
 }
 
 // CRebirthPas
-CRebirthPas::CRebirthPas( const char* pRootId, const char* pName, float fCoolDown )
+CRebirthPas::CRebirthPas( const char* pRootId, const char* pName, float fCoolDown, const CExtraCoeff& rExMaxHp )
     : CPassiveAbility(pRootId, pName, fCoolDown)
+    , m_oExMaxHp(rExMaxHp)
     , m_bRevivableBefore(false)
 {
+    setDbgClassName("CRebirthPas");
     setTriggerFlags(CUnit::kDieTrigger);
 }
 
 CMultiRefObject* CRebirthPas::copy() const
 {
-    return new CRebirthPas(getRootId(), getName(), getCoolDown());
+    return new CRebirthPas(getRootId(), getName(), getCoolDown(), m_oExMaxHp);
 }
 
 void CRebirthPas::onUnitAddAbility()
@@ -914,12 +953,106 @@ void CRebirthPas::onUnitDie()
     CWorld* w = o->getWorld();
 
     CUnit* oo = w->getUnit(o->getId());
+    float fHp = getExMaxHp().getValue(o->getMaxHp());
     if (oo != NULL)
     {
-        oo->revive(500);
+        oo->revive(fHp);
     }
     else
     {
-        w->reviveUnit(o->getId(), 500);
+        w->reviveUnit(o->getId(), fHp);
     }
+
+    // for cocos2d
+    CUnitDrawForCC* ccd = NULL;
+    o->getDraw()->dcast(ccd);
+
+    if (ccd != NULL)
+    {
+        char sz[64];
+        sprintf(sz, "%s!", getName());
+        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(217, 47, 111));
+    }
+
+    //ccd->setFlightHeight(ccd->getFlightHeight() + 20.0f);
+}
+
+// CEvadePas
+CEvadePas::CEvadePas( const char* pRootId, const char* pName, float fChance, int iTemplateBuff )
+    : CPassiveAbility(pRootId, pName)
+    , m_fChance(fChance)
+    , m_iTemplateBuff(iTemplateBuff)
+{
+    setDbgClassName("CEvadePas");
+    setTriggerFlags(CUnit::kAttackedTrigger);
+}
+
+CMultiRefObject* CEvadePas::copy() const
+{
+    return new CEvadePas(getRootId(), getName(), m_fChance, m_iTemplateBuff);
+}
+
+CAttackData* CEvadePas::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
+{
+    if (M_RAND_HIT(getChance()))
+    {
+        CUnit* o = getOwner();
+        if (getTemplateBuff() != 0)
+        {
+            o->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
+        }
+
+        LOG("%s%s了%s的攻击", getOwner()->getName(), getName(), pSource->getName());
+
+        // for cocos2d
+        CUnitDrawForCC* ccd = NULL;
+        o->getDraw()->dcast(ccd);
+
+        if (ccd != NULL)
+        {
+            char sz[64];
+            sprintf(sz, "%s!", getName());
+            ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
+        }
+        return NULL;
+    }
+
+    return pAttack;
+}
+
+// CEvadeBuff
+CEvadeBuff::CEvadeBuff( const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance )
+    : CBuffAbility(pRootId, pName, fDuration, bStackable)
+    , m_fChance(fChance)
+{
+    setDbgClassName("CEvadeBuff");
+    setTriggerFlags(CUnit::kAttackedTrigger);
+}
+
+CMultiRefObject* CEvadeBuff::copy() const
+{
+    return new CEvadeBuff(getRootId(), getName(), getDuration(), isStackable(), m_fChance);
+}
+
+CAttackData* CEvadeBuff::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
+{
+    if (M_RAND_HIT(getChance()))
+    {
+        LOG("%s%s了%s的攻击", getOwner()->getName(), getName(), pSource->getName());
+
+        CUnit* o = getOwner();
+        // for cocos2d
+        CUnitDrawForCC* ccd = NULL;
+        o->getDraw()->dcast(ccd);
+
+        if (ccd != NULL)
+        {
+            char sz[64];
+            sprintf(sz, "%s!", getName());
+            ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
+        }
+        return NULL;
+    }
+
+    return pAttack;
 }

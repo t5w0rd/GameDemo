@@ -13,6 +13,10 @@
 #include "Item.h"
 #include "Draw.h"
 
+// for cocos2d
+#include "../CommHeader.h"
+#include "../DrawForCC.h"
+
 
 // CAttackValue
 const char* CAttackValue::CONST_ARR_NAME[CONST_MAX_ATTACK_TYPE][CONST_MAX_NAME_INDEX] = {
@@ -328,6 +332,69 @@ CUnitEventAdapter::~CUnitEventAdapter()
 {
 }
 
+// CDefaultAI
+void CDefaultAI::onUnitTick( float dt )
+{
+    CUnit* u = getNotifyUnit();
+    if (u->isDoingNothing() == false)
+    {
+        return;
+    }
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    if (d == NULL)
+    {
+        return;
+    }
+
+    int atk = u->getAttackAbilityId();
+    if (atk == 0)
+    {
+        return;
+    }
+
+    CUnit* t = CUnitGroup::getNearestUnitInRange(u->getWorld(), d->getPosition(), 200.0, (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
+    if (t == NULL || t->isDead())
+    {
+        return;
+    }
+
+    d->setCastTarget(CCommandTarget(t->getId()));
+    d->cmdCastSpell(atk);
+}
+
+CAttackData* CDefaultAI::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
+{
+    if (pSource->isDead())
+    {
+        return pAttack;
+    }
+
+    CUnit* u = getNotifyUnit();
+    if (u->isDoingOr(CUnit::kCasting | CUnit::kObstinate))
+    {
+        // 正在施法，或者处于固执状态
+        return pAttack;
+    }
+
+    int atk = u->getAttackAbilityId();
+    if (atk == 0)
+    {
+        return pAttack;
+    }
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    if (d == NULL)
+    {
+        return pAttack;
+    }
+
+    d->setCastTarget(CCommandTarget(pSource->getId()));
+    d->cmdCastSpell(atk, false);
+
+    return pAttack;
+}
+
 // CUnit
 CUnit::CUnit(const char* pRootId)
 : CONST_ROOT_ID(pRootId)
@@ -379,6 +446,7 @@ bool CUnit::revive(float fHp)
     if (isDead())
     {
         m_fHp = min(max(fHp, 1.0f), m_fMaxHp);
+        onChangeHp(m_fHp);
         onRevive();
         return true;
     }
@@ -455,7 +523,7 @@ void CUnit::onDie()
 
 void CUnit::onChangeHp(float fChanged)
 {
-    triggerOnHpChange(fChanged);
+    triggerOnChangeHp(fChanged);
     
     if (m_pAI)
     {
@@ -490,11 +558,10 @@ void CUnit::onTick(float dt)
 
 CAttackData* CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    if (dwTriggerMask & kAttackTargetTrigger)
+    if (!(dwTriggerMask & kAttackTargetTrigger))
     {
-        return pAttack;
+        pAttack = triggerOnAttackTarget(pAttack, pTarget);
     }
-    pAttack = triggerOnAttackTarget(pAttack, pTarget);
     
     if (m_pAI)
     {
@@ -506,11 +573,10 @@ CAttackData* CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_
 
 CAttackData* CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (dwTriggerMask & kAttackedTrigger)
+    if (!(dwTriggerMask & kAttackedTrigger))
     {
-        return pAttack;
+        pAttack = triggerOnAttacked(pAttack, pSource);;
     }
-    pAttack = triggerOnAttacked(pAttack, pSource);
     
     if (m_pAI)
     {
@@ -522,17 +588,15 @@ CAttackData* CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dw
 
 void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (dwTriggerMask & kDamagedSurfaceTrigger)
+    if (!(dwTriggerMask & kDamagedSurfaceTrigger))
     {
-        return;
+        triggerOnDamagedSurface(pAttack, pSource);
     }
-    triggerOnDamagedSurface(pAttack, pSource);
 
-    if (dwTriggerMask & kDamagedInnerTrigger)
+    if (!(dwTriggerMask & kDamagedInnerTrigger))
     {
-        return;
+        triggerOnDamagedInner(pAttack, pSource);
     }
-    triggerOnDamagedInner(pAttack, pSource);
     
     if (m_pAI)
     {
@@ -542,28 +606,37 @@ void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMa
 
 void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (dwTriggerMask & kDamagedDoneTrigger)
+    if (!(dwTriggerMask & kDamagedDoneTrigger))
     {
-        return;
+        triggerOnDamagedDone(fDamage, pSource);
     }
-    triggerOnDamagedDone(fDamage, pSource);
     
     LOG("%s受到%d点伤害", getName(), toInt(fDamage));
     LOG("%s HP: %d/%d\n", getName(), toInt(getHp()), toInt(getMaxHp()));
-    
+
     if (m_pAI)
     {
         m_pAI->onUnitDamagedDone(fDamage, pSource);
+    }
+
+    // for cocos2dx
+    CUnitDrawForCC* ccd = NULL;
+    getDraw()->dcast(ccd);
+
+    if (ccd != NULL)
+    {
+        char sz[64];
+        sprintf(sz, "-%d", toInt(fDamage));
+        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(255, 0, 0));
     }
 }
 
 void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    if (dwTriggerMask & kDamageTargetDoneTrigger)
+    if (!(dwTriggerMask & kDamageTargetDoneTrigger))
     {
-        return;
+        triggerOnDamageTargetDone(fDamage, pTarget);
     }
-    triggerOnDamageTargetDone(fDamage, pTarget);
     
     if (m_pAI)
     {
@@ -995,9 +1068,9 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
         m_mapOnDieTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kHpChangeTrigger)
+    if (dwTriggerFlags & kChangeHpTrigger)
     {
-        m_mapOnHpChangeTriggerAbilitys.addObject(pAbility);
+        m_mapOnChangeHpTriggerAbilitys.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kTickTrigger)
@@ -1068,9 +1141,9 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
         m_mapOnDieTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kHpChangeTrigger)
+    if (dwTriggerFlags & kChangeHpTrigger)
     {
-        m_mapOnHpChangeTriggerAbilitys.delObject(id);
+        m_mapOnChangeHpTriggerAbilitys.delObject(id);
     }
     
     if (dwTriggerFlags & kTickTrigger)
@@ -1180,10 +1253,10 @@ void CUnit::triggerOnDie()
     endTrigger();
 }
 
-void CUnit::triggerOnHpChange(float fChanged)
+void CUnit::triggerOnChangeHp(float fChanged)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnHpChangeTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnChangeHpTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitChangeHp(fChanged);
@@ -1315,6 +1388,7 @@ bool CUnit::isSuspended() const
 
 void CUnit::suspend()
 {
+    endDoing(kObstinate);
     ++m_iSuspendRef;
     // TODO: stop actions
     if (m_iSuspendRef == 1)
@@ -1783,4 +1857,3 @@ CAbility* CWorld::copyAbility(int id) const
     
     return pAbility->copy()->dcast(pAbility);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
 }
-

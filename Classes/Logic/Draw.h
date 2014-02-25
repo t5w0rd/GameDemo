@@ -64,6 +64,7 @@ public:
     
     virtual void loadAnimation(int id, const char* pName, int iNotifyFrameIndex, float fDelay);
     virtual void loadFrame(int id, const char* pName);
+
 };
 
 class CUnitDraw2D : public CUnitDraw
@@ -79,6 +80,8 @@ public:
 
     virtual void onTick(float dt);
 
+    M_SYNTHESIZE(float, m_fFlightHeight, FlightHeight);
+
     /////////////////////// move //////////////////////////////
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
     
@@ -88,20 +91,20 @@ public:
     struct UNIT_MOVE_PARAMS
     {
         UNIT_MOVE_PARAMS(
-            bool bIntended_ = true,
+            //bool bObstinate_ = true,
             bool bAutoFlipX_ = true,
-            float fMaxOffsetY_ = 0.0f,
-            bool bCancelCast_ = true
+            float fMaxOffsetY_ = 0.0f
+            //bool bCancelCast_ = true
             )
-            : bIntended(bIntended_)
-            , bAutoFlipX(bAutoFlipX_)
+            //: bObstinate(bObstinate_)
+            : bAutoFlipX(bAutoFlipX_)
             , fMaxOffsetY(fMaxOffsetY_)
-            , bCancelCast(bCancelCast_)
+            //, bCancelCast(bCancelCast_)
         {}
-        bool bIntended;
+        //bool bObstinate;
         bool bAutoFlipX;
         float fMaxOffsetY;
-        bool bCancelCast;
+        //bool bCancelCast;
     };
 
     static const UNIT_MOVE_PARAMS CONST_DEFAULT_MOVE_PARAMS;
@@ -119,29 +122,29 @@ public:
 
     float getRealMoveSpeed() const;
 
-    virtual void updateMoveSpeedDelta();
+    void updateMoveSpeedDelta();
 
 
     M_SYNTHESIZE(int, m_iMoveToActionId, MoveToActionId);
     M_SYNTHESIZE(int, m_iMoveActionId, MoveActionId);
-    void cmdMove(const CPoint& roPos);
+    void cmdMove(const CPoint& roPos, bool bObstinate = true);
     void move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
     void follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
-    //virtual void moveAlongPath(CUnitPath* pPath, bool bIntended = true, bool bRestart = false, float fBufArrive = 5.0);
+    //virtual void moveAlongPath(CUnitPath* pPath, bool bObstinate = true, bool bRestart = false, float fBufArrive = 5.0);
     void stopMove();
     void onMoveDone(CMultiRefObject* pUnit, CCallFuncData* pData);
 
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oLastMoveToTarget, LastMoveToTarget);
     //M_SYNTHESIZE(uint32_t, m_dwPathCurPos, PathCurPos);
-    //virtual void setPathIntended(bool bPathIntended = true);
-    //virtual bool isPathIntended() const;
+    //virtual void setPathObstinate(bool bPathObstinate = true);
+    //virtual bool isPathObstinate() const;
 
     
     // /////////////////////// cast /////////////////////////////
     M_SYNTHESIZE_PASS_BY_REF(CCommandTarget, m_oCastTarget, CastTarget);
     M_SYNTHESIZE(int, m_iCastActionId, CastActionId);
     M_SYNTHESIZE(int, m_iCastActiveAbilityId, CastActiveAbilityId);
-    int cmdCastSpell(int iActiveAbilityId);  // 可能是施法失败，施法中，施法追逐中，所以返回类型为int
+    int cmdCastSpell(int iActiveAbilityId, bool bObstinate = true);  // 可能是施法失败，施法中，施法追逐中，所以返回类型为int
     int castSpell(CActiveAbility* pAbility);
     bool checkCastTargetDistance(CActiveAbility* pAbility, const CPoint& roPos, CUnitDraw2D* td);
     void moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td);
@@ -182,9 +185,9 @@ public:
     //virtual void move(const CPoint& roPos, const CUnit::UNIT_MOVE_PARAMS& roMoveParams = CUnit::CONST_DEFAULT_MOVE_PARAMS);
     //virtual void followTo(int iTargetKey, const CUnit::UNIT_MOVE_PARAMS& roMoveParams = CUnit::CONST_DEFAULT_MOVE_PARAMS);
     //virtual void stopMove();
-    //virtual void attack(int iTargetKey, bool bIntended = true);
+    //virtual void attack(int iTargetKey, bool bObstinate = true);
     //virtual void stopAttack();
-    //virtual void moveAlongPath(CUnitPath* pPath, bool bIntended = true, bool bRestart = false, float fBufArrive = 5.0);
+    //virtual void moveAlongPath(CUnitPath* pPath, bool bObstinate = true, bool bRestart = false, float fBufArrive = 5.0);
 
     //void damagedAdv(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
     //void damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);

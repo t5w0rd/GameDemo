@@ -279,6 +279,16 @@ inline int toInt(double fValue)
     return (int)((fValue > 0.0 ? 0.5 : -0.5) + fValue);
 }
 
+inline void cirInc(int& i, int min, int num)
+{
+    ++i >= (min + num) && (i = min);
+}
+
+inline void cirDec(int& i, int min, int num)
+{
+    --i < min && (i = min + num - 1);
+}
+
 
 #endif	/* __COMDEF_H__ */
 

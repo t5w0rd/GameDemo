@@ -17,17 +17,6 @@
 //        CChargeOfDarkness();
 //};
 
-class CEvadeBuff : public CBuffAbility
-{
-public:
-    CEvadeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance);
-    virtual CMultiRefObject* copy() const;
-    
-    M_SYNTHESIZE(float, m_fChance , Chance);
-    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
-    
-
-};
 
 class CIceLanceBuff : public CBuffAbility
 {
