@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __ABILITYFORCC_H__
+#define	__ABILITYFORCC_H__
+
 
 #include "Logic/Ability.h"
 
@@ -19,3 +21,5 @@ public:
 public:
     CCProgressBar* m_pProgressBar;
 };
+
+#endif	/* __ABILITYFORCC_H__ */

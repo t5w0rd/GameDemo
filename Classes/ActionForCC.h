@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ACTIONFORCC_H__
+#define	__ACTIONFORCC_H__
 
 
 class CCallFuncData;
@@ -152,3 +153,5 @@ protected:
 
     bool m_bFireFrom;
 };
+
+#endif  /* __ACTIONFORCC_H__ */

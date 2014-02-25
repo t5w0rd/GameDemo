@@ -5,8 +5,8 @@
  * Created on 2014年2月13日, 下午6:34
  */
 
-#ifndef __UNITDRAW_H__
-#define	__UNITDRAW_H__
+#ifndef __DRAW_H__
+#define	__DRAW_H__
 
 #include "Base.h"
 #include "MultiRefObject.h"
@@ -309,5 +309,5 @@ protected:
 };
 
 
-#endif	/* __UNITDRAW_H__ */
+#endif	/* __DRAW_H__ */
 

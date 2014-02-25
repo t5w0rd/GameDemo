@@ -1,4 +1,6 @@
-#pragma once
+#ifndef __GAMECONTROL_H__
+#define __GAMECONTROL_H__
+
 
 #include <cocos2d.h>
 
@@ -22,3 +24,5 @@ public:
     M_SYNTHESIZE_READONLY(CCAnimationCache*, m_ac, ac);
 };
 
+
+#endif  /* __GAMECONTROL_H__ */

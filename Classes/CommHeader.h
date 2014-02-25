@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMMHEADER_H__
+#define __COMMHEADER_H__
 
 
 #include <float.h>
@@ -27,4 +28,6 @@ USING_NS_CC;
 
 #define M_DEF_GC(var) CCGameControler* var = CCGameControler::sharedGameControler()
 #define M_BASE_Z 10000
+
+#endif  /* __COMMHEADER_H__ */
 

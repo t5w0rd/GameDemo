@@ -1,4 +1,5 @@
 APPNAME="GameDemo"
+NDK_ROOT=/cygdrive/f/Android/android-ndk-r9c
 
 # options
 

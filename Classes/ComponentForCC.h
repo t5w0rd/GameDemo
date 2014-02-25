@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __COMPONENTFORCC_H__
+#define __COMPONENTFORCC_H__
 
 
 class CCProgressBar : public CCNode
@@ -22,3 +23,5 @@ public:
     CCProgressTimer* m_pPt;
 };
 
+
+#endif  /* __COMPONENTFORCC_H__ */

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __DRAWFORCC_H__
+#define __DRAWFORCC_H__
 
 #include "Logic/Draw.h"
 
@@ -254,3 +255,5 @@ public:
     
 };
 
+
+#endif  /* __DRAWFORCC_H__ */
