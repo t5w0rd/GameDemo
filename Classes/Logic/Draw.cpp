@@ -474,11 +474,6 @@ int CUnitDraw2D::cmdCastSpell( int iActiveAbilityId, bool bObstinate )
 
 int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
 {
-    if (pAbility->isCoolingDown())
-    {
-        return -1;
-    }
-
     // 可以施展动画并作用
     if (isDoingAction(getCastActionId()))
     {
@@ -489,6 +484,11 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
     if (isDoingAction(getMoveActionId()))
     {
         stopMove();
+    }
+
+    if (pAbility->isCoolingDown())
+    {
+        return -1;
     }
 
     float spd = 1.0f;

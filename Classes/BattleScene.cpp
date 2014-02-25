@@ -131,14 +131,14 @@ void CBattleWorld::onInit()
     CAttackAct* atk = new CAttackAct(
         "NormalAttack",
         "¹¥»÷",
-        1.75,
+        10.75,
         CAttackValue(1,
         CAttackValue::kPhysical,
         30.0),
         0.5);
     atk->setCastMinRange(-3.0f);
-    atk->setCastRange(150.0f);
-    atk->setCastHorizontal();
+    atk->setCastRange(2500.0f);
+    //atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
 
