@@ -1636,25 +1636,6 @@ CAction* CUnit::getActionByTag(int iTag)
     return m_oActMgr.getActionByTag(iTag);
 }
 
-// CProjectile 
-CProjectile::CProjectile(const char* pRootId)
-: CUnit(pRootId)
-, m_iSourceUnit(0)
-, m_iStartUnit(0)
-, m_iTargetUnit(0)
-{
-    setDbgClassName("CProjectile");
-}
-
-CProjectile::~CProjectile()
-{
-}
-
-bool CProjectile::hasPenaltyType(PENALTY_FLAG_BIT ePenaltyType) const
-{
-    return (m_dwPenaltyFlags & (uint32_t)ePenaltyType) != 0;
-}
-
 // CWorld
 CWorld::CWorld()
 {
@@ -1681,6 +1662,14 @@ void CWorld::onDelUnit( CUnit* pUnit )
 {
 }
 
+void CWorld::onAddProjectile(CProjectile* pProjectile)
+{
+}
+
+void CWorld::onDelProjectile(CProjectile* pProjectile)
+{
+}
+
 void CWorld::init()
 {
     onInit();
@@ -1694,35 +1683,31 @@ void CWorld::addUnit(CUnit* pUnit)
     m_mapUnits.addObject(pUnit);
 }
 
-void CWorld::delUnit(int id)
+void CWorld::delUnit( int id, bool bRevivable /*= false*/ )
 {
     auto it = m_mapUnits.find(id);
     if (it == m_mapUnits.end())
     {
         return;
     }
-    
-    delUnit(it, false);
-}
 
-void CWorld::delUnit( MAP_UNITS::iterator it, bool bRevivable /*= false*/ )
-{
-    onDelUnit(it->second);
+    CUnit* pUnit = it->second;
 
-    CUnit* pDel = it->second;
+    onDelUnit(pUnit);
+
     if (bRevivable)
     {
         // 如果单位可以复活，拖进灵魂域
-        m_mapUnitsToRevive.addObject(pDel);
+        m_mapUnitsToRevive.addObject(pUnit);
     }
     else
     {
         // 如果不可以复活，该单位将不再拥有世界，清除该单位的所有CD中的技能
-        pDel->setWorld(NULL);
-        cleanAbilitysCD(pDel);
+        pUnit->setWorld(NULL);
+        cleanAbilitysCD(pUnit);
     }
 
-    pDel->release();
+    pUnit->release();
     m_mapUnits.erase(it);
 }
 
@@ -1874,8 +1859,22 @@ void CWorld::step(float dt)
         
         if (pUnit->isDead() && !pUnit->isDoingOr(CUnit::kDying))  // terrible code
         {
-            // 单位已经死亡
+            // 刚死，计划最后移除该单位
             pUnit->onDying();
+        }
+
+        M_MAP_NEXT;
+    }
+
+    M_MAP_FOREACH(m_mapProjectiles)
+    {
+        CProjectile* pProjectiles = M_MAP_EACH;
+        pProjectiles->step(dt);
+
+        if (pProjectiles->isDead() && !pProjectiles->isEffecting())  // terrible code
+        {
+            // 刚死，计划最后移除该抛射物
+            pProjectiles->die();
         }
 
         M_MAP_NEXT;
@@ -1903,4 +1902,46 @@ CAbility* CWorld::copyAbility(int id) const
     }
     
     return pAbility->copy()->dcast(pAbility);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
+}
+
+int CWorld::addTemplateProjectile( CProjectile* pProjectile )
+{
+    m_mapTemplateProjectiles.addObject(pProjectile);
+    return pProjectile->getId();
+}
+
+CProjectile* CWorld::copyProjectile(int id) const
+{
+    CProjectile* pProjectile = m_mapTemplateProjectiles.getObject(id);
+    if (pProjectile == NULL)
+    {
+        return NULL;
+    }
+
+    return pProjectile->copy()->dcast(pProjectile);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
+}
+
+void CWorld::addProjectile( CProjectile* pProjectile )
+{
+    onAddProjectile(pProjectile);
+
+    pProjectile->setWorld(this);
+    m_mapProjectiles.addObject(pProjectile);
+}
+
+
+void CWorld::delProjectile( int id )
+{
+    auto it = m_mapProjectiles.find(id);
+    if (it == m_mapProjectiles.end())
+    {
+        return;
+    }
+
+    CProjectile* pProjectile = it->second;
+    onDelProjectile(pProjectile);
+
+    pProjectile->setWorld(NULL);
+    pProjectile->release();
+    m_mapProjectiles.erase(it);
 }

@@ -325,8 +325,6 @@ void CAttackAct::onUnitCastAbility()
     }
     
     ad = o->attackAdv(ad, t);
-    
-    // 这里模拟命中
     if (ad == NULL)
     {
         return;
@@ -336,6 +334,31 @@ void CAttackAct::onUnitCastAbility()
     if (getTemplateProjectile() == 0)
     {
         t->damagedAdv(ad, o);
+    }
+    else
+    {
+        CWorld* w = o->getWorld();
+        CProjectile* p = NULL;
+        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+        assert(td != NULL);
+
+        w->copyProjectile(getTemplateProjectile())->dcast(p);
+        w->addProjectile(p);
+
+        switch (p->getFireType())
+        {
+        case CProjectile::kFireFollow:
+            p->setSourceUnit(o->getId());
+            p->setAttackData(ad);
+            CPoint from(d->getPosition() + CPoint(d->isFixed() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y));
+            float fDis = from.getDistance(td->getPosition() + CPoint(0.0f, td->getHalfOfHeight()));
+            p->fireFollow(
+                from,
+                t->getId(),
+                fDis / max(FLT_EPSILON, p->getMoveSpeed()),
+                p->getMaxHeightDelta());
+            break;
+        }
     }
 #else
     ad->retain();

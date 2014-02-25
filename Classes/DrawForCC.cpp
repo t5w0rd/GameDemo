@@ -7,6 +7,41 @@
 #include "Logic/MultiRefObject.h"
 
 
+// CCActionSprite
+
+void CCActionSprite::onMoveToDone( CCNode*, void* pCallFuncData )
+{
+    if (pCallFuncData == NULL)
+    {
+        return;
+    }
+
+    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
+    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
+}
+
+void CCActionSprite::onNotifyFrame( CCNode*, void* pCallFuncData )
+{
+    if (pCallFuncData == NULL)
+    {
+        return;
+    }
+
+    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
+    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
+}
+
+void CCActionSprite::onAnimationDone( CCNode*, void* pCallFuncData )
+{
+    if (pCallFuncData == NULL)
+    {
+        return;
+    }
+
+    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
+    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
+}
+
 // CCUnitSprite
 CCUnitSprite::CCUnitSprite()
     : m_pDraw(NULL)
@@ -33,39 +68,6 @@ bool CCUnitSprite::initWithDraw( CUnitDrawForCC* pDraw )
     return initWithSpriteFrame(sf);
 }
 
-void CCUnitSprite::onMoveToDone( CCNode*, void* pCallFuncData )
-{
-    if (pCallFuncData == NULL)
-    {
-        return;
-    }
-
-    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
-    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
-}
-
-void CCUnitSprite::onNotifyFrame( CCNode*, void* pCallFuncData )
-{
-    if (pCallFuncData == NULL)
-    {
-        return;
-    }
-
-    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
-    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
-}
-
-void CCUnitSprite::onAnimationDone( CCNode*, void* pCallFuncData )
-{
-    if (pCallFuncData == NULL)
-    {
-        return;
-    }
-
-    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
-    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
-}
-
 CCNode* CCUnitSprite::createShadow()
 {
     assert(m_pShadow == NULL);
@@ -88,9 +90,11 @@ void CCUnitSprite::setPosition( const CCPoint& roPos )
         if (layer != NULL)
         {
             CUnitDraw2D* d = DCAST(getDraw(), CUnitDraw2D*);
-            int z = M_BASE_Z + d->getFlightHeight() - roPos.y;
-            layer->reorderChild(this, z);
-            layer->reorderChild(getShadow(), z);
+            int z = M_BASE_Z + d->getHeight() - roPos.y;
+            setZOrder(z);
+            getShadow()->setZOrder(z);
+            //layer->reorderChild(this, z);
+            //layer->reorderChild(getShadow(), z);
         }
     }
 }
@@ -136,7 +140,7 @@ CUnitDrawForCC::~CUnitDrawForCC()
 
 int CUnitDrawForCC::doMoveTo( const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed /*= 1.0f*/ )
 {
-    CCPoint ccPos(rPos.x, rPos.y + getFlightHeight());
+    CCPoint ccPos(rPos.x, rPos.y + getHeight());
 
     CCActionInterval* act = CCMoveTo::create(fDuration, ccPos);
     act = CCSequence::createWithTwoActions(act,
@@ -299,24 +303,22 @@ CCUnitSprite* CUnitDrawForCC::createSprite()
 void CUnitDrawForCC::setPosition( const CPoint& p )
 {
     CCUnitSprite* sp = DCAST(getSprite(), CCUnitSprite*);
-    CCNode* sd = sp->getShadow();
-    sp->setPosition(ccp(p.x, p.y + getFlightHeight()));
-    //CUnitDraw2D::setPosition(p);
+    sp->setPosition(ccp(p.x, p.y + getHeight()));
 }
 
 CPoint& CUnitDrawForCC::getPosition()
 {
     const CCPoint& p = getSprite()->getPosition();
     m_oPosition.x = p.x;
-    m_oPosition.y = p.y - getFlightHeight();
+    m_oPosition.y = p.y - getHeight();
     return m_oPosition;
 }
 
-void CUnitDrawForCC::setFlightHeight( float fHeight )
+void CUnitDrawForCC::setHeight( float fHeight )
 {
     const CPoint& p = getPosition();
-    CUnitDraw2D::setFlightHeight(fHeight);
-    getSprite()->setPosition(ccp(p.x, p.y + getFlightHeight()));
+    CUnitDraw2D::setHeight(fHeight);
+    getSprite()->setPosition(ccp(p.x, p.y + getHeight()));
 }
 
 CUnitDrawForCC::FRM_INFO* CUnitDrawForCC::getFrameInfo( FRM_ID id )
@@ -327,7 +329,7 @@ CUnitDrawForCC::FRM_INFO* CUnitDrawForCC::getFrameInfo( FRM_ID id )
     return &it->second;
 }
 
-void CUnitDrawForCC::setGeometry( float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CCPoint& firePoint )
+void CUnitDrawForCC::setGeometry( float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CPoint& firePoint )
 {
     setHalfOfWidth(fHalfOfWidth);
     setHalfOfHeight(fHalfOfHeight);
@@ -483,6 +485,33 @@ void CUnitWorldForCC::onDelUnit( CUnit* pUnit )
     pLayer->removeChild(pSprite->getShadow(), true);
     pLayer->removeChild(pSprite, true);
 
+}
+
+void CUnitWorldForCC::onAddProjectile( CProjectile* pProjectile )
+{
+    CCLayer* pLayer = getLayer();
+    if (pLayer == NULL)
+    {
+        pLayer = createLayer();
+    }
+
+    CProjectileForCC* pProjectileForCC = DCAST(pProjectile, CProjectileForCC*);
+    CCProjectileSprite* pSprite = pProjectileForCC->getSprite();
+    if (pSprite == NULL)
+    {
+        pSprite = pProjectileForCC->createSprite();
+    }
+
+    pLayer->addChild(pSprite);
+}
+
+void CUnitWorldForCC::onDelProjectile( CProjectile* pProjectile )
+{
+    CProjectileForCC* pProjectileForCC = DCAST(pProjectile, CProjectileForCC*);
+    CCProjectileSprite* pSprite = pProjectileForCC->getSprite();
+    CCLayer* pLayer = getLayer();
+
+    pLayer->removeChild(pSprite, true);
 }
 
 void CUnitWorldForCC::setLayer( CCUnitLayer* pLayer )
@@ -726,4 +755,233 @@ int CCWinUnitLayer::touchActionIndex() const
         return m_iPendingAbilityOwner != 0 ? kUnitCastTarget : kClickPoint;
     }
     return m_iPendingAbilityOwner != 0 ? kUnitCastTarget : kNormalTouch;
+}
+
+// CCProjectileSprite
+CCProjectileSprite::CCProjectileSprite()
+    : m_pProjectile(NULL)
+{
+}
+
+bool CCProjectileSprite::initWithProjectile( CProjectileForCC* pProjectile )
+{
+    assert(pProjectile != NULL);
+
+    setProjectile(pProjectile);
+
+    CCSpriteFrame* sf = pProjectile->getFrameInfo(CProjectileForCC::kFrmDefault)->pSf;
+
+    return initWithSpriteFrame(sf);
+}
+
+void CCProjectileSprite::setPosition( const CCPoint& roPos )
+{
+    CCSprite::setPosition(roPos);
+    CProjectile* d = DCAST(getProjectile(), CProjectile*);
+    int z = M_BASE_Z + d->getHeight() - roPos.y;
+    setZOrder(z);
+}
+
+// CProjectileForCC
+CProjectileForCC::CProjectileForCC( const char* pName )
+    : CProjectile(pName)
+    , m_pSprite(NULL)
+    , m_oAnchorPoint(0.5f, 0.5f)
+{
+    memset(&m_stFrmInfo, 0, sizeof(m_stFrmInfo));
+}
+
+CProjectileForCC::~CProjectileForCC()
+{
+    if (m_pSprite != NULL)
+    {
+        m_pSprite->release();
+    }
+}
+
+CMultiRefObject* CProjectileForCC::copy() const
+{
+    CProjectileForCC* ret = new CProjectileForCC(getName());
+    ret->setMoveSpeed(getMoveSpeed());
+    ret->setMaxHeightDelta(getMaxHeightDelta());
+    ret->setSourceUnit(getSourceUnit());
+    ret->setPenaltyFlags(getPenaltyFlags());
+    ret->setFromToType(getFromToType());
+    ret->setFireType(getFireType());
+    ret->m_mapAniInfos = m_mapAniInfos;
+    ret->m_stFrmInfo = m_stFrmInfo;
+    if (getSprite() != NULL)
+    {
+        ret->createSprite();
+    }
+
+    // 如果需要复制位置、高度、AttackData等，应在这里添加代码
+
+    return ret;
+}
+
+void CProjectileForCC::setPosition( const CPoint& p )
+{
+    CCProjectileSprite* sp = DCAST(getSprite(), CCProjectileSprite*);
+    sp->setPosition(ccp(p.x, p.y + getHeight()));
+}
+
+CPoint& CProjectileForCC::getPosition()
+{
+    const CCPoint& p = getSprite()->getPosition();
+    m_oPosition.x = p.x;
+    m_oPosition.y = p.y - getHeight();
+    return m_oPosition;
+}
+
+void CProjectileForCC::setHeight( float fHeight )
+{
+    const CPoint& p = getPosition();
+    CProjectile::setHeight(fHeight);
+    getSprite()->setPosition(ccp(p.x, p.y + getHeight()));
+}
+
+int CProjectileForCC::doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone)
+{
+    CUnitDrawForCC* d = DCAST(pToUnit->getDraw(), CUnitDrawForCC*);
+    assert(d != NULL);
+
+    CCActionInterval* act = CCMoveToNode::create(fDuration, d->getSprite(), true, fMaxHeightDelta);
+    act = CCSequence::createWithTwoActions(act,
+        CCCallFuncNMultiObj::create(getSprite(),
+        callfuncND_selector(CCUnitSprite::onMoveToDone),
+        pOnMoveToDone));
+
+    int tag = CKeyGen::nextKey();
+    act->setTag(tag);
+
+    getSprite()->runAction(act);
+
+    return tag;
+}
+
+int CProjectileForCC::doMoveTo( const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone )
+{
+    CCPoint ccPos(rPos.x, rPos.y + getHeight());
+
+    CCActionInterval* act = CCMoveTo::create(fDuration, ccPos);
+    act = CCSequence::createWithTwoActions(act,
+        CCCallFuncNMultiObj::create(getSprite(),
+        callfuncND_selector(CCUnitSprite::onMoveToDone),
+        pOnMoveToDone));
+
+    int tag = CKeyGen::nextKey();
+    act->setTag(tag);
+
+    getSprite()->runAction(act);
+
+    return tag;
+}
+
+int CProjectileForCC::doAnimation( ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone)
+{
+    ANI_INFO* pAniInfo = getAnimationInfo(id);
+    assert(pAniInfo != NULL);
+
+    CCActionInterval* act = CCNotifyAnimate::create(pAniInfo->pAni,
+        pAniInfo->iNotifyFrameIndex,
+        getSprite(),
+        callfuncND_selector(CCUnitSprite::onNotifyFrame),
+        pOnNotifyFrame);
+
+    if (iRepeatTimes == INFINITE)
+    {
+        act = CCRepeatForever::create(act);
+    }
+    else
+    {
+        act = CCRepeat::create(act, iRepeatTimes);
+        act = CCSequence::createWithTwoActions(act,
+            CCCallFuncNMultiObj::create(getSprite(),
+            callfuncND_selector(CCUnitSprite::onAnimationDone),
+            pOnAnimationDone));
+    }
+
+    int tag = CKeyGen::nextKey();
+    act->setTag(tag);
+
+    getSprite()->runAction(act);
+
+    return tag;
+}
+
+void CProjectileForCC::stopAction( int tag )
+{
+    getSprite()->stopActionByTag(tag);
+}
+
+bool CProjectileForCC::isDoingAction( int id )
+{
+    return getSprite()->getActionByTag(id) != NULL;
+}
+
+void CProjectileForCC::stopAllActions()
+{
+    getSprite()->stopAllActions();
+}
+
+void CProjectileForCC::prepareAnimation( ANI_ID id, const char* pName, int iNotifyFrameIndex )
+{
+    M_DEF_GC(gc);
+
+    char szName[256];
+    sprintf(szName, "Units/%s/%s", getName(), pName);
+    CCAnimation* pAni = gc->getAnimation(szName);
+    if (pAni == NULL)
+    {
+        return;
+    }
+
+    ANI_INFO stAi = {};
+    stAi.iNotifyFrameIndex = iNotifyFrameIndex;
+    stAi.pAni = pAni;
+    m_mapAniInfos.insert(make_pair(id, stAi));
+}
+
+CProjectileForCC::ANI_INFO* CProjectileForCC::getAnimationInfo( ANI_ID id )
+{
+    auto it = m_mapAniInfos.find(id);
+    assert(it != m_mapAniInfos.end());
+
+    return &it->second;
+}
+
+void CProjectileForCC::prepareFrame( FRM_ID id, const char* pName )
+{
+    M_DEF_GC(gc);
+
+    char szName[256];
+    sprintf(szName, "Units/%s/%s", getName(), pName);
+    CCSpriteFrame* pSf = gc->getFrame(szName);
+    if (pSf == NULL)
+    {
+        return;
+    }
+
+    m_stFrmInfo.pSf = pSf;
+}
+
+CProjectileForCC::FRM_INFO* CProjectileForCC::getFrameInfo( FRM_ID id )
+{
+    return &m_stFrmInfo;
+}
+
+CCProjectileSprite* CProjectileForCC::createSprite()
+{
+    assert(m_pSprite == NULL);
+    char sz[256];
+    sprintf(sz, "Units/%s/default.png", getName());
+    m_pSprite = CCProjectileSprite::createWithProjectile(this);
+    assert(m_pSprite != NULL);
+
+    m_pSprite->retain();
+
+    m_pSprite->setAnchorPoint(getAnchorPoint());
+
+    return m_pSprite;
 }

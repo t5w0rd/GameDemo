@@ -4,7 +4,11 @@ import os
 import sys
 
 def renamedImageFiles(dir, test):
-    fs = os.listdir(dir)
+    try:
+        fs = os.listdir(dir)
+    except:
+        return 0
+        
     dirname = dir[dir.rfind('/') + 1:]
     fs.sort()
     c = 0
@@ -22,12 +26,16 @@ def renamedImageFiles(dir, test):
     return len(fs)
 
 if __name__ == "__main__":
-    dir = os.path.abspath(sys.argv[1])
-    renamedImageFiles(dir, True)
-    res = raw_input('Are your sure to rename the files?(y/N):')
-    
-    if len(res) > 0 and res[0].lower() == 'y':
-        count = renamedImageFiles(dir, False)
-        print '%s file(s) renamed.' % (count)
-    else:
-        print 'Operation canceled.'
+    for argv in sys.argv[1:]:
+        dir = os.path.abspath(argv)
+        res = renamedImageFiles(dir, True)
+        if res == 0:
+            continue
+            
+        res = raw_input('Are your sure to rename the files?(y/N):')
+        
+        if len(res) > 0 and res[0].lower() == 'y':
+            count = renamedImageFiles(dir, False)
+            print '%s file(s) renamed.' % (count)
+        else:
+            print 'Operation canceled.'

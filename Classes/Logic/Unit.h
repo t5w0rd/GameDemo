@@ -555,32 +555,6 @@ public:
     
 };
 
-class CProjectile : public CUnit
-{
-public:
-    CProjectile(const char* pRootId);
-    virtual ~CProjectile();
-
-    // 单位和抛射物非紧密联系，即单位死亡后抛射物不一定会释放，所以必须通过ID引用
-    M_SYNTHESIZE(int, m_iSourceUnit, SourceUnit);
-    M_SYNTHESIZE(int, m_iStartUnit, StartUnit);
-    M_SYNTHESIZE(int, m_iTargetUnit, TargetUnit);
-    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oTargetPoint, TargetPoint);
-    
-    enum PENALTY_FLAG_BIT
-    {
-        kOnDying = 1 << 0,
-        kOnContact = 1 << 1
-    };
-    
-    M_SYNTHESIZE(uint32_t, m_dwPenaltyFlags, PenaltyFlags);
-    bool hasPenaltyType(PENALTY_FLAG_BIT ePenaltyType) const;
-    
-    
-protected:
-
-};
-
 class CWorld : public CMultiRefObject
 {
 public:
@@ -591,14 +565,15 @@ public:
     virtual void onTick(float dt);
     virtual void onAddUnit(CUnit* pUnit);
     virtual void onDelUnit(CUnit* pUnit);
+    virtual void onAddProjectile(CProjectile* pProjectile);
+    virtual void onDelProjectile(CProjectile* pProjectile);
 
     void init();
     
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnits, Units);
     void addUnit(CUnit* pUnit);
-    void delUnit(MAP_UNITS::iterator it, bool bRevivable = false);
-    void delUnit(int id);
+    void delUnit(int id, bool bRevivable = false);
     CUnit* getUnit(int id) const;
     
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnitsToRevive, UnitsToRevive);
@@ -623,12 +598,18 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapTemplateAbilitys, TemplateAbilitys);
     int addTemplateAbility(CAbility* pAbility);
     void loadTemplateAbilitys();
-    
     CAbility* copyAbility(int id) const;
 
+    typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapTemplateProjectiles, TemplateProjectiles);
+    int addTemplateProjectile(CProjectile* pProjectile);
+    CProjectile* copyProjectile(int id) const;
+
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapProjectiles, Projectiles);
+    void addProjectile(CProjectile* pProjectile);
+    void delProjectile(int id);
+
 };
-
-
 
 
 

@@ -65,8 +65,18 @@ void CBattleWorld::onInit()
     CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
 
+    CUnit* u = NULL;
+    CUnitDrawForCC* ud = NULL;
+    CAbility* a = NULL;
+    int id = 0;
+
     M_DEF_GC(gc);
     gc->loadTexture("Global");
+
+    gc->loadTexture("Global");
+    gc->loadAnimation("Units/Ball1/move", "Units/Ball1/move", 0.1f);
+    gc->loadAnimation("Units/Ball1/die", "Units/Ball1/die", 0.1f);
+
     gc->loadAnimation("Units/Malik/move", "Units/Malik/move", 0.08f);
     gc->loadAnimation("Units/Malik/die", "Units/Malik/die", 0.18f);
     gc->loadAnimation("Units/Malik/act1", "Units/Malik/act1", 0.05f);
@@ -77,17 +87,14 @@ void CBattleWorld::onInit()
     gc->loadAnimation("Units/Matchstick/act2", "Units/Matchstick/act2", 0.08f);
     gc->loadAnimation("Units/Matchstick/act3", "Units/Matchstick/act3", 0.08f);
     gc->loadAnimation("Units/Matchstick/act4", "Units/Matchstick/act4", 0.08f);
-
-    CUnit* u = NULL;
-    CUnitDrawForCC* ud = NULL;
-
+    
 #if 0
     u = createUnit(kDemonHunter);
     u->getDraw()->dcast(ud);
     u->setForceByIndex(1);
     ud->setPosition(CPoint(vs.width * 1.2, vs.height * 1.2));
 
-    u = createUnit(kMountainKing);
+    u = createUnit(kBladeMaster);
     m_iHeroUnit = u->getId();
     u->getDraw()->dcast(ud);
     u->setForceByIndex(2);
@@ -95,9 +102,6 @@ void CBattleWorld::onInit()
 
     return;
 #endif
-
-    CAbility* a = NULL;
-    int id = 0;
 
     // 创建Draw
     ud = new CUnitDrawForCC("Malik");
@@ -107,7 +111,7 @@ void CBattleWorld::onInit()
     ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 4);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 4);
 
-    ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), ccp(10.0f, 10.0f));
+    ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), CPoint(10.0f, 10.0f));
 
     // 创建hero
     u = new CUnit("CUnit");
@@ -133,10 +137,23 @@ void CBattleWorld::onInit()
         30.0),
         0.5);
     atk->setCastMinRange(-3.0f);
-    atk->setCastRange(15.0f);
+    atk->setCastRange(150.0f);
     atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
+
+    CProjectileForCC* p = NULL;
+    p = new CProjectileForCC("Ball1");
+    p->setMoveSpeed(300.0f);
+    p->setMaxHeightDelta(100.0f);
+    p->setPenaltyFlags(CProjectile::kOnDying);
+    p->setFireType(CProjectile::kFireFollow);
+    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    id = addTemplateProjectile(p);
+    atk->setTemplateProjectile(id);
+
     u->addActiveAbility(atk);
 
     a = new CSpeedBuff(
@@ -218,8 +235,8 @@ void CBattleWorld::onInit()
     u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 2.0f, CExtraCoeff(0.5, 0)));
 
     ud->setBaseMoveSpeed(80.0f);
-    ud->setPosition(CPoint(vs.width * 1.4, vs.height * 1.2));
-    //ud->setFlightHeight(30);
+    ud->setPosition(CPoint(vs.width * 0.6, vs.height * 0.5));
+    //ud->setHeight(30);
 
     // create other units
     ud = new CUnitDrawForCC("Matchstick");
@@ -228,7 +245,7 @@ void CBattleWorld::onInit()
     ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 3);
     ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
-    ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
+    ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
 
     u = new CUnit("CUnit");
     u->setDraw(ud);
@@ -265,7 +282,7 @@ void CBattleWorld::onInit()
     u->addPassiveAbility(new CAttackBuffMakerPas("abm.DoubleAttack", "连击", 0.5f, id, true));
 
     ud->setBaseMoveSpeed(50.0f);
-    ud->setPosition(CPoint(vs.width * 1.2, vs.height * 1.2));
+    ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.5));
 
 }
 
@@ -286,7 +303,7 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
         ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
         ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
         ud->prepareAnimation(CUnitDrawForCC::kAniAct4, "act4", 1);
-        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
+        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
 
         u = new CUnit("CUnit");
         m_iHeroUnit = u->getId();
@@ -338,7 +355,7 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
         ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
         ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 3);
         ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
-        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), ccp(41.0f, 29.0f));
+        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
 
         u = new CUnit("CUnit");
         m_iHeroUnit = u->getId();
@@ -371,7 +388,7 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
         atk->addCastAnimation(CUnitDraw::kAniAct2);
         atk->setExAttackSpeed(CExtraCoeff(1.35f));
 
-        // Critical 15% x4
+        // Evade 30%
         a = new CEvadePas(
             "Evade30%",
             "Evade",
@@ -388,7 +405,7 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
         ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 4);
         ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 4);
 
-        ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), ccp(10.0f, 10.0f));
+        ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), CPoint(10.0f, 10.0f));
         
         u = new CUnit("CUnit");
         m_iHeroUnit = u->getId();
@@ -507,8 +524,9 @@ bool CCBattleSceneLayer::init()
         return false;
     }
 
-    setBackGroundSprite(CCSprite::create("BackgroundHD.png"));
+    setBackGroundSprite(CCSprite::create("Background.png"));
     setBufferEffectParam(0.9f, 10.0f, 0.1f);
+    setPosition(ccp(0, 0));
 
     CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
