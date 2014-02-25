@@ -62,7 +62,7 @@ public:
     virtual void onUnitDamagedDone(float fDamage, CUnit* pSource);
     virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
     
-    virtual void onUnitDestroyProjectile(CProjectile* pProjectile);
+    virtual void onUnitProjectileEffect(CProjectile* pProjectile);
     
 public:
     // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生
@@ -87,6 +87,8 @@ public:
     virtual bool cast();
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
+
+    void fireProjectile(CAttackData* pAttackData);
     
     // 限定施法参数
     M_SYNTHESIZE(CCommandTarget::TARGET_TYPE, m_eCastTargetType, CastTargetType);
@@ -149,6 +151,7 @@ public:
     virtual void onUnitDelAbility();
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
+    virtual void onUnitProjectileEffect(CProjectile* pProjectile);
         
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, AttackValue);
     M_SYNTHESIZE(float, m_fAttackValueRandomRange, AttackValueRandomRange);

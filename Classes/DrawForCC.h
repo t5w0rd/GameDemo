@@ -46,6 +46,8 @@ public:
     virtual void stopAllActions();
     virtual CCAction* getAction(int id);
 
+    virtual void setVisible(bool bVisible = true);
+
     virtual void setFrame(FRM_ID id);
 
     virtual void setFlipX(bool bFlipX = true);
@@ -212,12 +214,15 @@ public:
     virtual CPoint& getPosition();
     virtual void setHeight(float fHeight);
 
+    virtual int doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
     virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone);
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone);
     virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
     virtual void stopAction(int tag);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
+
+    virtual void setVisible(bool bVisible = true);
 
     struct ANI_INFO
     {

@@ -667,13 +667,13 @@ void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTrigger
     }
 }
 
-void CUnit::onDestroyProjectile(CProjectile* pProjectile)
+void CUnit::onProjectileEffect(CProjectile* pProjectile)
 {
-    triggerOnDestroyProjectile(pProjectile);
+    triggerOnProjectileEffect(pProjectile);
     
     if (m_pAI)
     {
-        m_pAI->onUnitDestroyProjectile(pProjectile);
+        m_pAI->onUnitProjectileEffect(pProjectile);
     }
 }
 
@@ -1136,9 +1136,9 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
         m_mapOnDamageTargetDoneTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDestroyProjectileTrigger)
+    if (dwTriggerFlags & kProjectileEffectTrigger)
     {
-        m_mapOnDestroyProjectileTriggerAbilitys.addObject(pAbility);
+        m_mapOnProjectileEffectTriggerAbilitys.addObject(pAbility);
     }
 }
 
@@ -1214,9 +1214,9 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
         m_mapOnDamageTargetDoneTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDestroyProjectileTrigger)
+    if (dwTriggerFlags & kProjectileEffectTrigger)
     {
-        m_mapOnDestroyProjectileTriggerAbilitys.delObject(id);
+        m_mapOnProjectileEffectTriggerAbilitys.delObject(id);
     }
 }
 
@@ -1414,13 +1414,13 @@ void CUnit::triggerOnDamageTargetDone(float fDamage, CUnit* pTarget)
     endTrigger();
 }
 
-void CUnit::triggerOnDestroyProjectile(CProjectile* pProjectile)
+void CUnit::triggerOnProjectileEffect(CProjectile* pProjectile)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDestroyProjectileTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnProjectileEffectTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAbility->onUnitDestroyProjectile(pProjectile);
+        pAbility->onUnitProjectileEffect(pProjectile);
         M_MAP_NEXT;
     }
     endTrigger();
@@ -1870,12 +1870,6 @@ void CWorld::step(float dt)
     {
         CProjectile* pProjectiles = M_MAP_EACH;
         pProjectiles->step(dt);
-
-        if (pProjectiles->isDead() && !pProjectiles->isEffecting())  // terrible code
-        {
-            // 刚死，计划最后移除该抛射物
-            pProjectiles->die();
-        }
 
         M_MAP_NEXT;
     }

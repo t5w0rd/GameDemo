@@ -76,6 +76,7 @@ void CBattleWorld::onInit()
     gc->loadTexture("Global");
     gc->loadAnimation("Units/Ball1/move", "Units/Ball1/move", 0.1f);
     gc->loadAnimation("Units/Ball1/die", "Units/Ball1/die", 0.1f);
+    gc->loadAnimation("Units/Lightning1/die", "Units/Lightning1/die", 0.05f);
 
     gc->loadAnimation("Units/Malik/move", "Units/Malik/move", 0.08f);
     gc->loadAnimation("Units/Malik/die", "Units/Malik/die", 0.18f);
@@ -124,25 +125,25 @@ void CBattleWorld::onInit()
 
     addUnit(u);
 
-    CStatusShowPas* hpb = new CStatusShowPas(
-        );
+    CStatusShowPas* hpb = new CStatusShowPas();
     u->addPassiveAbility(hpb, false);
 
     CAttackAct* atk = new CAttackAct(
         "NormalAttack",
         "¹¥»÷",
-        10.75,
+        1.75,
         CAttackValue(1,
         CAttackValue::kPhysical,
         30.0),
         0.5);
     atk->setCastMinRange(-3.0f);
-    atk->setCastRange(2500.0f);
-    //atk->setCastHorizontal();
+    atk->setCastRange(50.0f);
+    atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
 
     CProjectileForCC* p = NULL;
+#if 0
     p = new CProjectileForCC("Ball1");
     p->setMoveSpeed(300.0f);
     p->setMaxHeightDelta(100.0f);
@@ -150,6 +151,12 @@ void CBattleWorld::onInit()
     p->setFireType(CProjectile::kFireFollow);
     p->prepareAnimation(CProjectile::kAniMove, "move", -1);
     p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+#else
+    p = new CProjectileForCC("Lightning1");
+    p->setPenaltyFlags(CProjectile::kOnDying);
+    p->setFireType(CProjectile::kFireLink);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+#endif
     p->prepareFrame(CProjectile::kFrmDefault, "default");
     id = addTemplateProjectile(p);
     atk->setTemplateProjectile(id);

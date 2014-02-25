@@ -55,6 +55,7 @@ protected:
 };
 
 class CUnitDrawForCC;
+class CProjectileForCC;
 
 class CCMoveToNode : public CCActionInterval
 {
@@ -62,17 +63,24 @@ public:
     enum NODE_TYPE
     {
         kNormal,
-        kUnit,
+        kDraw,
         kProjectile
     };
 
 public:
     CCMoveToNode();
     virtual ~CCMoveToNode();
-    virtual bool init(float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta = 0.0f);
-    M_CREATE_FUNC_PARAM(CCMoveToNode, (float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta), fDuration, pToNode, bFixRotation, fMaxHeightDelta);
-    virtual void startWithTarget(CCNode *pTarget);
 
+    virtual bool initWithNode(float fDuration, CCNode* pToNode, bool bFixRotation = true, float fMaxHeightDelta = 0.0f);
+    M_CREATEWITH_FUNC_PARAM(Node, CCMoveToNode, (float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta), fDuration, pToNode, bFixRotation, fMaxHeightDelta);
+
+    virtual bool initWithDraw(float fDuration, CUnitDrawForCC* pToDraw, bool bFixRotation = true, float fMaxHeightDelta = 0.0f);
+    M_CREATEWITH_FUNC_PARAM(Draw, CCMoveToNode, (float fDuration, CUnitDrawForCC* pToDraw, bool bFixRotation, float fMaxHeightDelta), fDuration, pToDraw, bFixRotation, fMaxHeightDelta);
+
+    virtual bool initWithProjectile(float fDuration, CProjectileForCC* pToProjectile, bool bFixRotation = true, float fMaxHeightDelta = 0.0f);
+    M_CREATEWITH_FUNC_PARAM(Projectile, CCMoveToNode, (float fDuration, CProjectileForCC* pToProjectile, bool bFixRotation, float fMaxHeightDelta), fDuration, pToProjectile, bFixRotation, fMaxHeightDelta);
+
+    virtual void startWithTarget(CCNode *pTarget);
     virtual void update(float time);
     virtual CCObject* copyWithZone(CCZone* pZone);
 
@@ -80,7 +88,13 @@ protected:
     CCPoint m_oStartPos;
     CCPoint m_oEndPos;
     CCPoint m_oDeltaPos;
-    CCNode* m_pToNode;
+    union
+    {
+        CCNode * m_pToNode;
+        CUnitDrawForCC* m_pToDraw;
+        CProjectileForCC* m_pToProjectile;
+    };
+    
     NODE_TYPE m_eFromType;
     NODE_TYPE m_eToType;
     float m_fMinSpeed;
@@ -90,4 +104,51 @@ protected:
     float m_fMaxHeightDelta;
     float m_fA;
     bool m_bFixRotation;
+};
+
+class CCLink : public CCNotifyAnimate
+{
+public:
+    CCLink();
+    virtual ~CCLink();
+    virtual bool initWithDrawToDraw(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData, CUnitDrawForCC* pFromDraw, CUnitDrawForCC* pToDraw);
+    M_CREATEWITH_FUNC_PARAM(DrawToDraw, CCLink, (CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData, CUnitDrawForCC* pFromDraw, CUnitDrawForCC* pToDraw), pAnimation, iNotifyFrameIndex, pSelector, pCallback, pData, pFromDraw, pToDraw);
+    
+    virtual CCObject* copyWithZone(CCZone* pZone);
+
+    virtual void startWithTarget(CCNode *pTarget);
+    virtual void update(float t);
+
+    void fixTargetPosition(CCNode* pTarget);
+
+protected:
+    enum NODE_TYPE
+    {
+        kNormal,
+        kDraw,
+        kProjectile,
+        kPoint
+    };
+
+    NODE_TYPE m_eFromType;
+    NODE_TYPE m_eToType;
+    NODE_TYPE m_eTargetType;
+
+    union
+    {
+        CCNode* m_pFromNode;
+        CUnitDrawForCC* m_pFromDraw;
+        CProjectileForCC* m_pFromProjectile;
+    };
+    CCPoint m_oFromPoint;
+
+    union
+    {
+        CCNode* m_pToNode;
+        CUnitDrawForCC* m_pToDraw;
+        CProjectileForCC* m_pToProjectile;
+    };
+    CCPoint m_oToPoint;
+
+    bool m_bFireFrom;
 };

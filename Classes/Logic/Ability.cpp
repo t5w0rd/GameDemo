@@ -132,7 +132,7 @@ void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 {
 }
 
-void CAbility::onUnitDestroyProjectile(CProjectile* pProjectile)
+void CAbility::onUnitProjectileEffect(CProjectile* pProjectile)
 {
 }
 
@@ -208,6 +208,33 @@ void CActiveAbility::onUnitCastAbility()
 {
 }
 
+void CActiveAbility::fireProjectile(CAttackData* pAttackData)
+{
+    assert(getTemplateProjectile() != 0);
+
+    CUnit* o = getOwner();
+    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    CWorld* w = o->getWorld();
+    CProjectile* p = NULL;
+    w->copyProjectile(getTemplateProjectile())->dcast(p);
+    w->addProjectile(p);
+    p->setSourceUnit(o->getId());
+    p->setAttackData(pAttackData);
+
+    if (getCastTargetType() == CCommandTarget::kUnitTarget)
+    {
+        CUnit* t = w->getUnit(d->getCastTarget().getTargetUnit());
+        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+        assert(td != NULL);
+
+        p->setFromToType(CProjectile::kUnitToUnit);
+        p->setFromUnit(o->getId());
+        p->setToUnit(t->getId());
+
+        p->fire();
+    }
+}
+
 void CActiveAbility::addCastAnimation( int id )
 {
     m_vecCastAnis.push_back(id);
@@ -265,6 +292,7 @@ CAttackAct::CAttackAct(const char* pRootId, const char* pName, float fCoolDown, 
 , m_fAttackValueRandomRange(fAttackValueRandomRange)
 {
     setDbgClassName("CAttackAct");
+    setTriggerFlags(CUnit::kProjectileEffectTrigger);
 }
 
 CMultiRefObject* CAttackAct::copy() const
@@ -337,28 +365,7 @@ void CAttackAct::onUnitCastAbility()
     }
     else
     {
-        CWorld* w = o->getWorld();
-        CProjectile* p = NULL;
-        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-        assert(td != NULL);
-
-        w->copyProjectile(getTemplateProjectile())->dcast(p);
-        w->addProjectile(p);
-
-        switch (p->getFireType())
-        {
-        case CProjectile::kFireFollow:
-            p->setSourceUnit(o->getId());
-            p->setAttackData(ad);
-            CPoint from(d->getPosition() + CPoint(d->isFixed() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y));
-            float fDis = from.getDistance(td->getPosition() + CPoint(0.0f, td->getHalfOfHeight()));
-            p->fireFollow(
-                from,
-                t->getId(),
-                fDis / max(FLT_EPSILON, p->getMoveSpeed()),
-                p->getMaxHeightDelta());
-            break;
-        }
+        fireProjectile(ad);
     }
 #else
     ad->retain();
@@ -478,6 +485,20 @@ void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
     ad->release();
     
     delete pAi;
+}
+
+void CAttackAct::onUnitProjectileEffect( CProjectile* pProjectile )
+{
+    CUnit* o = getOwner();
+    if (pProjectile->getFromToType() == CProjectile::kUnitToUnit || pProjectile->getFromToType() == CProjectile::kPointToUnit)
+    {
+        CUnit* t = o->getUnit(pProjectile->getToUnit());
+        //CUnit* s = o->getUnit(pProjectile->getSourceUnit());
+        if (t != NULL)
+        {
+            t->damagedAdv(pProjectile->getAttackData(), o);
+        }
+    }
 }
 
 // CBuffMakerAct

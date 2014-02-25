@@ -143,10 +143,12 @@ int CUnitDrawForCC::doMoveTo( const CPoint& rPos, float fDuration, CCallFuncData
     CCPoint ccPos(rPos.x, rPos.y + getHeight());
 
     CCActionInterval* act = CCMoveTo::create(fDuration, ccPos);
-    act = CCSequence::createWithTwoActions(act,
-                                           CCCallFuncNMultiObj::create(getSprite(),
-                                                                       callfuncND_selector(CCUnitSprite::onMoveToDone),
-                                                                       pOnMoveToDone));
+    act = CCSequence::createWithTwoActions(
+        act,
+        CCCallFuncNMultiObj::create(
+            getSprite(),
+            callfuncND_selector(CCUnitSprite::onMoveToDone),
+            pOnMoveToDone));
 
     CCSpeed* spd = CCSpeed::create(act, fSpeed);
     int tag = CKeyGen::nextKey();
@@ -162,11 +164,12 @@ int CUnitDrawForCC::doAnimation( ANI_ID id, CCallFuncData* pOnNotifyFrame, int i
     ANI_INFO* pAniInfo = getAnimationInfo(id);
     assert(pAniInfo != NULL);
 
-    CCActionInterval* act = CCNotifyAnimate::create(pAniInfo->pAni,
-                                                   pAniInfo->iNotifyFrameIndex,
-                                                   getSprite(),
-                                                   callfuncND_selector(CCUnitSprite::onNotifyFrame),
-                                                   pOnNotifyFrame);
+    CCActionInterval* act = CCNotifyAnimate::create(
+        pAniInfo->pAni,
+        pAniInfo->iNotifyFrameIndex,
+        getSprite(),
+        callfuncND_selector(CCUnitSprite::onNotifyFrame),
+        pOnNotifyFrame);
 
     if (iRepeatTimes == INFINITE)
     {
@@ -175,10 +178,12 @@ int CUnitDrawForCC::doAnimation( ANI_ID id, CCallFuncData* pOnNotifyFrame, int i
     else
     {
         act = CCRepeat::create(act, iRepeatTimes);
-        act = CCSequence::createWithTwoActions(act,
-                                               CCCallFuncNMultiObj::create(getSprite(),
-                                                                           callfuncND_selector(CCUnitSprite::onAnimationDone),
-                                                                           pOnAnimationDone));
+        act = CCSequence::createWithTwoActions(
+            act,
+            CCCallFuncNMultiObj::create(
+            getSprite(),
+            callfuncND_selector(CCUnitSprite::onAnimationDone),
+            pOnAnimationDone));
     }
 
     CCSpeed* spd = CCSpeed::create(act, fSpeed);
@@ -219,6 +224,11 @@ void CUnitDrawForCC::stopAllActions()
 CCAction* CUnitDrawForCC::getAction( int id )
 {
     return getSprite()->getActionByTag(id);
+}
+
+void CUnitDrawForCC::setVisible( bool bVisible /*= true*/ )
+{
+    getSprite()->setVisible(bVisible);
 }
 
 void CUnitDrawForCC::setFrame( FRM_ID id )
@@ -464,7 +474,7 @@ void CUnitWorldForCC::onAddUnit( CUnit* pUnit )
     {
         pLayer = createLayer();
     }
-    
+
     CUnitDrawForCC* pDraw = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
     CCUnitSprite* pSprite = pDraw->getSprite();
     if (pSprite == NULL)
@@ -841,16 +851,61 @@ void CProjectileForCC::setHeight( float fHeight )
     getSprite()->setPosition(ccp(p.x, p.y + getHeight()));
 }
 
+int CProjectileForCC::doLinkUnitToUnit( CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone )
+{
+    ANI_INFO* pAniInfo = getAnimationInfo(id);
+    assert(pAniInfo != NULL);
+
+    CUnitDrawForCC* d = DCAST(pFromUnit->getDraw(), CUnitDrawForCC*);
+    assert(d != NULL);
+
+    CUnitDrawForCC* td = DCAST(pToUnit->getDraw(), CUnitDrawForCC*);
+    assert(td != NULL);
+
+    CCActionInterval* act = CCLink::createWithDrawToDraw(
+        pAniInfo->pAni,
+        pAniInfo->iNotifyFrameIndex,
+        getSprite(),
+        callfuncND_selector(CCProjectileSprite::onNotifyFrame),
+        pOnNotifyFrame,
+        d,
+        td);
+
+    if (iRepeatTimes == INFINITE)
+    {
+        act = CCRepeatForever::create(act);
+    }
+    else
+    {
+        act = CCRepeat::create(act, iRepeatTimes);
+        act = CCSequence::createWithTwoActions(
+            act,
+            CCCallFuncNMultiObj::create(
+                getSprite(),
+                callfuncND_selector(CCProjectileSprite::onAnimationDone),
+                pOnAnimationDone));
+    }
+
+    int tag = CKeyGen::nextKey();
+    act->setTag(tag);
+
+    getSprite()->runAction(act);
+
+    return tag;
+}
+
 int CProjectileForCC::doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone)
 {
     CUnitDrawForCC* d = DCAST(pToUnit->getDraw(), CUnitDrawForCC*);
     assert(d != NULL);
 
-    CCActionInterval* act = CCMoveToNode::create(fDuration, d->getSprite(), true, fMaxHeightDelta);
-    act = CCSequence::createWithTwoActions(act,
-        CCCallFuncNMultiObj::create(getSprite(),
-        callfuncND_selector(CCUnitSprite::onMoveToDone),
-        pOnMoveToDone));
+    CCActionInterval* act = CCMoveToNode::createWithDraw(fDuration, d, true, fMaxHeightDelta);
+    act = CCSequence::createWithTwoActions(
+        act,
+        CCCallFuncNMultiObj::create(
+            getSprite(),
+            callfuncND_selector(CCProjectileSprite::onMoveToDone),
+            pOnMoveToDone));
 
     int tag = CKeyGen::nextKey();
     act->setTag(tag);
@@ -865,10 +920,12 @@ int CProjectileForCC::doMoveTo( const CPoint& rPos, float fDuration, CCallFuncDa
     CCPoint ccPos(rPos.x, rPos.y + getHeight());
 
     CCActionInterval* act = CCMoveTo::create(fDuration, ccPos);
-    act = CCSequence::createWithTwoActions(act,
-        CCCallFuncNMultiObj::create(getSprite(),
-        callfuncND_selector(CCUnitSprite::onMoveToDone),
-        pOnMoveToDone));
+    act = CCSequence::createWithTwoActions(
+        act,
+        CCCallFuncNMultiObj::create(
+            getSprite(),
+            callfuncND_selector(CCProjectileSprite::onMoveToDone),
+            pOnMoveToDone));
 
     int tag = CKeyGen::nextKey();
     act->setTag(tag);
@@ -883,10 +940,11 @@ int CProjectileForCC::doAnimation( ANI_ID id, CCallFuncData* pOnNotifyFrame, int
     ANI_INFO* pAniInfo = getAnimationInfo(id);
     assert(pAniInfo != NULL);
 
-    CCActionInterval* act = CCNotifyAnimate::create(pAniInfo->pAni,
+    CCActionInterval* act = CCNotifyAnimate::create(
+        pAniInfo->pAni,
         pAniInfo->iNotifyFrameIndex,
         getSprite(),
-        callfuncND_selector(CCUnitSprite::onNotifyFrame),
+        callfuncND_selector(CCProjectileSprite::onNotifyFrame),
         pOnNotifyFrame);
 
     if (iRepeatTimes == INFINITE)
@@ -896,9 +954,11 @@ int CProjectileForCC::doAnimation( ANI_ID id, CCallFuncData* pOnNotifyFrame, int
     else
     {
         act = CCRepeat::create(act, iRepeatTimes);
-        act = CCSequence::createWithTwoActions(act,
-            CCCallFuncNMultiObj::create(getSprite(),
-            callfuncND_selector(CCUnitSprite::onAnimationDone),
+        act = CCSequence::createWithTwoActions(
+            act,
+            CCCallFuncNMultiObj::create(
+            getSprite(),
+            callfuncND_selector(CCProjectileSprite::onAnimationDone),
             pOnAnimationDone));
     }
 
@@ -923,6 +983,11 @@ bool CProjectileForCC::isDoingAction( int id )
 void CProjectileForCC::stopAllActions()
 {
     getSprite()->stopAllActions();
+}
+
+void CProjectileForCC::setVisible( bool bVisible /*= true*/ )
+{
+    getSprite()->setVisible(bVisible);
 }
 
 void CProjectileForCC::prepareAnimation( ANI_ID id, const char* pName, int iNotifyFrameIndex )

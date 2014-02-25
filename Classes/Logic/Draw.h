@@ -52,6 +52,8 @@ public:
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
+    
+    virtual void setVisible(bool bVisible = true);
 
     virtual void onUnitDying();
     virtual void onUnitTick(float dt);
@@ -218,9 +220,6 @@ public:
 
     M_SYNTHESIZE(CWorld*, m_pWorld, World);
 
-    M_SYNTHESIZE_BOOL(Dead);
-    M_SYNTHESIZE_BOOL(Effecting);
-
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oPosition, Position);
     M_SYNTHESIZE(float, m_fHeight, Height);
 
@@ -233,12 +232,15 @@ public:
         kAniDie
     };
 
+    virtual int doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
     virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone);
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone);
     virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
     virtual void stopAction(int tag);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
+
+    virtual void setVisible(bool bVisible = true);
 
     enum FRM_ID
     {
@@ -285,20 +287,22 @@ public:
     enum FIRE_TYPE
     {
         kFireFollow,
-        kFireChain,
+        kFireLink,
         kFireStraight
     };
 
     M_SYNTHESIZE(FIRE_TYPE, m_eFireType, FireType);
 
-    virtual void fireFollow(const CPoint& rFromPoint, int iToUnit, float fDuration, float fMaxHeightDelta);
+    void fireFollow(const CPoint& rFromPoint, int iToUnit, float fDuration, float fMaxHeightDelta);
     
-    virtual void fireChain(const CPoint& rFromPoint, int iToUnit);  // 点-单位
-    virtual void fireChain(const CPoint& rFromPoint, const CPoint& rToPoint);  // 点-点
-    virtual void fireChain(int iFromUnit, int iToUnit);  // 单位-单位
-    virtual void fireChain(int iFromUnit, const CPoint& rToPoint);  // 单位-点
+    void fireLink(const CPoint& rFromPoint, int iToUnit);  // 点-单位
+    void fireLink(const CPoint& rFromPoint, const CPoint& rToPoint);  // 点-点
+    void fireLink(int iFromUnit, int iToUnit);  // 单位-单位
+    void fireLink(int iFromUnit, const CPoint& rToPoint);  // 单位-点
 
-    virtual void fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint, float fDuration, float fMaxHeightDelta);
+    void fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint, float fDuration, float fMaxHeightDelta);
+
+    void fire();
 
 protected:
 

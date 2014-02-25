@@ -11,6 +11,8 @@
 
 #define DCAST(var, type) dynamic_cast<type>(var)
 
+#define M_RADIANS_TO_DEGREES(__ANGLE__) ((__ANGLE__) * 57.29577951f) // PI * 180
+
 #define M_SYNTHESIZE_READONLY(varType, varName, funName)\
 protected: varType varName;\
 public: inline virtual varType get##funName(void) const { return varName; }
