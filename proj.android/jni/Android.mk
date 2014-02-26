@@ -24,7 +24,6 @@ LOCAL_SRC_FILES := gamedemo/main.cpp \
 ../../Classes/Logic/MultiRefObject.cpp \
 ../../Classes/Logic/Unit.cpp
 
-
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes
 
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos2dx_static

@@ -1,5 +1,5 @@
 APPNAME="GameDemo"
-NDK_ROOT=/cygdrive/f/adt-bundle-windows-x86_64-20131030/ndk
+NDK_ROOT=F:/adt-bundle-windows-x86_64-20131030/ndk
 
 # options
 
