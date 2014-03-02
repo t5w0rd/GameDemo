@@ -2,7 +2,7 @@
 #define	__ABILITYFORCC_H__
 
 
-#include "Logic/Ability.h"
+#include "Ability.h"
 
 
 class CCProgressBar;

@@ -26,6 +26,8 @@ public:
     
     virtual const char* getDbgTag() const;
     
+    M_SYNTHESIZE_STR(ScriptHandler);
+    
     const char* getRootId() const;
     M_SYNTHESIZE_STR(Name);
     
@@ -118,7 +120,7 @@ public:
 
 };
 
-class CBuffAbility : public CPassiveAbility
+class CBuffAbility : public CAbility
 {
 public:
     CBuffAbility(const char* pRootId, const char* pName, float fDuration, bool bStackable);
@@ -153,14 +155,13 @@ public:
     virtual void onUnitCastAbility();
     virtual void onUnitProjectileEffect(CProjectile* pProjectile);
         
-    M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, AttackValue);
+    M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, BaseAttack);
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_aoExAttackValue, ExAttackValue);
     M_SYNTHESIZE(float, m_fAttackValueRandomRange, AttackValueRandomRange);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValueRandomRange, ExAttackValueRandomRange);
     
-    float getBaseAttackValue(CAttackValue::ATTACK_TYPE eAttackType) const;
-    void setExAttackValue(CAttackValue::ATTACK_TYPE eAttackType, const CExtraCoeff& roExAttackValue);
-    const CExtraCoeff& getExAttackValue(CAttackValue::ATTACK_TYPE eAttackType) const;
-    float getRealAttackValue(CAttackValue::ATTACK_TYPE eAttackType, bool bUseRandomRange = true) const;
+    float getBaseAttackValue() const;
+    float getRealAttackValue(bool bUseRandomRange = true) const;
     
     virtual float getCoolDown() const;
     void setBaseAttackInterval(float fAttackInterval);
@@ -176,7 +177,6 @@ public:
     void updateAttackSpeed();
     
 protected:
-    CExtraCoeff m_aoExAttackValue[CAttackValue::CONST_MAX_ATTACK_TYPE];
     CExtraCoeff m_oExAttackSpeed;
     
 protected:
@@ -206,6 +206,13 @@ protected:
 };
 
 /////////////////////// PassiveAbilitys & BuffAbilitys ///////////////////////
+class CLuaAbilityPas : public CPassiveAbility
+{
+public:
+    CLuaAbilityPas(const char* pRootId, const char* pName, float fCoolDown = 0);
+    virtual CMultiRefObject* copy() const;
+    
+};
 
 // 光环，范围型BUFF附加器
 class CAuraPas : public CPassiveAbility

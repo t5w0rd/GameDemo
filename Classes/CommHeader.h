@@ -9,8 +9,8 @@
 USING_NS_CC;
 
 
-#include "Logic\CommInc.h"
-#include "Logic\Unit.h"
+#include "CommInc.h"
+#include "Unit.h"
 
 
 #define CC_SINGLETON(name) \

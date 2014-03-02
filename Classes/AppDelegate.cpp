@@ -29,7 +29,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setContentScaleFactor(1.0);
 
     // create a scene. it's an autorelease object
-    CCScene *pScene = CCBattleSceneLayer::scene();
+    CCScene* pScene = CCBattleSceneLayer::scene();
+    if (pScene == NULL)
+    {
+        return false;
+    }
 
     // run
     pDirector->runWithScene(pScene);

@@ -12,14 +12,43 @@
 #include "Application.h"
 #include "Item.h"
 #include "Draw.h"
+#include "LuaBinding.h"
 
+
+#ifdef DEBUG_FOR_CC
 // for cocos2d
 #include "../CommHeader.h"
 #include "../DrawForCC.h"
+#endif
 
+
+// CTypeValue
+CTypeValue::CTypeValue(int type, float value)
+: m_iType(type)
+, m_fValue(value)
+{
+}
+
+void CTypeValue::set(int type, float value)
+{
+    m_iType = type;
+    m_fValue = value;
+}
 
 // CAttackValue
-const char* CAttackValue::CONST_ARR_NAME[CONST_MAX_ATTACK_TYPE][CONST_MAX_NAME_INDEX] = {
+CAttackValue::CAttackValue(ATTACK_TYPE type, float value)
+: CTypeValue(type, value)
+{
+}
+
+// CArmorValue
+CArmorValue::CArmorValue(ARMOR_TYPE type, float value)
+: CTypeValue(type, value)
+{
+}
+
+// CMultiAttackValue
+const char* CMultiAttackValue::CONST_ARR_NAME[CAttackValue::CONST_MAX_ATTACK_TYPE][CAttackValue::CONST_MAX_NAME_INDEX] = {
 #if 1
     { "kPhysical",  "物理" },
     { "kMagical",   "魔法" },
@@ -33,12 +62,12 @@ const char* CAttackValue::CONST_ARR_NAME[CONST_MAX_ATTACK_TYPE][CONST_MAX_NAME_I
 #endif
 };
 
-CAttackValue::CAttackValue()
+CMultiAttackValue::CMultiAttackValue()
 {
     setValueZero();
 }
 
-CAttackValue::CAttackValue(int iCount, ATTACK_TYPE eType1, float fValue1, ...)
+CMultiAttackValue::CMultiAttackValue(int iCount, CAttackValue::ATTACK_TYPE eType1, float fValue1, ...)
 {
     setValueZero();
     setValue(eType1, fValue1);
@@ -46,53 +75,53 @@ CAttackValue::CAttackValue(int iCount, ATTACK_TYPE eType1, float fValue1, ...)
     va_start(argv, fValue1);
     for (int i = 1; i < iCount; ++i)
     {
-        eType1 = (ATTACK_TYPE)va_arg(argv, int);
+        eType1 = (CAttackValue::ATTACK_TYPE)va_arg(argv, int);
         fValue1 = (float)va_arg(argv, double);
         setValue(eType1, fValue1);
     }
     va_end(argv);
 }
 
-float CAttackValue::getValue(ATTACK_TYPE eType) const
+float CMultiAttackValue::getValue(CAttackValue::ATTACK_TYPE eType) const
 {
-    if (eType > CONST_MAX_ATTACK_TYPE)
+    if (eType > CAttackValue::CONST_MAX_ATTACK_TYPE)
     {
         return 0;
     }
     return m_afValues[eType];
 }
 
-void CAttackValue::setValue(ATTACK_TYPE eType, float fValue)
+void CMultiAttackValue::setValue(CAttackValue::ATTACK_TYPE eType, float fValue)
 {
-    if (eType > CONST_MAX_ATTACK_TYPE)
+    if (eType > CAttackValue::CONST_MAX_ATTACK_TYPE)
     {
         return;
     }
     m_afValues[eType] = fValue;
 }
 
-void CAttackValue::setAttackValue(const CAttackValue& roAttackValue)
+void CMultiAttackValue::setAttackValue(const CMultiAttackValue& roAttackValue)
 {
     memmove(m_afValues, roAttackValue.m_afValues, sizeof(m_afValues));
 }
 
-void CAttackValue::setValueZero()
+void CMultiAttackValue::setValueZero()
 {
     memset(m_afValues, 0, sizeof(m_afValues));
 }
 
-const char* CAttackValue::getName(ATTACK_TYPE eType, int iIndex)
+const char* CMultiAttackValue::getName(CAttackValue::ATTACK_TYPE eType, int iIndex)
 {
     return CONST_ARR_NAME[eType][iIndex];
 }
 
-const CAttackValue& CAttackValue::operator=(const CAttackValue& roAttackValue)
+const CMultiAttackValue& CMultiAttackValue::operator=(const CMultiAttackValue& roAttackValue)
 {
     setAttackValue(roAttackValue);
     return *this;
 }
 
-const char* CArmorValue::CONST_ARR_NAME[CONST_MAX_ARMOR_TYPE][CONST_MAX_NAME_INDEX] = {
+const char* CMultiArmorValue::CONST_ARR_NAME[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_NAME_INDEX] = {
 #if 1
     { "Normal",     "普通" },
     { "Heavy",      "重装" },
@@ -110,13 +139,13 @@ const char* CArmorValue::CONST_ARR_NAME[CONST_MAX_ARMOR_TYPE][CONST_MAX_NAME_IND
 #endif
 };
 
-// CArmorValue
-CArmorValue::CArmorValue()
+// CMultiArmorValue
+CMultiArmorValue::CMultiArmorValue()
 {
     setValueZero();
 }
 
-CArmorValue::CArmorValue(int iCount, ARMOR_TYPE eType1, float fValue1, ...)
+CMultiArmorValue::CMultiArmorValue(int iCount, CArmorValue::ARMOR_TYPE eType1, float fValue1, ...)
 {
     setValueZero();
     setValue(eType1, fValue1);
@@ -124,47 +153,47 @@ CArmorValue::CArmorValue(int iCount, ARMOR_TYPE eType1, float fValue1, ...)
     va_start(argv, fValue1);
     for (int i = 1; i < iCount; ++i)
     {
-        eType1 = (ARMOR_TYPE)va_arg(argv, int);
+        eType1 = (CArmorValue::ARMOR_TYPE)va_arg(argv, int);
         fValue1 = (float)va_arg(argv, double);
         setValue(eType1, fValue1);
     }
     va_end(argv);
 }
 
-float CArmorValue::getValue(ARMOR_TYPE eType) const
+float CMultiArmorValue::getValue(CArmorValue::ARMOR_TYPE eType) const
 {
-    if (eType > CONST_MAX_ARMOR_TYPE)
+    if (eType > CArmorValue::CONST_MAX_ARMOR_TYPE)
     {
         return 0;
     }
     return m_afValues[eType];
 }
 
-void CArmorValue::setValue(ARMOR_TYPE eType, float fValue)
+void CMultiArmorValue::setValue(CArmorValue::ARMOR_TYPE eType, float fValue)
 {
-    if (eType > CONST_MAX_ARMOR_TYPE)
+    if (eType > CArmorValue::CONST_MAX_ARMOR_TYPE)
     {
         return;
     }
     m_afValues[eType] = fValue;
 }
 
-void CArmorValue::setArmorValue(const CArmorValue& roArmorValue)
+void CMultiArmorValue::setArmorValue(const CMultiArmorValue& roArmorValue)
 {
     memmove(m_afValues, roArmorValue.m_afValues, sizeof(m_afValues));
 }
 
-void CArmorValue::setValueZero()
+void CMultiArmorValue::setValueZero()
 {
     memset(m_afValues, 0, sizeof(m_afValues));
 }
 
-const char* CArmorValue::getName(ARMOR_TYPE eType, int iIndex)
+const char* CMultiArmorValue::getName(CArmorValue::ARMOR_TYPE eType, int iIndex)
 {
     return CONST_ARR_NAME[eType][iIndex];
 }
 
-const CArmorValue& CArmorValue::operator=(const CArmorValue& roArmorValue)
+const CMultiArmorValue& CMultiArmorValue::operator=(const CMultiArmorValue& roArmorValue)
 {
     setArmorValue(roArmorValue);
     return *this;
@@ -207,7 +236,7 @@ CAttackData::CAttackData()
 
 void CAttackData::setAttackValue(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue)
 {
-    m_oAtkVal.setValue(eAttackType, fAttackValue);
+    m_oAtkVal.set(eAttackType, fAttackValue);
 }
 
 void CAttackData::addAttackBuff(const CAttackBuff& rAttackBuff)
@@ -406,8 +435,6 @@ CUnit::CUnit(const char* pRootId)
 , m_iAttackAbilityId(0)
 , m_iTriggerRefCount(0)
 , m_iSuspendRef(0)
-, m_eArmorType(CArmorValue::kNormal)
-, m_fBaseArmorValue(0.0f)
 , m_bRevivable(false)
 , m_dwDoingFlags(0)
 , m_pDraw(NULL)
@@ -534,8 +561,6 @@ void CUnit::onDying()
 
 void CUnit::onDead()
 {
-    CUnitDraw* d = getDraw();
-
     triggerOnDead();
 
     if (m_pAI)
@@ -642,6 +667,7 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
         m_pAI->onUnitDamagedDone(fDamage, pSource);
     }
 
+#ifdef DEBUG_FOR_CC
     // for cocos2dx
     CUnitDrawForCC* ccd = NULL;
     getDraw()->dcast(ccd);
@@ -652,6 +678,7 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
         sprintf(sz, "-%d", toInt(fDamage));
         ccd->addBattleTip(sz, "Comic Book", 18, ccc3(255, 0, 0));
     }
+#endif
 }
 
 void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTriggerMask)
@@ -792,12 +819,11 @@ void CUnit::damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerM
     onDamaged(pAttack, pSource, dwTriggerMask);
 
     //transformDamageByAttribute(pAttack);
-    float fDamage = 0;
-    for (int i = 0; i < CAttackValue::CONST_MAX_ATTACK_TYPE; i++)
-    {
-        fDamage += calcDamage((CAttackValue::ATTACK_TYPE)i, pAttack->getAttackValue().getValue((CAttackValue::ATTACK_TYPE)i), m_eArmorType, getRealArmorValue());
-    }
-
+    float fDamage = calcDamage((CAttackValue::ATTACK_TYPE)pAttack->getAttackValue().getType(),
+                               pAttack->getAttackValue().getValue(),
+                               (CArmorValue::ARMOR_TYPE)getBaseArmor().getType(),
+                               getRealArmorValue());
+    
     damagedBot(fDamage, pSource, dwTriggerMask);
     
     M_VEC_FOREACH(pAttack->getAttackBuffs())
@@ -1459,7 +1485,7 @@ void CUnit::resume()
 
 float CUnit::getRealArmorValue() const
 {
-    return m_oExArmorValue.getValue(m_fBaseArmorValue);
+    return m_oExArmorValue.getValue(m_oBaseArmor.getValue());
 }
 
 void CUnit::setPackageSize(int iSize)
@@ -1638,16 +1664,50 @@ CAction* CUnit::getActionByTag(int iTag)
 
 // CWorld
 CWorld::CWorld()
+: m_pLua(NULL)
+, m_iControlUnit(0)
 {
     setDbgClassName("CWorld");
+    
+    m_pLua = luaL_newstate();
+    luaL_openlibs(m_pLua);
 }
 
 CWorld::~CWorld()
 {
+    lua_close(m_pLua);
 }
 
-void CWorld::onInit()
+bool CWorld::loadScript(const char* pName)
 {
+    std::string code("require \"");
+    code.append(pName);
+    code.append("\"");
+    int nRet = luaL_dostring(m_pLua, code.c_str());
+    if (nRet != 0)
+    {
+        LOG(lua_tostring(m_pLua, -1));
+        lua_pop(m_pLua, 1);
+
+        return false;
+    }
+    
+    return true;
+}
+
+void CWorld::addScriptSearchPath( const char* pPath )
+{
+    lua_getglobal(m_pLua, "package");
+    lua_getfield(m_pLua, -1, "path");
+    const char* cur_path =  lua_tostring(m_pLua, -1);
+    lua_pushfstring(m_pLua, "%s;%s/?.lua", cur_path, pPath);
+    lua_setfield(m_pLua, -3, "path");
+    lua_pop(m_pLua, 2);
+}
+
+bool CWorld::onInit()
+{
+    return true;
 }
 
 void CWorld::onTick(float dt)
@@ -1670,9 +1730,9 @@ void CWorld::onDelProjectile(CProjectile* pProjectile)
 {
 }
 
-void CWorld::init()
+bool CWorld::init()
 {
-    onInit();
+    return onInit();
 }
 
 void CWorld::addUnit(CUnit* pUnit)

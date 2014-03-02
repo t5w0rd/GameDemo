@@ -11,11 +11,21 @@
 #include "MultiRefObject.h"
 #include "Level.h"
 #include "Base.h"
+#include "CommDef.h"
 // 禁止在此处包含Unit.h文件
 
 
-// 攻击数值，由多种类型的攻击组合而成
-class CAttackValue
+class CTypeValue
+{
+public:
+    CTypeValue(int type, float value);
+    M_SYNTHESIZE(int, m_iType, Type);
+    M_SYNTHESIZE(float, m_fValue, Value);
+    
+    void set(int type, float value);
+};
+
+class CAttackValue : public CTypeValue
 {
 public:
     static const int CONST_MAX_ATTACK_TYPE = 4;
@@ -34,27 +44,10 @@ public:
         kCnName = CONST_MAX_NAME_INDEX - 1
     };
     
-    static const char* CONST_ARR_NAME[CONST_MAX_ATTACK_TYPE][CONST_MAX_NAME_INDEX];
-    typedef float ARR_ATTACK_VALUES[CONST_MAX_ATTACK_TYPE];
-    
-public:
-    CAttackValue();
-    CAttackValue(int iCount, ATTACK_TYPE eType1, float fValue1, ...);
-    
-    float getValue(ATTACK_TYPE eType) const;
-    void setValue(ATTACK_TYPE eType, float fValue);
-    void setAttackValue(const CAttackValue& roAttackValue);
-    void setValueZero();
-    
-    static const char* getName(ATTACK_TYPE eType, int iIndex = 0);
-    
-    const CAttackValue& operator=(const CAttackValue& roAttackValue);
-    
-    ARR_ATTACK_VALUES m_afValues;
+    CAttackValue(ATTACK_TYPE type = kPhysical, float value = 0.0f);
 };
 
-// 护甲数值，由多种类型的护甲组合而成
-class CArmorValue
+class CArmorValue : public CTypeValue
 {
 public:
     static const int CONST_MAX_ARMOR_TYPE = 6;
@@ -75,21 +68,52 @@ public:
         kCnName = CONST_MAX_NAME_INDEX - 1
     };
     
-    static const char* CONST_ARR_NAME[CONST_MAX_ARMOR_TYPE][CONST_MAX_NAME_INDEX];
-    typedef float ARR_ARMOR_VALUES[CONST_MAX_ARMOR_TYPE];
+    CArmorValue(ARMOR_TYPE type = kNormal, float value = 0.0f);
+};
+
+
+// 攻击数值，由多种类型的攻击组合而成
+class CMultiAttackValue
+{
+public:
+    static const char* CONST_ARR_NAME[CAttackValue::CONST_MAX_ATTACK_TYPE][CAttackValue::CONST_MAX_NAME_INDEX];
+    typedef float ARR_ATTACK_VALUES[CAttackValue::CONST_MAX_ATTACK_TYPE];
     
 public:
-    CArmorValue();
-    CArmorValue(int iCount, ARMOR_TYPE eType1, float fValue1, ...);
+    CMultiAttackValue();
+    CMultiAttackValue(int iCount, CAttackValue::ATTACK_TYPE eType1, float fValue1, ...);
     
-    float getValue(ARMOR_TYPE eType) const;
-    void setValue(ARMOR_TYPE eType, float fValue);
-    void setArmorValue(const CArmorValue& roArmorValue);
+    float getValue(CAttackValue::ATTACK_TYPE eType) const;
+    void setValue(CAttackValue::ATTACK_TYPE eType, float fValue);
+    void setAttackValue(const CMultiAttackValue& roAttackValue);
     void setValueZero();
     
-    static const char* getName(ARMOR_TYPE eType, int iIndex = 0);
+    static const char* getName(CAttackValue::ATTACK_TYPE eType, int iIndex = 0);
     
-    const CArmorValue& operator=(const CArmorValue& roArmorValue);
+    const CMultiAttackValue& operator=(const CMultiAttackValue& roAttackValue);
+    
+    ARR_ATTACK_VALUES m_afValues;
+};
+
+// 护甲数值，由多种类型的护甲组合而成
+class CMultiArmorValue
+{
+public:
+    static const char* CONST_ARR_NAME[CArmorValue::CONST_MAX_ARMOR_TYPE][CArmorValue::CONST_MAX_NAME_INDEX];
+    typedef float ARR_ARMOR_VALUES[CArmorValue::CONST_MAX_ARMOR_TYPE];
+    
+public:
+    CMultiArmorValue();
+    CMultiArmorValue(int iCount, CArmorValue::ARMOR_TYPE eType1, float fValue1, ...);
+    
+    float getValue(CArmorValue::ARMOR_TYPE eType) const;
+    void setValue(CArmorValue::ARMOR_TYPE eType, float fValue);
+    void setArmorValue(const CMultiArmorValue& roArmorValue);
+    void setValueZero();
+    
+    static const char* getName(CArmorValue::ARMOR_TYPE eType, int iIndex = 0);
+    
+    const CMultiArmorValue& operator=(const CMultiArmorValue& roArmorValue);
     
     ARR_ARMOR_VALUES m_afValues;
 };
@@ -483,8 +507,7 @@ public:
     virtual void suspend();
     virtual void resume();
     
-     M_SYNTHESIZE(CArmorValue::ARMOR_TYPE, m_eArmorType, ArmorType);
-    M_SYNTHESIZE(float, m_fBaseArmorValue, BaseArmorValue);
+    M_SYNTHESIZE_PASS_BY_REF(CArmorValue, m_oBaseArmor, BaseArmor);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExArmorValue, ExArmorValue)
     float getRealArmorValue() const;
     
@@ -560,15 +583,22 @@ class CWorld : public CMultiRefObject
 public:
     CWorld();
     virtual ~CWorld();
+    
+    M_SYNTHESIZE_STR(ScriptHandler);
+    M_SYNTHESIZE_READONLY(lua_State*, m_pLua, LuaHandle);
+    void addScriptSearchPath(const char* pPath);
+    bool loadScript(const char* pName);
 
-    virtual void onInit();
+    virtual bool onInit();
     virtual void onTick(float dt);
     virtual void onAddUnit(CUnit* pUnit);
     virtual void onDelUnit(CUnit* pUnit);
     virtual void onAddProjectile(CProjectile* pProjectile);
     virtual void onDelProjectile(CProjectile* pProjectile);
 
-    void init();
+    bool init();
+
+    M_SYNTHESIZE(int, m_iControlUnit, ControlUnit);
     
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnits, Units);

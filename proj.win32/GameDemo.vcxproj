@@ -65,8 +65,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\cocos2dx;$(ProjectDir)..\..\..\cocos2dx\include;$(ProjectDir)..\..\..\cocos2dx\kazmath\include;$(ProjectDir)..\..\..\cocos2dx\platform\win32;$(ProjectDir)..\..\..\cocos2dx\platform\third_party\win32;$(ProjectDir)..\..\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)..\..\..\external;$(ProjectDir)..\..\..\external\chipmunk\include\chipmunk;$(ProjectDir)..\..\..\CocosDenshion\include;$(ProjectDir)..\..\..\extensions;..\Classes;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\cocos2dx;$(ProjectDir)..\..\..\cocos2dx\include;$(ProjectDir)..\..\..\cocos2dx\kazmath\include;$(ProjectDir)..\..\..\cocos2dx\platform\win32;$(ProjectDir)..\..\..\cocos2dx\platform\third_party\win32;$(ProjectDir)..\..\..\cocos2dx\platform\third_party\win32\OGLES;$(ProjectDir)..\..\..\external;$(ProjectDir)..\..\..\external\chipmunk\include\chipmunk;$(ProjectDir)..\..\..\CocosDenshion\include;$(ProjectDir)..\..\..\extensions;..\Classes;..\Classes\Logic;..\Classes\lua;..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;DEBUG_FOR_CC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -139,10 +139,44 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\Logic\Draw.cpp" />
     <ClCompile Include="..\Classes\Logic\Item.cpp" />
     <ClCompile Include="..\Classes\Logic\Level.cpp" />
+    <ClCompile Include="..\Classes\Logic\LuaBinding.cpp" />
     <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp" />
     <ClCompile Include="..\Classes\Logic\Ability.cpp" />
     <ClCompile Include="..\Classes\Logic\Unit.cpp" />
     <ClCompile Include="..\Classes\DrawForCC.cpp" />
+    <ClCompile Include="..\Classes\LuaBindingForCC.cpp" />
+    <ClCompile Include="..\Classes\lua\lapi.c" />
+    <ClCompile Include="..\Classes\lua\lauxlib.c" />
+    <ClCompile Include="..\Classes\lua\lbaselib.c" />
+    <ClCompile Include="..\Classes\lua\lbitlib.c" />
+    <ClCompile Include="..\Classes\lua\lcode.c" />
+    <ClCompile Include="..\Classes\lua\lcorolib.c" />
+    <ClCompile Include="..\Classes\lua\lctype.c" />
+    <ClCompile Include="..\Classes\lua\ldblib.c" />
+    <ClCompile Include="..\Classes\lua\ldebug.c" />
+    <ClCompile Include="..\Classes\lua\ldo.c" />
+    <ClCompile Include="..\Classes\lua\ldump.c" />
+    <ClCompile Include="..\Classes\lua\lfunc.c" />
+    <ClCompile Include="..\Classes\lua\lgc.c" />
+    <ClCompile Include="..\Classes\lua\linit.c" />
+    <ClCompile Include="..\Classes\lua\liolib.c" />
+    <ClCompile Include="..\Classes\lua\llex.c" />
+    <ClCompile Include="..\Classes\lua\lmathlib.c" />
+    <ClCompile Include="..\Classes\lua\lmem.c" />
+    <ClCompile Include="..\Classes\lua\loadlib.c" />
+    <ClCompile Include="..\Classes\lua\lobject.c" />
+    <ClCompile Include="..\Classes\lua\lopcodes.c" />
+    <ClCompile Include="..\Classes\lua\loslib.c" />
+    <ClCompile Include="..\Classes\lua\lparser.c" />
+    <ClCompile Include="..\Classes\lua\lstate.c" />
+    <ClCompile Include="..\Classes\lua\lstring.c" />
+    <ClCompile Include="..\Classes\lua\lstrlib.c" />
+    <ClCompile Include="..\Classes\lua\ltable.c" />
+    <ClCompile Include="..\Classes\lua\ltablib.c" />
+    <ClCompile Include="..\Classes\lua\ltm.c" />
+    <ClCompile Include="..\Classes\lua\lundump.c" />
+    <ClCompile Include="..\Classes\lua\lvm.c" />
+    <ClCompile Include="..\Classes\lua\lzio.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,10 +195,37 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\Logic\Draw.h" />
     <ClInclude Include="..\Classes\Logic\Item.h" />
     <ClInclude Include="..\Classes\Logic\Level.h" />
+    <ClInclude Include="..\Classes\Logic\LuaBinding.h" />
     <ClInclude Include="..\Classes\Logic\MultiRefObject.h" />
     <ClInclude Include="..\Classes\Logic\Ability.h" />
     <ClInclude Include="..\Classes\Logic\Unit.h" />
     <ClInclude Include="..\Classes\DrawForCC.h" />
+    <ClInclude Include="..\Classes\LuaBindingForCC.h" />
+    <ClInclude Include="..\Classes\lua\lapi.h" />
+    <ClInclude Include="..\Classes\lua\lauxlib.h" />
+    <ClInclude Include="..\Classes\lua\lcode.h" />
+    <ClInclude Include="..\Classes\lua\lctype.h" />
+    <ClInclude Include="..\Classes\lua\ldebug.h" />
+    <ClInclude Include="..\Classes\lua\ldo.h" />
+    <ClInclude Include="..\Classes\lua\lfunc.h" />
+    <ClInclude Include="..\Classes\lua\lgc.h" />
+    <ClInclude Include="..\Classes\lua\llex.h" />
+    <ClInclude Include="..\Classes\lua\llimits.h" />
+    <ClInclude Include="..\Classes\lua\lmem.h" />
+    <ClInclude Include="..\Classes\lua\lobject.h" />
+    <ClInclude Include="..\Classes\lua\lopcodes.h" />
+    <ClInclude Include="..\Classes\lua\lparser.h" />
+    <ClInclude Include="..\Classes\lua\lstate.h" />
+    <ClInclude Include="..\Classes\lua\lstring.h" />
+    <ClInclude Include="..\Classes\lua\ltable.h" />
+    <ClInclude Include="..\Classes\lua\ltm.h" />
+    <ClInclude Include="..\Classes\lua\lua.h" />
+    <ClInclude Include="..\Classes\lua\lua.hpp" />
+    <ClInclude Include="..\Classes\lua\luaconf.h" />
+    <ClInclude Include="..\Classes\lua\lualib.h" />
+    <ClInclude Include="..\Classes\lua\lundump.h" />
+    <ClInclude Include="..\Classes\lua\lvm.h" />
+    <ClInclude Include="..\Classes\lua\lzio.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +249,9 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
       <Project>{207bc7a9-ccf1-4f2f-a04d-45f72242ae25}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\script\world.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

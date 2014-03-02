@@ -1,7 +1,7 @@
 #include "CommHeader.h"
 
-#include "Logic/Unit.h"
-#include "Logic/Ability.h"
+#include "Unit.h"
+#include "Ability.h"
 #include "AbilityForCC.h"
 #include "ComponentForCC.h"
 #include "DrawForCC.h"

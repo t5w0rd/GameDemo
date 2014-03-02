@@ -537,7 +537,7 @@ bool CUnitDraw2D::checkCastTargetDistance( CActiveAbility* pAbility, const CPoin
         break;
     }
 
-    if (pAbility->isCastHorizontal() && abs(roPos.y - roPos2.y) > CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE)
+    if (pAbility->isCastHorizontal() && fabs(roPos.y - roPos2.y) > CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE)
     {
         return false;
     }
@@ -569,8 +569,6 @@ void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
         float fA = -(roPos1 - roPos2).getAngle();
         move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis), oMp);
     }
-
-    CUnit* u = getUnit();
 }
 
 void CUnitDraw2D::onCastEffect( CMultiRefObject* pDraw, CCallFuncData* pData )
@@ -684,8 +682,6 @@ void CUnitDraw2D::onDyingDone( CMultiRefObject* pDraw, CCallFuncData* pData )
         return;
     }
 
-    CWorld::MAP_UNITS& units = w->getUnits();
-
     u->endDoing(0xFFFFFFFF);
     int id = u->getId();
     w->delUnit(id, u->isRevivable());
@@ -732,7 +728,6 @@ CUnitGroup::CUnitGroup( CWorld* pWorld, int iMaxCount /*= INFINITE*/, FUNC_UNIT_
     M_MAP_FOREACH(units)
     {
         CUnit* u = M_MAP_EACH;
-        CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
         if ((int)m_vecUnits.size() >= iMaxCount)
         {
             return;
@@ -929,7 +924,6 @@ void CProjectile::onMoveDone( CMultiRefObject* pProjectile, CCallFuncData* pData
 
 void CProjectile::onEffect( CMultiRefObject* pProjectile, CCallFuncData* pData )
 {
-    CAttackData* ad = getAttackData();
     CWorld* w = getWorld();
     assert(w != NULL);
     CUnit* s = w->getUnit(getSourceUnit());
@@ -1122,6 +1116,9 @@ void CProjectile::fire()
             case kUnitToUnit:
                 fireLink(getFromUnit(), getToUnit());
                 break;
+                
+            default:
+                assert(false);
             }
             
         }

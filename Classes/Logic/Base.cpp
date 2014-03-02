@@ -13,7 +13,7 @@
 // CApplicationLog
 void CDebugLog::Log(const char* pFormat, ...)
 {
-    return;
+    //return;
     //fprintf(stdout, "[%03.2f] ", CLogicApplication::sharedApplication()->getElapsedTime());
     va_list argv;
     va_start(argv, pFormat);

@@ -1,7 +1,7 @@
 #ifndef __DRAWFORCC_H__
 #define __DRAWFORCC_H__
 
-#include "Logic/Draw.h"
+#include "Draw.h"
 
 
 class CUnitDrawForCC;

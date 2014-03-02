@@ -11,10 +11,14 @@
 #include "MultiRefObject.h"
 #include "Application.h"
 #include "Draw.h"
+#include "LuaBinding.h"
 
+
+#ifdef DEBUG_FOR_CC
 // for cocos2d
 #include "../CommHeader.h"
 #include "../DrawForCC.h"
+#endif
 
 
 // CAbility
@@ -62,10 +66,6 @@ void CAbility::coolDown()
     getOwner()->abilityCD(this);
 }
 
-void CAbility::onUnitAddAbility()
-{
-}
-
 void CAbility::setInterval(float fInterval)
 {
     if (fInterval <= FLT_EPSILON)
@@ -78,62 +78,139 @@ void CAbility::setInterval(float fInterval)
     m_fInterval = fInterval;
 }
 
+void CAbility::onUnitAddAbility()
+{
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
+    
+    CUnit* o = getOwner();
+    CWorld* w = o->getWorld();
+    lua_State* l = w->getLuaHandle();
+    
+    lua_getglobal(l, getScriptHandler());
+    int a = lua_gettop(l);
+    
+    lua_getfield(l, a, "onUnitAddAbility");
+    lua_getcopy(l, a);
+    lua_call(l, 1, 0);
+    
+    lua_pop(l, 1);
+}
+
 void CAbility::onUnitDelAbility()
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitAbilityReady()
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitRevive()
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitDying()
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitDead()
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitChangeHp(float fChanged)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitTick(float dt)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitInterval()
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return pAttack;
+    }
     return pAttack;
 }
 
 CAttackData* CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return pAttack;
+    }
     return pAttack;
 }
 
 void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onUnitProjectileEffect(CProjectile* pProjectile)
 {
+    if (m_sScriptHandler.empty())
+    {
+        return;
+    }
 }
 
 void CAbility::onAddToUnit(CUnit* pOwner)
@@ -263,7 +340,7 @@ CPassiveAbility::~CPassiveAbility()
 
 // CBuffAbility
 CBuffAbility::CBuffAbility(const char* pRootId, const char* pName, float fDuration, bool bStackable)
-: CPassiveAbility(pRootId, pName, 0.0f)
+: CAbility(pRootId, pName, 0.0f)
 , m_fDuration(fDuration)
 , m_fElapsed(0.0f)
 , m_bStackable(bStackable)
@@ -347,10 +424,7 @@ void CAttackAct::onUnitCastAbility()
     }
     
     CAttackData* ad = new CAttackData();
-    for (int i = 0; i < CAttackValue::CONST_MAX_ATTACK_TYPE; ++i)
-    {
-        ad->setAttackValue((CAttackValue::ATTACK_TYPE)i, getRealAttackValue((CAttackValue::ATTACK_TYPE)i));
-    }
+    ad->setAttackValue((CAttackValue::ATTACK_TYPE)getBaseAttack().getType(), getRealAttackValue());
     
     ad = o->attackAdv(ad, t);
     if (ad == NULL)
@@ -376,32 +450,22 @@ void CAttackAct::onUnitCastAbility()
 #endif
 }
 
-float CAttackAct::getBaseAttackValue(CAttackValue::ATTACK_TYPE eAttackType) const
+float CAttackAct::getBaseAttackValue() const
 {
-    return m_oAttackValue.getValue(eAttackType);
+    return m_oAttackValue.getValue();
 }
 
-void CAttackAct::setExAttackValue(CAttackValue::ATTACK_TYPE eAttackType, const CExtraCoeff& roExAttackValue)
-{
-    m_aoExAttackValue[eAttackType] = roExAttackValue;
-}
-
-const CExtraCoeff& CAttackAct::getExAttackValue(CAttackValue::ATTACK_TYPE eAttackType) const
-{
-    return m_aoExAttackValue[eAttackType];
-}
-
-float CAttackAct::getRealAttackValue(CAttackValue::ATTACK_TYPE eAttackType, bool bUseRandomRange) const
+float CAttackAct::getRealAttackValue(bool bUseRandomRange) const
 {
     if (bUseRandomRange)
     {
         float fAttackValueRandomRange = m_oExAttackValueRandomRange.getValue(m_fAttackValueRandomRange);
         if (fAttackValueRandomRange > 0.001)
         {
-            return m_aoExAttackValue[eAttackType].getValue(m_oAttackValue.getValue(eAttackType)) * (1 - fAttackValueRandomRange * 0.5 + (rand() % (int)(fAttackValueRandomRange * 1000)) * 0.001);
+            return m_aoExAttackValue.getValue(m_oAttackValue.getValue()) * (1 - fAttackValueRandomRange * 0.5 + (rand() % (int)(fAttackValueRandomRange * 1000)) * 0.001);
         }
     }
-    return m_aoExAttackValue[eAttackType].getValue(m_oAttackValue.getValue(eAttackType));
+    return m_aoExAttackValue.getValue(m_oAttackValue.getValue());
 }
 
 float CAttackAct::getCoolDown() const
@@ -620,6 +684,20 @@ void CBuffMakerAct::onUnitCastAbility()
     }
 }
 
+// CLuaAbilityPas
+CLuaAbilityPas::CLuaAbilityPas(const char* pRootId, const char* pName, float fCoolDown)
+: CPassiveAbility(pRootId, pName, fCoolDown)
+{
+    setDbgClassName("CLuaAbilityPas");
+}
+
+CMultiRefObject* CLuaAbilityPas::copy() const
+{
+    CLuaAbilityPas* ret = new CLuaAbilityPas(getRootId(), getName(), m_fCoolDown);
+    ret->setScriptHandler(getScriptHandler());
+    return ret;
+}
+
 // CAuraPas
 CAuraPas::CAuraPas(const char* pRootId, const char* pName, float fInterval, int iTemplateBuff, float fRange, uint32_t dwEffectiveTypeFlags)
 : CPassiveAbility(pRootId, pName)
@@ -717,14 +795,7 @@ CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit
         return pAttack;
     }
     
-    for (int i = 0; i < CAttackValue::CONST_MAX_ATTACK_TYPE; ++i)
-    {
-        const CAttackValue& rAtkVal = pAttack->getAttackValue();
-        if (rAtkVal.getValue((CAttackValue::ATTACK_TYPE)i) > FLT_EPSILON)
-        {
-            pAttack->setAttackValue((CAttackValue::ATTACK_TYPE)i, m_oExAttackValue.getValue(rAtkVal.getValue((CAttackValue::ATTACK_TYPE)i)));
-        }
-    }
+    pAttack->getAttackValue().setValue(m_oExAttackValue.getValue(pAttack->getAttackValue().getValue()));
     
     if (m_iTemplateBuff != 0)
     {
@@ -770,6 +841,7 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     o->setHp(o->getHp() + fDtHp);
     LOG("%s恢复%d点HP", o->getName(), toInt(fDtHp));
 
+#ifdef DEBUG_FOR_CC
     // for cocos2d
     CUnit* u = getOwner();
     CUnitDrawForCC* d = NULL;
@@ -781,6 +853,7 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
         sprintf(sz, "+%d", toInt(fDtHp));
         d->addBattleTip(sz, "Comic Book", 18, ccc3(113, 205, 44));
     }
+#endif
 }
 
 // CStunBuff
@@ -805,6 +878,7 @@ void CStunBuff::onUnitAddAbility()
     
     LOG("%s%s中", o->getName(), getName());
 
+#ifdef DEBUG_FOR_CC
     // for cocos2d
     CUnitDrawForCC* ccd = NULL;
     o->getDraw()->dcast(ccd);
@@ -815,6 +889,7 @@ void CStunBuff::onUnitAddAbility()
         sprintf(sz, "%s!", getName());
         ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
     }
+#endif
 }
 
 void CStunBuff::onUnitDelAbility()
@@ -892,6 +967,7 @@ void CSpeedBuff::onUnitAddAbility()
     
     LOG("%s攻击速度变慢(%.1fs->%.1fs)\n", o->getName(), fTestOld, pAtkAct->getRealAttackInterval());
 
+#ifdef DEBUG_FOR_CC
     // for cocos2d
     CUnitDrawForCC* ccd = NULL;
     o->getDraw()->dcast(ccd);
@@ -902,6 +978,7 @@ void CSpeedBuff::onUnitAddAbility()
         sprintf(sz, "%s!", getName());
         ccd->addBattleTip(sz, "Comic Book", 18, ccc3(72, 130, 200));
     }
+#endif
 }
 
 void CSpeedBuff::onUnitDelAbility()
@@ -1020,6 +1097,7 @@ void CRebirthPas::onUnitDead()
         w->reviveUnit(o->getId(), fHp);
     }
 
+#ifdef DEBUG_FOR_CC
     // for cocos2d
     CUnitDrawForCC* ccd = NULL;
     o->getDraw()->dcast(ccd);
@@ -1030,6 +1108,7 @@ void CRebirthPas::onUnitDead()
         sprintf(sz, "%s!", getName());
         ccd->addBattleTip(sz, "Comic Book", 18, ccc3(217, 47, 111));
     }
+#endif
 
     LOG("Doing: %u", o->getDoingFlags());
 }
@@ -1061,6 +1140,7 @@ CAttackData* CEvadePas::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
 
         LOG("%s%s了%s的攻击", getOwner()->getName(), getName(), pSource->getName());
 
+#ifdef DEBUG_FOR_CC
         // for cocos2d
         CUnitDrawForCC* ccd = NULL;
         o->getDraw()->dcast(ccd);
@@ -1071,6 +1151,7 @@ CAttackData* CEvadePas::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
             sprintf(sz, "%s!", getName());
             ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
         }
+#endif
         return NULL;
     }
 
@@ -1097,8 +1178,9 @@ CAttackData* CEvadeBuff::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
     {
         LOG("%s%s了%s的攻击", getOwner()->getName(), getName(), pSource->getName());
 
-        CUnit* o = getOwner();
+#ifdef DEBUG_FOR_CC
         // for cocos2d
+        CUnit* o = getOwner();
         CUnitDrawForCC* ccd = NULL;
         o->getDraw()->dcast(ccd);
 
@@ -1109,7 +1191,8 @@ CAttackData* CEvadeBuff::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
             ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
         }
         return NULL;
+#endif
     }
-
+    
     return pAttack;
 }

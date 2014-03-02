@@ -1,12 +1,14 @@
 #include "CommHeader.h"
 
-#include "Logic/Unit.h"
-#include "Logic/Ability.h"
+#include "Unit.h"
+#include "Ability.h"
 #include "BattleScene.h"
 #include "GameControl.h"
 #include "DrawForCC.h"
 #include "AbilityForCC.h"
 #include "ActionForCC.h"
+#include "LuaBinding.h"
+#include "LuaBindingForCC.h"
 
 
 class CMyAI : public CDefaultAI
@@ -51,7 +53,6 @@ public:
 
 // CBattleWorld
 CBattleWorld::CBattleWorld()
-    : m_iHeroUnit(0)
 {
 }
 
@@ -60,7 +61,7 @@ CBattleWorld::~CBattleWorld()
 
 }
 
-void CBattleWorld::onInit()
+bool CBattleWorld::onInit()
 {
     CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
@@ -73,7 +74,6 @@ void CBattleWorld::onInit()
     M_DEF_GC(gc);
     gc->loadTexture("Global");
 
-    gc->loadTexture("Global");
     gc->loadAnimation("Units/Ball1/move", "Units/Ball1/move", 0.1f);
     gc->loadAnimation("Units/Ball1/die", "Units/Ball1/die", 0.1f);
     gc->loadAnimation("Units/Lightning1/die", "Units/Lightning1/die", 0.05f);
@@ -96,7 +96,7 @@ void CBattleWorld::onInit()
     ud->setPosition(CPoint(vs.width * 1.2, vs.height * 1.2));
 
     u = createUnit(kBladeMaster);
-    m_iHeroUnit = u->getId();
+    m_iControlUnit = u->getId();
     u->getDraw()->dcast(ud);
     u->setForceByIndex(2);
     ud->setPosition(CPoint(vs.width * 1.5, vs.height * 1.2));
@@ -106,17 +106,17 @@ void CBattleWorld::onInit()
 
     // ´´½¨Draw
     ud = new CUnitDrawForCC("Malik");
-    ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
-    ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
-    ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
-    ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 4);
-    ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 4);
+    ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
+    ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+    ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4);
+    ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 4);
 
     ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), CPoint(10.0f, 10.0f));
 
     // ´´½¨hero
     u = new CUnit("CUnit");
-    m_iHeroUnit = u->getId();
+    m_iControlUnit = u->getId();
     u->setDraw(ud);
     u->setName("Malik");
     u->setMaxHp(500.0f);
@@ -132,9 +132,7 @@ void CBattleWorld::onInit()
         "NormalAttack",
         "¹¥»÷",
         1.75,
-        CAttackValue(1,
-        CAttackValue::kPhysical,
-        30.0),
+        CAttackValue(CAttackValue::kPhysical, 30.0),
         0.5);
     atk->setCastMinRange(-3.0f);
     atk->setCastRange(50.0f);
@@ -205,7 +203,6 @@ void CBattleWorld::onInit()
         true,
         0.3f);
     id = addTemplateAbility(a);
-    u->addPassiveAbility(id);
 
     a = new CEvadePas(
         "EvadePas",
@@ -247,11 +244,11 @@ void CBattleWorld::onInit()
 
     // create other units
     ud = new CUnitDrawForCC("Matchstick");
-    ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
-    ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
-    ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
-    ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 3);
-    ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
+    ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
+    ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+    ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 3);
+    ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 2);
     ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
 
     u = new CUnit("CUnit");
@@ -271,9 +268,7 @@ void CBattleWorld::onInit()
         "NormalAttack",
         "¹¥»÷",
         2.00,
-        CAttackValue(1,
-        CAttackValue::kPhysical,
-        50.0),
+        CAttackValue(CAttackValue::kPhysical, 50.0),
         0.5);
     atk->setCastMinRange(-3.0f);
     atk->setCastRange(15.0f);
@@ -291,6 +286,37 @@ void CBattleWorld::onInit()
     ud->setBaseMoveSpeed(50.0f);
     ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.5));
 
+    // lua
+    string path = CCFileUtils::sharedFileUtils()->fullPathForFilename("script");
+    CCLOG(path.c_str());
+
+    addScriptSearchPath(path.c_str());
+    if (loadScript("world") == false)
+    {
+        return false;
+    }
+
+    lua_State* L = getLuaHandle();
+    luaRegCommFunc(L);
+    luaRegWorldFuncs(L, this);
+    luaRegWorldFuncsForCC(L, this);
+
+    lua_getglobal(L, "onWorldInit");
+    int res = lua_pcall(L, 0, 0, 0);
+
+    CCLOG("TOP: %d", lua_gettop(L));
+
+    if (res != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        CCLOG("err: %s", err);
+        lua_pop(L, 1);
+        return false;
+    }
+
+    assert(lua_gettop(L) == 0);
+
+    return true;
 }
 
 CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
@@ -305,22 +331,22 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
     {
     case kBladeMaster:
         ud = new CUnitDrawForCC("Matchstick");
-        ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
-        ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
-        ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
-        ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
-        ud->prepareAnimation(CUnitDrawForCC::kAniAct4, "act4", 1);
+        ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
+        ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+        ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+        ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 2);
+        ud->prepareAnimation(CUnitDraw::kAniAct4, "act4", 1);
         ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
 
         u = new CUnit("CUnit");
-        m_iHeroUnit = u->getId();
+        m_iControlUnit = u->getId();
         u->setDraw(ud);
         u->setAI(CMyAI());
         addUnit(u);
 
         u->setName("BladeMaster");
         u->setMaxHp(1000);
-        u->setBaseArmorValue(9.0f);
+        u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 9.0f));
 
         ud->setBaseMoveSpeed(80.0f);
 
@@ -331,9 +357,7 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
             "NormalAttack",
             "¹¥»÷",
             1.77f,
-            CAttackValue(1,
-            CAttackValue::kPhysical,
-            51.0),
+            CAttackValue(CAttackValue::kPhysical, 51.0),
             0.431f);
         u->addActiveAbility(atk);
         atk->setCastMinRange(-3.0f);
@@ -357,22 +381,22 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
 
     case kDemonHunter:
         ud = new CUnitDrawForCC("Matchstick");
-        ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
-        ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
-        ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
-        ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 3);
-        ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 2);
+        ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
+        ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+        ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+        ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 3);
+        ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 2);
         ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
 
         u = new CUnit("CUnit");
-        m_iHeroUnit = u->getId();
+        m_iControlUnit = u->getId();
         u->setDraw(ud);
         u->setAI(CMyAI());
         addUnit(u);
 
         u->setName("DemonHunter");
         u->setMaxHp(1100);
-        u->setBaseArmorValue(9.0f);
+        u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 9.0f));
 
         ud->setBaseMoveSpeed(80.0f);
 
@@ -383,9 +407,7 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
             "NormalAttack",
             "¹¥»÷",
             1.7f,
-            CAttackValue(1,
-            CAttackValue::kPhysical,
-            48.0),
+            CAttackValue(CAttackValue::kPhysical, 48.0),
             0.458f);
         u->addActiveAbility(atk);
         atk->setCastMinRange(-3.0f);
@@ -406,23 +428,23 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
 
     case kMountainKing:
         ud = new CUnitDrawForCC("Malik");
-        ud->prepareFrame(CUnitDrawForCC::kFrmDefault, "default");
-        ud->prepareAnimation(CUnitDrawForCC::kAniMove, "move", -1);
-        ud->prepareAnimation(CUnitDrawForCC::kAniDie, "die", -1);
-        ud->prepareAnimation(CUnitDrawForCC::kAniAct1, "act1", 4);
-        ud->prepareAnimation(CUnitDrawForCC::kAniAct2, "act2", 4);
+        ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
+        ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+        ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+        ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4);
+        ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 4);
 
         ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), CPoint(10.0f, 10.0f));
         
         u = new CUnit("CUnit");
-        m_iHeroUnit = u->getId();
+        m_iControlUnit = u->getId();
         u->setDraw(ud);
         u->setAI(CMyAI());
         addUnit(u);
 
         u->setName("MountainKing");
         u->setMaxHp(1375.0f);
-        u->setBaseArmorValue(6.0f);
+        u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 9.0f));
 
         ud->setBaseMoveSpeed(80.0f);
 
@@ -433,9 +455,7 @@ CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
             "NormalAttack",
             "¹¥»÷",
             2.22f,
-            CAttackValue(1,
-            CAttackValue::kPhysical,
-            58.0),
+            CAttackValue(CAttackValue::kPhysical, 58.0),
             0.172f);
         u->addActiveAbility(atk);
         atk->setCastMinRange(-3.0f);
@@ -515,7 +535,11 @@ CCScene* CCBattleSceneLayer::scene()
     // add layer as a child to scene
     pScene->addChild(layer);
 
-    pWorld->init();
+    if (pWorld->init() == false)
+    {
+        return NULL;
+    }
+    
 
     // return the scene
     return pScene;
@@ -555,7 +579,6 @@ bool CCBattleSceneLayer::init()
 
     setWorldInterval(0.02f);
 
-
     return true;
 }
 
@@ -570,7 +593,7 @@ void CCBattleSceneLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
     CCPoint pos = ccpSub(pTouch->getLocation(), getPosition());
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    CUnit* hero = w->getUnit(w->getHeroUnit());
+    CUnit* hero = w->getUnit(w->getControlUnit());
     if (hero == NULL)
     {
         return;
@@ -599,7 +622,6 @@ void CCBattleSceneLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
 
 void CCBattleSceneLayer::onMovePreviousLabel( CCNode* pCurLble, void* PreLbl )
 {
-
 }
 
 

@@ -11,9 +11,7 @@ public:
     CBattleWorld();
     virtual ~CBattleWorld();
 
-    virtual void onInit();
-
-    M_SYNTHESIZE(int, m_iHeroUnit, HeroUnit);
+    virtual bool onInit();
 
     enum UNIT_INDEX
     {
@@ -23,6 +21,7 @@ public:
     };
 
     CUnit* createUnit(UNIT_INDEX eId);
+
 };
 
 class CCBattleScene : public CCScene

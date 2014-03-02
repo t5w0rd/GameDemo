@@ -2,7 +2,7 @@
 
 #include "ActionForCC.h"
 #include "DrawForCC.h"
-#include "Logic/Draw.h"
+#include "Draw.h"
 
 
 // CCCallFuncNMultiObj

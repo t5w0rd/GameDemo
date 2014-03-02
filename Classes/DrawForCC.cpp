@@ -3,8 +3,8 @@
 #include "DrawForCC.h"
 #include "GameControl.h"
 #include "ActionForCC.h"
-#include "Logic/Unit.h"
-#include "Logic/MultiRefObject.h"
+#include "Unit.h"
+#include "MultiRefObject.h"
 
 
 // CCActionSprite
@@ -63,7 +63,7 @@ bool CCUnitSprite::initWithDraw( CUnitDrawForCC* pDraw )
 
     setDraw(pDraw);
 
-    CCSpriteFrame* sf = pDraw->getFrameInfo(CUnitDrawForCC::kFrmDefault)->pSf;
+    CCSpriteFrame* sf = pDraw->getFrameInfo(CUnitDraw::kFrmDefault)->pSf;
 
     return initWithSpriteFrame(sf);
 }
@@ -102,7 +102,7 @@ void CCUnitSprite::setPosition( const CCPoint& roPos )
 void CCUnitSprite::draw()
 {
     CCSprite::draw();
-#if 0
+#if 1
     const CCPoint& p = getAnchorPoint();
     //oPos = pDr->convertToGL(oPos);
     //ccDrawLine(ccp(0, oPos.y), ccp(800, oPos.y));
@@ -233,7 +233,7 @@ void CUnitDrawForCC::setVisible( bool bVisible /*= true*/ )
 
 void CUnitDrawForCC::setFrame( FRM_ID id )
 {
-    CCSpriteFrame* sf = getFrameInfo(CUnitDrawForCC::kFrmDefault)->pSf;
+    CCSpriteFrame* sf = getFrameInfo(CUnitDraw::kFrmDefault)->pSf;
     if (sf == NULL)
     {
         return;

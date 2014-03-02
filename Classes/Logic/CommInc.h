@@ -26,6 +26,13 @@
 #include <map>
 using namespace std;
 
+extern "C"
+{
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+    
 #include "CommDef.h"
 
 #endif	/* __COMINC_H__ */
