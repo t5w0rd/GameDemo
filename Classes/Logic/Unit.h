@@ -354,25 +354,25 @@ public:
     ////////////////////////  trigger /////////////////    
     enum TRIGGER_FLAG_BIT
     {
-        kReviveTrigger = 1 << 0,
-        kDyingTrigger = 1 << 1,
-        kDeadTrigger = 1 << 2,
-        kChangeHpTrigger = 1 << 3,
-        kTickTrigger = 1 << 4,
-        kAttackTargetTrigger = 1 << 5,
-        kAttackedTrigger = 1 << 6,
-        kDamagedSurfaceTrigger = 1 << 7,
-        kDamagedInnerTrigger = 1 << 8,
-        kDamagedDoneTrigger = 1 << 9,
-        kDamageTargetDoneTrigger = 1 << 10,
-        kProjectileEffectTrigger = 1 << 11
+        kOnReviveTrigger = 1 << 0,
+        kOnDyingTrigger = 1 << 1,
+        kOnDeadTrigger = 1 << 2,
+        kOnChangeHpTrigger = 1 << 3,
+        kOnTickTrigger = 1 << 4,
+        kOnAttackTargetTrigger = 1 << 5,
+        kOnAttackedTrigger = 1 << 6,
+        kOnDamagedSurfaceTrigger = 1 << 7,
+        kOnDamagedInnerTrigger = 1 << 8,
+        kOnDamagedDoneTrigger = 1 << 9,
+        kOnDamageTargetDoneTrigger = 1 << 10,
+        kOnProjectileEffectTrigger = 1 << 11
     };
     
     enum TRIGGER_MASK
     {
         kNoMasked = 0,
         kMaskAll = 0xFFFFFFFF,
-        kMaskActiveTrigger = kAttackTargetTrigger | kDamageTargetDoneTrigger
+        kMaskActiveTrigger = kOnAttackTargetTrigger | kOnDamageTargetDoneTrigger
     };
     
     
@@ -584,8 +584,8 @@ public:
     CWorld();
     virtual ~CWorld();
     
-    M_SYNTHESIZE_STR(ScriptHandler);
-    M_SYNTHESIZE_READONLY(lua_State*, m_pLua, LuaHandle);
+    M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
+    static lua_State* getLuaHandle();
     void addScriptSearchPath(const char* pPath);
     bool loadScript(const char* pName);
 

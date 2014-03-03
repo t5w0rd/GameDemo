@@ -13,7 +13,7 @@ CStatusShowPas::CStatusShowPas()
     , m_pProgressBar(NULL)
 {
     setDbgClassName("CStatusShowPas");
-    setTriggerFlags(CUnit::kChangeHpTrigger);
+    setTriggerFlags(CUnit::kOnChangeHpTrigger);
 }
 
 CMultiRefObject* CStatusShowPas::copy() const

@@ -606,7 +606,7 @@ void CUnit::onTick(float dt)
 
 CAttackData* CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kAttackTargetTrigger))
+    if (!(dwTriggerMask & kOnAttackTargetTrigger))
     {
         pAttack = triggerOnAttackTarget(pAttack, pTarget);
     }
@@ -621,7 +621,7 @@ CAttackData* CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_
 
 CAttackData* CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kAttackedTrigger))
+    if (!(dwTriggerMask & kOnAttackedTrigger))
     {
         pAttack = triggerOnAttacked(pAttack, pSource);;
     }
@@ -636,12 +636,12 @@ CAttackData* CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dw
 
 void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kDamagedSurfaceTrigger))
+    if (!(dwTriggerMask & kOnDamagedSurfaceTrigger))
     {
         triggerOnDamagedSurface(pAttack, pSource);
     }
 
-    if (!(dwTriggerMask & kDamagedInnerTrigger))
+    if (!(dwTriggerMask & kOnDamagedInnerTrigger))
     {
         triggerOnDamagedInner(pAttack, pSource);
     }
@@ -654,7 +654,7 @@ void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMa
 
 void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kDamagedDoneTrigger))
+    if (!(dwTriggerMask & kOnDamagedDoneTrigger))
     {
         triggerOnDamagedDone(fDamage, pSource);
     }
@@ -683,7 +683,7 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 
 void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kDamageTargetDoneTrigger))
+    if (!(dwTriggerMask & kOnDamageTargetDoneTrigger))
     {
         triggerOnDamageTargetDone(fDamage, pTarget);
     }
@@ -1107,62 +1107,62 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
         return;
     }
     
-    if (dwTriggerFlags & kReviveTrigger)
+    if (dwTriggerFlags & kOnReviveTrigger)
     {
         m_mapOnReviveTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDyingTrigger)
+    if (dwTriggerFlags & kOnDyingTrigger)
     {
         m_mapOnDyingTriggerAbilitys.addObject(pAbility);
     }
 
-    if (dwTriggerFlags & kDeadTrigger)
+    if (dwTriggerFlags & kOnDeadTrigger)
     {
         m_mapOnDeadTriggerAbilitys.addObject(pAbility);
     }
 
-    if (dwTriggerFlags & kChangeHpTrigger)
+    if (dwTriggerFlags & kOnChangeHpTrigger)
     {
         m_mapOnChangeHpTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kTickTrigger)
+    if (dwTriggerFlags & kOnTickTrigger)
     {
         m_mapOnTickTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kAttackTargetTrigger)
+    if (dwTriggerFlags & kOnAttackTargetTrigger)
     {
         m_mapOnAttackTargetTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kAttackedTrigger)
+    if (dwTriggerFlags & kOnAttackedTrigger)
     {
         m_mapOnAttackedTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamagedSurfaceTrigger)
+    if (dwTriggerFlags & kOnDamagedSurfaceTrigger)
     {
         m_mapOnDamagedSurfaceTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamagedInnerTrigger)
+    if (dwTriggerFlags & kOnDamagedInnerTrigger)
     {
         m_mapOnDamagedInnerTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamagedDoneTrigger)
+    if (dwTriggerFlags & kOnDamagedDoneTrigger)
     {
         m_mapOnDamagedDoneTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamageTargetDoneTrigger)
+    if (dwTriggerFlags & kOnDamageTargetDoneTrigger)
     {
         m_mapOnDamageTargetDoneTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kProjectileEffectTrigger)
+    if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
         m_mapOnProjectileEffectTriggerAbilitys.addObject(pAbility);
     }
@@ -1185,62 +1185,62 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     
     int id = pAbility->getId();
     
-    if (dwTriggerFlags & kReviveTrigger)
+    if (dwTriggerFlags & kOnReviveTrigger)
     {
         m_mapOnReviveTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDyingTrigger)
+    if (dwTriggerFlags & kOnDyingTrigger)
     {
         m_mapOnDyingTriggerAbilitys.delObject(id);
     }
 
-    if (dwTriggerFlags & kDeadTrigger)
+    if (dwTriggerFlags & kOnDeadTrigger)
     {
         m_mapOnDeadTriggerAbilitys.delObject(id);
     }
 
-    if (dwTriggerFlags & kChangeHpTrigger)
+    if (dwTriggerFlags & kOnChangeHpTrigger)
     {
         m_mapOnChangeHpTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kTickTrigger)
+    if (dwTriggerFlags & kOnTickTrigger)
     {
         m_mapOnTickTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kAttackTargetTrigger)
+    if (dwTriggerFlags & kOnAttackTargetTrigger)
     {
         m_mapOnAttackTargetTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kAttackedTrigger)
+    if (dwTriggerFlags & kOnAttackedTrigger)
     {
         m_mapOnAttackedTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDamagedSurfaceTrigger)
+    if (dwTriggerFlags & kOnDamagedSurfaceTrigger)
     {
         m_mapOnDamagedSurfaceTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDamagedInnerTrigger)
+    if (dwTriggerFlags & kOnDamagedInnerTrigger)
     {
         m_mapOnDamagedInnerTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDamagedDoneTrigger)
+    if (dwTriggerFlags & kOnDamagedDoneTrigger)
     {
         m_mapOnDamagedDoneTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamageTargetDoneTrigger)
+    if (dwTriggerFlags & kOnDamageTargetDoneTrigger)
     {
         m_mapOnDamageTargetDoneTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kProjectileEffectTrigger)
+    if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
         m_mapOnProjectileEffectTriggerAbilitys.delObject(id);
     }
@@ -1664,30 +1664,26 @@ CAction* CUnit::getActionByTag(int iTag)
 
 // CWorld
 CWorld::CWorld()
-: m_pLua(NULL)
-, m_iControlUnit(0)
+: m_iControlUnit(0)
 {
     setDbgClassName("CWorld");
-    
-    m_pLua = luaL_newstate();
-    luaL_openlibs(m_pLua);
 }
 
 CWorld::~CWorld()
 {
-    lua_close(m_pLua);
 }
 
 bool CWorld::loadScript(const char* pName)
 {
+    lua_State* L = CWorld::getLuaHandle();
     std::string code("require \"");
     code.append(pName);
     code.append("\"");
-    int nRet = luaL_dostring(m_pLua, code.c_str());
+    int nRet = luaL_dostring(L, code.c_str());
     if (nRet != 0)
     {
-        LOG(lua_tostring(m_pLua, -1));
-        lua_pop(m_pLua, 1);
+        LOG(lua_tostring(L, -1));
+        lua_pop(L, 1);
 
         return false;
     }
@@ -1697,12 +1693,13 @@ bool CWorld::loadScript(const char* pName)
 
 void CWorld::addScriptSearchPath( const char* pPath )
 {
-    lua_getglobal(m_pLua, "package");
-    lua_getfield(m_pLua, -1, "path");
-    const char* cur_path =  lua_tostring(m_pLua, -1);
-    lua_pushfstring(m_pLua, "%s;%s/?.lua", cur_path, pPath);
-    lua_setfield(m_pLua, -3, "path");
-    lua_pop(m_pLua, 2);
+    lua_State* L = CWorld::getLuaHandle();
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, "path");
+    const char* cur_path =  lua_tostring(L, -1);
+    lua_pushfstring(L, "%s;%s/?.lua", cur_path, pPath);
+    lua_setfield(L, -3, "path");
+    lua_pop(L, 2);
 }
 
 bool CWorld::onInit()
@@ -1998,4 +1995,16 @@ void CWorld::delProjectile( int id )
     pProjectile->setWorld(NULL);
     pProjectile->release();
     m_mapProjectiles.erase(it);
+}
+
+lua_State* CWorld::getLuaHandle()
+{
+    static lua_State* L = NULL;
+    if (L == NULL)
+    {
+        L = luaL_newstate();
+        luaL_openlibs(L);
+    }
+
+    return L;
 }

@@ -1,3 +1,17 @@
+DefPas = class(PassiveAbility)
+function DefPas:ctor()
+	self:sctor("root", "name", 0)
+	self:setTriggerFlags(Ability.kOnDamageTargetDoneTrigger)
+end
+
+function DefPas:onUnitAddAbility()
+	print("DefPas:onUnitAddAbility()")
+end
+
+function DefPas:onUnitDamageTargetDone()
+	print("DefPas:onUnitDamageTargetDone")
+end
+
 function onWorldInit()
     s = Sprite:new("Malik")
     s:prepareFrame(Sprite.kFrmDefault, "default")
@@ -13,7 +27,6 @@ function onWorldInit()
     u:setBaseArmor(0, 9.0)
     u:setBaseMoveSpeed(80.0)
     u:setPosition(100, 100)
-	
 
 	setControlUnit(u)
 
@@ -22,5 +35,9 @@ function onWorldInit()
 
 	a = AttackAct:new("Attack", "NormalAttack", 1.5, 0, 10, 0.15,   -3, 50, true, Sprite.kAniAct1, Sprite.kAniAct2)
 	u:addActiveAbility(a)
+
+	--do return end
+	a = DefPas:new()
+	u:addPassiveAbility(a)
 	
 end

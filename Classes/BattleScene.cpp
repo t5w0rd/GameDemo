@@ -287,25 +287,23 @@ bool CBattleWorld::onInit()
     ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.5));
 
     // lua
+    lua_State* L = getLuaHandle();
+
     string path = CCFileUtils::sharedFileUtils()->fullPathForFilename("script");
     CCLOG(path.c_str());
-
     addScriptSearchPath(path.c_str());
+
+    luaRegCommFunc(L);
+    luaRegWorldFuncs(L, this);
+    luaRegWorldFuncsForCC(L, this);
+
     if (loadScript("world") == false)
     {
         return false;
     }
 
-    lua_State* L = getLuaHandle();
-    luaRegCommFunc(L);
-    luaRegWorldFuncs(L, this);
-    luaRegWorldFuncsForCC(L, this);
-
     lua_getglobal(L, "onWorldInit");
     int res = lua_pcall(L, 0, 0, 0);
-
-    CCLOG("TOP: %d", lua_gettop(L));
-
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);

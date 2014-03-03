@@ -26,7 +26,7 @@ public:
     
     virtual const char* getDbgTag() const;
     
-    M_SYNTHESIZE_STR(ScriptHandler);
+    M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
     
     const char* getRootId() const;
     M_SYNTHESIZE_STR(Name);

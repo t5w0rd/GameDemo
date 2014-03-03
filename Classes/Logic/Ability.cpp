@@ -24,6 +24,7 @@
 // CAbility
 CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 : CONST_ROOT_ID(pRootId)
+, m_iScriptHandler(0)
 , m_sName(pName)
 , m_pOwner(NULL)
 , m_fCoolDown(fCoolDown)
@@ -37,6 +38,11 @@ CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 
 CAbility::~CAbility()
 {
+    if (getScriptHandler() != 0)
+    {
+        lua_State* L = CWorld::getLuaHandle();
+        luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
+    }
 }
 
 const char* CAbility::getDbgTag() const
@@ -74,143 +80,280 @@ void CAbility::setInterval(float fInterval)
         return;
     }
     
-    setTriggerFlags(CUnit::kTickTrigger);
+    setTriggerFlags(CUnit::kOnTickTrigger);
     m_fInterval = fInterval;
 }
 
 void CAbility::onUnitAddAbility()
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
     
-    CUnit* o = getOwner();
-    CWorld* w = o->getWorld();
-    lua_State* l = w->getLuaHandle();
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitAddAbility");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
     
-    lua_getglobal(l, getScriptHandler());
-    int a = lua_gettop(l);
-    
-    lua_getfield(l, a, "onUnitAddAbility");
-    lua_getcopy(l, a);
-    lua_call(l, 1, 0);
-    
-    lua_pop(l, 1);
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitDelAbility()
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+    
+    lua_getfield(L, a, "onUnitDelAbility");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitAbilityReady()
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitAbilityReady");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitRevive()
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitRevive");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitDying()
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitDying");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitDead()
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitDead");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitChangeHp(float fChanged)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitChangeHp");
+    luaL_getcopy(L, a);
+    lua_pushnumber(L, fChanged);
+    lua_call(L, 2, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitTick(float dt)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitTick");
+    luaL_getcopy(L, a);
+    lua_pushnumber(L, dt);
+    lua_call(L, 2, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitInterval()
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitInterval");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
+    
+    lua_pop(L, 1);
 }
 
 CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return pAttack;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitAttackTarget");
+    luaL_getcopy(L, a);
+    lua_pushnil(L);
+    lua_pushnil(L);
+    lua_call(L, 3, 1);
+    // pAttack = 
+    lua_pop(L, 1);
+
     return pAttack;
 }
 
 CAttackData* CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return pAttack;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitAttacked");
+    luaL_getcopy(L, a);
+    lua_pushnil(L);
+    lua_pushnil(L);
+    lua_call(L, 3, 1);
+    // pAttack = 
+    lua_pop(L, 1);
+
     return pAttack;
 }
 
 void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitDamaged");
+    luaL_getcopy(L, a);
+    lua_pushnil(L);
+    lua_pushnil(L);
+    lua_call(L, 3, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitDamagedDone");
+    luaL_getcopy(L, a);
+    lua_pushnil(L);
+    lua_pushnil(L);
+    lua_call(L, 3, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitDamageTargetDone");
+    luaL_getcopy(L, a);
+    lua_pushnil(L);
+    lua_pushnil(L);
+    lua_call(L, 3, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onUnitProjectileEffect(CProjectile* pProjectile)
 {
-    if (m_sScriptHandler.empty())
+    if (getScriptHandler() == 0)
     {
         return;
     }
+    
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitProjectileEffect");
+    luaL_getcopy(L, a);
+    lua_pushnil(L);
+    lua_call(L, 2, 0);
+    
+    lua_pop(L, 1);
 }
 
 void CAbility::onAddToUnit(CUnit* pOwner)
@@ -278,11 +421,38 @@ bool CActiveAbility::cast()
 
 bool CActiveAbility::checkConditions()
 {
-    return true;
+    if (getScriptHandler() == 0)
+    {
+        return true;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "checkConditions");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 1);
+    bool res = lua_toboolean(L, -1) != 0;
+    lua_pop(L, 1);
+
+    return res;
 }
 
 void CActiveAbility::onUnitCastAbility()
 {
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitCastAbility");
+    luaL_getcopy(L, a);
+    lua_call(L, 1, 0);
+
+    lua_pop(L, 1);
 }
 
 void CActiveAbility::fireProjectile(CAttackData* pAttackData)
@@ -369,7 +539,7 @@ CAttackAct::CAttackAct(const char* pRootId, const char* pName, float fCoolDown, 
 , m_fAttackValueRandomRange(fAttackValueRandomRange)
 {
     setDbgClassName("CAttackAct");
-    setTriggerFlags(CUnit::kProjectileEffectTrigger);
+    setTriggerFlags(CUnit::kOnProjectileEffectTrigger);
 }
 
 CMultiRefObject* CAttackAct::copy() const
@@ -771,7 +941,7 @@ CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName,
 , m_oExAttackValue(roExAttackValue)
 {
     setDbgClassName("CAttackBuffMakerPas");
-    setTriggerFlags(CUnit::kAttackTargetTrigger);
+    setTriggerFlags(CUnit::kOnAttackTargetTrigger);
 }
 
 CMultiRefObject* CAttackBuffMakerPas::copy() const
@@ -819,7 +989,7 @@ CVampirePas::CVampirePas(const char* pRootId, const char* pName, float fPercentC
 , m_fPercentConversion(fPercentConversion)
 {
     setDbgClassName("CVampirePas");
-    setTriggerFlags(CUnit::kDamageTargetDoneTrigger);
+    setTriggerFlags(CUnit::kOnDamageTargetDoneTrigger);
 }
 
 CMultiRefObject* CVampirePas::copy() const
@@ -1053,7 +1223,7 @@ CRebirthPas::CRebirthPas( const char* pRootId, const char* pName, float fCoolDow
     , m_bRevivableBefore(false)
 {
     setDbgClassName("CRebirthPas");
-    setTriggerFlags(CUnit::kDeadTrigger);
+    setTriggerFlags(CUnit::kOnDeadTrigger);
 }
 
 CMultiRefObject* CRebirthPas::copy() const
@@ -1120,7 +1290,7 @@ CEvadePas::CEvadePas( const char* pRootId, const char* pName, float fChance, int
     , m_iTemplateBuff(iTemplateBuff)
 {
     setDbgClassName("CEvadePas");
-    setTriggerFlags(CUnit::kAttackedTrigger);
+    setTriggerFlags(CUnit::kOnAttackedTrigger);
 }
 
 CMultiRefObject* CEvadePas::copy() const
@@ -1164,7 +1334,7 @@ CEvadeBuff::CEvadeBuff( const char* pRootId, const char* pName, float fDuration,
     , m_fChance(fChance)
 {
     setDbgClassName("CEvadeBuff");
-    setTriggerFlags(CUnit::kAttackedTrigger);
+    setTriggerFlags(CUnit::kOnAttackedTrigger);
 }
 
 CMultiRefObject* CEvadeBuff::copy() const

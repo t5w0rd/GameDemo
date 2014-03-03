@@ -8,11 +8,11 @@
 
 
 luaL_Reg unit4cc_funcs[] = {
-    {"init", unit4cc_init},
+    {"ctor", unit4cc_ctor},
     {NULL, NULL}
 };
 
-int unit4cc_init(lua_State* L)
+int unit4cc_ctor(lua_State* L)
 {
     int sprite = 2;
     const char* name = lua_tostring(L, 3);
@@ -46,7 +46,6 @@ CUnitDrawForCC* getSpritePtr( lua_State* L, int idx /*= 1*/ )
 
 luaL_Reg sprite4cc_funcs[] = {
     {"ctor", sprite4cc_ctor},
-    {"init", sprite4cc_init},
     {"prepareFrame", sprite4cc_prepareFrame},
     {"prepareAnimation", sprite4cc_prepareAnimation},
     {"setGeometry", sprite4cc_setGeometry},
@@ -54,11 +53,6 @@ luaL_Reg sprite4cc_funcs[] = {
 };
 
 int sprite4cc_ctor( lua_State* L )
-{
-    return 0;
-}
-
-int sprite4cc_init( lua_State* L )
 {
     const char* name = lua_tostring(L, 2);
 
@@ -173,14 +167,15 @@ int luaRegWorldFuncsForCC( lua_State* L, CWorld* pWorld )
     int t = 0;
 
     // bind a class
-    M_LUA_BIND_CLASS(L, StatusShowPas);
+    M_LUA_BIND_CLASS_EX(L, StatusShowPas, PassiveAbility);
 
     return 0;
 }
 
-int StatusShowPas_init( lua_State* L )
+int StatusShowPas_ctor( lua_State* L )
 {
     CStatusShowPas* _p = new CStatusShowPas();
+    //_p->setScriptHandler(luaL_setregistry(L, 1));
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
