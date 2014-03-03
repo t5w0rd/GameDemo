@@ -290,7 +290,7 @@ bool CBattleWorld::onInit()
     lua_State* L = getLuaHandle();
 
     string path = CCFileUtils::sharedFileUtils()->fullPathForFilename("script");
-    CCLOG(path.c_str());
+    CCLOG("%s", path.c_str());
     addScriptSearchPath(path.c_str());
 
     luaRegCommFunc(L);
@@ -553,7 +553,7 @@ bool CCBattleSceneLayer::init()
         return false;
     }
 
-    setBackGroundSprite(CCSprite::create("Background.png"));
+    setBackGroundSprite(CCSprite::create("BackgroundHD.png"));
     setBufferEffectParam(0.9f, 10.0f, 0.1f);
     setPosition(ccp(0, 0));
 
