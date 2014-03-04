@@ -44,7 +44,7 @@ public:
         kCnName = CONST_MAX_NAME_INDEX - 1
     };
     
-    CAttackValue(ATTACK_TYPE type = kPhysical, float value = 0.0f);
+    CAttackValue(int type = kPhysical, float value = 0.0f);
 };
 
 class CArmorValue : public CTypeValue
@@ -68,7 +68,7 @@ public:
         kCnName = CONST_MAX_NAME_INDEX - 1
     };
     
-    CArmorValue(ARMOR_TYPE type = kNormal, float value = 0.0f);
+    CArmorValue(int type = kNormal, float value = 0.0f);
 };
 
 
@@ -141,7 +141,7 @@ public:
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAtkVal, AttackValue);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ATTACK_BUFF, m_vecAtkBuffs, AttackBuffs);
     
-    void setAttackValue(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue);
+    void setAttackValue(int eAttackType, float fAttackValue);
     void addAttackBuff(const CAttackBuff& rAttackBuff);
 };
 

@@ -36,13 +36,13 @@ void CTypeValue::set(int type, float value)
 }
 
 // CAttackValue
-CAttackValue::CAttackValue(ATTACK_TYPE type, float value)
+CAttackValue::CAttackValue(int type, float value)
 : CTypeValue(type, value)
 {
 }
 
 // CArmorValue
-CArmorValue::CArmorValue(ARMOR_TYPE type, float value)
+CArmorValue::CArmorValue(int type, float value)
 : CTypeValue(type, value)
 {
 }
@@ -234,7 +234,7 @@ CAttackData::CAttackData()
     setDbgClassName("CAttackData");
 }
 
-void CAttackData::setAttackValue(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue)
+void CAttackData::setAttackValue(int eAttackType, float fAttackValue)
 {
     m_oAtkVal.set(eAttackType, fAttackValue);
 }

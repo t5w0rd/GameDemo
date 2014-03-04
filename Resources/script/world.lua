@@ -8,8 +8,9 @@ function DefPas:onUnitAddAbility()
 	print("DefPas:onUnitAddAbility()")
 end
 
-function DefPas:onUnitDamageTargetDone()
-	print("DefPas:onUnitDamageTargetDone")
+function DefPas:onUnitDamageTargetDone(damage, target)
+	print(string.format("DefPas:onUnitDamageTargetDone(%f, %d)", damage, target:getId()))
+	target:setHp(1)
 end
 
 function onWorldInit()
@@ -33,7 +34,7 @@ function onWorldInit()
 	a = StatusShowPas:new()
 	u:addPassiveAbility(a)
 
-	a = AttackAct:new("Attack", "NormalAttack", 1.5, 0, 10, 0.15,   -3, 50, true, Sprite.kAniAct1, Sprite.kAniAct2)
+	a = AttackAct:new("Attack", "NormalAttack", 1.5, 0, 10, 0.15,   -3, 20, true, Sprite.kAniAct1, Sprite.kAniAct2)
 	u:addActiveAbility(a)
 
 	--do return end

@@ -98,7 +98,7 @@ void CAbility::onUnitAddAbility()
     luaL_getcopy(L, a);
     lua_call(L, 1, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitDelAbility()
@@ -115,7 +115,7 @@ void CAbility::onUnitDelAbility()
     luaL_getcopy(L, a);
     lua_call(L, 1, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitAbilityReady()
@@ -132,7 +132,7 @@ void CAbility::onUnitAbilityReady()
     luaL_getcopy(L, a);
     lua_call(L, 1, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitRevive()
@@ -149,7 +149,7 @@ void CAbility::onUnitRevive()
     luaL_getcopy(L, a);
     lua_call(L, 1, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitDying()
@@ -166,7 +166,7 @@ void CAbility::onUnitDying()
     luaL_getcopy(L, a);
     lua_call(L, 1, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitDead()
@@ -183,7 +183,7 @@ void CAbility::onUnitDead()
     luaL_getcopy(L, a);
     lua_call(L, 1, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitChangeHp(float fChanged)
@@ -201,7 +201,7 @@ void CAbility::onUnitChangeHp(float fChanged)
     lua_pushnumber(L, fChanged);
     lua_call(L, 2, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitTick(float dt)
@@ -219,7 +219,7 @@ void CAbility::onUnitTick(float dt)
     lua_pushnumber(L, dt);
     lua_call(L, 2, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitInterval()
@@ -236,7 +236,7 @@ void CAbility::onUnitInterval()
     luaL_getcopy(L, a);
     lua_call(L, 1, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
@@ -251,11 +251,16 @@ CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 
     lua_getfield(L, a, "onUnitAttackTarget");
     luaL_getcopy(L, a);
-    lua_pushnil(L);
-    lua_pushnil(L);
+    luaL_pushobjptr(L, "AttackData", pAttack);
+    luaL_pushobjptr(L, "Unit", pTarget);
     lua_call(L, 3, 1);
-    // pAttack = 
-    lua_pop(L, 1);
+    
+    if (lua_isnil(L, -1))
+    {
+        pAttack = NULL;
+    }
+    
+    lua_pop(L, 2);  // pop 'a' and ret
 
     return pAttack;
 }
@@ -272,11 +277,16 @@ CAttackData* CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 
     lua_getfield(L, a, "onUnitAttacked");
     luaL_getcopy(L, a);
-    lua_pushnil(L);
-    lua_pushnil(L);
+    luaL_pushobjptr(L, "AttackData", pAttack);
+    luaL_pushobjptr(L, "Unit", pSource);
     lua_call(L, 3, 1);
-    // pAttack = 
-    lua_pop(L, 1);
+
+    if (lua_isnil(L, -1))
+    {
+        pAttack = NULL;
+    }
+
+    lua_pop(L, 2);  // pop 'a' and ret
 
     return pAttack;
 }
@@ -293,11 +303,11 @@ void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
 
     lua_getfield(L, a, "onUnitDamaged");
     luaL_getcopy(L, a);
-    lua_pushnil(L);
-    lua_pushnil(L);
+    luaL_pushobjptr(L, "AttackData", pAttack);
+    luaL_pushobjptr(L, "Unit", pSource);
     lua_call(L, 3, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
@@ -312,11 +322,11 @@ void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
 
     lua_getfield(L, a, "onUnitDamagedDone");
     luaL_getcopy(L, a);
-    lua_pushnil(L);
-    lua_pushnil(L);
+    lua_pushnumber(L, fDamage);
+    luaL_pushobjptr(L, "Unit", pSource);
     lua_call(L, 3, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
@@ -331,11 +341,11 @@ void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 
     lua_getfield(L, a, "onUnitDamageTargetDone");
     luaL_getcopy(L, a);
-    lua_pushnil(L);
-    lua_pushnil(L);
+    lua_pushnumber(L, fDamage);
+    luaL_pushobjptr(L, "Unit", pTarget);
     lua_call(L, 3, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onUnitProjectileEffect(CProjectile* pProjectile)
@@ -350,10 +360,10 @@ void CAbility::onUnitProjectileEffect(CProjectile* pProjectile)
 
     lua_getfield(L, a, "onUnitProjectileEffect");
     luaL_getcopy(L, a);
-    lua_pushnil(L);
+    lua_pushnil(L);  // NOT IMPLEMENT
     lua_call(L, 2, 0);
     
-    lua_pop(L, 1);
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onAddToUnit(CUnit* pOwner)

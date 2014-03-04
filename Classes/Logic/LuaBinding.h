@@ -47,10 +47,16 @@ class CWorld;
         lua_setglobal((L), #name); \
     } while (false)
 template <typename PTYPE>
-PTYPE getObjPtr(PTYPE& ptr, lua_State* L, int idx = 1);
+PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr);
 
-CUnit* getUnitPtr(lua_State* L, int idx = 1);
-CAbility* getAbilityPtr(lua_State* L, int idx);
+template <typename PTYPE>
+void luaL_pushobjptr(lua_State* L, const char* name, const PTYPE _p);
+
+
+CUnit* luaL_tounitptr(lua_State* L, int idx = 1);
+CAbility* luaL_toabilityptr(lua_State* L, int idx);
+
+int mrobj_getId(lua_State* L);
 
 int unit_ctor(lua_State* L);
 int unit_setMaxHp(lua_State* L);
@@ -82,8 +88,21 @@ int ability_onUnitDamaged(lua_State* L);
 int ability_onUnitDamagedDone(lua_State* L);
 int ability_onUnitDamageTargetDone(lua_State* L);
 int ability_onUnitProjectileEffect(lua_State* L);
-
 int ability_setTriggerFlags(lua_State* L);
+
+int ActiveAbility_ctor(lua_State* L);
+int ActiveAbility_checkConditions(lua_State* L);
+int ActiveAbility_onUnitCastAbility(lua_State* L);
+int PassiveAbility_ctor(lua_State* L);
+int BuffAbility_ctor(lua_State* L);
+int AttackAct_ctor(lua_State* L);
+
+int attackData_ctor(lua_State* L);
+int attackData_setAttackType(lua_State* L);
+int attackData_getAttackType(lua_State* L);
+int attackData_setAttackValue(lua_State* L);
+int attackData_getAttackValue(lua_State* L);
+int attackData_addAttackBuff(lua_State* L);
 
 int g_addUnit(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
@@ -91,28 +110,32 @@ int g_setControlUnit(lua_State* L);
 
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 
-int ActiveAbility_ctor(lua_State* L);
-int ActiveAbility_checkConditions(lua_State* L);
-int ActiveAbility_onUnitCastAbility(lua_State* L);
-
-int PassiveAbility_ctor(lua_State* L);
-
-
-int AttackAct_ctor(lua_State* L);
 
 
 
 ///////////////////////////////// Inline //////////////////////////////////////
 template <typename PTYPE>
-PTYPE getObjPtr( PTYPE& ptr, lua_State* L, int idx /*= 1*/ )
+PTYPE luaL_toobjptr( lua_State* L, int idx, PTYPE& ptr )
 {
     lua_getfield(L, idx, "_p");
-    PTYPE* ret = (PTYPE*)lua_touserdata(L, lua_gettop(L));
+    ptr = (PTYPE)lua_touserdata(L, lua_gettop(L));
     lua_pop(L, 1);
 
-    return ret;
+    return ptr;
 }
 
+template <typename PTYPE>
+void luaL_pushobjptr( lua_State* L, const char* name, const PTYPE _p )
+{
+    lua_newtable(L);
+    int obj = lua_gettop(L);
+
+    lua_getglobal(L, name);
+    lua_setmetatable(L, obj);
+
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, obj, "_p");
+}
 
 #endif	/* __LUABINDING_H__ */
 
