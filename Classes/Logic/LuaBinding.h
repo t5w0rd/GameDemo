@@ -10,6 +10,10 @@
 
 
 // common
+int luaModuleLoader4cc(lua_State *L);
+void luaL_insertloader(lua_State *L, lua_CFunction loader);
+void luaL_addpath(lua_State *L, const char* pPath);
+bool luaL_loadscript(lua_State *L, const char* name, string& err);
 int luaL_getcopy(lua_State* L, int idx);
 int luaL_setregistry(lua_State* L, int idx);
 int luaL_getregistery(lua_State* L, int key);

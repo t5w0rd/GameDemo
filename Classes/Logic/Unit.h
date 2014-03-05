@@ -586,9 +586,7 @@ public:
     
     M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
     static lua_State* getLuaHandle();
-    void addScriptSearchPath(const char* pPath);
-    bool loadScript(const char* pName);
-
+    
     virtual bool onInit();
     virtual void onTick(float dt);
     virtual void onAddUnit(CUnit* pUnit);

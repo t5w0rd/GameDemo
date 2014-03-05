@@ -6,7 +6,7 @@ LOCAL_MODULE := cocos2dcpp_shared
 
 LOCAL_MODULE_FILENAME := libcocos2dcpp
 
-LOCAL_SRC_FILES := gamedemo/main.cpp \
+LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/AbilityForCC.cpp \
 ../../Classes/ActionForCC.cpp \
 ../../Classes/AppDelegate.cpp \

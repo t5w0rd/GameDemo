@@ -52,8 +52,7 @@ public:
     CREATE_FUNC(CCBattleSceneLayer);
 
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
-
-    void onMovePreviousLabel(CCNode* pCurLble, void* PreLbl);
+    M_SYNTHESIZE(CCLayer*, m_pCtrlLayer, CtrlLayer);
 
 };
 

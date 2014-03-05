@@ -1673,35 +1673,6 @@ CWorld::~CWorld()
 {
 }
 
-bool CWorld::loadScript(const char* pName)
-{
-    lua_State* L = CWorld::getLuaHandle();
-    std::string code("require \"");
-    code.append(pName);
-    code.append("\"");
-    int nRet = luaL_dostring(L, code.c_str());
-    if (nRet != 0)
-    {
-        LOG(lua_tostring(L, -1));
-        lua_pop(L, 1);
-
-        return false;
-    }
-    
-    return true;
-}
-
-void CWorld::addScriptSearchPath( const char* pPath )
-{
-    lua_State* L = CWorld::getLuaHandle();
-    lua_getglobal(L, "package");
-    lua_getfield(L, -1, "path");
-    const char* cur_path =  lua_tostring(L, -1);
-    lua_pushfstring(L, "%s;%s/?.lua", cur_path, pPath);
-    lua_setfield(L, -3, "path");
-    lua_pop(L, 2);
-}
-
 bool CWorld::onInit()
 {
     return true;

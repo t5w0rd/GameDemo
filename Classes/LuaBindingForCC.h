@@ -4,6 +4,9 @@
 
 class CUnitDrawForCC;
 
+int luaModuleLoader4cc(lua_State *L);
+bool luaL_loadscript4cc(lua_State *L, const char* name, string& err);
+
 int unit4cc_ctor(lua_State* L);
 
 CUnitDrawForCC* getSpritePtr(lua_State* L, int idx = 1);

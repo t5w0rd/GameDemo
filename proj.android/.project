@@ -110,7 +110,7 @@
 		<link>
 			<name>Classes</name>
 			<type>2</type>
-			<locationURI>$%7BPARENT-3-PROJECT_LOC%7D/projects/GameDemo/Classes</locationURI>
+			<locationURI>COCOS2DX/projects/GameDemo/Classes</locationURI>
 		</link>
 		<link>
 			<name>cocos2dx</name>
@@ -128,4 +128,10 @@
 			<locationURI>COCOS2DX/scripting</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>COCOS2DX__</name>
+			<value>$%7BPARENT-3-PROJECT_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>

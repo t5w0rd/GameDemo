@@ -54,6 +54,7 @@ public:
 // CBattleWorld
 CBattleWorld::CBattleWorld()
 {
+    lua_State* L = CWorld::getLuaHandle();
 }
 
 CBattleWorld::~CBattleWorld()
@@ -289,17 +290,29 @@ bool CBattleWorld::onInit()
     // lua
     lua_State* L = getLuaHandle();
 
-    string path = CCFileUtils::sharedFileUtils()->fullPathForFilename("script");
-    CCLOG("%s", path.c_str());
-    addScriptSearchPath(path.c_str());
-
     luaRegCommFunc(L);
     luaRegWorldFuncs(L, this);
     luaRegWorldFuncsForCC(L, this);
 
-    if (loadScript("world") == false)
+    string err;
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+    string name = "/sdcard/Android/data/com.ts.gamedemo/files/world.lua";
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+    string name = "/var/mobile/Documents/world.lua";
+#else
+    string name = "script/world.lua";
+#endif
+    CCLOG("MSG | loadScript: %s", name.c_str());
+    if (luaL_loadscript4cc(L, name.c_str(), err) == false)
     {
-        return false;
+        CCLOG("ERR | LuaErr: %s", err.c_str());
+        CCLabelTTF* pLabel = CCLabelTTF::create(err.c_str(), "Arial", 18);
+        pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
+        pLabel->setColor(ccc3(255, 0, 0));
+        DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
+        pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 5, vs.height - pLabel->getContentSize().height * 0.5 + 5));
+        
+        return true;
     }
 
     lua_getglobal(L, "onWorldInit");
@@ -307,9 +320,15 @@ bool CBattleWorld::onInit()
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
-        CCLOG("err: %s", err);
+        CCLOG("ERR | LuaErr: %s", err);
         lua_pop(L, 1);
-        return false;
+        CCLabelTTF* pLabel = CCLabelTTF::create(err, "Arial", 18);
+        pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
+        pLabel->setColor(ccc3(255, 0, 0));
+        DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
+        pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 5, vs.height - pLabel->getContentSize().height * 0.5 + 5));
+
+        return true;
     }
 
     assert(lua_gettop(L) == 0);
@@ -513,11 +532,21 @@ bool CCBattleScene::init()
 
 // CCBattleSceneLayer
 CCBattleSceneLayer::CCBattleSceneLayer()
+    : m_pCtrlLayer(NULL)
 {
 }
 
 CCBattleSceneLayer::~CCBattleSceneLayer()
 {
+    if (m_pCtrlLayer != NULL)
+    {
+        if (m_pCtrlLayer->getParent() != NULL)
+        {
+            m_pCtrlLayer->removeFromParentAndCleanup(true);
+        }
+        
+        m_pCtrlLayer->release();
+    }
 }
 
 CCScene* CCBattleSceneLayer::scene()
@@ -527,11 +556,12 @@ CCScene* CCBattleSceneLayer::scene()
 
     CUnitWorldForCC* pWorld = pScene->getWorld();
     // 'layer' is an autorelease object
-    CCUnitLayer* layer = CCBattleSceneLayer::create();
+    CCBattleSceneLayer* layer = CCBattleSceneLayer::create();
     pWorld->setLayer(layer);
 
     // add layer as a child to scene
     pScene->addChild(layer);
+    pScene->addChild(layer->getCtrlLayer(), 1);
 
     if (pWorld->init() == false)
     {
@@ -553,27 +583,15 @@ bool CCBattleSceneLayer::init()
         return false;
     }
 
+    m_pCtrlLayer = CCLayer::create();
+    m_pCtrlLayer->retain();
+
     setBackGroundSprite(CCSprite::create("BackgroundHD.png"));
     setBufferEffectParam(0.9f, 10.0f, 0.1f);
     setPosition(ccp(0, 0));
 
-    CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
-    CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
-
     /////////////////////////////
     // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-
-    CCLabelTTF* pLabel = CCLabelTTF::create("Hello World", "Arial", 24);
-
-    // position the label on the center of the screen
-    pLabel->setPosition(ccp(org.x + vs.width/2,
-        org.y + vs.height - pLabel->getContentSize().height));
-
-    // add the label as a child to this layer
-    this->addChild(pLabel, 1);
 
     setWorldInterval(0.02f);
 
@@ -617,9 +635,3 @@ void CCBattleSceneLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
         d->cmdMove(p);
     }
 }
-
-void CCBattleSceneLayer::onMovePreviousLabel( CCNode* pCurLble, void* PreLbl )
-{
-}
-
-

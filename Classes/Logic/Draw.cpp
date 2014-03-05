@@ -596,7 +596,9 @@ void CUnitDraw2D::onCastDone( CMultiRefObject* pDraw, CCallFuncData* pData )
 
     if (u->getAttackAbilityId() != 0 && pAbility->getId() == u->getAttackAbilityId())
     {
+        // 拥有攻击技能，正在释放的技能就是攻击技能
         setFrame(kFrmDefault);
+        setCastActionId(0);
         return;
     }
 

@@ -2,11 +2,13 @@
 
 #include "AppDelegate.h"
 #include "BattleScene.h"
+#include "LuaBinding.h"
+#include "LuaBindingForCC.h"
 
 
 // AppDelegate
-AppDelegate::AppDelegate() {
-
+AppDelegate::AppDelegate()
+{
 }
 
 AppDelegate::~AppDelegate() 
@@ -29,9 +31,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setContentScaleFactor(1.0);
 
     // create a scene. it's an autorelease object
+    lua_State* L = CWorld::getLuaHandle();
+    luaL_insertloader(L, luaModuleLoader4cc);
+
     CCScene* pScene = CCBattleSceneLayer::scene();
     if (pScene == NULL)
     {
+        exit(1);
         return false;
     }
 

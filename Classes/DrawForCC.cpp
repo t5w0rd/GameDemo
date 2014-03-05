@@ -202,6 +202,11 @@ void CUnitDrawForCC::stopAction( int tag )
 
 void CUnitDrawForCC::setActionSpeed( int tag, float fSpeed )
 {
+    if (tag == 0)
+    {
+        return;
+    }
+
     CCSpeed* spd = DCAST(getSprite()->getActionByTag(tag), CCSpeed*);
     if (spd == NULL)
     {
@@ -213,7 +218,7 @@ void CUnitDrawForCC::setActionSpeed( int tag, float fSpeed )
 
 bool CUnitDrawForCC::isDoingAction(int id)
 {
-    return getSprite()->getActionByTag(id) != NULL;
+    return id != 0 && getSprite()->getActionByTag(id) != NULL;
 }
 
 void CUnitDrawForCC::stopAllActions()

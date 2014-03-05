@@ -7,6 +7,65 @@
 #include "AbilityForCC.h"
 
 
+int luaModuleLoader4cc(lua_State *L)
+{
+    std::string filename(luaL_checkstring(L, 1));
+    size_t pos = filename.rfind(".lua");
+    if (pos != std::string::npos)
+    {
+        filename = filename.substr(0, pos);
+    }
+    
+    pos = filename.find_first_of(".");
+    while (pos != std::string::npos)
+    {
+        filename.replace(pos, 1, "/");
+        pos = filename.find_first_of(".");
+    }
+    filename.append(".lua");
+    
+    unsigned long codeBufferSize = 0;
+    unsigned char* codeBuffer = CCFileUtils::sharedFileUtils()->getFileData(filename.c_str(), "rb", &codeBufferSize);
+    
+    if (codeBuffer)
+    {
+        if (luaL_loadbuffer(L, (char*)codeBuffer, codeBufferSize, filename.c_str()) != 0)
+        {
+            luaL_error(L, "error loading module %s from file %s :\n\t%s",
+                lua_tostring(L, 1), filename.c_str(), lua_tostring(L, -1));
+        }
+        delete []codeBuffer;
+    }
+    else
+    {
+        //CCLog("can not get file data of %s", filename.c_str());
+    }
+    
+    return 1;
+}
+
+bool luaL_loadscript4cc(lua_State *L, const char* name, string& err)
+{
+#if 0 && (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+    std::string code("require \"");
+    code.append(name);
+    code.append("\"");
+    int nRet = luaL_dostring(L, code.c_str());
+#else
+    std::string fullPath = CCFileUtils::sharedFileUtils()->fullPathForFilename(name);
+    int nRet = luaL_dofile(L, fullPath.c_str());
+#endif
+    if (nRet != 0)
+    {
+        err = lua_tostring(L, -1);
+        lua_pop(L, 1);
+
+        return false;
+    }
+
+    return true;
+}
+
 luaL_Reg unit4cc_funcs[] = {
     {"ctor", unit4cc_ctor},
     {NULL, NULL}

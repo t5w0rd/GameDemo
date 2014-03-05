@@ -14,6 +14,42 @@
 
 
 // common
+void luaL_insertloader(lua_State *L, lua_CFunction loader)
+{
+    if (!loader) return;
+    
+    // stack content after the invoking of the function
+    // get loader table
+    lua_getglobal(L, "package");                                  /* L: package */
+    lua_getfield(L, -1, "searchers");                               /* L: package, loaders */
+    
+    // insert loader into index 2
+    lua_pushcfunction(L, loader);                                   /* L: package, loaders, func */
+    int n = lua_rawlen(L, -2) + 1;
+    for (int i = n; i > 2; --i)
+    {
+        lua_rawgeti(L, -2, i - 1);                                /* L: package, loaders, func, function */
+        // we call lua_rawgeti, so the loader table now is at -3
+        lua_rawseti(L, -3, i);                                    /* L: package, loaders, func */
+    }
+    lua_rawseti(L, -2, 2);                                        /* L: package, loaders */
+    
+    // set loaders into package
+    lua_setfield(L, -2, "loaders");                               /* L: package */
+    
+    lua_pop(L, 1);
+}
+
+void luaL_addpath(lua_State *L, const char* pPath)
+{
+    lua_getglobal(L, "package");
+    lua_getfield(L, -1, "path");
+    const char* cur_path =  lua_tostring(L, -1);
+    lua_pushfstring(L, "%s;%s/?.lua", cur_path, pPath);
+    lua_setfield(L, -3, "path");
+    lua_pop(L, 2);
+}
+
 int luaL_getcopy(lua_State* L, int idx)
 {
     lua_pushnil(L);
