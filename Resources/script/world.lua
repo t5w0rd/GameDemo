@@ -11,9 +11,15 @@ end
 function DefPas:onUnitDamageTargetDone(damage, target)
 	print(string.format("DefPas:onUnitDamageTargetDone(%f, %d)", damage, target:getId()))
 	target:setHp(1)
+    o = self:getOwner()
+    o:addBattleTip("KILL", "Arial", 18, 0, 0, 0)
 end
 
 function onWorldInit()
+    c = getControlUnit()
+    local x, y = c:getPosition()
+    c:setPosition(x - 200, y)
+    
     s = Sprite:new("Malik")
     s:prepareFrame(Sprite.kFrmDefault, "default")
     s:prepareAnimation(Sprite.kAniMove, "move", -1)
@@ -27,7 +33,7 @@ function onWorldInit()
 	u:setMaxHp(1375.0)
     u:setBaseArmor(0, 9.0)
     u:setBaseMoveSpeed(80.0)
-    u:setPosition(100, 100)
+    u:setPosition(500, 500)
 
 	setControlUnit(u)
 

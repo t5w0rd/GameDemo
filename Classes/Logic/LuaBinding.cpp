@@ -217,14 +217,20 @@ int mrobj_getId( lua_State* L )
 luaL_Reg unit_funcs[] = {
     {"ctor", unit_ctor},
     {"setMaxHp", unit_setMaxHp},
+    {"getMaxHp", unit_getMaxHp},
     {"setHp", unit_setHp},
+    {"getHp", unit_getHp},
     {"setForceByIndex", unit_setForceByIndex},
     {"setBaseArmor", unit_setBaseArmor},
     {"addActiveAbility", unit_addActiveAbility},
     {"addPassiveAbility", unit_addPassiveAbility},
     {"addBuffAbility", unit_addBuffAbility},
     {"setBaseMoveSpeed", uint2d_setBaseMoveSpeed},
+    {"getRealMoveSpeed", uint2d_getRealMoveSpeed},
+    {"setExMoveSpeed", uint2d_setExMoveSpeed},
+    {"getExMoveSpeed", uint2d_getExMoveSpeed},
     {"setPosition", unit2d_setPosition},
+    {"getPosition", unit2d_getPosition},
     {NULL, NULL}
 };
 
@@ -260,6 +266,14 @@ int unit_setMaxHp(lua_State* L)
     return 0;
 }
 
+int unit_getMaxHp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    lua_pushnumber(L, u->getMaxHp());
+    
+    return 1;
+}
+
 int unit_setHp(lua_State* L)
 {
     float n = lua_tonumber(L, 2);
@@ -268,6 +282,14 @@ int unit_setHp(lua_State* L)
     u->setHp(n);
     
     return 0;
+}
+
+int unit_getHp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    lua_pushnumber(L, u->getHp());
+    
+    return 1;
 }
 
 int unit_setForceByIndex(lua_State* L)
@@ -289,6 +311,17 @@ int unit_setBaseArmor(lua_State* L)
     u->setBaseArmor(CArmorValue((CArmorValue::ARMOR_TYPE)armorType, armorValue));
     
     return 0;
+}
+
+int unit_getBaseArmor(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CArmorValue& av = u->getBaseArmor();
+    
+    lua_pushinteger(L, av.getType());
+    lua_pushnumber(L, av.getValue());
+    
+    return 2;
 }
 
 int unit_setAlly( lua_State* L )
@@ -364,15 +397,60 @@ int uint2d_setBaseMoveSpeed(lua_State* L)
     return 0;
 }
 
+int uint2d_getRealMoveSpeed(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    lua_pushnumber(L, d->getRealMoveSpeed());
+    
+    return 1;
+}
+
+int uint2d_setExMoveSpeed(lua_State* L)
+{
+    float a = lua_tonumber(L, 2);
+    float b = lua_tonumber(L, 2);
+    
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    d->setExMoveSpeed(CExtraCoeff(a, b));
+    
+    return 0;
+}
+
+int uint2d_getExMoveSpeed(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    CExtraCoeff& ex = d->getExMoveSpeed();
+    
+    lua_pushnumber(L, ex.getMulriple());
+    lua_pushnumber(L, ex.getAddend());
+    
+    return 2;
+}
+
 int unit2d_setPosition(lua_State* L)
 {
     CPoint p(lua_tonumber(L, 2), lua_tonumber(L, 3));
     
-    CUnit* u = luaL_tounitptr(L);
-    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     d->setPosition(p);
     
     return 0;
+}
+
+int unit2d_getPosition(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    CPoint& p = d->getPosition();
+    
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+    
+    return 2;
 }
 
 luaL_Reg ability_funcs[] = {
@@ -393,6 +471,7 @@ luaL_Reg ability_funcs[] = {
     {"onUnitDamageTargetDone", ability_onUnitDamageTargetDone},
     {"onUnitProjectileEffect", ability_onUnitProjectileEffect},
     {"setTriggerFlags", ability_setTriggerFlags},
+    {"getOwner", ability_getOwner},
     {NULL, NULL}
 };
 
@@ -488,10 +567,20 @@ int ability_setTriggerFlags(lua_State* L)
 {
     unsigned int trigger = lua_tounsigned(L, 2);
 
-    CAbility* a = luaL_toabilityptr(L, 1);
-    a->setTriggerFlags(trigger);
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    _p->setTriggerFlags(trigger);
 
     return 0;
+}
+
+int ability_getOwner(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    CUnit* u = _p->getOwner();
+    
+    luaL_pushobjptr(L, "Unit", u);
+    
+    return 1;
 }
 
 int ActiveAbility_ctor(lua_State* L)
@@ -689,7 +778,7 @@ int g_addTemplateAbility( lua_State* L )
 
 int g_setControlUnit( lua_State* L )
 {
-    CUnit* u = luaL_tounitptr(L);
+    CUnit* u = luaL_tounitptr(L, 1);
 
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
@@ -699,6 +788,25 @@ int g_setControlUnit( lua_State* L )
     return 0;
 }
 
+int g_getControlUnit(lua_State* L)
+{
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    CUnit* _p = w->getUnit(w->getControlUnit());
+    lua_pop(L, 1);
+    
+    if (_p != NULL)
+    {
+        luaL_pushobjptr(L, "Unit", _p);
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
+    
+    return 1;
+}
+
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -706,8 +814,8 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_setglobal(L, "_world");
 
     // TODO: reg global funcs
-    lua_pushcfunction(L, g_setControlUnit);
-    lua_setglobal(L, "setControlUnit");
+    lua_register(L, "setControlUnit", g_setControlUnit);
+    lua_register(L, "getControlUnit", g_getControlUnit);
     
     // TODO: reg global classes
     lua_getglobal(L, "class");

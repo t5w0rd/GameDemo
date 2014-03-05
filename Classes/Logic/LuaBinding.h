@@ -64,17 +64,24 @@ int mrobj_getId(lua_State* L);
 
 int unit_ctor(lua_State* L);
 int unit_setMaxHp(lua_State* L);
+int unit_getMaxHp(lua_State* L);
 int unit_setHp(lua_State* L);
+int unit_getHp(lua_State* L);
 int unit_setForceByIndex(lua_State* L);
 int unit_setAlly(lua_State* L);
 int unit_setBaseArmor(lua_State* L);
+int unit_getBaseArmor(lua_State* L);
 
 int unit_addActiveAbility(lua_State* L);
 int unit_addPassiveAbility(lua_State* L);
 int unit_addBuffAbility(lua_State* L);
 
 int uint2d_setBaseMoveSpeed(lua_State* L);
+int uint2d_getRealMoveSpeed(lua_State* L);
+int uint2d_setExMoveSpeed(lua_State* L);
+int uint2d_getExMoveSpeed(lua_State* L);
 int unit2d_setPosition(lua_State* L);
+int unit2d_getPosition(lua_State* L);
 
 int ability_ctor(lua_State* L);
 int ability_onUnitAddAbility(lua_State* L);
@@ -93,6 +100,7 @@ int ability_onUnitDamagedDone(lua_State* L);
 int ability_onUnitDamageTargetDone(lua_State* L);
 int ability_onUnitProjectileEffect(lua_State* L);
 int ability_setTriggerFlags(lua_State* L);
+int ability_getOwner(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -111,6 +119,7 @@ int attackData_addAttackBuff(lua_State* L);
 int g_addUnit(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
 int g_setControlUnit(lua_State* L);
+int g_getControlUnit(lua_State* L);
 
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 

@@ -68,6 +68,7 @@ bool luaL_loadscript4cc(lua_State *L, const char* name, string& err)
 
 luaL_Reg unit4cc_funcs[] = {
     {"ctor", unit4cc_ctor},
+    {"addBattleTip", unit4cc_addBattleTip},
     {NULL, NULL}
 };
 
@@ -76,7 +77,7 @@ int unit4cc_ctor(lua_State* L)
     int sprite = 2;
     const char* name = lua_tostring(L, 3);
 
-    CUnitDrawForCC* d = getSpritePtr(L, sprite);
+    CUnitDrawForCC* d = luaL_tospriteptr(L, sprite);
     CUnit* u = new CUnit(d->getName());
     u->setDraw(d);
     u->setName(name);
@@ -93,8 +94,23 @@ int unit4cc_ctor(lua_State* L)
 
     return 0;
 }
+int unit4cc_addBattleTip(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    const char* tip = lua_tostring(L, 2);
+    const char* font = lua_tostring(L, 3);
+    float fontSize = lua_tonumber(L, 4);
+    unsigned int r = lua_tounsigned(L, 5);
+    unsigned int g = lua_tounsigned(L, 6);
+    unsigned int b = lua_tounsigned(L, 7);
+    
+    CUnitDrawForCC* d = DCAST(_p->getDraw(), CUnitDrawForCC*);
+    d->addBattleTip(tip, font, fontSize, ccc3(r, g, b));
+    
+    return 0;
+}
 
-CUnitDrawForCC* getSpritePtr( lua_State* L, int idx /*= 1*/ )
+CUnitDrawForCC* luaL_tospriteptr( lua_State* L, int idx /*= 1*/ )
 {
     lua_getfield(L, idx, "_p");
     CUnitDrawForCC* ret = (CUnitDrawForCC*)lua_touserdata(L, lua_gettop(L));
@@ -127,7 +143,7 @@ int sprite4cc_prepareFrame( lua_State* L )
     int id = lua_tointeger(L, 2);
     const char* name = lua_tostring(L, 3);
     
-    CUnitDrawForCC* d = getSpritePtr(L);
+    CUnitDrawForCC* d = luaL_tospriteptr(L);
     d->prepareFrame((CUnitDraw2D::FRM_ID)id, name);
 
     return 0;
@@ -139,7 +155,7 @@ int sprite4cc_prepareAnimation( lua_State* L )
     const char* name = lua_tostring(L, 3);
     int notify = lua_tointeger(L, 4);
 
-    CUnitDrawForCC* d = getSpritePtr(L);
+    CUnitDrawForCC* d = luaL_tospriteptr(L);
     d->prepareAnimation((CUnitDraw2D::ANI_ID)id, name, notify);
 
     return 0;
@@ -152,7 +168,7 @@ int sprite4cc_setGeometry( lua_State* L )
     CCPoint anchorPoint(lua_tonumber(L, 4), lua_tonumber(L, 5));
     CPoint firePoint(lua_tonumber(L, 6), lua_tonumber(L, 7));
 
-    CUnitDrawForCC* d = getSpritePtr(L);
+    CUnitDrawForCC* d = luaL_tospriteptr(L);
     d->setGeometry(fHalfOfWidth, fHalfOfHeight, anchorPoint, firePoint);
 
     return 0;
