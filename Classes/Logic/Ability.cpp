@@ -1060,9 +1060,24 @@ void CDamageBuffMakerBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     CUnit* s = o->getUnit(getSrcUnit());
+    //CUnit* sd = DCAST(s->getDraw(), CUnitDraw2D*);
+    
     
     CAttackData* ad = new CAttackData;
-    ad->setAttackValue(getDamage());
+    if (getDamage().getValue() == 0.0f)
+    {
+        CAttackAct* atk = NULL;
+        s->getActiveAbility(s->getAttackAbilityId())->dcast(atk);
+        if (atk != NULL)
+        {
+            ad->setAttackValue(atk->getBaseAttack().getType(), getExAttackValue().getValue(atk->getRealAttackValue()));
+        }
+    }
+    else
+    {
+        ad->setAttackValue(getDamage());
+    }
+    
     if (M_RAND_HIT(getChance()))
     {
         if (isToSelf())
@@ -1286,6 +1301,49 @@ void CSpeedBuff::onUnitDelAbility()
     pAtkAct->setExAttackSpeed(CExtraCoeff(rExAs.getMulriple() - m_oExAttackSpeedDelta.getMulriple(), rExAs.getAddend() - m_oExAttackSpeedDelta.getAddend()));
     
     LOG("%s¹¥»÷ËÙ¶È»Ö¸´(%.1fs->%.1fs)\n", o->getName(), fTestOld, pAtkAct->getRealAttackInterval());
+}
+
+// CChangeHpPas
+CChangeHpPas::CChangeHpPas(const char* pRootId, const char* pName, float fInterval, const CExtraCoeff& roChangeHp, const CExtraCoeff& roMinHp)
+    : CPassiveAbility(pRootId, pName)
+    , m_oChangeHp(roChangeHp)
+    , m_oMinHp(roMinHp)
+{
+    setDbgClassName("CChangeHpPas");
+    setInterval(fInterval);
+}
+
+CMultiRefObject* CChangeHpPas::copy() const
+{
+    return new CChangeHpPas(getRootId(), getName(), m_fInterval, m_oChangeHp, m_oMinHp);
+}
+
+void CChangeHpPas::onUnitAddAbility()
+{
+    CUnit* o = getOwner();
+    LOG("%s»ñµÃ%s×´Ì¬(%.1f/s)\n", o->getName(), getName(), getChangeHp().getValue(o->getMaxHp()));
+}
+
+void CChangeHpPas::onUnitDelAbility()
+{
+    CUnit* o = getOwner();
+    LOG("%sÊ§È¥%s×´Ì¬\n", o->getName(), getName());
+}
+
+void CChangeHpPas::onUnitInterval()
+{
+    CUnit* o = getOwner();
+    float fNewHp = o->getHp();
+    float fChangeHp = getChangeHp().getValue(o->getMaxHp());
+    fNewHp += fChangeHp;
+
+    float fMinHp = getMinHp().getValue(o->getMaxHp());
+    if (fNewHp < fMinHp)
+    {
+        fNewHp = fMinHp;
+    }
+
+    o->setHp(fNewHp);
 }
 
 // CChangeHpBuff

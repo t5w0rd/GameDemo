@@ -302,6 +302,21 @@ public:
 };
 
 // hp变化，CExTraCoeff是以MaxHp为基准的
+class CChangeHpPas : public CPassiveAbility
+{
+public:
+    CChangeHpPas(const char* pRootId, const char* pName, float fInterval, const CExtraCoeff& roChangeHp, const CExtraCoeff& roMinHp = CExtraCoeff(0.0, -1.0f));
+    virtual CMultiRefObject* copy() const;
+
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
+    virtual void onUnitInterval();
+
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oChangeHp, ChangeHp);
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oMinHp, MinHp);
+
+};
+
 class CChangeHpBuff : public CBuffAbility
 {
 public:

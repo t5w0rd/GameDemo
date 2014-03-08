@@ -239,9 +239,11 @@ bool CBattleWorld::onInit()
 
     a = new CDamageBuffMakerBuff(
         "´¸×ÓÉËº¦",
-        CAttackValue(CAttackValue::kMagical, 100.0f),
+        CAttackValue(CAttackValue::kMagical, 0.0f),
         1.0f,
-        id);
+        id,
+        false,
+        CExtraCoeff(10.0f, 0.0f));
     id = addTemplateAbility(a);
 
     CBuffMakerAct* bm = new CBuffMakerAct("", "´¸×Ó", 5.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);
@@ -303,10 +305,10 @@ bool CBattleWorld::onInit()
     ud->setBaseMoveSpeed(50.0f);
     ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.5));
 
+    onLuaWorldInit();
+
     hero->setCastTarget(CCommandTarget(u->getId()));
     hero->cmdCastSpell(bm->getId());
-
-    onLuaWorldInit();
 
     return true;
 }

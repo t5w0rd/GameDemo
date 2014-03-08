@@ -414,6 +414,7 @@ int CUnitDraw2D::cmdCastSpell(int iActiveAbilityId, bool bObstinate)
             // 目标不具备2D性
             return -1;
         }
+        getCastTarget().setTargetPoint(td->getPosition());
 
     case CCommandTarget::kPointTarget:
         if (getCastTarget().getTargetType() != pAbility->getCastTargetType())

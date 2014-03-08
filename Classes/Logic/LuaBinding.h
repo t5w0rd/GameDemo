@@ -70,10 +70,18 @@ int unit_setForceByIndex(lua_State* L);
 int unit_setAlly(lua_State* L);
 int unit_setBaseArmor(lua_State* L);
 int unit_getBaseArmor(lua_State* L);
+int unit_getRealArmorValue(lua_State* L);
+int unit_setExArmorValue(lua_State* L);
+int unit_getExArmorValue(lua_State* L);
+int unit_suspend(lua_State* L);
+int unit_isSuspended(lua_State* L);
+int unit_resume(lua_State* L);
+int uint_getBuffStackSize(lua_State* L);
 
 int unit_addActiveAbility(lua_State* L);
 int unit_addPassiveAbility(lua_State* L);
 int unit_addBuffAbility(lua_State* L);
+int unit_getAttackAbility(lua_State* L);
 
 int uint2d_setBaseMoveSpeed(lua_State* L);
 int uint2d_getRealMoveSpeed(lua_State* L);
@@ -98,10 +106,18 @@ int ability_onUnitDamaged(lua_State* L);
 int ability_onUnitDamagedDone(lua_State* L);
 int ability_onUnitDamageTargetDone(lua_State* L);
 int ability_onUnitProjectileEffect(lua_State* L);
+int ability_onUnitAbilityProjectileEffect(lua_State* L);
 int ability_copy(lua_State* L);
 int ability_setTriggerFlags(lua_State* L);
 int ability_getOwner(lua_State* L);
 int ability_setInterval(lua_State* L);
+int ability_getInterval(lua_State* L);
+int ability_setCoolDown(lua_State* L);
+int ability_getCoolDown(lua_State* L);
+int ability_isCoolingDown(lua_State* L);
+int ability_resetCD(lua_State* L);
+int ability_coolDown(lua_State* L);
+
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -110,19 +126,31 @@ int PassiveAbility_ctor(lua_State* L);
 int BuffAbility_ctor(lua_State* L);
 
 int AttackAct_ctor(lua_State* L);
+int AttackAct_setBaseAttack(lua_State* L);
+int AttackAct_getBaseAttack(lua_State* L);
+int AttackAct_getRealAttackValue(lua_State* L);
+int AttackAct_setExAttackValue(lua_State* L);
+int AttackAct_getExAttackValue(lua_State* L);
+int AttackAct_setBaseAttackInterval(lua_State* L);
+int AttackAct_getBaseAttackInterval(lua_State* L);
+int AttackAct_getRealAttackInterval(lua_State* L);
+int AttackAct_getRealAttackSpeed(lua_State* L);
+int AttackAct_setExAttackSpeed(lua_State* L);
+int AttackAct_getExAttackSpeed(lua_State* L);
+
 int AttackBuffMakerPas_ctor(lua_State* L);
 int AuraPas_ctor(lua_State* L);
 int VampirePas_ctor(lua_State* L);
 int StunBuff_ctor(lua_State* L);
 int DoubleAttackPas_ctor(lua_State* L);
 int SpeedBuff_ctor(lua_State* L);
+int ChangeHpPas_ctor(lua_State* L);
 int ChangeHpBuff_ctor(lua_State* L);
 int RebirthPas_ctor(lua_State* L);
 int EvadePas_ctor(lua_State* L);
 int EvadeBuff_ctor(lua_State* L);
 int BuffMakerAct_ctor(lua_State* L);
-
-
+int DamageBuffMakerBuff_ctor(lua_State* L);
 
 int attackData_ctor(lua_State* L);
 int attackData_setAttackType(lua_State* L);

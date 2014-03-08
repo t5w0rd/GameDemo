@@ -67,12 +67,17 @@ function DefPas:onUnitAttackTarget(ad, target)
 end
 
 function onWorldInit()
-	do return end
+	
 
     c = getControlUnit()
     local x, y = c:getPosition()
-    c:setPosition(x - 200, y)
+	cclog("p(%.1f, %.1f)", x, y);
+    c:setPosition(x + 200, y)
+	x, y = c:getPosition()
+	cclog("p(%.1f, %.1f)", x, y);
     c:setMaxHp(2000)
+
+	do return end
     
     s = Sprite:new("Malik")
     s:prepareFrame(Sprite.kFrmDefault, "default")
