@@ -49,26 +49,16 @@ void luaL_addpath(lua_State *L, const char* pPath)
     lua_setfield(L, -3, "path");
     lua_pop(L, 2);
 }
-
-int luaL_getcopy(lua_State* L, int idx)
+#include "CommHeader.h"
+int luaL_setregistry(lua_State* L, int idx)
 {
-    lua_pushnil(L);
-    int copy = lua_gettop(L);
-    lua_copy(L, idx, copy);
-    
-    return copy;
-}
-
-int luaL_setregistry( lua_State* L, int idx )
-{
+    lua_pushvalue(L, idx);
     int key = luaL_ref(L, LUA_REGISTRYINDEX);
-    luaL_getcopy(L, idx);
-    lua_rawseti(L, LUA_REGISTRYINDEX, key);
 
     return key;
 }
 
-int luaL_getregistery( lua_State* L, int key )
+int luaL_getregistery(lua_State* L, int key)
 {
     lua_rawgeti(L, LUA_REGISTRYINDEX, key);
 
@@ -88,10 +78,10 @@ int obj_sctor(lua_State* L)
 
     lua_getfield(L, self, "_cur");
     lua_getfield(L, -1, "ctor");
-    luaL_getcopy(L, self);
+    lua_pushvalue(L, self);
     for (int argv = 2; argv < n; ++argv)
     {
-        luaL_getcopy(L, argv);
+        lua_pushvalue(L, argv);
     }
     lua_call(L, n - self, 0);
     lua_pop(L, 1);
@@ -113,17 +103,17 @@ int class_type_new(lua_State* L)
     lua_newtable(L);
     int obj = lua_gettop(L);
     
-    luaL_getcopy(L, class_type);
+    lua_pushvalue(L, class_type);
     lua_setmetatable(L, obj);
     
-    luaL_getcopy(L, obj);
+    lua_pushvalue(L, obj);
     lua_setfield(L, obj, "_cur");
 
     lua_getfield(L, obj, "ctor");
-    luaL_getcopy(L, obj);
+    lua_pushvalue(L, obj);
     for (int argv = 2; argv < n; ++argv)
     {
-        luaL_getcopy(L, argv);
+        lua_pushvalue(L, argv);
     }
     lua_call(L, n - class_type, 0);
 
@@ -142,13 +132,13 @@ int g_class(lua_State* L)
     
     if (super)
     {
-        luaL_getcopy(L, super);
+        lua_pushvalue(L, super);
         lua_setfield(L, t, "super");
-        luaL_getcopy(L, super);
+        lua_pushvalue(L, super);
         lua_setmetatable(L, t);
     }
     
-    luaL_getcopy(L, t);
+    lua_pushvalue(L, t);
     lua_setfield(L, t, "__index");
     
     lua_getfield(L, t, "sctor");
@@ -204,7 +194,7 @@ luaL_Reg mrobj_funcs[] = {
     {NULL, NULL}
 };
 
-int mrobj_getId( lua_State* L )
+int mrobj_getId(lua_State* L)
 {
     CMultiRefObject* _p = NULL;
     luaL_toobjptr(L, 1, _p);
@@ -308,7 +298,7 @@ int unit_setBaseArmor(lua_State* L)
     float armorValue = lua_tonumber(L, 3);
     
     CUnit* u = luaL_tounitptr(L);
-    u->setBaseArmor(CArmorValue((CArmorValue::ARMOR_TYPE)armorType, armorValue));
+    u->setBaseArmor(CArmorValue(armorType, armorValue));
     
     return 0;
 }
@@ -324,7 +314,7 @@ int unit_getBaseArmor(lua_State* L)
     return 2;
 }
 
-int unit_setAlly( lua_State* L )
+int unit_setAlly(lua_State* L)
 {
     unsigned int ally = lua_tounsigned(L, 2);
 
@@ -379,7 +369,15 @@ int unit_addBuffAbility(lua_State* L)
     else
     {
         int id = lua_tointeger(L, 2);
-        int src = lua_tointeger(L, 3);
+        int src = 0;
+        if (lua_istable(L, 3))
+        {
+            src = luaL_tounitptr(L, 3)->getId();
+        }
+        else
+        {
+            src = lua_tointeger(L, 3);
+        }
         u->addBuffAbility(id, src);
     }
     
@@ -470,8 +468,10 @@ luaL_Reg ability_funcs[] = {
     {"onUnitDamagedDone", ability_onUnitDamagedDone},
     {"onUnitDamageTargetDone", ability_onUnitDamageTargetDone},
     {"onUnitProjectileEffect", ability_onUnitProjectileEffect},
+    {"copy", ability_copy},
     {"setTriggerFlags", ability_setTriggerFlags},
     {"getOwner", ability_getOwner},
+    {"setInterval", ability_setInterval},
     {NULL, NULL}
 };
 
@@ -529,7 +529,7 @@ int ability_onUnitAttackTarget(lua_State* L)
 {
     int ad = 2;
     
-    luaL_getcopy(L, ad);
+    lua_pushvalue(L, ad);
     
     return 1;
 }
@@ -538,7 +538,7 @@ int ability_onUnitAttacked(lua_State* L)
 {
     int ad = 2;
     
-    luaL_getcopy(L, ad);
+    lua_pushvalue(L, ad);
     
     return 0;
 }
@@ -563,6 +563,19 @@ int ability_onUnitProjectileEffect(lua_State* L)
     return 0;
 }
 
+int ability_copy(lua_State* L)
+{
+    CAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    
+    CAbility* _p_ = NULL;
+    _p->copy()->dcast(_p_);
+    
+    luaL_getregistery(L, _p_->getScriptHandler());
+    
+    return 1;
+}
+
 int ability_setTriggerFlags(lua_State* L)
 {
     unsigned int trigger = lua_tounsigned(L, 2);
@@ -581,6 +594,16 @@ int ability_getOwner(lua_State* L)
     luaL_pushobjptr(L, "Unit", u);
     
     return 1;
+}
+
+int ability_setInterval(lua_State* L)
+{
+    float fInterval = lua_tonumber(L, 2);
+    
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    _p->setInterval(fInterval);
+    
+    return 0;
 }
 
 int ActiveAbility_ctor(lua_State* L)
@@ -629,7 +652,7 @@ int PassiveAbility_ctor(lua_State* L)
     return 0;
 }
 
-int BuffAbility_ctor( lua_State* L )
+int BuffAbility_ctor(lua_State* L)
 {
     // TODO: get init params
     const char* root = lua_tostring(L, 2);
@@ -646,24 +669,23 @@ int BuffAbility_ctor( lua_State* L )
     return 0;
 }
 
-int AttackAct_ctor( lua_State* L )
+int AttackAct_ctor(lua_State* L)
 {
-    const char* root = lua_tostring(L, 2);
-    const char* name = lua_tostring(L, 3);
-    float cd = lua_tonumber(L, 4);
-    int at = lua_tointeger(L, 5);
-    float av = lua_tonumber(L, 6);
-    float ar = lua_tonumber(L, 7);
+    const char* name = lua_tostring(L, 2);
+    float cd = lua_tonumber(L, 3);
+    int at = lua_tointeger(L, 4);
+    float av = lua_tonumber(L, 5);
+    float ar = lua_tonumber(L, 6);
 
-    float minRange = lua_tonumber(L, 8);
-    float maxRange = lua_tonumber(L, 9);
-    bool hor = (lua_toboolean(L, 10) != 0);
+    float minRange = lua_tonumber(L, 7);
+    float maxRange = lua_tonumber(L, 8);
+    bool hor = (lua_toboolean(L, 9) != 0);
 
     int anis = lua_gettop(L) + 1;
-    assert(anis > 10);
+    assert(anis > 9);
 
 
-    CAttackAct* _p = new CAttackAct(root, name, cd, CAttackValue((CAttackValue::ATTACK_TYPE)at, av), ar);
+    CAttackAct* _p = new CAttackAct("Attack", name, cd, CAttackValue(at, av), ar);
     //_p->setScriptHandler(luaL_setregistry(L, 1));
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
@@ -689,7 +711,7 @@ luaL_Reg attackData_funcs[] = {
     {NULL, NULL}
 };
 
-int attackData_ctor( lua_State* L )
+int attackData_ctor(lua_State* L)
 {
     // TODO: get init params
 
@@ -701,7 +723,7 @@ int attackData_ctor( lua_State* L )
     return 0;
 }
 
-int attackData_setAttackType( lua_State* L )
+int attackData_setAttackType(lua_State* L)
 {
     int type = lua_tointeger(L, 2);
 
@@ -711,7 +733,7 @@ int attackData_setAttackType( lua_State* L )
     return 0;
 }
 
-int attackData_getAttackType( lua_State* L )
+int attackData_getAttackType(lua_State* L)
 {
     CAttackData* _p = NULL;
     int type = luaL_toobjptr(L, 1, _p)->getAttackValue().getType();
@@ -721,7 +743,7 @@ int attackData_getAttackType( lua_State* L )
     return 1;
 }
 
-int attackData_setAttackValue( lua_State* L )
+int attackData_setAttackValue(lua_State* L)
 {
     float value = lua_tonumber(L, 2);
 
@@ -731,7 +753,7 @@ int attackData_setAttackValue( lua_State* L )
     return 0;
 }
 
-int attackData_getAttackValue( lua_State* L )
+int attackData_getAttackValue(lua_State* L)
 {
     CAttackData* _p = NULL;
     float value = luaL_toobjptr(L, 1, _p)->getAttackValue().getValue();
@@ -741,7 +763,7 @@ int attackData_getAttackValue( lua_State* L )
     return 1;
 }
 
-int attackData_addAttackBuff( lua_State* L )
+int attackData_addAttackBuff(lua_State* L)
 {
     int buff = lua_tointeger(L, 2);
     int level = lua_tointeger(L, 3);
@@ -752,18 +774,7 @@ int attackData_addAttackBuff( lua_State* L )
     return 0;
 }
 
-int g_addUnit( lua_State* L )
-{
-    CUnit* u = luaL_tounitptr(L);
-    lua_getglobal(L, "_world");
-    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    w->addUnit(u);
-    lua_pop(L, 1);
-
-    return 0;
-}
-
-int g_addTemplateAbility( lua_State* L )
+int g_addTemplateAbility(lua_State* L)
 {
     CAbility* a = luaL_toabilityptr(L, 1);
     lua_getglobal(L, "_world");
@@ -776,7 +787,7 @@ int g_addTemplateAbility( lua_State* L )
     return 1;
 }
 
-int g_setControlUnit( lua_State* L )
+int g_setControlUnit(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L, 1);
 
@@ -814,6 +825,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_setglobal(L, "_world");
 
     // TODO: reg global funcs
+    lua_register(L, "addTemplateAbility", g_addTemplateAbility);
     lua_register(L, "setControlUnit", g_setControlUnit);
     lua_register(L, "getControlUnit", g_getControlUnit);
     
@@ -873,4 +885,172 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     
     return 0;
 }
+
+int AttackBuffMakerPas_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float chance = lua_tonumber(L, 3);
+    int buff = lua_tointeger(L, 4);
+    bool toself = lua_toboolean(L, 5) != 0;
+    float exAttackA = lua_tonumber(L, 6);
+    float exAttackB = lua_tonumber(L, 7);
+
+    CAttackBuffMakerPas* _p = new CAttackBuffMakerPas("ABM", name, chance, buff, toself, CExtraCoeff(exAttackA, exAttackB));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int AuraPas_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float interval = lua_tonumber(L, 3);
+    int buff = lua_tointeger(L, 4);
+    float range = lua_tonumber(L, 5);
+    unsigned int effect = lua_tounsigned(L, 6);
+
+    CAuraPas* _p = new CAuraPas("Aura", name, interval, buff, range, effect);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int VampirePas_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float conversion = lua_tonumber(L, 3);
+
+    CVampirePas* _p = new CVampirePas("Vampire", name, conversion);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int StunBuff_ctor(lua_State* L)
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+    bool stackable = lua_toboolean(L, 5) != 0;
+
+    CStunBuff* _p = new CStunBuff(root, name, duration, stackable);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int DoubleAttackPas_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float chance = lua_tonumber(L, 3);
+    float exAttackA = lua_tonumber(L, 4);
+    float exAttackB = lua_tonumber(L, 5);
+
+    CDoubleAttackPas* _p = new CDoubleAttackPas("DoubleAttack", name, chance, CExtraCoeff(exAttackA, exAttackB));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int SpeedBuff_ctor(lua_State* L)
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+    bool stackable = lua_toboolean(L, 5) != 0;
+    float moveA = lua_tonumber(L, 6);
+    float moveB = lua_tonumber(L, 7);
+    float attackA = lua_tonumber(L, 8);
+    float attackB = lua_tonumber(L, 9);
+
+    CSpeedBuff* _p = new CSpeedBuff(root, name, duration, stackable, CExtraCoeff(moveA, moveB), CExtraCoeff(attackA, attackB));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int ChangeHpBuff_ctor(lua_State* L)
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+    bool stackable = lua_toboolean(L, 5) != 0;
+    float interval = lua_tonumber(L, 6);
+    float exChangeMaxHpA = lua_tonumber(L, 7);
+    float exChangeMaxHpB = lua_tonumber(L, 8);
+    float exMinMaxHpA = lua_tonumber(L, 9);
+    float exMinMaxHpB = lua_tonumber(L, 10);
+
+    CChangeHpBuff* _p = new CChangeHpBuff(root, name, duration, stackable, interval, CExtraCoeff(exChangeMaxHpA, exChangeMaxHpB), CExtraCoeff(exMinMaxHpA, exMinMaxHpB));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int RebirthPas_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float cd = lua_tonumber(L, 3);
+    float exMaxHpA = lua_tonumber(L, 4);
+    float exMaxHpB = lua_tonumber(L, 5);
+
+    CRebirthPas* _p = new CRebirthPas("Rebirth", name, cd, CExtraCoeff(exMaxHpA, exMaxHpB));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int EvadePas_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float chance = lua_tonumber(L, 3);
+    int buff = lua_tointeger(L, 4);
+
+    CEvadePas* _p = new CEvadePas("Evade", name, chance, buff);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int EvadeBuff_ctor(lua_State* L)
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+    bool stackable = lua_toboolean(L, 5) != 0;
+    float chance = lua_tonumber(L, 6);
+
+    CEvadeBuff* _p = new CEvadeBuff(root, name, duration, stackable, chance);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int BuffMakerAct_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float cd = lua_tonumber(L, 3);
+    int target = lua_tointeger(L, 4);
+    unsigned int effect = lua_tounsigned(L, 5);
+    float chance = lua_tonumber(L, 6);
+    int buff = lua_tointeger(L, 7);
+
+    CBuffMakerAct* _p = new CBuffMakerAct("BM", name, cd, (CCommandTarget::TARGET_TYPE)target, effect, chance, buff);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+
 

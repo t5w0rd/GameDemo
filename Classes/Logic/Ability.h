@@ -6,7 +6,7 @@
  */
 
 #ifndef __ABILITY_H__
-#define	__ABILITY_H__
+#define __ABILITY_H__
 
 #include "MultiRefObject.h"
 #include "Level.h"
@@ -46,6 +46,8 @@ public:
 
     typedef vector<int> VEC_CAST_ANIS;
     M_SYNTHESIZE_PASS_BY_REF(VEC_CAST_ANIS, m_vecCastAnis, CastAnimations);
+
+    void fireProjectile(int iProjectile, const CCommandTarget& rTarget);
     
     // 技能持有者事件响应，只覆被注册的触发器相应的事件函数即可
     // @override
@@ -63,13 +65,14 @@ public:
     virtual void onUnitDamaged(CAttackData* pAttack, CUnit* pSource);
     virtual void onUnitDamagedDone(float fDamage, CUnit* pSource);
     virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
-    
-    virtual void onUnitProjectileEffect(CProjectile* pProjectile);
+    virtual void onUnitProjectileEffect(const CPoint& p, CUnit* pTarget);
+    virtual void onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget);
     
 public:
     // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生
     void onAddToUnit(CUnit* pOwner);
     void onDelFromUnit();
+    void copyScriptHandler(int iScriptHandler);
     
     M_SYNTHESIZE_READONLY(uint32_t, m_dwTriggerFlags, TriggerFlags);
     virtual void setTriggerFlags(uint32_t dwTriggerFlags);
@@ -86,11 +89,11 @@ public:
     static const float CONST_MAX_CAST_BUFFER_RANGE;
     static const float CONST_MAX_HOR_CAST_Y_RANGE;
 
-    virtual bool cast();
+    bool cast();
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
 
-    void fireProjectile(CAttackData* pAttackData);
+    void effect();
     
     // 限定施法参数
     M_SYNTHESIZE(CCommandTarget::TARGET_TYPE, m_eCastTargetType, CastTargetType);
@@ -124,7 +127,7 @@ class CBuffAbility : public CAbility
 {
 public:
     CBuffAbility(const char* pRootId, const char* pName, float fDuration, bool bStackable);
-    virtual ~CBuffAbility();
+    virtual CMultiRefObject* copy() const;
 
     M_SYNTHESIZE(float, m_fDuration, Duration);
     M_SYNTHESIZE(float, m_fElapsed, Elapsed);
@@ -153,7 +156,7 @@ public:
     virtual void onUnitDelAbility();
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
-    virtual void onUnitProjectileEffect(CProjectile* pProjectile);
+    virtual void onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget);
         
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, BaseAttack);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_aoExAttackValue, ExAttackValue);
@@ -193,12 +196,14 @@ protected:
 class CBuffMakerAct : public CActiveAbility
 {
 public:
-    CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, int iTemplateBuff, CCommandTarget::TARGET_TYPE eCastType = CCommandTarget::kNoTarget, uint32_t dwEffectiveTypeFlags = CUnitForce::kSelf);
+    CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, float fChance, int iTemplateBuff);
     virtual CMultiRefObject* copy() const;
     
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
+    virtual void onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget);
     
+    M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
     
 protected:
@@ -206,14 +211,6 @@ protected:
 };
 
 /////////////////////// PassiveAbilitys & BuffAbilitys ///////////////////////
-class CLuaAbilityPas : public CPassiveAbility
-{
-public:
-    CLuaAbilityPas(const char* pRootId, const char* pName, float fCoolDown = 0);
-    virtual CMultiRefObject* copy() const;
-    
-};
-
 // 光环，范围型BUFF附加器
 class CAuraPas : public CPassiveAbility
 {
@@ -233,12 +230,27 @@ public:
 class CAttackBuffMakerPas : public CPassiveAbility
 {
 public:
-    CAttackBuffMakerPas(const char* pRootId, const char* pName, float fProbability, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
+    CAttackBuffMakerPas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
     virtual CMultiRefObject* copy() const;
     
     virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
     
-    M_SYNTHESIZE(float, m_fProbability, Probability);
+    M_SYNTHESIZE(float, m_fChance, Chance);
+    M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
+    M_SYNTHESIZE_BOOL(ToSelf);
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
+};
+
+class CDamageBuffMakerBuff : public CBuffAbility
+{
+public:
+    CDamageBuffMakerBuff(const char* pName, const CAttackValue& rDamage, float fChance, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
+    virtual CMultiRefObject* copy() const;
+
+    virtual void onUnitAddAbility();
+
+    M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oDamage, Damage);
+    M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
     M_SYNTHESIZE_BOOL(ToSelf);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
@@ -265,13 +277,13 @@ public:
     virtual void onUnitDelAbility();
 };
 
-class CDoubleAttackBuff : public CBuffAbility
+class CDoubleAttackPas : public CAttackBuffMakerPas
 {
 public:
-    CDoubleAttackBuff(const char* pRootId, const char* pName);
+    CDoubleAttackPas(const char* pRootId, const char* pName, float fChance, const CExtraCoeff& roExAttackValue = CExtraCoeff());
     virtual CMultiRefObject* copy() const;
     
-    virtual void onUnitAddAbility();
+    virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
     
 };
 
@@ -345,5 +357,5 @@ public:
     M_SYNTHESIZE(float, m_fChance, Chance);
 };
 
-#endif	/* __ABILITY_H__ */
+#endif  /* __ABILITY_H__ */
 

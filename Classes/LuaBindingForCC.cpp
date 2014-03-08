@@ -110,7 +110,7 @@ int unit4cc_addBattleTip(lua_State* L)
     return 0;
 }
 
-CUnitDrawForCC* luaL_tospriteptr( lua_State* L, int idx /*= 1*/ )
+CUnitDrawForCC* luaL_tospriteptr(lua_State* L, int idx /*= 1*/)
 {
     lua_getfield(L, idx, "_p");
     CUnitDrawForCC* ret = (CUnitDrawForCC*)lua_touserdata(L, lua_gettop(L));
@@ -127,7 +127,7 @@ luaL_Reg sprite4cc_funcs[] = {
     {NULL, NULL}
 };
 
-int sprite4cc_ctor( lua_State* L )
+int sprite4cc_ctor(lua_State* L)
 {
     const char* name = lua_tostring(L, 2);
 
@@ -138,7 +138,7 @@ int sprite4cc_ctor( lua_State* L )
     return 0;
 }
 
-int sprite4cc_prepareFrame( lua_State* L )
+int sprite4cc_prepareFrame(lua_State* L)
 {
     int id = lua_tointeger(L, 2);
     const char* name = lua_tostring(L, 3);
@@ -149,7 +149,7 @@ int sprite4cc_prepareFrame( lua_State* L )
     return 0;
 }
 
-int sprite4cc_prepareAnimation( lua_State* L )
+int sprite4cc_prepareAnimation(lua_State* L)
 {
     int id = lua_tointeger(L, 2);
     const char* name = lua_tostring(L, 3);
@@ -161,7 +161,7 @@ int sprite4cc_prepareAnimation( lua_State* L )
     return 0;
 }
 
-int sprite4cc_setGeometry( lua_State* L )
+int sprite4cc_setGeometry(lua_State* L)
 {
     float fHalfOfWidth = lua_tonumber(L, 2);
     float fHalfOfHeight = lua_tonumber(L, 3);
@@ -174,7 +174,26 @@ int sprite4cc_setGeometry( lua_State* L )
     return 0;
 }
 
-int g_loadTexture( lua_State* L )
+int g_cclog(lua_State* L)
+{
+    lua_getglobal(L, "string");
+    lua_getfield(L, -1, "format");
+    int n = lua_gettop(L);
+    for (int i = 1; i <= n; ++i)
+    {
+        lua_pushvalue(L, i);
+    }
+    lua_call(L, n, 1);
+    
+    const char* log = lua_tostring(L, -1);
+    CCLOG("%s", log);
+    
+    lua_pop(L, 2);  // pop res and "string"
+    
+    return 0;
+}
+
+int g_loadTexture(lua_State* L)
 {
     const char* name = lua_tostring(L, 1);
 
@@ -184,7 +203,7 @@ int g_loadTexture( lua_State* L )
     return 0;
 }
 
-int g_loadAnimation( lua_State* L )
+int g_loadAnimation(lua_State* L)
 {
     const char* path = lua_tostring(L, 1);
     const char* name = lua_tostring(L, 2);
@@ -196,15 +215,14 @@ int g_loadAnimation( lua_State* L )
     return 0;
 }
 
-int luaRegWorldFuncsForCC( lua_State* L, CWorld* pWorld )
+int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
 
     // TODO: reg global funcs
-    lua_pushcfunction(L, g_loadTexture);
-    lua_setglobal(L, "loadTexture");
-    lua_pushcfunction(L, g_loadAnimation);
-    lua_setglobal(L, "loadAnimation");
+    lua_register(L, "loadTexture", g_loadTexture);
+    lua_register(L, "loadAnimation", g_loadAnimation);
+    lua_register(L, "cclog", g_cclog);
 
     // TODO: reg global class members
     lua_getglobal(L, "Unit");
@@ -247,7 +265,7 @@ int luaRegWorldFuncsForCC( lua_State* L, CWorld* pWorld )
     return 0;
 }
 
-int StatusShowPas_ctor( lua_State* L )
+int StatusShowPas_ctor(lua_State* L)
 {
     CStatusShowPas* _p = new CStatusShowPas();
     //_p->setScriptHandler(luaL_setregistry(L, 1));

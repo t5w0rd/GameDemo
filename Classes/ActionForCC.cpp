@@ -14,7 +14,7 @@ CCCallFuncNMultiObj::~CCCallFuncNMultiObj()
     }
 }
 
-bool CCCallFuncNMultiObj::initWithTarget( CCObject* pSelectorTarget, SEL_CallFuncND selector, CCallFuncData* d )
+bool CCCallFuncNMultiObj::initWithTarget(CCObject* pSelectorTarget, SEL_CallFuncND selector, CCallFuncData* d)
 {
     if (d != NULL)
     {
@@ -24,7 +24,7 @@ bool CCCallFuncNMultiObj::initWithTarget( CCObject* pSelectorTarget, SEL_CallFun
     return CCCallFuncND::initWithTarget(pSelectorTarget, selector, d);
 }
 
-CCObject* CCCallFuncNMultiObj::copyWithZone( CCZone *zone )
+CCObject* CCCallFuncNMultiObj::copyWithZone(CCZone *zone)
 {
     CCZone* pNewZone = NULL;
     CCCallFuncNMultiObj* pRet = NULL;
@@ -52,7 +52,7 @@ CCNotifyAnimate::~CCNotifyAnimate()
     }
 }
 
-bool CCNotifyAnimate::initWithAnimation( CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData )
+bool CCNotifyAnimate::initWithAnimation(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData)
 {
     if (!CCAnimate::initWithAnimation(pAnimation))
     {
@@ -72,15 +72,15 @@ bool CCNotifyAnimate::initWithAnimation( CCAnimation* pAnimation, int iNotifyFra
     return true;
 }
 
-void CCNotifyAnimate::update( float t )
+void CCNotifyAnimate::update(float t)
 {
     // if t==1, ignore. Animation should finish with t==1
-    if( t < 1.0f ) {
+    if(t < 1.0f) {
         t *= getAnimation()->getLoops();
 
         // new loop?  If so, reset frame counter
         unsigned int loopNumber = (unsigned int)t;
-        if( loopNumber > m_uExecutedLoops ) {
+        if(loopNumber > m_uExecutedLoops) {
             m_nNextFrame = 0;
             m_uExecutedLoops++;
         }
@@ -93,16 +93,16 @@ void CCNotifyAnimate::update( float t )
     unsigned int numberOfFrames = frames->count();
     CCSpriteFrame *frameToDisplay = NULL;
 
-    for( unsigned int i=m_nNextFrame; i < numberOfFrames; i++ ) {
+    for(unsigned int i=m_nNextFrame; i < numberOfFrames; i++) {
         float splitTime = m_pSplitTimes->at(i);
 
-        if( splitTime <= t ) {
+        if(splitTime <= t) {
             CCAnimationFrame* frame = (CCAnimationFrame*)frames->objectAtIndex(i);
             frameToDisplay = frame->getSpriteFrame();
             ((CCSprite*)m_pTarget)->setDisplayFrame(frameToDisplay);
 
             CCDictionary* dict = frame->getUserInfo();
-            if( dict )
+            if(dict)
             {
                 //TODO: [[NSNotificationCenter defaultCenter] postNotificationName:CCAnimationFrameDisplayedNotification object:target_ userInfo:dict];
             }
@@ -118,7 +118,7 @@ void CCNotifyAnimate::update( float t )
     }
 }
 
-CCObject* CCNotifyAnimate::copyWithZone( CCZone* pZone )
+CCObject* CCNotifyAnimate::copyWithZone(CCZone* pZone)
 {
     CCZone* pNewZone = NULL;
     CCNotifyAnimate* pCopy = NULL;
@@ -142,7 +142,7 @@ CCObject* CCNotifyAnimate::copyWithZone( CCZone* pZone )
 }
 
 // CCFadeInOutScale4
-bool CCFadeInOutScale4::init( float fScaleStart, float fScaleMid, float fScaleEnd, float fDurToMid, float fDurToNormal, float fDurKeep, float fDurToEnd )
+bool CCFadeInOutScale4::init(float fScaleStart, float fScaleMid, float fScaleEnd, float fDurToMid, float fDurToNormal, float fDurKeep, float fDurToEnd)
 {
     m_fScaleStart = fScaleStart;
     CCActionInterval* pAct0 = CCSpawn::createWithTwoActions(CCFadeIn::create(fDurToMid), CCScaleTo::create(fDurToMid, fScaleMid));
@@ -153,7 +153,7 @@ bool CCFadeInOutScale4::init( float fScaleStart, float fScaleMid, float fScaleEn
     return CCSequence::initWithTwoActions(CCSequence::create(pAct0, pAct1, pAct2, NULL), pAct3);
 }
 
-void CCFadeInOutScale4::startWithTarget( CCNode *pTarget )
+void CCFadeInOutScale4::startWithTarget(CCNode *pTarget)
 {
     CCSequence::startWithTarget(pTarget);
     m_pTarget->setScale(m_fScaleStart);
@@ -195,7 +195,7 @@ CCMoveToNode::~CCMoveToNode()
     }
 }
 
-bool CCMoveToNode::initWithNode( float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta /*= 0.0f*/ )
+bool CCMoveToNode::initWithNode(float fDuration, CCNode* pToNode, bool bFixRotation, float fMaxHeightDelta /*= 0.0f*/)
 {
     if (CCActionInterval::initWithDuration(fDuration) == false)
     {
@@ -215,7 +215,7 @@ bool CCMoveToNode::initWithNode( float fDuration, CCNode* pToNode, bool bFixRota
     return true;
 }
 
-bool CCMoveToNode::initWithDraw( float fDuration, CUnitDrawForCC* pToDraw, bool bFixRotation /*= true*/, float fMaxHeightDelta /*= 0.0f*/ )
+bool CCMoveToNode::initWithDraw(float fDuration, CUnitDrawForCC* pToDraw, bool bFixRotation /*= true*/, float fMaxHeightDelta /*= 0.0f*/)
 {
     if (CCActionInterval::initWithDuration(fDuration) == false)
     {
@@ -234,7 +234,7 @@ bool CCMoveToNode::initWithDraw( float fDuration, CUnitDrawForCC* pToDraw, bool 
     return true;
 }
 
-bool CCMoveToNode::initWithProjectile( float fDuration, CProjectileForCC* pToProjectile, bool bFixRotation /*= true*/, float fMaxHeightDelta /*= 0.0f*/ )
+bool CCMoveToNode::initWithProjectile(float fDuration, CProjectileForCC* pToProjectile, bool bFixRotation /*= true*/, float fMaxHeightDelta /*= 0.0f*/)
 {
     if (CCActionInterval::initWithDuration(fDuration) == false)
     {
@@ -253,7 +253,7 @@ bool CCMoveToNode::initWithProjectile( float fDuration, CProjectileForCC* pToPro
     return true;
 }
 
-void CCMoveToNode::startWithTarget( CCNode *pTarget )
+void CCMoveToNode::startWithTarget(CCNode *pTarget)
 {
     CCActionInterval::startWithTarget(pTarget);
 
@@ -284,7 +284,7 @@ void CCMoveToNode::startWithTarget( CCNode *pTarget )
     m_fMinSpeed = sqrt(m_oDeltaPos.x * m_oDeltaPos.x + m_oDeltaPos.y * m_oDeltaPos.y) / m_fDuration;
 }
 
-void CCMoveToNode::update( float time )
+void CCMoveToNode::update(float time)
 {
     if (m_pTarget == NULL)
     {
@@ -361,7 +361,7 @@ void CCMoveToNode::update( float time )
     //CCLOG("%.2f, %.2f", CC_RADIANS_TO_DEGREES(-ccpToAngle(ccpSub(m_oEndPos, m_oStartPos))), (m_oStartPos.x > m_oEndPos.x ? CC_RADIANS_TO_DEGREES(fOffsetR) : CC_RADIANS_TO_DEGREES(fOffsetR)));
 }
 
-CCObject* CCMoveToNode::copyWithZone( CCZone* pZone )
+CCObject* CCMoveToNode::copyWithZone(CCZone* pZone)
 {
     CCZone* pNewZone = NULL;
     CCMoveToNode* pCopy = NULL;
@@ -447,7 +447,7 @@ CCLink::~CCLink()
     }
 }
 
-bool CCLink::initWithDrawToDraw( CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData, CUnitDrawForCC* pFromDraw, CUnitDrawForCC* pToDraw )
+bool CCLink::initWithDrawToDraw(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData, CUnitDrawForCC* pFromDraw, CUnitDrawForCC* pToDraw)
 {
     if (CCNotifyAnimate::initWithAnimation(pAnimation, iNotifyFrameIndex, pSelector, pCallback, pData) == false)
     {
@@ -467,7 +467,7 @@ bool CCLink::initWithDrawToDraw( CCAnimation* pAnimation, int iNotifyFrameIndex,
     return true;
 }
 
-CCObject* CCLink::copyWithZone( CCZone* pZone )
+CCObject* CCLink::copyWithZone(CCZone* pZone)
 {
     CCZone* pNewZone = NULL;
     CCLink* pCopy = NULL;
@@ -502,7 +502,7 @@ CCObject* CCLink::copyWithZone( CCZone* pZone )
     return pCopy;
 }
 
-void CCLink::startWithTarget( CCNode *pTarget )
+void CCLink::startWithTarget(CCNode *pTarget)
 {
     CCNotifyAnimate::startWithTarget(pTarget);
 
@@ -512,7 +512,7 @@ void CCLink::startWithTarget( CCNode *pTarget )
         
         CCProjectileSprite* sp = DCAST(m_pTarget, CCProjectileSprite*);
         CProjectileForCC* p = sp->getProjectile();
-        if (m_eFromType == kDraw && m_pFromDraw->getUnit()->getId() == p->getSourceUnit())
+        if (m_eFromType == kDraw && m_pFromDraw->getUnit()->getId() == p->getSrcUnit())
         {
             m_bFireFrom = true;
         }
@@ -529,7 +529,7 @@ void CCLink::startWithTarget( CCNode *pTarget )
     pTarget->setVisible(false);
 }
 
-void CCLink::update( float t )
+void CCLink::update(float t)
 {
     if (m_pTarget)
     {

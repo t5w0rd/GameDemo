@@ -2,7 +2,7 @@
 #include "GameControl.h"
 
 
-CCGameControler::CCGameControler( void )
+CCGameControler::CCGameControler(void)
 {
 
 }
@@ -15,14 +15,14 @@ bool CCGameControler::init()
     return true;
 }
 
-void CCGameControler::loadTexture( const char* pPath )
+void CCGameControler::loadTexture(const char* pPath)
 {
     char szName[256];
     sprintf(szName, "%s.plist", pPath);
     m_fc->addSpriteFramesWithFile(szName);
 }
 
-CCAnimation* CCGameControler::loadAnimation( const char* pPath, const char* pName, float fDelay )
+CCAnimation* CCGameControler::loadAnimation(const char* pPath, const char* pName, float fDelay)
 {
     // loadAnimation("Units/Malik/move", "/Malik/move")
     CCSpriteFrame* pSf;
@@ -52,14 +52,14 @@ CCAnimation* CCGameControler::loadAnimation( const char* pPath, const char* pNam
     return pAni;
 }
 
-CCSpriteFrame* CCGameControler::getFrame( const char* pName )
+CCSpriteFrame* CCGameControler::getFrame(const char* pName)
 {
     char szName[256];
     sprintf(szName, "%s.png", pName);
     return m_fc->spriteFrameByName(szName);
 }
 
-CCAnimation* CCGameControler::getAnimation( const char* pName )
+CCAnimation* CCGameControler::getAnimation(const char* pName)
 {
     return m_ac->animationByName(pName);
 }

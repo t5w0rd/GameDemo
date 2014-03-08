@@ -14,13 +14,6 @@
 #include "LuaBinding.h"
 
 
-#ifdef DEBUG_FOR_CC
-// for cocos2d
-#include "../CommHeader.h"
-#include "../DrawForCC.h"
-#endif
-
-
 // CAbility
 CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 : CONST_ROOT_ID(pRootId)
@@ -84,6 +77,33 @@ void CAbility::setInterval(float fInterval)
     m_fInterval = fInterval;
 }
 
+void CAbility::fireProjectile(int iProjectile, const CCommandTarget& rTarget)
+{
+    assert(iProjectile != 0);
+
+    CUnit* o = getOwner();
+    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    CWorld* w = o->getWorld();
+    CProjectile* p = NULL;
+    w->copyProjectile(iProjectile)->dcast(p);
+    w->addProjectile(p);
+    p->setSrcUnit(o->getId());
+    p->setSrcAbility(this);
+
+    if (rTarget.getTargetType() == CCommandTarget::kUnitTarget)
+    {
+        CUnit* t = w->getUnit(rTarget.getTargetUnit());
+        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+        assert(td != NULL);
+
+        p->setFromToType(CProjectile::kUnitToUnit);
+        p->setFromUnit(o->getId());
+        p->setToUnit(t->getId());
+
+        p->fire();
+    }
+}
+
 void CAbility::onUnitAddAbility()
 {
     if (getScriptHandler() == 0)
@@ -93,9 +113,9 @@ void CAbility::onUnitAddAbility()
     
     lua_State* L = CWorld::getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
-
+    
     lua_getfield(L, a, "onUnitAddAbility");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
     
     lua_pop(L, 1);  // pop 'a'
@@ -112,7 +132,7 @@ void CAbility::onUnitDelAbility()
     int a = luaL_getregistery(L, getScriptHandler());
     
     lua_getfield(L, a, "onUnitDelAbility");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
     
     lua_pop(L, 1);  // pop 'a'
@@ -129,7 +149,7 @@ void CAbility::onUnitAbilityReady()
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitAbilityReady");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
     
     lua_pop(L, 1);  // pop 'a'
@@ -146,7 +166,7 @@ void CAbility::onUnitRevive()
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitRevive");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
     
     lua_pop(L, 1);  // pop 'a'
@@ -163,7 +183,7 @@ void CAbility::onUnitDying()
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDying");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
     
     lua_pop(L, 1);  // pop 'a'
@@ -180,7 +200,7 @@ void CAbility::onUnitDead()
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDead");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
     
     lua_pop(L, 1);  // pop 'a'
@@ -197,7 +217,7 @@ void CAbility::onUnitChangeHp(float fChanged)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitChangeHp");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_pushnumber(L, fChanged);
     lua_call(L, 2, 0);
     
@@ -215,7 +235,7 @@ void CAbility::onUnitTick(float dt)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitTick");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_pushnumber(L, dt);
     lua_call(L, 2, 0);
     
@@ -233,7 +253,7 @@ void CAbility::onUnitInterval()
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitInterval");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
     
     lua_pop(L, 1);  // pop 'a'
@@ -250,7 +270,7 @@ CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitAttackTarget");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     luaL_pushobjptr(L, "AttackData", pAttack);
     luaL_pushobjptr(L, "Unit", pTarget);
     lua_call(L, 3, 1);
@@ -276,7 +296,7 @@ CAttackData* CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitAttacked");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     luaL_pushobjptr(L, "AttackData", pAttack);
     luaL_pushobjptr(L, "Unit", pSource);
     lua_call(L, 3, 1);
@@ -302,7 +322,7 @@ void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDamaged");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     luaL_pushobjptr(L, "AttackData", pAttack);
     luaL_pushobjptr(L, "Unit", pSource);
     lua_call(L, 3, 0);
@@ -321,7 +341,7 @@ void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDamagedDone");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_pushnumber(L, fDamage);
     luaL_pushobjptr(L, "Unit", pSource);
     lua_call(L, 3, 0);
@@ -340,7 +360,7 @@ void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDamageTargetDone");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_pushnumber(L, fDamage);
     luaL_pushobjptr(L, "Unit", pTarget);
     lua_call(L, 3, 0);
@@ -348,7 +368,7 @@ void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     lua_pop(L, 1);  // pop 'a'
 }
 
-void CAbility::onUnitProjectileEffect(CProjectile* pProjectile)
+void CAbility::onUnitProjectileEffect(const CPoint& p, CUnit* pTarget)
 {
     if (getScriptHandler() == 0)
     {
@@ -359,12 +379,20 @@ void CAbility::onUnitProjectileEffect(CProjectile* pProjectile)
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitProjectileEffect");
-    luaL_getcopy(L, a);
-    lua_pushnil(L);  // NOT IMPLEMENT
-    lua_call(L, 2, 0);
+    lua_pushvalue(L, a);
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+    luaL_pushobjptr(L, "Unit", pTarget);
+    lua_call(L, 4, 0);
     
     lua_pop(L, 1);  // pop 'a'
 }
+
+void CAbility::onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget)
+{
+
+}
+
 
 void CAbility::onAddToUnit(CUnit* pOwner)
 {
@@ -376,6 +404,28 @@ void CAbility::onDelFromUnit()
 {
     onUnitDelAbility();
     setOwner(NULL);
+}
+
+void CAbility::copyScriptHandler(int iScriptHandler)
+{
+    if (iScriptHandler == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+
+    // copy source lua obj
+    lua_getglobal(L, "table");
+    lua_getfield(L, -1, "copy");
+    luaL_getregistery(L, iScriptHandler);
+    lua_call(L, 1, 1);
+
+    lua_pushlightuserdata(L, this);
+    lua_setfield(L, -2, "_p");
+    setScriptHandler(luaL_ref(L, LUA_REGISTRYINDEX));
+
+    lua_pop(L, 1);  // pop "table"
 }
 
 void CAbility::setTriggerFlags(uint32_t dwTriggerFlags)
@@ -440,7 +490,7 @@ bool CActiveAbility::checkConditions()
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "checkConditions");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 1);
     bool res = lua_toboolean(L, -1) != 0;
     lua_pop(L, 1);
@@ -459,40 +509,13 @@ void CActiveAbility::onUnitCastAbility()
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitCastAbility");
-    luaL_getcopy(L, a);
+    lua_pushvalue(L, a);
     lua_call(L, 1, 0);
 
     lua_pop(L, 1);
 }
 
-void CActiveAbility::fireProjectile(CAttackData* pAttackData)
-{
-    assert(getTemplateProjectile() != 0);
-
-    CUnit* o = getOwner();
-    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
-    CWorld* w = o->getWorld();
-    CProjectile* p = NULL;
-    w->copyProjectile(getTemplateProjectile())->dcast(p);
-    w->addProjectile(p);
-    p->setSourceUnit(o->getId());
-    p->setAttackData(pAttackData);
-
-    if (getCastTargetType() == CCommandTarget::kUnitTarget)
-    {
-        CUnit* t = w->getUnit(d->getCastTarget().getTargetUnit());
-        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-        assert(td != NULL);
-
-        p->setFromToType(CProjectile::kUnitToUnit);
-        p->setFromUnit(o->getId());
-        p->setToUnit(t->getId());
-
-        p->fire();
-    }
-}
-
-void CActiveAbility::addCastAnimation( int id )
+void CActiveAbility::addCastAnimation(int id)
 {
     m_vecCastAnis.push_back(id);
 }
@@ -506,6 +529,58 @@ int CActiveAbility::getCastRandomAnimation() const
 
     return m_vecCastAnis[rand() % m_vecCastAnis.size()];
 }
+
+void CActiveAbility::effect()
+{
+    CUnit* o = getOwner();
+    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    // Ability
+    
+    coolDown();
+
+    onUnitCastAbility();
+
+    switch (getCastTargetType())
+    {
+    case CCommandTarget::kNoTarget:
+        break;
+
+    case CCommandTarget::kUnitTarget:
+        {
+            CUnit* t = o->getUnit(d->getCastTarget().getTargetUnit());
+
+            if (t == NULL || t->isDead())
+            {
+                return;
+            }
+
+            if (getTemplateProjectile() != 0)
+            {
+                fireProjectile(getTemplateProjectile(), d->getCastTarget());
+            }
+            else
+            {
+                onUnitAbilityProjectileEffect(d->getCastTarget().getTargetPoint(), t);
+            }
+        }
+        break;
+
+    case CCommandTarget::kPointTarget:
+        break;
+    }
+
+    
+#if 1
+    // onCastAbility在cd变化下面，所以可以添加重置cd的逻辑
+#else
+    ad->retain();
+    TEST_ATTACK_INFO* pAi = new TEST_ATTACK_INFO;
+    pAi->iTarget = t->getId();
+    pAi->pAttackData = ad;
+    o->runAction(new CCallFunc(this, (FUNC_CALLFUNC_ND)&CAttackAct::onTestAttackEffect, pAi));
+#endif
+}
+
 
 // CPassiveAbility
 CPassiveAbility::CPassiveAbility(const char* pRootId, const char* pName, float fCoolDown)
@@ -529,8 +604,17 @@ CBuffAbility::CBuffAbility(const char* pRootId, const char* pName, float fDurati
     setDbgClassName("CBuffAbility");
 }
 
-CBuffAbility::~CBuffAbility()
+CMultiRefObject* CBuffAbility::copy() const
 {
+    CBuffAbility* ret = new CBuffAbility(getRootId(), getName(), m_fDuration, m_bStackable);
+    //ret->setScriptHandler(getScriptHandler());
+    ret->setSrcUnit(getSrcUnit());
+    ret->setLevel(getLevel());
+    ret->setInterval(getInterval());
+    ret->setTriggerFlags(getTriggerFlags());
+    ret->copyScriptHandler(getScriptHandler());
+    
+    return ret;
 }
 
 bool CBuffAbility::isDone() const
@@ -549,7 +633,6 @@ CAttackAct::CAttackAct(const char* pRootId, const char* pName, float fCoolDown, 
 , m_fAttackValueRandomRange(fAttackValueRandomRange)
 {
     setDbgClassName("CAttackAct");
-    setTriggerFlags(CUnit::kOnProjectileEffectTrigger);
 }
 
 CMultiRefObject* CAttackAct::copy() const
@@ -593,41 +676,25 @@ bool CAttackAct::checkConditions()
 
 void CAttackAct::onUnitCastAbility()
 {
+}
+
+void CAttackAct::onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget)
+{
     CUnit* o = getOwner();
-    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(getCastTargetType() == CCommandTarget::kUnitTarget);
-    CUnit* t = o->getUnit(d->getCastTarget().getTargetUnit());
-    
-    if (t == NULL || t->isDead())
-    {
-        return;
-    }
-    
+
     CAttackData* ad = new CAttackData();
-    ad->setAttackValue((CAttackValue::ATTACK_TYPE)getBaseAttack().getType(), getRealAttackValue());
-    
-    ad = o->attackAdv(ad, t);
+    ad->setAttackValue(getBaseAttack().getType(), getRealAttackValue());
+
+    ad = o->attackAdv(ad, pTarget);
     if (ad == NULL)
     {
         return;
     }
 
-#if 1
-    if (getTemplateProjectile() == 0)
+    if (pTarget != NULL)
     {
-        t->damagedAdv(ad, o);
+        pTarget->damagedAdv(ad, o);
     }
-    else
-    {
-        fireProjectile(ad);
-    }
-#else
-    ad->retain();
-    TEST_ATTACK_INFO* pAi = new TEST_ATTACK_INFO;
-    pAi->iTarget = t->getId();
-    pAi->pAttackData = ad;
-    o->runAction(new CCallFunc(this, (FUNC_CALLFUNC_ND)&CAttackAct::onTestAttackEffect, pAi));
-#endif
 }
 
 float CAttackAct::getBaseAttackValue() const
@@ -731,23 +798,10 @@ void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
     delete pAi;
 }
 
-void CAttackAct::onUnitProjectileEffect( CProjectile* pProjectile )
-{
-    CUnit* o = getOwner();
-    if (pProjectile->getFromToType() == CProjectile::kUnitToUnit || pProjectile->getFromToType() == CProjectile::kPointToUnit)
-    {
-        CUnit* t = o->getUnit(pProjectile->getToUnit());
-        //CUnit* s = o->getUnit(pProjectile->getSourceUnit());
-        if (t != NULL)
-        {
-            t->damagedAdv(pProjectile->getAttackData(), o);
-        }
-    }
-}
-
 // CBuffMakerAct
-CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, int iTemplateBuff, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags)
+CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, float fChance, int iTemplateBuff)
 : CActiveAbility(pRootId, pName, fCoolDown, eCastType, dwEffectiveTypeFlags)
+, m_fChance(fChance)
 , m_iTemplateBuff(iTemplateBuff)
 , m_pTarget(NULL)
 {
@@ -756,7 +810,7 @@ CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCool
 
 CMultiRefObject* CBuffMakerAct::copy() const
 {
-    CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getTemplateBuff(), getCastTargetType(), getEffectiveTypeFlags());
+    CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getCastTargetType(), getEffectiveTypeFlags(), getChance(), getTemplateBuff());
     pRet->setCastRange(getCastRange());
     pRet->setCastTargetRadius(getCastTargetRadius());
     pRet->setTemplateProjectile(getTemplateProjectile());
@@ -804,26 +858,32 @@ bool CBuffMakerAct::checkConditions()
 
 void CBuffMakerAct::onUnitCastAbility()
 {
+}
+
+void CBuffMakerAct::onUnitAbilityProjectileEffect( const CPoint& p, CUnit* pTarget )
+{
     CUnit* o = getOwner();
+
     switch (getCastTargetType())
     {
     case CCommandTarget::kNoTarget:
     case CCommandTarget::kUnitTarget:
-        if (o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
+
+        if (M_RAND_HIT(m_fChance) && o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
         {
             m_pTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
         break;
-        
+
     default:
         ;
     }
-    
+
     if (getCastTargetRadius() <= FLT_EPSILON)
     {
         return;
     }
-    
+
     CWorld* w = o->getWorld();
     CUnitDraw2D* od  = DCAST(o->getDraw(), CUnitDraw2D*);
     assert(od != NULL);
@@ -833,12 +893,12 @@ void CBuffMakerAct::onUnitCastAbility()
     {
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
-        
-        if (u == NULL || u->isDead())
+
+        if (M_RAND_HIT(m_fChance) == false || u == NULL || u->isDead())
         {
             continue;
         }
-        
+
         if (!o->isEffective(DCAST(u, CUnitForce*), m_dwEffectiveTypeFlags))
         {
             continue;
@@ -850,7 +910,7 @@ void CBuffMakerAct::onUnitCastAbility()
         {
             continue;
         }
-        
+
         if (pBuff == NULL)
         {
             w->copyAbility(getTemplateBuff())->dcast(pBuff);
@@ -859,24 +919,11 @@ void CBuffMakerAct::onUnitCastAbility()
         {
             pBuff->copy()->dcast(pBuff);
         }
-        
+
         u->addBuffAbility(pBuff);
     }
 }
 
-// CLuaAbilityPas
-CLuaAbilityPas::CLuaAbilityPas(const char* pRootId, const char* pName, float fCoolDown)
-: CPassiveAbility(pRootId, pName, fCoolDown)
-{
-    setDbgClassName("CLuaAbilityPas");
-}
-
-CMultiRefObject* CLuaAbilityPas::copy() const
-{
-    CLuaAbilityPas* ret = new CLuaAbilityPas(getRootId(), getName(), m_fCoolDown);
-    ret->setScriptHandler(getScriptHandler());
-    return ret;
-}
 
 // CAuraPas
 CAuraPas::CAuraPas(const char* pRootId, const char* pName, float fInterval, int iTemplateBuff, float fRange, uint32_t dwEffectiveTypeFlags)
@@ -943,9 +990,9 @@ void CAuraPas::onUnitInterval()
 }
 
 // CAttackBuffMakerPas
-CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName, float fProbability, int iTemplateBuff, bool bToSelf, const CExtraCoeff& roExAttackValue)
+CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff, bool bToSelf, const CExtraCoeff& roExAttackValue)
 : CPassiveAbility(pRootId, pName)
-, m_fProbability(fProbability)
+, m_fChance(fChance)
 , m_iTemplateBuff(iTemplateBuff)
 , m_bToSelf(bToSelf)
 , m_oExAttackValue(roExAttackValue)
@@ -956,7 +1003,7 @@ CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName,
 
 CMultiRefObject* CAttackBuffMakerPas::copy() const
 {
-    CAttackBuffMakerPas* ret = new CAttackBuffMakerPas(getRootId(), getName(), m_fProbability, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
+    CAttackBuffMakerPas* ret = new CAttackBuffMakerPas(getRootId(), getName(), m_fChance, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
     ret->setCoolDown(getCoolDown());
     return ret;
 }
@@ -970,7 +1017,7 @@ CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit
 
     coolDown();
 
-    if (M_RAND_HIT(m_fProbability) == false)
+    if (M_RAND_HIT(m_fChance) == false)
     {
         return pAttack;
     }
@@ -991,6 +1038,48 @@ CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit
     }
     
     return pAttack;
+}
+
+// CDamageBuffMakerBuff
+CDamageBuffMakerBuff::CDamageBuffMakerBuff( const char* pName, const CAttackValue& rDamage, float fChance, int iTemplateBuff, bool bToSelf /*= false*/, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/ )
+: CBuffAbility("DBM", pName, 0.0f, true)
+, m_oDamage(rDamage)
+, m_fChance(fChance)
+, m_iTemplateBuff(iTemplateBuff)
+, m_bToSelf(bToSelf)
+, m_oExAttackValue(roExAttackValue)
+{
+}
+
+CMultiRefObject* CDamageBuffMakerBuff::copy() const
+{
+    return new CDamageBuffMakerBuff(getName(), getDamage(), getChance(), getTemplateBuff(), isToSelf(), getExAttackValue());
+}
+
+void CDamageBuffMakerBuff::onUnitAddAbility()
+{
+    CUnit* o = getOwner();
+    CUnit* s = o->getUnit(getSrcUnit());
+    
+    CAttackData* ad = new CAttackData;
+    ad->setAttackValue(getDamage());
+    if (M_RAND_HIT(getChance()))
+    {
+        if (isToSelf())
+        {
+            if (s != NULL && !s->isDead())
+            {
+                s->addBuffAbility(getTemplateBuff(), getSrcUnit(), getLevel());
+            }
+        }
+        else
+        {
+            ad->addAttackBuff(CAttackBuff(getTemplateBuff(), getLevel()));
+        }
+        
+    }
+
+    o->damagedAdv(ad, s);
 }
 
 // CVampirePas
@@ -1083,32 +1172,48 @@ void CStunBuff::onUnitDelAbility()
     }
 }
 
-// CDoubleAttackBuff
-CDoubleAttackBuff::CDoubleAttackBuff(const char* pRootId, const char* pName)
-: CBuffAbility(pRootId, pName, 0.0f, true)
+// CDoubleAttackPas
+CDoubleAttackPas::CDoubleAttackPas(const char* pRootId, const char* pName, float fChange, const CExtraCoeff& roExAttackValue)
+: CAttackBuffMakerPas(pRootId, pName, fChange, 0, true, roExAttackValue)
 {
-    setDbgClassName("CDoubleAttackBuff");
+    setDbgClassName("CDoubleAttackPas");
 }
 
-CMultiRefObject* CDoubleAttackBuff::copy() const
+CMultiRefObject* CDoubleAttackPas::copy() const
 {
-    return new CDoubleAttackBuff(getRootId(), getName());
+    return new CDoubleAttackPas(getRootId(), getName(), m_fChance, m_oExAttackValue);
 }
 
-void CDoubleAttackBuff::onUnitAddAbility()
+CAttackData* CDoubleAttackPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     CUnit* o = getOwner();
     if (o->getAttackAbilityId() == 0)
     {
-        return;
+        return pAttack;
     }
-    
+
+    if (isCoolingDown())
+    {
+        return pAttack;
+    }
+
+    coolDown();
+
+    if (M_RAND_HIT(m_fChance) == false)
+    {
+        return pAttack;
+    }
+
+    pAttack->getAttackValue().setValue(m_oExAttackValue.getValue(pAttack->getAttackValue().getValue()));
+
     CAttackAct* pAtk = NULL;
     o->getActiveAbility(o->getAttackAbilityId())->dcast(pAtk);
     
     pAtk->resetCD();
     
     LOG("%s将进行%s", o->getName(), getName());
+
+    return pAttack;
 }
 
 // CSpeedBuff
@@ -1227,7 +1332,7 @@ void CChangeHpBuff::onUnitInterval()
 }
 
 // CRebirthPas
-CRebirthPas::CRebirthPas( const char* pRootId, const char* pName, float fCoolDown, const CExtraCoeff& rExMaxHp )
+CRebirthPas::CRebirthPas(const char* pRootId, const char* pName, float fCoolDown, const CExtraCoeff& rExMaxHp)
     : CPassiveAbility(pRootId, pName, fCoolDown)
     , m_oExMaxHp(rExMaxHp)
     , m_bRevivableBefore(false)
@@ -1294,7 +1399,7 @@ void CRebirthPas::onUnitDead()
 }
 
 // CEvadePas
-CEvadePas::CEvadePas( const char* pRootId, const char* pName, float fChance, int iTemplateBuff )
+CEvadePas::CEvadePas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff)
     : CPassiveAbility(pRootId, pName)
     , m_fChance(fChance)
     , m_iTemplateBuff(iTemplateBuff)
@@ -1308,7 +1413,7 @@ CMultiRefObject* CEvadePas::copy() const
     return new CEvadePas(getRootId(), getName(), m_fChance, m_iTemplateBuff);
 }
 
-CAttackData* CEvadePas::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
+CAttackData* CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     if (M_RAND_HIT(getChance()))
     {
@@ -1339,7 +1444,7 @@ CAttackData* CEvadePas::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
 }
 
 // CEvadeBuff
-CEvadeBuff::CEvadeBuff( const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance )
+CEvadeBuff::CEvadeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance)
     : CBuffAbility(pRootId, pName, fDuration, bStackable)
     , m_fChance(fChance)
 {
@@ -1352,7 +1457,7 @@ CMultiRefObject* CEvadeBuff::copy() const
     return new CEvadeBuff(getRootId(), getName(), getDuration(), isStackable(), m_fChance);
 }
 
-CAttackData* CEvadeBuff::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
+CAttackData* CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     if (M_RAND_HIT(getChance()))
     {
@@ -1376,3 +1481,4 @@ CAttackData* CEvadeBuff::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
     
     return pAttack;
 }
+

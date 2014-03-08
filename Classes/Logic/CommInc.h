@@ -35,5 +35,13 @@ extern "C"
     
 #include "CommDef.h"
 
+
+#ifdef DEBUG_FOR_CC
+// for cocos2d
+#include "../CommHeader.h"
+#include "../DrawForCC.h"
+#endif
+
+
 #endif	/* __COMINC_H__ */
 

@@ -6,7 +6,7 @@
  */
 
 #ifndef __LUABINDING_H__
-#define	__LUABINDING_H__
+#define __LUABINDING_H__
 
 
 // common
@@ -14,7 +14,6 @@ int luaModuleLoader4cc(lua_State *L);
 void luaL_insertloader(lua_State *L, lua_CFunction loader);
 void luaL_addpath(lua_State *L, const char* pPath);
 bool luaL_loadscript(lua_State *L, const char* name, string& err);
-int luaL_getcopy(lua_State* L, int idx);
 int luaL_setregistry(lua_State* L, int idx);
 int luaL_getregistery(lua_State* L, int key);
 
@@ -99,15 +98,31 @@ int ability_onUnitDamaged(lua_State* L);
 int ability_onUnitDamagedDone(lua_State* L);
 int ability_onUnitDamageTargetDone(lua_State* L);
 int ability_onUnitProjectileEffect(lua_State* L);
+int ability_copy(lua_State* L);
 int ability_setTriggerFlags(lua_State* L);
 int ability_getOwner(lua_State* L);
+int ability_setInterval(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
 int ActiveAbility_onUnitCastAbility(lua_State* L);
 int PassiveAbility_ctor(lua_State* L);
 int BuffAbility_ctor(lua_State* L);
+
 int AttackAct_ctor(lua_State* L);
+int AttackBuffMakerPas_ctor(lua_State* L);
+int AuraPas_ctor(lua_State* L);
+int VampirePas_ctor(lua_State* L);
+int StunBuff_ctor(lua_State* L);
+int DoubleAttackPas_ctor(lua_State* L);
+int SpeedBuff_ctor(lua_State* L);
+int ChangeHpBuff_ctor(lua_State* L);
+int RebirthPas_ctor(lua_State* L);
+int EvadePas_ctor(lua_State* L);
+int EvadeBuff_ctor(lua_State* L);
+int BuffMakerAct_ctor(lua_State* L);
+
+
 
 int attackData_ctor(lua_State* L);
 int attackData_setAttackType(lua_State* L);
@@ -116,7 +131,6 @@ int attackData_setAttackValue(lua_State* L);
 int attackData_getAttackValue(lua_State* L);
 int attackData_addAttackBuff(lua_State* L);
 
-int g_addUnit(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
 int g_setControlUnit(lua_State* L);
 int g_getControlUnit(lua_State* L);
@@ -128,7 +142,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 
 ///////////////////////////////// Inline //////////////////////////////////////
 template <typename PTYPE>
-PTYPE luaL_toobjptr( lua_State* L, int idx, PTYPE& ptr )
+PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr)
 {
     lua_getfield(L, idx, "_p");
     ptr = (PTYPE)lua_touserdata(L, lua_gettop(L));
@@ -138,7 +152,7 @@ PTYPE luaL_toobjptr( lua_State* L, int idx, PTYPE& ptr )
 }
 
 template <typename PTYPE>
-void luaL_pushobjptr( lua_State* L, const char* name, const PTYPE _p )
+void luaL_pushobjptr(lua_State* L, const char* name, const PTYPE _p)
 {
     lua_newtable(L);
     int obj = lua_gettop(L);
@@ -150,5 +164,5 @@ void luaL_pushobjptr( lua_State* L, const char* name, const PTYPE _p )
     lua_setfield(L, obj, "_p");
 }
 
-#endif	/* __LUABINDING_H__ */
+#endif  /* __LUABINDING_H__ */
 

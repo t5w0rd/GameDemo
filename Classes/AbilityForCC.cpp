@@ -45,7 +45,7 @@ void CStatusShowPas::onUnitDelAbility()
     m_pProgressBar = NULL;
 }
 
-void CStatusShowPas::onUnitChangeHp( float fChanged )
+void CStatusShowPas::onUnitChangeHp(float fChanged)
 {
     CUnit* o = getOwner();
     float fPer = o->getHp() * 100 / max(FLT_EPSILON, o->getMaxHp());

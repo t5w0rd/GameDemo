@@ -12,15 +12,7 @@ public:
     virtual ~CBattleWorld();
 
     virtual bool onInit();
-
-    enum UNIT_INDEX
-    {
-        kBladeMaster,
-        kDemonHunter,
-        kMountainKing
-    };
-
-    CUnit* createUnit(UNIT_INDEX eId);
+    bool onLuaWorldInit();
 
 };
 

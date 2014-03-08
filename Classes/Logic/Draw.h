@@ -101,7 +101,7 @@ public:
             bool bAutoFlipX_ = true,
             float fMaxOffsetY_ = 0.0f
             //bool bCancelCast_ = true
-            )
+           )
             //: bObstinate(bObstinate_)
             : bAutoFlipX(bAutoFlipX_)
             , fMaxOffsetY(fMaxOffsetY_)
@@ -256,7 +256,7 @@ public:
     void onDyingDone(CMultiRefObject* pProjectile, CCallFuncData* pData);
 
     // 单位和抛射物非紧密联系，即单位死亡后抛射物不一定会释放，所以必须通过ID引用
-    M_SYNTHESIZE(int, m_iSourceUnit, SourceUnit);  // 抛射物所属单位
+    M_SYNTHESIZE(int, m_iSrcUnit, SrcUnit);  // 抛射物所属单位
     M_SYNTHESIZE(int, m_iFromUnit, FromUnit);  // 发射单位
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oFromPoint, FromPoint);
     M_SYNTHESIZE(int, m_iToUnit, ToUnit);  // 目标位点
@@ -264,6 +264,9 @@ public:
 
     M_SYNTHESIZE_READONLY(CAttackData*, m_pAttackData, AttackData);
     void setAttackData(CAttackData* pAttackData);
+
+    M_SYNTHESIZE_READONLY(CAbility*, m_pSrcAbility, SrcAbility);
+    void setSrcAbility(CAbility* pSrcAbility);
 
     enum PENALTY_FLAG_BIT
     {

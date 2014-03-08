@@ -19,7 +19,8 @@ public: inline virtual varType get##funName(void) const { return varName; }
 
 #define M_SYNTHESIZE_READONLY_PASS_BY_REF(varType, varName, funName)\
 protected: varType varName;\
-public: inline virtual varType& get##funName(void) { return varName; }
+public: inline virtual varType& get##funName(void) { return varName; }\
+public: inline virtual const varType& get##funName(void) const { return varName; }
 
 #define M_SYNTHESIZE(varType, varName, funName)\
 protected: varType varName;\
@@ -39,6 +40,7 @@ public: inline virtual void set##funName(const char* p##funName){ m_s##funName =
 #define M_SYNTHESIZE_PASS_BY_REF(varType, varName, funName)\
 protected: varType varName;\
 public: inline virtual varType& get##funName(void) { return varName; }\
+public: inline virtual const varType& get##funName(void) const { return varName; }\
 public: inline virtual void set##funName(const varType& var){ varName = var; }
 
 #define M_LOGIC_CONSTRUCTOR(sub, super) \
@@ -240,7 +242,7 @@ const char* GBKToUTF8(const char* pGBKStr);
 #define M_BIT_32U(index) ((uint32_t)(1 << index))
 #define M_IS_BIT_SET_32U(u32, index) ((uint32_t)(u32) & (uint32_t)(1 << (uint32_t)(index)))
 
-#define M_MAP_FOREACH(mapVar) for (auto it = (mapVar).begin(); it != (mapVar).end(); )
+#define M_MAP_FOREACH(mapVar) for (auto it = (mapVar).begin(); it != (mapVar).end();)
 #define M_MAP_EACH (it->second)
 #define M_MAP_IT it
 
@@ -249,7 +251,7 @@ const char* GBKToUTF8(const char* pGBKStr);
 // –Ë¡¢º¥continue
 #define M_MAP_NEXT ++it
 
-#define M_VEC_FOREACH(vecVar) for (auto it = (vecVar).begin(); it != (vecVar).end(); )
+#define M_VEC_FOREACH(vecVar) for (auto it = (vecVar).begin(); it != (vecVar).end();)
 #define M_VEC_EACH (*it)
 #define M_VEC_IT it
 

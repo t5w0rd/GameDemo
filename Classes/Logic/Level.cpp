@@ -124,7 +124,7 @@ int CLevelExp::getMaxExp() const
     return m_iMaxExp;
 }
 
-void CLevelExp::setLevelUpdate( CLevelUpdate* pUpdate )
+void CLevelExp::setLevelUpdate(CLevelUpdate* pUpdate)
 {
     m_pUpdate = pUpdate;
 }

@@ -90,20 +90,6 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Units/Matchstick/act3", "Units/Matchstick/act3", 0.08f);
     gc->loadAnimation("Units/Matchstick/act4", "Units/Matchstick/act4", 0.08f);
     
-#if 0
-    u = createUnit(kDemonHunter);
-    u->getDraw()->dcast(ud);
-    u->setForceByIndex(1);
-    ud->setPosition(CPoint(vs.width * 1.2, vs.height * 1.2));
-
-    u = createUnit(kBladeMaster);
-    m_iControlUnit = u->getId();
-    u->getDraw()->dcast(ud);
-    u->setForceByIndex(2);
-    ud->setPosition(CPoint(vs.width * 1.5, vs.height * 1.2));
-
-    return;
-#endif
 
     // ´´½¨Draw
     ud = new CUnitDrawForCC("Malik");
@@ -161,7 +147,7 @@ bool CBattleWorld::onInit()
     atk->setTemplateProjectile(id);
 
     u->addActiveAbility(atk);
-
+#if 1
     a = new CSpeedBuff(
         "SlowDown",
         "Slow",
@@ -236,13 +222,45 @@ bool CBattleWorld::onInit()
         0.2f);
     id = addTemplateAbility(a);
     u->addPassiveAbility(id);
-
+#endif
     u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 2.0f, CExtraCoeff(0.5, 0)));
 
     ud->setBaseMoveSpeed(80.0f);
     ud->setPosition(CPoint(vs.width * 0.6, vs.height * 0.5));
     //ud->setHeight(30);
 
+    // Ö÷¶¯¼¼ÄÜ²âÊÔ
+    a = new CStunBuff(
+        "Stun2s",
+        "Stun",
+        2.0f,
+        false);
+    id = addTemplateAbility(a);
+
+    a = new CDamageBuffMakerBuff(
+        "´¸×ÓÉËº¦",
+        CAttackValue(CAttackValue::kMagical, 100.0f),
+        1.0f,
+        id);
+    id = addTemplateAbility(a);
+
+    CBuffMakerAct* bm = new CBuffMakerAct("", "´¸×Ó", 5.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);
+    p = new CProjectileForCC("Ball1");
+    p->setMoveSpeed(500.0f);
+    p->setMaxHeightDelta(10.0f);
+    p->setPenaltyFlags(CProjectile::kOnDying);
+    p->setFireType(CProjectile::kFireFollow);
+    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    id = addTemplateProjectile(p);
+    bm->setTemplateProjectile(id);
+    bm->addCastAnimation(CUnitDraw::kAniAct1);
+    bm->setCastRange(200.0f);
+    u->addActiveAbility(bm);
+
+    CUnitDrawForCC* hero = ud;
+    
     // create other units
     ud = new CUnitDrawForCC("Matchstick");
     ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
@@ -262,7 +280,7 @@ bool CBattleWorld::onInit()
     addUnit(u);
 
     hpb = new CStatusShowPas(
-        );
+       );
     u->addPassiveAbility(hpb, false);
 
     atk = new CAttackAct(
@@ -280,21 +298,32 @@ bool CBattleWorld::onInit()
 
     u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 2.0f, CExtraCoeff(0.5, 0)));
     
-    a = new CDoubleAttackBuff("DoubleAttack", "¹¥»÷CDÖØÖÃ");
-    id = addTemplateAbility(a);
-    u->addPassiveAbility(new CAttackBuffMakerPas("abm.DoubleAttack", "Á¬»÷", 0.5f, id, true));
+    u->addPassiveAbility(new CDoubleAttackPas("DoubleAttack", "Á¬»÷", 0.5f));
 
     ud->setBaseMoveSpeed(50.0f);
     ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.5));
 
+    hero->setCastTarget(CCommandTarget(u->getId()));
+    hero->cmdCastSpell(bm->getId());
+
+    onLuaWorldInit();
+
+    return true;
+}
+
+bool CBattleWorld::onLuaWorldInit()
+{
+    CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
+    CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
+
     // lua
     lua_State* L = getLuaHandle();
 
+    luaL_insertloader(L, luaModuleLoader4cc);
     luaRegCommFunc(L);
     luaRegWorldFuncs(L, this);
     luaRegWorldFuncsForCC(L, this);
 
-    string err;
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
     string name = "/sdcard/Android/data/com.ts.gamedemo/files/world.lua";
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
@@ -303,6 +332,8 @@ bool CBattleWorld::onInit()
     string name = "script/world.lua";
 #endif
     CCLOG("MSG | loadScript: %s", name.c_str());
+
+    string err;
     if (luaL_loadscript4cc(L, name.c_str(), err) == false)
     {
         CCLOG("ERR | LuaErr: %s", err.c_str());
@@ -311,8 +342,8 @@ bool CBattleWorld::onInit()
         pLabel->setColor(ccc3(255, 0, 0));
         DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
         pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 5, vs.height - pLabel->getContentSize().height * 0.5 + 5));
-        
-        return true;
+
+        return false;
     }
 
     lua_getglobal(L, "onWorldInit");
@@ -328,182 +359,12 @@ bool CBattleWorld::onInit()
         DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
         pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 5, vs.height - pLabel->getContentSize().height * 0.5 + 5));
 
-        return true;
+        return false;
     }
 
     assert(lua_gettop(L) == 0);
 
     return true;
-}
-
-CUnit* CBattleWorld::createUnit( UNIT_INDEX eId )
-{
-    CUnit* u = NULL;
-    CUnitDrawForCC* ud = NULL;
-    CAbility* a = NULL;
-    int id = 0;
-    CAttackAct* atk = NULL;
-
-    switch (eId)
-    {
-    case kBladeMaster:
-        ud = new CUnitDrawForCC("Matchstick");
-        ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
-        ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
-        ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
-        ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 2);
-        ud->prepareAnimation(CUnitDraw::kAniAct4, "act4", 1);
-        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
-
-        u = new CUnit("CUnit");
-        m_iControlUnit = u->getId();
-        u->setDraw(ud);
-        u->setAI(CMyAI());
-        addUnit(u);
-
-        u->setName("BladeMaster");
-        u->setMaxHp(1000);
-        u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 9.0f));
-
-        ud->setBaseMoveSpeed(80.0f);
-
-        u->addPassiveAbility(new CStatusShowPas(), false);
-
-        // 40~62 = 51~43.1%
-        atk = new CAttackAct(
-            "NormalAttack",
-            "¹¥»÷",
-            1.77f,
-            CAttackValue(CAttackValue::kPhysical, 51.0),
-            0.431f);
-        u->addActiveAbility(atk);
-        atk->setCastMinRange(-3.0f);
-        atk->setCastRange(15.0f);
-        atk->setCastHorizontal();
-        atk->addCastAnimation(CUnitDraw::kAniAct2);
-        atk->addCastAnimation(CUnitDraw::kAniAct4);
-        atk->setExAttackSpeed(CExtraCoeff(1.38f));
-
-        // Critical 15% x4
-        a = new CAttackBuffMakerPas(
-            "Criticalx4",
-            "Critical",
-            0.15f,
-            0,
-            false,
-            CExtraCoeff(4.0f));
-        id = addTemplateAbility(a);
-        u->addPassiveAbility(id);
-        break;
-
-    case kDemonHunter:
-        ud = new CUnitDrawForCC("Matchstick");
-        ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
-        ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
-        ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
-        ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 3);
-        ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 2);
-        ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
-
-        u = new CUnit("CUnit");
-        m_iControlUnit = u->getId();
-        u->setDraw(ud);
-        u->setAI(CMyAI());
-        addUnit(u);
-
-        u->setName("DemonHunter");
-        u->setMaxHp(1100);
-        u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 9.0f));
-
-        ud->setBaseMoveSpeed(80.0f);
-
-        u->addPassiveAbility(new CStatusShowPas(), false);
-
-        // 37~59 = 48~45.8%
-        atk = new CAttackAct(
-            "NormalAttack",
-            "¹¥»÷",
-            1.7f,
-            CAttackValue(CAttackValue::kPhysical, 48.0),
-            0.458f);
-        u->addActiveAbility(atk);
-        atk->setCastMinRange(-3.0f);
-        atk->setCastRange(15.0f);
-        atk->setCastHorizontal();
-        atk->addCastAnimation(CUnitDraw::kAniAct1);
-        atk->addCastAnimation(CUnitDraw::kAniAct2);
-        atk->setExAttackSpeed(CExtraCoeff(1.35f));
-
-        // Evade 30%
-        a = new CEvadePas(
-            "Evade30%",
-            "Evade",
-            0.3f);
-        id = addTemplateAbility(a);
-        u->addPassiveAbility(id);
-        break;
-
-    case kMountainKing:
-        ud = new CUnitDrawForCC("Malik");
-        ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
-        ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
-        ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
-        ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4);
-        ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 4);
-
-        ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), CPoint(10.0f, 10.0f));
-        
-        u = new CUnit("CUnit");
-        m_iControlUnit = u->getId();
-        u->setDraw(ud);
-        u->setAI(CMyAI());
-        addUnit(u);
-
-        u->setName("MountainKing");
-        u->setMaxHp(1375.0f);
-        u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 9.0f));
-
-        ud->setBaseMoveSpeed(80.0f);
-
-        u->addPassiveAbility(new CStatusShowPas(), false);
-
-        // 53~63 = 58~17.2%
-        atk = new CAttackAct(
-            "NormalAttack",
-            "¹¥»÷",
-            2.22f,
-            CAttackValue(CAttackValue::kPhysical, 58.0),
-            0.172f);
-        u->addActiveAbility(atk);
-        atk->setCastMinRange(-3.0f);
-        atk->setCastRange(15.0f);
-        atk->setCastHorizontal();
-        atk->addCastAnimation(CUnitDraw::kAniAct1);
-        atk->addCastAnimation(CUnitDraw::kAniAct2);
-        atk->setExAttackSpeed(CExtraCoeff(1.24f));
-
-        // Thump 40% +25 1s
-        a = new CStunBuff(
-            "Stun",
-            "Stun",
-            1.0f,
-            true);
-        id = addTemplateAbility(a);
-        a = new CAttackBuffMakerPas(
-            "ABM.Stun",
-            "Thump",
-            0.4f,
-            id,
-            false,
-            CExtraCoeff(1.0f, 25.0f));
-        id = addTemplateAbility(a);
-        u->addPassiveAbility(id);
-
-        break;
-
-    }
-
-    return u;
 }
 
 
@@ -578,7 +439,7 @@ bool CCBattleSceneLayer::init()
 {
     //////////////////////////////
     // 1. super init first
-    if ( !CCLayer::init() )
+    if (!CCLayer::init())
     {
         return false;
     }
@@ -598,7 +459,7 @@ bool CCBattleSceneLayer::init()
     return true;
 }
 
-void CCBattleSceneLayer::ccTouchEnded( CCTouch *pTouch, CCEvent *pEvent )
+void CCBattleSceneLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 {
     CCWinUnitLayer::ccTouchEnded(pTouch, pEvent);
     if (!isClickAction())

@@ -14,7 +14,7 @@ CCProgressBar::~CCProgressBar()
 {
 }
 
-bool CCProgressBar::init( const CCSize& roSize, CCSprite* pFill, CCSprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop )
+bool CCProgressBar::init(const CCSize& roSize, CCSprite* pFill, CCSprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop)
 {
     setAnchorPoint(ccp(0.5f, 0.5f));
     setContentSize(roSize);
@@ -48,7 +48,7 @@ bool CCProgressBar::init( const CCSize& roSize, CCSprite* pFill, CCSprite* pBord
     return true;
 }
 
-void CCProgressBar::setPercentage( float fPercent )
+void CCProgressBar::setPercentage(float fPercent)
 {
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
     {
@@ -58,7 +58,7 @@ void CCProgressBar::setPercentage( float fPercent )
     m_pPt->setPercentage(fPercent);
 }
 
-void CCProgressBar::setPercentage( float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/ )
+void CCProgressBar::setPercentage(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/)
 {
     m_pPt->stopAllActions();
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
@@ -77,7 +77,7 @@ void CCProgressBar::setPercentage( float fPercent, float fDuration, CCFiniteTime
 
 }
 
-CCFiniteTimeAction* CCProgressBar::setPercentageAction( float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/ )
+CCFiniteTimeAction* CCProgressBar::setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/)
 {
     m_pPt->stopAllActions();
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
@@ -93,7 +93,7 @@ CCFiniteTimeAction* CCProgressBar::setPercentageAction( float fPercent, float fD
     return CCSequence::create(CCProgressTo::create(fDuration, fPercent), NULL);
 }
 
-void CCProgressBar::setFillColor( const ccColor3B& roColor )
+void CCProgressBar::setFillColor(const ccColor3B& roColor)
 {
     m_pPt->setColor(roColor);
 }

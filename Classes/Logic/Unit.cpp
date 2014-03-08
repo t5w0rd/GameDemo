@@ -15,13 +15,6 @@
 #include "LuaBinding.h"
 
 
-#ifdef DEBUG_FOR_CC
-// for cocos2d
-#include "../CommHeader.h"
-#include "../DrawForCC.h"
-#endif
-
-
 // CTypeValue
 CTypeValue::CTypeValue(int type, float value)
 : m_iType(type)
@@ -362,7 +355,7 @@ CUnitEventAdapter::~CUnitEventAdapter()
 }
 
 // CDefaultAI
-void CDefaultAI::onUnitTick( float dt )
+void CDefaultAI::onUnitTick(float dt)
 {
     CUnit* u = getNotifyUnit();
     if (u->isDoingNothing() == false)
@@ -393,7 +386,7 @@ void CDefaultAI::onUnitTick( float dt )
     d->cmdCastSpell(atk);
 }
 
-CAttackData* CDefaultAI::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
+CAttackData* CDefaultAI::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     if (pSource->isDead())
     {
@@ -694,13 +687,13 @@ void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTrigger
     }
 }
 
-void CUnit::onProjectileEffect(CProjectile* pProjectile)
+void CUnit::onProjectileEffect(const CPoint& p, CUnit* pTarget)
 {
-    triggerOnProjectileEffect(pProjectile);
+    triggerOnProjectileEffect(p, pTarget);
     
     if (m_pAI)
     {
-        m_pAI->onUnitProjectileEffect(pProjectile);
+        m_pAI->onUnitProjectileEffect(p, pTarget);
     }
 }
 
@@ -1440,13 +1433,13 @@ void CUnit::triggerOnDamageTargetDone(float fDamage, CUnit* pTarget)
     endTrigger();
 }
 
-void CUnit::triggerOnProjectileEffect(CProjectile* pProjectile)
+void CUnit::triggerOnProjectileEffect(const CPoint& p, CUnit* pTarget)
 {
     beginTrigger();
     M_MAP_FOREACH(m_mapOnProjectileEffectTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAbility->onUnitProjectileEffect(pProjectile);
+        pAbility->onUnitProjectileEffect(p, pTarget);
         M_MAP_NEXT;
     }
     endTrigger();
@@ -1634,7 +1627,7 @@ bool CUnit::isDoingNothing() const
     return m_dwDoingFlags == 0;
 }
 
-void CUnit::setDraw( CUnitDraw* pDraw )
+void CUnit::setDraw(CUnitDraw* pDraw)
 {
     if (pDraw != m_pDraw)
     {
@@ -1682,11 +1675,11 @@ void CWorld::onTick(float dt)
 {
 }
 
-void CWorld::onAddUnit( CUnit* pUnit )
+void CWorld::onAddUnit(CUnit* pUnit)
 {
 }
 
-void CWorld::onDelUnit( CUnit* pUnit )
+void CWorld::onDelUnit(CUnit* pUnit)
 {
 }
 
@@ -1711,7 +1704,7 @@ void CWorld::addUnit(CUnit* pUnit)
     m_mapUnits.addObject(pUnit);
 }
 
-void CWorld::delUnit( int id, bool bRevivable /*= false*/ )
+void CWorld::delUnit(int id, bool bRevivable /*= false*/)
 {
     auto it = m_mapUnits.find(id);
     if (it == m_mapUnits.end())
@@ -1926,7 +1919,7 @@ CAbility* CWorld::copyAbility(int id) const
     return pAbility->copy()->dcast(pAbility);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
 }
 
-int CWorld::addTemplateProjectile( CProjectile* pProjectile )
+int CWorld::addTemplateProjectile(CProjectile* pProjectile)
 {
     m_mapTemplateProjectiles.addObject(pProjectile);
     return pProjectile->getId();
@@ -1943,7 +1936,7 @@ CProjectile* CWorld::copyProjectile(int id) const
     return pProjectile->copy()->dcast(pProjectile);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
 }
 
-void CWorld::addProjectile( CProjectile* pProjectile )
+void CWorld::addProjectile(CProjectile* pProjectile)
 {
     onAddProjectile(pProjectile);
 
@@ -1952,7 +1945,7 @@ void CWorld::addProjectile( CProjectile* pProjectile )
 }
 
 
-void CWorld::delProjectile( int id )
+void CWorld::delProjectile(int id)
 {
     auto it = m_mapProjectiles.find(id);
     if (it == m_mapProjectiles.end())

@@ -31,9 +31,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setContentScaleFactor(1.0);
 
     // create a scene. it's an autorelease object
-    lua_State* L = CWorld::getLuaHandle();
-    luaL_insertloader(L, luaModuleLoader4cc);
-
     CCScene* pScene = CCBattleSceneLayer::scene();
     if (pScene == NULL)
     {
