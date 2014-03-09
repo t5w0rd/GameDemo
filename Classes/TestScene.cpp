@@ -51,8 +51,8 @@ CCScene* CCTestSceneLayer::scene()
 }
 
 #define PLIST_NAME "Global"
-#define PLIST_FILE_NAME (PLIST_NAME##".plist")
-#define PLIST_SAVE_NAME ("Saved/"##PLIST_NAME)
+#define PLIST_FILE_NAME ("Global.plist")
+#define PLIST_SAVE_NAME ("Saved/Global")
 const char* g_files[] = {
     //"sprite_level10-ipadhd",
     //"sprite_level11-ipadhd",

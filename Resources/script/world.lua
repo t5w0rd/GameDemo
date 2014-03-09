@@ -67,19 +67,19 @@ function DefPas:onUnitAttackTarget(ad, target)
 end
 
 function onWorldInit()
-	
+    
 
     c = getControlUnit()
     local x, y = c:getPosition()
-	cclog("p(%.1f, %.1f)", x, y);
+    cclog("p(%.1f, %.1f)", x, y);
     c:setPosition(x + 200, y)
-	x, y = c:getPosition()
-	cclog("p(%.1f, %.1f)", x, y);
+    x, y = c:getPosition()
+    cclog("p(%.1f, %.1f)", x, y);
     c:setMaxHp(2000)
 
-	--do return end
+    --do return end
     
-	s = Sprite:new("Alric")
+    s = Sprite:new("Alric")
     s:prepareFrame(Sprite.kFrmDefault, "default")
     s:prepareAnimation(Sprite.kAniMove, "move", -1)
     s:prepareAnimation(Sprite.kAniDie, "die", -1)
@@ -103,7 +103,7 @@ function onWorldInit()
     a = StatusShowPas:new()
     u:addPassiveAbility(a)
 
-    a = AttackAct:new("NormalAttack", 1.5, 0, 10, 0.15,   -3, 20, true, Sprite.kAniAct1, Sprite.kAniAct2, Sprite.kAniAct2)
+    a = AttackAct:new("NormalAttack", 1.5, 0, 20, 0.15,   -3, 20, true, Sprite.kAniAct1, Sprite.kAniAct2, Sprite.kAniAct3)
     u:addActiveAbility(a)
 
     --do return end
@@ -115,21 +115,21 @@ function onWorldInit()
     --a = DefPas:new(id)
     --u:addPassiveAbility(a) 
 
-	a = ChangeHpBuff:new("+HP", "Heal", 5, true, 0.2, 0.002, 0.0, 0.0, 0.0)
-	id = addTemplateAbility(a)
-	a = EvadePas:new("Evade", 0.30, id)
-	u:addPassiveAbility(a)
+    a = ChangeHpBuff:new("+HP", "Heal", 5, true, 0.2, 0.002, 0.0, 0.0, 0.0)
+    id = addTemplateAbility(a)
+    a = EvadePas:new("Evade", 0.30, id)
+    u:addPassiveAbility(a)
 
-	a = ChangeHpPas:new("Heal", 0.2, 0.002, 0.0, 0.0, 0.0)
-	u:addPassiveAbility(a)
+    a = ChangeHpPas:new("Heal", 0.2, 0.002, 0.0, 0.0, 0.0)
+    u:addPassiveAbility(a)
 
-	a = VampirePas:new("Vampire", 0.5)
-	u:addPassiveAbility(a)
+    a = VampirePas:new("Vampire", 0.5)
+    u:addPassiveAbility(a)
 
-	a = SpeedBuff:new("SpeedUp", "SpeedUp", 5, true, 2.0, 0.0, 2.0, 0.0)
-	id = addTemplateAbility(a)
-	a = AttackBuffMakerPas:new("Critical", 0.1, id, true, 10.0, 0.0)
-	u:addPassiveAbility(a)
+    a = SpeedBuff:new("SpeedUp", "SpeedUp", 5, true, 2.0, 0.0, 2.0, 0.0)
+    id = addTemplateAbility(a)
+    a = AttackBuffMakerPas:new("Critical", 0.1, id, true, 10.0, 0.0)
+    u:addPassiveAbility(a)
     
 end
 
