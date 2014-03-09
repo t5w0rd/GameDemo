@@ -63,3 +63,19 @@ CCAnimation* CCGameControler::getAnimation(const char* pName)
 {
     return m_ac->animationByName(pName);
 }
+
+// CCSpriteFrameCacheEx
+CCDictionary* CCSpriteFrameCacheEx::getSpriteFrames()
+{
+    return m_pSpriteFrames;
+}
+
+CCDictionary* CCSpriteFrameCacheEx::getSpriteFramesAliases()
+{
+    return m_pSpriteFramesAliases;
+}
+
+SET_STR* CCSpriteFrameCacheEx::getLoadedFileNames()
+{
+    return m_pLoadedFileNames;
+}

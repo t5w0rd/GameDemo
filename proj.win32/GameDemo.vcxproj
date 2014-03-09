@@ -177,6 +177,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\lua\lundump.c" />
     <ClCompile Include="..\Classes\lua\lvm.c" />
     <ClCompile Include="..\Classes\lua\lzio.c" />
+    <ClCompile Include="..\Classes\TestScene.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +227,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\lua\lundump.h" />
     <ClInclude Include="..\Classes\lua\lvm.h" />
     <ClInclude Include="..\Classes\lua\lzio.h" />
+    <ClInclude Include="..\Classes\TestScene.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

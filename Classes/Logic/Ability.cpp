@@ -43,6 +43,13 @@ const char* CAbility::getDbgTag() const
     return getName();
 }
 
+void CAbility::copyData( const CAbility* from )
+{
+    // TODO: copy some members which are not in the constuctor params
+    setLevel(from->getLevel());
+}
+
+
 const char* CAbility::getRootId() const
 {
     return CONST_ROOT_ID.c_str();
@@ -456,6 +463,21 @@ CActiveAbility::~CActiveAbility()
 {
 }
 
+void CActiveAbility::copyData( const CAbility* from )
+{
+    const CActiveAbility* a = DCAST(from, const CActiveAbility*);
+    setCastTargetType(a->getCastTargetType());
+    setEffectiveTypeFlags(a->getEffectiveTypeFlags());
+    setCastMinRange(a->getCastMinRange());
+    setCastRange(a->getCastRange());
+    setCastTargetRadius(a->getCastTargetRadius());
+    setTemplateProjectile(a->getTemplateProjectile());
+    setCastHorizontal(a->isCastHorizontal());
+
+    copyData(from);
+}
+
+
 const float CActiveAbility::CONST_MAX_CAST_BUFFER_RANGE = 50.0f;
 const float CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE = 5.0f;
 
@@ -638,13 +660,7 @@ CAttackAct::CAttackAct(const char* pRootId, const char* pName, float fCoolDown, 
 CMultiRefObject* CAttackAct::copy() const
 {
     CAttackAct* pRet = new CAttackAct(getRootId(), getName(), m_fCoolDown, m_oAttackValue, m_fAttackValueRandomRange);
-    pRet->setCastTargetType(getCastTargetType());
-    pRet->setEffectiveTypeFlags(getEffectiveTypeFlags());
-    pRet->setCastMinRange(getCastMinRange());
-    pRet->setCastRange(getCastRange());
-    pRet->setCastTargetRadius(getCastTargetRadius());
-    pRet->setTemplateProjectile(getTemplateProjectile());
-    pRet->setCastHorizontal(isCastHorizontal());
+    pRet->copyData(this);
     pRet->m_vecCastAnis = m_vecCastAnis;
     return pRet;
 }

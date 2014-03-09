@@ -77,19 +77,23 @@ function onWorldInit()
 	cclog("p(%.1f, %.1f)", x, y);
     c:setMaxHp(2000)
 
-	do return end
+	--do return end
     
-    s = Sprite:new("Malik")
+	s = Sprite:new("Alric")
     s:prepareFrame(Sprite.kFrmDefault, "default")
     s:prepareAnimation(Sprite.kAniMove, "move", -1)
     s:prepareAnimation(Sprite.kAniDie, "die", -1)
     s:prepareAnimation(Sprite.kAniAct1, "act1", 4)
-    s:prepareAnimation(Sprite.kAniAct2, "act2", 4)
-    s:setGeometry(7.0, 10.0, 0.5, 0.1125, 10.0, 10.0)
-    u = Unit:new(s, "MK")
+    s:prepareAnimation(Sprite.kAniAct2, "act2", 3)
+    s:prepareAnimation(Sprite.kAniAct3, "act3", 8)
+    s:prepareAnimation(Sprite.kAniAct4, "act4", 9)
+    s:prepareAnimation(Sprite.kAniAct5, "act5", 3)
+    s:setGeometry(30.0, 31.0, 0.5122, 0.1, 40.0, 30.0)
+
+    u = Unit:new(s, "Sword")
 
     u:setForceByIndex(3)
-    u:setMaxHp(1375.0)
+    u:setMaxHp(200.0)
     u:setBaseArmor(0, 9.0)
     u:setBaseMoveSpeed(80.0)
     u:setPosition(500, 500)
@@ -99,18 +103,33 @@ function onWorldInit()
     a = StatusShowPas:new()
     u:addPassiveAbility(a)
 
-    a = AttackAct:new("NormalAttack", 1.5, 0, 10, 0.15,   -3, 20, true, Sprite.kAniAct1, Sprite.kAniAct2)
+    a = AttackAct:new("NormalAttack", 1.5, 0, 10, 0.15,   -3, 20, true, Sprite.kAniAct1, Sprite.kAniAct2, Sprite.kAniAct2)
     u:addActiveAbility(a)
 
     --do return end
     
-    u:setExMoveSpeed(2, 0)
+    --u:setExMoveSpeed(2, 0)
     
-    a = CurseBuff:new(13, false, 10, 4, 20 / 100)
-    id = addTemplateAbility(a)
-    
-    a = DefPas:new(id)
-    u:addPassiveAbility(a) 
+    --a = CurseBuff:new(13, false, 10, 4, 20 / 100)
+    --id = addTemplateAbility(a)
+    --a = DefPas:new(id)
+    --u:addPassiveAbility(a) 
+
+	a = ChangeHpBuff:new("+HP", "Heal", 5, true, 0.2, 0.002, 0.0, 0.0, 0.0)
+	id = addTemplateAbility(a)
+	a = EvadePas:new("Evade", 0.30, id)
+	u:addPassiveAbility(a)
+
+	a = ChangeHpPas:new("Heal", 0.2, 0.002, 0.0, 0.0, 0.0)
+	u:addPassiveAbility(a)
+
+	a = VampirePas:new("Vampire", 0.5)
+	u:addPassiveAbility(a)
+
+	a = SpeedBuff:new("SpeedUp", "SpeedUp", 5, true, 2.0, 0.0, 2.0, 0.0)
+	id = addTemplateAbility(a)
+	a = AttackBuffMakerPas:new("Critical", 0.1, id, true, 10.0, 0.0)
+	u:addPassiveAbility(a)
     
 end
 

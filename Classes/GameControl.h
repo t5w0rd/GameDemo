@@ -24,5 +24,15 @@ public:
     M_SYNTHESIZE_READONLY(CCAnimationCache*, m_ac, ac);
 };
 
+typedef std::set<std::string> SET_STR;
+class CCSpriteFrameCacheEx : public CCSpriteFrameCache
+{
+public:
+    CCDictionary* getSpriteFrames();
+    CCDictionary* getSpriteFramesAliases();
+    SET_STR*  getLoadedFileNames();
+};
+
 
 #endif  /* __GAMECONTROL_H__ */
+

@@ -89,7 +89,15 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Units/Matchstick/act2", "Units/Matchstick/act2", 0.08f);
     gc->loadAnimation("Units/Matchstick/act3", "Units/Matchstick/act3", 0.08f);
     gc->loadAnimation("Units/Matchstick/act4", "Units/Matchstick/act4", 0.08f);
-    
+
+    // 30, 31, (0.5122, 0.1), (40, 30)
+    gc->loadAnimation("Units/Alric/move", "Units/Alric/move", 0.08f);
+    gc->loadAnimation("Units/Alric/die", "Units/Alric/die", 0.08f);
+    gc->loadAnimation("Units/Alric/act1", "Units/Alric/act1", 0.08f);  // 4
+    gc->loadAnimation("Units/Alric/act2", "Units/Alric/act2", 0.08f);  // 3
+    gc->loadAnimation("Units/Alric/act3", "Units/Alric/act3", 0.08f);  // 8
+    gc->loadAnimation("Units/Alric/act4", "Units/Alric/act4", 0.08f);  // 9
+    gc->loadAnimation("Units/Alric/act5", "Units/Alric/act5", 0.08f);  // 3
 
     // 创建Draw
     ud = new CUnitDrawForCC("Malik");
@@ -98,7 +106,6 @@ bool CBattleWorld::onInit()
     ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
     ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4);
     ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 4);
-
     ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), CPoint(10.0f, 10.0f));
 
     // 创建hero
@@ -223,7 +230,7 @@ bool CBattleWorld::onInit()
     id = addTemplateAbility(a);
     u->addPassiveAbility(id);
 #endif
-    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 2.0f, CExtraCoeff(0.5, 0)));
+    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 10.0f, CExtraCoeff(0.5, 0)));
 
     ud->setBaseMoveSpeed(80.0f);
     ud->setPosition(CPoint(vs.width * 0.6, vs.height * 0.5));
@@ -243,7 +250,7 @@ bool CBattleWorld::onInit()
         1.0f,
         id,
         false,
-        CExtraCoeff(10.0f, 0.0f));
+        CExtraCoeff(2.0f, 0.0f));
     id = addTemplateAbility(a);
 
     CBuffMakerAct* bm = new CBuffMakerAct("", "锤子", 5.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);
@@ -298,7 +305,7 @@ bool CBattleWorld::onInit()
     atk->addCastAnimation(CUnitDraw::kAniAct2);
     u->addActiveAbility(atk);
 
-    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 2.0f, CExtraCoeff(0.5, 0)));
+    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 10.0f, CExtraCoeff(0.5, 0)));
     
     u->addPassiveAbility(new CDoubleAttackPas("DoubleAttack", "连击", 0.5f));
 

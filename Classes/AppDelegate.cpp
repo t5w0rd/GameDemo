@@ -4,6 +4,7 @@
 #include "BattleScene.h"
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
+#include "TestScene.h"
 
 
 // AppDelegate
@@ -32,6 +33,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     CCScene* pScene = CCBattleSceneLayer::scene();
+    //CCScene* pScene = CCTestSceneLayer::scene();
     if (pScene == NULL)
     {
         exit(1);

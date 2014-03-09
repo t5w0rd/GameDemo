@@ -25,6 +25,8 @@ public:
     virtual ~CAbility();
     
     virtual const char* getDbgTag() const;
+
+    virtual void copyData(const CAbility* from);
     
     M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
     
@@ -85,6 +87,8 @@ class CActiveAbility : public CAbility
 public:
     CActiveAbility(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType = CCommandTarget::kNoTarget, uint32_t dwEffectiveTypeFlags = CUnitForce::kSelf | CUnitForce::kOwn | CUnitForce::kAlly | CUnitForce::kEnemy);
     virtual ~CActiveAbility();
+
+    virtual void copyData(const CAbility* from);
     
     static const float CONST_MAX_CAST_BUFFER_RANGE;
     static const float CONST_MAX_HOR_CAST_Y_RANGE;
