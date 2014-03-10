@@ -76,17 +76,19 @@ int unit_getExArmorValue(lua_State* L);
 int unit_suspend(lua_State* L);
 int unit_isSuspended(lua_State* L);
 int unit_resume(lua_State* L);
-int uint_getBuffStackSize(lua_State* L);
+int unit_getBuffStackSize(lua_State* L);
+int unit_attack(lua_State* L);
+int unit_damaged(lua_State* L);
 
 int unit_addActiveAbility(lua_State* L);
 int unit_addPassiveAbility(lua_State* L);
 int unit_addBuffAbility(lua_State* L);
 int unit_getAttackAbility(lua_State* L);
 
-int uint2d_setBaseMoveSpeed(lua_State* L);
-int uint2d_getRealMoveSpeed(lua_State* L);
-int uint2d_setExMoveSpeed(lua_State* L);
-int uint2d_getExMoveSpeed(lua_State* L);
+int unit2d_setBaseMoveSpeed(lua_State* L);
+int unit2d_getRealMoveSpeed(lua_State* L);
+int unit2d_setExMoveSpeed(lua_State* L);
+int unit2d_getExMoveSpeed(lua_State* L);
 int unit2d_setPosition(lua_State* L);
 int unit2d_getPosition(lua_State* L);
 

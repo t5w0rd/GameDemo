@@ -34,12 +34,15 @@ public:
 
     void updateSprite();
 
-    bool saveToPng(const char* name, const char* path);
+    bool saveToPng(const char* name, const char* path, CCSpriteFrameCache* fc);
+    void scheduleSave(float ft);
 
     CCSpriteFrameCacheEx* m_fc;
     CCArray* m_arr;
     CCSprite* m_sp;
     unsigned int m_cur;
+    int m_iSavePos;
+    int m_iSaveCount;
 
 };
 

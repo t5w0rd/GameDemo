@@ -211,6 +211,7 @@ luaL_Reg unit_funcs[] = {
     {"setHp", unit_setHp},
     {"getHp", unit_getHp},
     {"setForceByIndex", unit_setForceByIndex},
+    {"setAlly", unit_setAlly},
     {"setBaseArmor", unit_setBaseArmor},
     {"getBaseArmor", unit_getBaseArmor},
     {"getRealArmorValue", unit_getRealArmorValue},
@@ -219,15 +220,17 @@ luaL_Reg unit_funcs[] = {
     {"suspend", unit_suspend},
     {"isSuspended", unit_isSuspended},
     {"resume", unit_resume},
-    {"getBuffStackSize", uint_getBuffStackSize},
+    {"getBuffStackSize", unit_getBuffStackSize},
+    {"attack", unit_attack},
+    {"damaged", unit_damaged},
     {"addActiveAbility", unit_addActiveAbility},
     {"addPassiveAbility", unit_addPassiveAbility},
     {"addBuffAbility", unit_addBuffAbility},
     {"getAttackAbility", unit_getAttackAbility},
-    {"setBaseMoveSpeed", uint2d_setBaseMoveSpeed},
-    {"getRealMoveSpeed", uint2d_getRealMoveSpeed},
-    {"setExMoveSpeed", uint2d_setExMoveSpeed},
-    {"getExMoveSpeed", uint2d_getExMoveSpeed},
+    {"setBaseMoveSpeed", unit2d_setBaseMoveSpeed},
+    {"getRealMoveSpeed", unit2d_getRealMoveSpeed},
+    {"setExMoveSpeed", unit2d_setExMoveSpeed},
+    {"getExMoveSpeed", unit2d_getExMoveSpeed},
     {"setPosition", unit2d_setPosition},
     {"getPosition", unit2d_getPosition},
     {NULL, NULL}
@@ -298,6 +301,16 @@ int unit_setForceByIndex(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
     u->setForceByIndex(n);
     
+    return 0;
+}
+
+int unit_setAlly(lua_State* L)
+{
+    unsigned int ally = lua_tounsigned(L, 2);
+
+    CUnit* u = luaL_tounitptr(L);
+    u->setAlly(ally);
+
     return 0;
 }
 
@@ -379,7 +392,7 @@ int unit_resume(lua_State* L)
     return 0;
 }
 
-int uint_getBuffStackSize(lua_State* L)
+int unit_getBuffStackSize(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     const char* root = lua_tostring(L, 2);
@@ -400,12 +413,30 @@ int uint_getBuffStackSize(lua_State* L)
     return 1;
 }
 
-int unit_setAlly(lua_State* L)
+int unit_attack(lua_State* L)
 {
-    unsigned int ally = lua_tounsigned(L, 2);
-
     CUnit* u = luaL_tounitptr(L);
-    u->setAlly(ally);
+    CAttackData* ad = NULL;
+    luaL_toobjptr(L, 2, ad);
+    CUnit* t = luaL_tounitptr(L, 3);
+    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+
+    ad = u->attackAdv(ad, t, mask);
+
+    luaL_pushobjptr(L, "AttackData", ad);
+
+    return 1;
+}
+
+int unit_damaged(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CAttackData* ad = NULL;
+    luaL_toobjptr(L, 2, ad);
+    CUnit* s = luaL_tounitptr(L, 3);
+    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+
+    u->damagedAdv(ad, s, mask);
 
     return 0;
 }
@@ -487,7 +518,7 @@ int unit_getAttackAbility(lua_State* L)
     return 1;
 }
 
-int uint2d_setBaseMoveSpeed(lua_State* L)
+int unit2d_setBaseMoveSpeed(lua_State* L)
 {
     float n = lua_tonumber(L, 2);
     
@@ -498,7 +529,7 @@ int uint2d_setBaseMoveSpeed(lua_State* L)
     return 0;
 }
 
-int uint2d_getRealMoveSpeed(lua_State* L)
+int unit2d_getRealMoveSpeed(lua_State* L)
 {
     CUnit* _p = luaL_tounitptr(L);
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
@@ -507,7 +538,7 @@ int uint2d_getRealMoveSpeed(lua_State* L)
     return 1;
 }
 
-int uint2d_setExMoveSpeed(lua_State* L)
+int unit2d_setExMoveSpeed(lua_State* L)
 {
     float a = lua_tonumber(L, 2);
     float b = lua_tonumber(L, 2);
@@ -519,7 +550,7 @@ int uint2d_setExMoveSpeed(lua_State* L)
     return 0;
 }
 
-int uint2d_getExMoveSpeed(lua_State* L)
+int unit2d_getExMoveSpeed(lua_State* L)
 {
     CUnit* _p = luaL_tounitptr(L);
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);

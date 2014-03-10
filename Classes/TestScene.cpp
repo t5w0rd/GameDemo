@@ -24,6 +24,8 @@ CCTestSceneLayer::CCTestSceneLayer()
     : m_fc(NULL)
     , m_arr(NULL)
     , m_sp(NULL)
+    , m_iSavePos(0)
+    , m_iSaveCount(0)
 {
 }
 
@@ -53,25 +55,51 @@ CCScene* CCTestSceneLayer::scene()
 #define PLIST_NAME "Global"
 #define PLIST_FILE_NAME ("Global.plist")
 #define PLIST_SAVE_NAME ("Saved/Global")
+
 const char* g_files[] = {
-    //"sprite_level10-ipadhd",
-    //"sprite_level11-ipadhd",
-    //"sprite_level14-ipadhd",
-    //"sprite_level15-ipadhd",
-    //"sprite_level16-ipadhd",
-    //"sprite_level18-ipadhd",
-    //"sprite_level18_3-ipadhd",
-    //"sprite_level19-ipadhd",
-    //"sprite_level20-ipadhd"
-    //"sprite_level21-ipadhd",
-    //"sprite_level22-ipadhd",
-    //"sprite_level4-ipadhd",
-    //"sprite_level6-ipadhd"
-    "sprite_level7-ipadhd",
+    "enemies_demons-ipadhd",
+    "enemies_effects-ipadhd",
+    "enemies_goblins-ipadhd",
+    "enemies_inferno-ipadhd",
+    "enemies_mercenaries_1-ipadhd",
+    "enemies_mercenaries_2-ipadhd",
+    "enemies_mercenaries_marauder-ipadhd",
+    "enemies_sheeps-ipadhd",
+    "enemies_snow-ipadhd",
+    "enemies_spiders-ipadhd",
+    "heroes_archer-ipadhd",
+    "heroes_denas-ipadhd",
+    "heroes_dwarf-ipadhd",
+    "heroes_fire-ipadhd",
+    "heroes_frost-ipadhd",
+    "heroes_mage-ipadhd",
+    "heroes_paladin-ipadhd",
+    "heroes_reinforcement-ipadhd",
+    "heroes_robot-ipadhd",
+    "heroes_samurai-ipadhd",
+    "heroes_thor-ipadhd",
+    "heroes_viking-ipadhd",
+    "sprite_level12-ipadhd",
+    "sprite_level13-ipadhd",
+    "sprite_level14-ipadhd",
+    "sprite_level15-ipadhd",
+    "sprite_level16-ipadhd",
+    "sprite_level17-ipadhd",
+    "sprite_level18-ipadhd",
+    "sprite_level19-ipadhd",
+    "sprite_level19_3-ipadhd",
+    "sprite_level21-ipadhd",
+    "sprite_level22-ipadhd",
+    "sprite_level6-ipadhd",
     "sprite_level8-ipadhd",
     "sprite_level9-ipadhd",
-    "towers-ipadhd"
+    "towers-ipadhd",
+    "towers_arcane-ipadhd",
+    "towers_bfg-ipadhd",
+    "towers_tesla-ipadhd"
+
 };
+
 // on "init" you need to initialize your instance
 bool CCTestSceneLayer::init()
 {
@@ -82,7 +110,7 @@ bool CCTestSceneLayer::init()
         return false;
     }
 
-    CCDirector::sharedDirector()->setDisplayStats(false);
+    //CCDirector::sharedDirector()->setDisplayStats(false);
 
     FILE* out = stdout;
 
@@ -218,32 +246,10 @@ void CCTestSceneLayer::updateSprite()
 void CCTestSceneLayer::onLabelSave( CCObject* )
 {
 #if 1
-    for (int f = 0; f < sizeof(g_files) / sizeof(g_files[0]); ++f)
-    {
-        char tmp[256];
-        m_fc->removeSpriteFrames();
+    m_iSavePos = 0;
+    m_iSaveCount = sizeof(g_files) / sizeof(g_files[0]);
 
-        sprintf(tmp, "%s.plist", g_files[f]);
-        m_fc->addSpriteFramesWithFile(tmp);
-
-
-        CCDictionary* d = m_fc->getSpriteFrames();
-        if (d->count() == 0)
-        {
-            continue;
-        }
-        CC_SAFE_RELEASE(m_arr);
-        m_arr = d->allKeys();
-        CC_SAFE_RETAIN(m_arr);
-
-
-        for (unsigned int i = 0; i < m_arr->count(); ++i)
-        {
-            const char* name = DCAST(m_arr->objectAtIndex(i), CCString*)->getCString();
-            sprintf(tmp, "Saved/%s", g_files[f]);
-            saveToPng(name, tmp);
-        }
-    }
+    schedule(schedule_selector(CCTestSceneLayer::scheduleSave), 2.0);
     m_cur = 0;
 #else
     unsigned int cur = m_cur;
@@ -257,18 +263,18 @@ void CCTestSceneLayer::onLabelSave( CCObject* )
 #endif
 }
 
-bool CCTestSceneLayer::saveToPng( const char* name, const char* path )
+bool CCTestSceneLayer::saveToPng( const char* name, const char* path, CCSpriteFrameCache* fc )
 {
-    m_sp->setDisplayFrame(m_fc->spriteFrameByName(name));
+    m_sp->setDisplayFrame(fc->spriteFrameByName(name));
     CCSize sz = m_sp->getContentSize();
     m_sp->setPosition(ccp(sz.width * 0.5, sz.height * 0.5));
-    CCRenderTexture* rt = CCRenderTexture::create(sz.width, sz.height, kTexture2DPixelFormat_RGBA8888);
+    CCRenderTexture rt;
+    rt.initWithWidthAndHeight(sz.width, sz.height, kTexture2DPixelFormat_RGBA8888);
 
-    rt->begin();
+    rt.begin();
     m_sp->visit();
-    rt->end();
+    rt.end();
 
-    CCImage* img = rt->newCCImage();
     char full[256];
     if (path != NULL)
     {
@@ -280,5 +286,37 @@ bool CCTestSceneLayer::saveToPng( const char* name, const char* path )
     }
     
     preparePath(full);
-    return img->saveToFile(full, false);
+    CCImage* img = rt.newCCImage();
+    bool res = img->saveToFile(full, false);
+    delete img;
+
+    return res;
+}
+
+void CCTestSceneLayer::scheduleSave( float ft )
+{
+    if (m_iSavePos >= m_iSaveCount)
+    {
+        unschedule(schedule_selector(CCTestSceneLayer::scheduleSave));
+        return;
+    }
+
+    char tmp[256];
+    CCSpriteFrameCacheEx fc;
+    fc.init();
+
+    sprintf(tmp, "%s.plist", g_files[m_iSavePos]);
+    fc.addSpriteFramesWithFile(tmp);
+
+
+    CCDictionary* d = fc.getSpriteFrames();
+    CCDictElement* e = NULL;
+    CCDICT_FOREACH(d, e)
+    {
+        const char* name = e->getStrKey();
+        sprintf(tmp, "Saved/%s", g_files[m_iSavePos]);
+        saveToPng(name, tmp, &fc);
+    }
+
+    ++m_iSavePos;
 }

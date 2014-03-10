@@ -327,6 +327,7 @@ bool CBattleWorld::onLuaWorldInit()
 
     // lua
     lua_State* L = getLuaHandle();
+    CCBattleSceneLayer* layer = DCAST(getLayer(), CCBattleSceneLayer*);
 
     luaL_insertloader(L, luaModuleLoader4cc);
     luaRegCommFunc(L);
@@ -346,11 +347,12 @@ bool CBattleWorld::onLuaWorldInit()
     if (luaL_loadscript4cc(L, name.c_str(), err) == false)
     {
         CCLOG("ERR | LuaErr: %s", err.c_str());
-        CCLabelTTF* pLabel = CCLabelTTF::create(err.c_str(), "Arial", 18);
-        pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
-        pLabel->setColor(ccc3(255, 0, 0));
-        DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
-        pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 5, vs.height - pLabel->getContentSize().height * 0.5 + 5));
+        layer->log("%s", err.c_str());
+//         CCLabelTTF* pLabel = CCLabelTTF::create(err.c_str(), "Arial", 20);
+//         pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
+//         pLabel->setColor(ccc3(240, 60, 0));
+//         DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
+//         pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 10, vs.height - pLabel->getContentSize().height * 0.5 + 10));
 
         return false;
     }
@@ -362,11 +364,12 @@ bool CBattleWorld::onLuaWorldInit()
         const char* err = lua_tostring(L, -1);
         CCLOG("ERR | LuaErr: %s", err);
         lua_pop(L, 1);
-        CCLabelTTF* pLabel = CCLabelTTF::create(err, "Arial", 18);
-        pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
-        pLabel->setColor(ccc3(255, 0, 0));
-        DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
-        pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 5, vs.height - pLabel->getContentSize().height * 0.5 + 5));
+        layer->log("%s", err);
+//         CCLabelTTF* pLabel = CCLabelTTF::create(err, "Arial", 20);
+//         pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
+//         pLabel->setColor(ccc3(240, 60, 0));
+//         DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
+//         pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 10, vs.height - pLabel->getContentSize().height * 0.5 + 10));
 
         return false;
     }
@@ -403,7 +406,14 @@ bool CCBattleScene::init()
 // CCBattleSceneLayer
 CCBattleSceneLayer::CCBattleSceneLayer()
     : m_pCtrlLayer(NULL)
+    , m_iMaxLogs(0)
+    , m_iBaseLogId(CKeyGen::nextKey())
+    , m_iCurLogId(m_iBaseLogId)
 {
+    CCLabelTTF* lbl = CCLabelTTF::create("TestSize", "Arial", 20);
+    const CCSize& sz = lbl->getContentSize();
+    CCSize winSz = CCDirector::sharedDirector()->getVisibleSize();
+    m_iMaxLogs = (winSz.height - 20) / sz.height;
 }
 
 CCBattleSceneLayer::~CCBattleSceneLayer()
@@ -424,7 +434,7 @@ CCScene* CCBattleSceneLayer::scene()
     // 'scene' is an autorelease object
     CCBattleScene* pScene = CCBattleScene::create();
 
-    CUnitWorldForCC* pWorld = pScene->getWorld();
+    CWorldForCC* pWorld = pScene->getWorld();
     // 'layer' is an autorelease object
     CCBattleSceneLayer* layer = CCBattleSceneLayer::create();
     pWorld->setLayer(layer);
@@ -503,5 +513,44 @@ void CCBattleSceneLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
     else
     {
         d->cmdMove(p);
+    }
+}
+
+void CCBattleSceneLayer::log( const char* fmt, ... )
+{
+    CCSize winSz = CCDirector::sharedDirector()->getVisibleSize();
+    char sz[1024];
+    va_list argv;
+    va_start(argv, fmt);
+    vsprintf(sz, fmt, argv);
+    va_end(argv);
+
+    CCNode* l = getCtrlLayer();
+    int curLogId = getCurLogId();
+    cirInc(curLogId, getBaseLogId(), getMaxLogs());
+    setCurLogId(curLogId);
+
+    CCLabelTTF* lbl = DCAST(l->getChildByTag(getCurLogId()), CCLabelTTF*);
+    if (lbl != NULL)
+    {
+        lbl->removeFromParentAndCleanup(true);
+    }
+
+    lbl = CCLabelTTF::create(sz, "Arial", 20);
+    lbl->setHorizontalAlignment(kCCTextAlignmentLeft);
+    lbl->setColor(ccc3(79, 0, 255));
+    l->addChild(lbl, 1, getCurLogId());
+    const CCSize& rSz = lbl->getContentSize();
+    lbl->setPosition(ccp(rSz.width * 0.5 + 10, winSz.height + rSz.height * 0.5 - 10));
+
+    for (int i = 0, j = getCurLogId(); i < getMaxLogs(); ++i)
+    {
+        CCNode* pNode = l->getChildByTag(j);
+        if (pNode != NULL)
+        {
+            pNode->runAction(CCMoveBy::create(0.1f, ccp(0.0f, -lbl->getContentSize().height)));
+        }
+
+        cirDec(j, getBaseLogId(), getMaxLogs());
     }
 }

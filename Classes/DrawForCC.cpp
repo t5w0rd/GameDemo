@@ -425,7 +425,7 @@ CCUnitLayer::CCUnitLayer()
 {
 }
 
-bool CCUnitLayer::initWithWorld(CUnitWorldForCC* pWorld)
+bool CCUnitLayer::initWithWorld(CWorldForCC* pWorld)
 {
     assert(pWorld != NULL);
 
@@ -475,14 +475,14 @@ void CCUnitLayer::onWorldInterval(float dt)
     w->step(dt);
 }
 
-// CUnitWorldForCC
-CUnitWorldForCC::CUnitWorldForCC()
+// CWorldForCC
+CWorldForCC::CWorldForCC()
     : m_pLayer(NULL)
 {
-    setDbgClassName("CUnitWorldForCC");;
+    setDbgClassName("CWorldForCC");;
 }
 
-CUnitWorldForCC::~CUnitWorldForCC()
+CWorldForCC::~CWorldForCC()
 {
     if (m_pLayer != NULL)
     {
@@ -490,7 +490,7 @@ CUnitWorldForCC::~CUnitWorldForCC()
     }
 }
 
-void CUnitWorldForCC::onAddUnit(CUnit* pUnit)
+void CWorldForCC::onAddUnit(CUnit* pUnit)
 {
     CCLayer* pLayer = getLayer();
     if (pLayer == NULL)
@@ -509,7 +509,7 @@ void CUnitWorldForCC::onAddUnit(CUnit* pUnit)
     pLayer->addChild(pSprite->getShadow());
 }
 
-void CUnitWorldForCC::onDelUnit(CUnit* pUnit)
+void CWorldForCC::onDelUnit(CUnit* pUnit)
 {
     CUnitDrawForCC* pDraw = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
     CCUnitSprite* pSprite = pDraw->getSprite();
@@ -520,7 +520,7 @@ void CUnitWorldForCC::onDelUnit(CUnit* pUnit)
 
 }
 
-void CUnitWorldForCC::onAddProjectile(CProjectile* pProjectile)
+void CWorldForCC::onAddProjectile(CProjectile* pProjectile)
 {
     CCLayer* pLayer = getLayer();
     if (pLayer == NULL)
@@ -538,7 +538,7 @@ void CUnitWorldForCC::onAddProjectile(CProjectile* pProjectile)
     pLayer->addChild(pSprite);
 }
 
-void CUnitWorldForCC::onDelProjectile(CProjectile* pProjectile)
+void CWorldForCC::onDelProjectile(CProjectile* pProjectile)
 {
     CProjectileForCC* pProjectileForCC = DCAST(pProjectile, CProjectileForCC*);
     CCProjectileSprite* pSprite = pProjectileForCC->getSprite();
@@ -547,7 +547,7 @@ void CUnitWorldForCC::onDelProjectile(CProjectile* pProjectile)
     pLayer->removeChild(pSprite, true);
 }
 
-void CUnitWorldForCC::setLayer(CCUnitLayer* pLayer)
+void CWorldForCC::setLayer(CCUnitLayer* pLayer)
 {
     if (pLayer != m_pLayer)
     {
@@ -565,7 +565,7 @@ void CUnitWorldForCC::setLayer(CCUnitLayer* pLayer)
     }
 }
 
-CCLayer* CUnitWorldForCC::createLayer()
+CCLayer* CWorldForCC::createLayer()
 {
     assert(m_pLayer == NULL);
     m_pLayer = CCUnitLayer::createWithWorld(this);

@@ -5,7 +5,7 @@
 #include "DrawForCC.h"
 
 
-class CBattleWorld : public CUnitWorldForCC
+class CBattleWorld : public CWorldForCC
 {
 public:
     CBattleWorld();
@@ -25,7 +25,7 @@ public:
     virtual bool init();
     CREATE_FUNC(CCBattleScene);
 
-    M_SYNTHESIZE(CUnitWorldForCC*, m_pWorld, World);
+    M_SYNTHESIZE(CWorldForCC*, m_pWorld, World);
 
 };
 
@@ -45,6 +45,11 @@ public:
 
     virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
     M_SYNTHESIZE(CCLayer*, m_pCtrlLayer, CtrlLayer);
+
+    M_SYNTHESIZE(int, m_iMaxLogs, MaxLogs);
+    M_SYNTHESIZE(int, m_iBaseLogId, BaseLogId);
+    M_SYNTHESIZE(int, m_iCurLogId, CurLogId);
+    void log(const char* fmt, ...);
 
 };
 

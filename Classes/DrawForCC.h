@@ -96,16 +96,16 @@ public:
 
 };
 
-class CUnitWorldForCC;
+class CWorldForCC;
 
 class CCUnitLayer : public CCLayer
 {
 public:
     CCUnitLayer();
-    virtual bool initWithWorld(CUnitWorldForCC* pWorld);
-    M_CREATEWITH_FUNC_PARAM(World, CCUnitLayer, (CUnitWorldForCC* pWorld), pWorld);
+    virtual bool initWithWorld(CWorldForCC* pWorld);
+    M_CREATEWITH_FUNC_PARAM(World, CCUnitLayer, (CWorldForCC* pWorld), pWorld);
 
-    M_SYNTHESIZE(CUnitWorldForCC*, m_pWorld, World);
+    M_SYNTHESIZE(CWorldForCC*, m_pWorld, World);
 
     virtual void onEnter();
     virtual void onExit();
@@ -116,11 +116,11 @@ public:
     virtual void onWorldInterval(float dt);
 };
 
-class CUnitWorldForCC : public CWorld
+class CWorldForCC : public CWorld
 {
 public:
-    CUnitWorldForCC();
-    virtual ~CUnitWorldForCC();
+    CWorldForCC();
+    virtual ~CWorldForCC();
 
     virtual void onAddUnit(CUnit* pUnit);
     virtual void onDelUnit(CUnit* pUnit);

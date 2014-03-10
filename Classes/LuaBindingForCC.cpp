@@ -5,6 +5,7 @@
 #include "DrawForCC.h"
 #include "GameControl.h"
 #include "AbilityForCC.h"
+#include "BattleScene.h"
 
 
 int luaModuleLoader4cc(lua_State *L)
@@ -187,8 +188,12 @@ int g_cclog(lua_State* L)
     
     const char* log = lua_tostring(L, -1);
     CCLOG("%s", log);
+
+    lua_getglobal(L, "_world");
+    CWorldForCC* w = (CWorldForCC*)lua_touserdata(L, -1);
+    DCAST(w->getLayer(), CCBattleSceneLayer*)->log("%s", log);
     
-    lua_pop(L, 2);  // pop res and "string"
+    lua_pop(L, 3);  // pop res and "string" and _world
     
     return 0;
 }
