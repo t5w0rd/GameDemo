@@ -281,6 +281,8 @@ protected:
 public:
     CUnit(const char* pRootId);
     virtual ~CUnit();
+    virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CUnit* from);
 
     virtual const char* getDbgTag() const;
 
@@ -299,7 +301,10 @@ public:
     
     M_SYNTHESIZE_READONLY(float, m_fHp, Hp);
     M_SYNTHESIZE_READONLY(float, m_fMaxHp, MaxHp);
-    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExMaxHp, ExMaxHp);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(CExtraCoeff, m_oExMaxHp, ExMaxHp);
+    void setExMaxHp(const CExtraCoeff& var);
+    float getRealMaxHp() const;
+    
     
     // @override
     
@@ -415,10 +420,12 @@ public:
     typedef CMultiRefMap<CActiveAbility*> MAP_ACTIVE_ABILITYS;
     typedef CMultiRefMap<CPassiveAbility*> MAP_PASSIVE_ABILITYS;
     typedef CMultiRefMap<CBuffAbility*> MAP_BUFF_ABILITYS;
+    typedef CMultiRefMap<CPassiveAbility*> MAP_SYSTEM_ABILITYS;
     
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ACTIVE_ABILITYS, m_mapActAbilitys, ActiveAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PASSIVE_ABILITYS, m_mapPasAbilitys, PassiveAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_BUFF_ABILITYS, m_mapBuffAbilitys, BuffAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_SYSTEM_ABILITYS, m_mapSysAbilitys, SystemAbilitys);
 
 
     M_SYNTHESIZE(int, m_iAttackAbilityId, AttackAbilityId);
@@ -438,6 +445,8 @@ public:
     void addBuffAbility(int id, int iSrcUnit, int iLevel = 1);
     void delBuffAbility(int id, bool bNotify = true);
     CBuffAbility* getBuffAbility(int id);
+
+    void addSystemAbility(CPassiveAbility* pAbility);
     
 protected:
     void updateBuffAbilityElapsed(float dt);
@@ -626,12 +635,12 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapTemplateAbilitys, TemplateAbilitys);
     int addTemplateAbility(CAbility* pAbility);
     void loadTemplateAbilitys();
-    CAbility* copyAbility(int id) const;
+    virtual CAbility* copyAbility(int id) const;
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapTemplateProjectiles, TemplateProjectiles);
     int addTemplateProjectile(CProjectile* pProjectile);
-    CProjectile* copyProjectile(int id) const;
+    virtual CProjectile* copyProjectile(int id) const;
 
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapProjectiles, Projectiles);
     void addProjectile(CProjectile* pProjectile);

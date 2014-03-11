@@ -30,6 +30,17 @@ CUnitDraw::~CUnitDraw()
 {
 }
 
+CMultiRefObject* CUnitDraw::copy() const
+{
+    CUnitDraw* d = new CUnitDraw(getName());
+    d->copyData(this);
+    return d;
+}
+
+void CUnitDraw::copyData( const CUnitDraw* from )
+{
+}
+
 int CUnitDraw::doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone, float fSpeed /*= 1.0f*/)
 {
     return 0;
@@ -80,6 +91,8 @@ void CUnitDraw::loadFrame(int id, const char* pName)
 {
 }
 
+
+
 // CUnitDraw2D
 CUnitDraw2D::CUnitDraw2D(const char* pName)
     : CUnitDraw(pName)
@@ -98,6 +111,26 @@ CUnitDraw2D::CUnitDraw2D(const char* pName)
 
 CUnitDraw2D::~CUnitDraw2D()
 {
+}
+
+CMultiRefObject* CUnitDraw2D::copy() const
+{
+    CUnitDraw2D* ret = new CUnitDraw2D(getName());
+    ret->copyData(this);
+    return ret;
+}
+
+void CUnitDraw2D::copyData( const CUnitDraw* from )
+{
+    CUnitDraw::copyData(from);
+    const CUnitDraw2D* d = DCAST(from, const CUnitDraw2D*);
+    m_fHalfOfWidth = d->m_fHalfOfWidth;
+    m_fHalfOfHeight = d->m_fHalfOfHeight;
+    m_oFirePoint = d->m_oFirePoint;
+    m_fHeight = d->m_fHeight;
+    m_fBaseMoveSpeed = d->m_fBaseMoveSpeed;
+    m_oExMoveSpeed = d->m_oExMoveSpeed;
+    m_bFixed = d->m_bFixed;
 }
 
 void CUnitDraw2D::onUnitDying()
@@ -150,7 +183,7 @@ void CUnitDraw2D::onUnitTick(float dt)
                 setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
                 castSpell(pAbility);
             }
-            else if (bUnitTarget && checkCastTargetDistance(pAbility, getLastMoveToTarget(), td) == false)
+            else if (pAbility->isCoolingDown() == false && (u->isDoingOr(CUnit::kMoving) == false || checkCastTargetDistance(pAbility, getLastMoveToTarget(), td) == false))
             {
                 moveToCastPosition(pAbility, td);
             }
@@ -695,6 +728,7 @@ void CUnitDraw2D::onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData)
     }
 }
 
+// CUnitGroup
 CUnitGroup::CUnitGroup()
 {
 }
@@ -855,13 +889,18 @@ CProjectile::~CProjectile()
 CMultiRefObject* CProjectile::copy() const
 {
     CProjectile* ret = new CProjectile(getName());
-    ret->setMoveSpeed(getMoveSpeed());
-    ret->setMaxHeightDelta(getMaxHeightDelta());
-    ret->setSrcUnit(getSrcUnit());
-    ret->setPenaltyFlags(getPenaltyFlags());
-    ret->setFromToType(getFromToType());
-    ret->setFireType(getFireType());
+    ret->copyData(ret);
     return ret;
+}
+
+void CProjectile::copyData( const CProjectile* from )
+{
+    setMoveSpeed(from->getMoveSpeed());
+    setMaxHeightDelta(from->getMaxHeightDelta());
+    setSrcUnit(from->getSrcUnit());
+    setPenaltyFlags(from->getPenaltyFlags());
+    setFromToType(from->getFromToType());
+    setFireType(from->getFireType());
 }
 
 int CProjectile::doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone)
@@ -1126,7 +1165,8 @@ void CProjectile::fire()
                 CUnit* u = w->getUnit(getFromUnit());
                 CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
-                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFixed() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y)));
+                //setHeight(d->getHeight() + d->getFirePoint().y);
+                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y)));
             }
 
             CUnit* t = w->getUnit(getToUnit());

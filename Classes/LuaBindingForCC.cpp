@@ -220,6 +220,21 @@ int g_loadAnimation(lua_State* L)
     return 0;
 }
 
+int g_createUnit( lua_State* L )
+{
+    int id = lua_tointeger(L, 1);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    CUnit* _p = w->m_oULib.copyUnit(id);
+    w->addUnit(_p);
+    lua_pop(L, 1);  // pop _world
+
+    luaL_pushobjptr(L, "Unit", _p);
+
+    return 1;
+}
+
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -227,6 +242,8 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     // TODO: reg global funcs
     lua_register(L, "loadTexture", g_loadTexture);
     lua_register(L, "loadAnimation", g_loadAnimation);
+    lua_register(L, "createUnit", g_createUnit);
+    
     lua_register(L, "cclog", g_cclog);
 
     // TODO: reg global class members

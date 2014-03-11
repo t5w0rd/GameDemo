@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "DrawForCC.h"
+#include "UnitLibraryForCC.h"
 
 
 class CBattleWorld : public CWorldForCC
@@ -12,7 +13,13 @@ public:
     virtual ~CBattleWorld();
 
     virtual bool onInit();
+    virtual void onTick(float dt);
     bool onLuaWorldInit();
+    void onLuaWorldTick(float dt);
+
+    virtual CProjectile* copyProjectile(int id) const;
+
+    CUnitLibraryForCC m_oULib;
 
 };
 

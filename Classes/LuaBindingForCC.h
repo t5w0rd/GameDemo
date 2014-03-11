@@ -19,6 +19,7 @@ int sprite4cc_setGeometry(lua_State* L);
 int g_cclog(lua_State* L);
 int g_loadTexture(lua_State* L);
 int g_loadAnimation(lua_State* L);
+int g_createUnit(lua_State* L);
 
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld);
 

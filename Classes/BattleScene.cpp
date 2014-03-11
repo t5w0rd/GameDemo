@@ -59,7 +59,6 @@ CBattleWorld::CBattleWorld()
 
 CBattleWorld::~CBattleWorld()
 {
-
 }
 
 bool CBattleWorld::onInit()
@@ -71,18 +70,15 @@ bool CBattleWorld::onInit()
     CUnitDrawForCC* ud = NULL;
     CAbility* a = NULL;
     int id = 0;
+    CAttackAct* atk = NULL;
 
     M_DEF_GC(gc);
-    gc->loadTexture("Global");
+    gc->loadTexture("Global0");
+    gc->loadTexture("Global1");
+    gc->loadTexture("Global2");
 
-    gc->loadAnimation("Units/Ball1/move", "Units/Ball1/move", 0.1f);
-    gc->loadAnimation("Units/Ball1/die", "Units/Ball1/die", 0.1f);
-    gc->loadAnimation("Units/Lightning1/die", "Units/Lightning1/die", 0.05f);
+    m_oULib.init();
 
-    gc->loadAnimation("Units/Malik/move", "Units/Malik/move", 0.08f);
-    gc->loadAnimation("Units/Malik/die", "Units/Malik/die", 0.18f);
-    gc->loadAnimation("Units/Malik/act1", "Units/Malik/act1", 0.05f);
-    gc->loadAnimation("Units/Malik/act2", "Units/Malik/act2", 0.05f);
     gc->loadAnimation("Units/Matchstick/move", "Units/Matchstick/move", 0.08f);
     gc->loadAnimation("Units/Matchstick/die", "Units/Matchstick/die", 0.08f);
     gc->loadAnimation("Units/Matchstick/act1", "Units/Matchstick/act1", 0.08f);
@@ -90,70 +86,11 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Units/Matchstick/act3", "Units/Matchstick/act3", 0.08f);
     gc->loadAnimation("Units/Matchstick/act4", "Units/Matchstick/act4", 0.08f);
 
-    // 30, 31, (0.5122, 0.1), (40, 30)
-    gc->loadAnimation("Units/Alric/move", "Units/Alric/move", 0.08f);
-    gc->loadAnimation("Units/Alric/die", "Units/Alric/die", 0.08f);
-    gc->loadAnimation("Units/Alric/act1", "Units/Alric/act1", 0.08f);  // 4
-    gc->loadAnimation("Units/Alric/act2", "Units/Alric/act2", 0.08f);  // 3
-    gc->loadAnimation("Units/Alric/act3", "Units/Alric/act3", 0.08f);  // 8
-    gc->loadAnimation("Units/Alric/act4", "Units/Alric/act4", 0.08f);  // 9
-    gc->loadAnimation("Units/Alric/act5", "Units/Alric/act5", 0.08f);  // 3
-
-    // 创建Draw
-    ud = new CUnitDrawForCC("Malik");
-    ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
-    ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
-    ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
-    ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4);
-    ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 4);
-    ud->setGeometry(7.0f, 10.0f, ccp(0.5f, 0.1125f), CPoint(10.0f, 10.0f));
-
-    // 创建hero
-    u = new CUnit("CUnit");
-    m_iControlUnit = u->getId();
-    u->setDraw(ud);
-    u->setName("Malik");
-    u->setMaxHp(500.0f);
-    u->setForceByIndex(1);
-    u->setAI(CMyAI());
-
+    
+    u = m_oULib.copyUnit(CUnitLibraryForCC::kAlric);
     addUnit(u);
-
-    CStatusShowPas* hpb = new CStatusShowPas();
-    u->addPassiveAbility(hpb, false);
-
-    CAttackAct* atk = new CAttackAct(
-        "NormalAttack",
-        "攻击",
-        1.75,
-        CAttackValue(CAttackValue::kPhysical, 30.0),
-        0.5);
-    atk->setCastMinRange(-3.0f);
-    atk->setCastRange(50.0f);
-    atk->setCastHorizontal();
-    atk->addCastAnimation(CUnitDraw::kAniAct1);
-    atk->addCastAnimation(CUnitDraw::kAniAct2);
-
-    CProjectileForCC* p = NULL;
-#if 0
-    p = new CProjectileForCC("Ball1");
-    p->setMoveSpeed(300.0f);
-    p->setMaxHeightDelta(100.0f);
-    p->setPenaltyFlags(CProjectile::kOnDying);
-    p->setFireType(CProjectile::kFireFollow);
-    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
-    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
-#else
-    p = new CProjectileForCC("Lightning1");
-    p->setPenaltyFlags(CProjectile::kOnDying);
-    p->setFireType(CProjectile::kFireLink);
-    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
-#endif
-    p->prepareFrame(CProjectile::kFrmDefault, "default");
-    id = addTemplateProjectile(p);
-    atk->setTemplateProjectile(id);
-
-    u->addActiveAbility(atk);
+    setControlUnit(u->getId());
+    ud = DCAST(u->getDraw(), CUnitDrawForCC*);
 #if 1
     a = new CSpeedBuff(
         "SlowDown",
@@ -254,21 +191,17 @@ bool CBattleWorld::onInit()
     id = addTemplateAbility(a);
 
     CBuffMakerAct* bm = new CBuffMakerAct("", "锤子", 5.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);
-    p = new CProjectileForCC("Ball1");
-    p->setMoveSpeed(500.0f);
-    p->setMaxHeightDelta(10.0f);
-    p->setPenaltyFlags(CProjectile::kOnDying);
-    p->setFireType(CProjectile::kFireFollow);
-    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
-    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
-    p->prepareFrame(CProjectile::kFrmDefault, "default");
-    id = addTemplateProjectile(p);
-    bm->setTemplateProjectile(id);
-    bm->addCastAnimation(CUnitDraw::kAniAct1);
+    bm->setTemplateProjectile(CUnitLibraryForCC::kThorHammer);
+    bm->addCastAnimation(CUnitDraw::kAniAct3);
     bm->setCastRange(200.0f);
     u->addActiveAbility(bm);
 
     CUnitDrawForCC* hero = ud;
+    
+    u = m_oULib.copyUnit(CUnitLibraryForCC::kReinforce);
+    addUnit(u);
+    u->getDraw()->dcast(ud);
+    ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.2));
     
     // create other units
     ud = new CUnitDrawForCC("Matchstick");
@@ -287,10 +220,6 @@ bool CBattleWorld::onInit()
     u->setAI(CMyAI());
 
     addUnit(u);
-
-    hpb = new CStatusShowPas(
-       );
-    u->addPassiveAbility(hpb, false);
 
     atk = new CAttackAct(
         "NormalAttack",
@@ -320,11 +249,14 @@ bool CBattleWorld::onInit()
     return true;
 }
 
+void CBattleWorld::onTick( float dt )
+{
+    onLuaWorldTick(dt);
+}
+
+
 bool CBattleWorld::onLuaWorldInit()
 {
-    CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
-    CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
-
     // lua
     lua_State* L = getLuaHandle();
     CCBattleSceneLayer* layer = DCAST(getLayer(), CCBattleSceneLayer*);
@@ -335,7 +267,7 @@ bool CBattleWorld::onLuaWorldInit()
     luaRegWorldFuncsForCC(L, this);
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-    string name = "/sdcard/Android/data/com.ts.gamedemo/files/world.lua";
+    string name = "/sdcard/ts/gamedemo/world.lua";
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
     string name = "/var/mobile/Documents/world.lua";
 #else
@@ -348,11 +280,6 @@ bool CBattleWorld::onLuaWorldInit()
     {
         CCLOG("ERR | LuaErr: %s", err.c_str());
         layer->log("%s", err.c_str());
-//         CCLabelTTF* pLabel = CCLabelTTF::create(err.c_str(), "Arial", 20);
-//         pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
-//         pLabel->setColor(ccc3(240, 60, 0));
-//         DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
-//         pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 10, vs.height - pLabel->getContentSize().height * 0.5 + 10));
 
         return false;
     }
@@ -365,11 +292,6 @@ bool CBattleWorld::onLuaWorldInit()
         CCLOG("ERR | LuaErr: %s", err);
         lua_pop(L, 1);
         layer->log("%s", err);
-//         CCLabelTTF* pLabel = CCLabelTTF::create(err, "Arial", 20);
-//         pLabel->setHorizontalAlignment(kCCTextAlignmentLeft);
-//         pLabel->setColor(ccc3(240, 60, 0));
-//         DCAST(getLayer(), CCBattleSceneLayer*)->getCtrlLayer()->addChild(pLabel);
-//         pLabel->setPosition(ccp(pLabel->getContentSize().width * 0.5 + 10, vs.height - pLabel->getContentSize().height * 0.5 + 10));
 
         return false;
     }
@@ -379,6 +301,31 @@ bool CBattleWorld::onLuaWorldInit()
     return true;
 }
 
+void CBattleWorld::onLuaWorldTick( float dt )
+{
+    lua_State* L = getLuaHandle();
+    CCBattleSceneLayer* layer = DCAST(getLayer(), CCBattleSceneLayer*);
+
+    lua_getglobal(L, "onWorldTick");
+    lua_pushnumber(L, dt);
+    int res = lua_pcall(L, 1, 0, 0);
+    if (res != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        CCLOG("ERR | LuaErr: %s", err);
+        lua_pop(L, 1);
+        layer->log("%s", err);
+
+        return;
+    }
+
+    assert(lua_gettop(L) == 0);
+}
+
+CProjectile* CBattleWorld::copyProjectile( int id ) const
+{
+    return m_oULib.copyProjectile(id);
+}
 
 // CCBattleScene
 CCBattleScene::CCBattleScene()

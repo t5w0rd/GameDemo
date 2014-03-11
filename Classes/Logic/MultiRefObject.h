@@ -79,6 +79,7 @@ public:
     ~CMultiRefMap();
     
     void addObject(MULTIREF_ID_TYPE_PTR pObj);
+    void addObject(int id, MULTIREF_ID_TYPE_PTR pObj);
     void delObject(int id);
     void delObject(iterator it);
     MULTIREF_ID_TYPE_PTR getObject(int id) const;
@@ -121,8 +122,15 @@ inline CMultiRefMap<MULTIREF_ID_TYPE_PTR>::~CMultiRefMap()
 template <typename MULTIREF_ID_TYPE_PTR>
 inline void CMultiRefMap<MULTIREF_ID_TYPE_PTR>::addObject(MULTIREF_ID_TYPE_PTR pObj)
 {
+    this->addObject(pObj->getId(), pObj);
+}
+
+
+template <typename MULTIREF_ID_TYPE_PTR>
+inline void CMultiRefMap<MULTIREF_ID_TYPE_PTR>::addObject(int id, MULTIREF_ID_TYPE_PTR pObj)
+{
     pObj->retain();
-    this->insert(make_pair(pObj->getId(), pObj));
+    this->insert(make_pair(id, pObj));
 }
 
 template <typename MULTIREF_ID_TYPE_PTR>

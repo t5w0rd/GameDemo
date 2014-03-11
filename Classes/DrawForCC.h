@@ -37,6 +37,8 @@ class CUnitDrawForCC : public CUnitDraw2D
 public:
     CUnitDrawForCC(const char* pName);
     virtual ~CUnitDrawForCC();
+    virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CUnitDraw* from);
 
     // ·µ»ØactionTag
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
@@ -210,6 +212,7 @@ public:
     CProjectileForCC(const char* pName);
     virtual ~CProjectileForCC();
     virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CProjectile* from);
 
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();

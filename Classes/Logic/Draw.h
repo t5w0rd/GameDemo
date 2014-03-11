@@ -27,6 +27,8 @@ class CUnitDraw : public CMultiRefObject
 public:
     CUnitDraw(const char* pName);
     virtual ~CUnitDraw();
+    virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CUnitDraw* from);
 
     M_SYNTHESIZE_STR(Name);
 
@@ -76,6 +78,8 @@ class CUnitDraw2D : public CUnitDraw
 public:
     CUnitDraw2D(const char* pName);
     virtual ~CUnitDraw2D();
+    virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CUnitDraw* from);
 
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oPosition, Position);
 
@@ -121,7 +125,7 @@ public:
     M_SYNTHESIZE_READONLY(float, m_fBaseMoveSpeed, BaseMoveSpeed);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(CExtraCoeff, m_oExMoveSpeed, ExMoveSpeed);
     M_SYNTHESIZE_BOOL(Fixed);
-    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oMoveTarget, MoveTarget);
+    //M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oMoveTarget, MoveTarget);
 
     void setBaseMoveSpeed(float fMoveSpeed);
     void setExMoveSpeed(const CExtraCoeff& roExMoveSpeed);
@@ -215,6 +219,7 @@ public:
     CProjectile(const char* pName);
     virtual ~CProjectile();
     virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CProjectile* from);
 
     M_SYNTHESIZE_STR(Name);
 

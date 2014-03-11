@@ -56,7 +56,8 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/lua/lundump.c \
 ../../Classes/lua/lvm.c \
 ../../Classes/lua/lzio.c \
-../../Classes/LuaBindingForCC.cpp
+../../Classes/LuaBindingForCC.cpp \
+../../Classes/UnitLibraryForCC.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes \
 $(LOCAL_PATH)/../../Classes/Logic \

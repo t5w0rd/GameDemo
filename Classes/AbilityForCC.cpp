@@ -30,8 +30,8 @@ void CStatusShowPas::onUnitAddAbility()
     CCNode* sd = sp->getShadow();
 
     assert(m_pProgressBar == NULL);
-    CCSize sz(d->getHalfOfWidth() * 3, d->getHalfOfHeight() * 3);
-    m_pProgressBar = CCProgressBar::create(CCSizeMake(sz.width * sp->getScale(), 6.0f), CCSprite::createWithSpriteFrameName("UI/healthbar_fill.png"), CCSprite::createWithSpriteFrameName("UI/healthbar_border.png"), 1.0f, 1.0f, true);
+    CCSize sz(d->getHalfOfWidth() * 2 + 20, d->getHalfOfHeight() * 2 + 20);
+    m_pProgressBar = CCProgressBar::create(CCSizeMake(sz.width * sp->getScale(), 10.0f), CCSprite::createWithSpriteFrameName("UI/healthbar_fill.png"), CCSprite::createWithSpriteFrameName("UI/healthbar_border.png"), 1.0f, 1.0f, true);
     sd->addChild(m_pProgressBar);
     m_pProgressBar->setPosition(ccpAdd(sd->getAnchorPointInPoints(), ccp(0.0f, sz.height * sp->getScale())));
     onUnitChangeHp(0.0f);
@@ -48,7 +48,7 @@ void CStatusShowPas::onUnitDelAbility()
 void CStatusShowPas::onUnitChangeHp(float fChanged)
 {
     CUnit* o = getOwner();
-    float fPer = o->getHp() * 100 / max(FLT_EPSILON, o->getMaxHp());
+    float fPer = o->getHp() * 100 / max(FLT_EPSILON, o->getRealMaxHp());
     m_pProgressBar->setPercentage(fPer);
     m_pProgressBar->setFillColor(ccc3(min(255, (int)((100.0 - fPer) * 2.56 / 0.5)), min(255, (int)(2.56 / 0.5  * fPer)), 0));
 }

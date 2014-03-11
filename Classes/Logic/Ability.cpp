@@ -465,6 +465,7 @@ CActiveAbility::~CActiveAbility()
 
 void CActiveAbility::copyData( const CAbility* from )
 {
+    CAbility::copyData(from);
     const CActiveAbility* a = DCAST(from, const CActiveAbility*);
     setCastTargetType(a->getCastTargetType());
     setEffectiveTypeFlags(a->getEffectiveTypeFlags());
@@ -473,8 +474,6 @@ void CActiveAbility::copyData( const CAbility* from )
     setCastTargetRadius(a->getCastTargetRadius());
     setTemplateProjectile(a->getTemplateProjectile());
     setCastHorizontal(a->isCastHorizontal());
-
-    copyData(from);
 }
 
 
@@ -1337,7 +1336,7 @@ CMultiRefObject* CChangeHpPas::copy() const
 void CChangeHpPas::onUnitAddAbility()
 {
     CUnit* o = getOwner();
-    LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), getChangeHp().getValue(o->getMaxHp()));
+    LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), getChangeHp().getValue(o->getRealMaxHp()));
 }
 
 void CChangeHpPas::onUnitDelAbility()
@@ -1350,10 +1349,10 @@ void CChangeHpPas::onUnitInterval()
 {
     CUnit* o = getOwner();
     float fNewHp = o->getHp();
-    float fChangeHp = getChangeHp().getValue(o->getMaxHp());
+    float fChangeHp = getChangeHp().getValue(o->getRealMaxHp());
     fNewHp += fChangeHp;
 
-    float fMinHp = getMinHp().getValue(o->getMaxHp());
+    float fMinHp = getMinHp().getValue(o->getRealMaxHp());
     if (fNewHp < fMinHp)
     {
         fNewHp = fMinHp;
@@ -1380,7 +1379,7 @@ CMultiRefObject* CChangeHpBuff::copy() const
 void CChangeHpBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
-    LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), getChangeHp().getValue(o->getMaxHp()));
+    LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), getChangeHp().getValue(o->getRealMaxHp()));
 }
 
 void CChangeHpBuff::onUnitDelAbility()
@@ -1393,10 +1392,10 @@ void CChangeHpBuff::onUnitInterval()
 {
     CUnit* o = getOwner();
     float fNewHp = o->getHp();
-    float fChangeHp = getChangeHp().getValue(o->getMaxHp());
+    float fChangeHp = getChangeHp().getValue(o->getRealMaxHp());
     fNewHp += fChangeHp;
 
-    float fMinHp = getMinHp().getValue(o->getMaxHp());
+    float fMinHp = getMinHp().getValue(o->getRealMaxHp());
     if (fNewHp < fMinHp)
     {
         fNewHp = fMinHp;
@@ -1446,7 +1445,7 @@ void CRebirthPas::onUnitDead()
     CWorld* w = o->getWorld();
 
     CUnit* oo = w->getUnit(o->getId());
-    float fHp = getExMaxHp().getValue(o->getMaxHp());
+    float fHp = getExMaxHp().getValue(o->getRealMaxHp());
     if (oo != NULL)
     {
         oo->revive(fHp);

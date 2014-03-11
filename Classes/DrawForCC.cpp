@@ -5,6 +5,7 @@
 #include "ActionForCC.h"
 #include "Unit.h"
 #include "MultiRefObject.h"
+#include "AbilityForCC.h"
 
 
 // CCActionSprite
@@ -136,6 +137,22 @@ CUnitDrawForCC::~CUnitDrawForCC()
     {
         m_pSprite->release();
     }
+}
+
+CMultiRefObject* CUnitDrawForCC::copy() const
+{
+    CUnitDrawForCC* ret = new CUnitDrawForCC(getName());
+    ret->copyData(this);
+    return ret;
+}
+
+void CUnitDrawForCC::copyData( const CUnitDraw* from )
+{
+    CUnitDraw2D::copyData(from);
+    const CUnitDrawForCC* d = DCAST(from, const CUnitDrawForCC*);
+    m_mapAniInfos = d->m_mapAniInfos;
+    m_mapFrmInfos = d->m_mapFrmInfos;
+    m_oAnchorPoint = d->m_oAnchorPoint;
 }
 
 int CUnitDrawForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed /*= 1.0f*/)
@@ -418,6 +435,7 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
     }
 }
 
+
 // CCUnitLayer
 CCUnitLayer::CCUnitLayer()
     : m_pWorld(NULL)
@@ -507,6 +525,10 @@ void CWorldForCC::onAddUnit(CUnit* pUnit)
 
     pLayer->addChild(pSprite);
     pLayer->addChild(pSprite->getShadow());
+
+    pUnit->addSystemAbility(new CStatusShowPas);
+    pUnit->setAI(CDefaultAI());
+    //pDraw->updateMoveSpeedDelta();
 }
 
 void CWorldForCC::onDelUnit(CUnit* pUnit)
@@ -835,22 +857,18 @@ CProjectileForCC::~CProjectileForCC()
 CMultiRefObject* CProjectileForCC::copy() const
 {
     CProjectileForCC* ret = new CProjectileForCC(getName());
-    ret->setMoveSpeed(getMoveSpeed());
-    ret->setMaxHeightDelta(getMaxHeightDelta());
-    ret->setSrcUnit(getSrcUnit());
-    ret->setPenaltyFlags(getPenaltyFlags());
-    ret->setFromToType(getFromToType());
-    ret->setFireType(getFireType());
-    ret->m_mapAniInfos = m_mapAniInfos;
-    ret->m_stFrmInfo = m_stFrmInfo;
-    if (getSprite() != NULL)
-    {
-        ret->createSprite();
-    }
-
-    // 如果需要复制位置、高度、AttackData等，应在这里添加代码
+    ret->copyData(this);
 
     return ret;
+}
+
+void CProjectileForCC::copyData( const CProjectile* from )
+{
+    CProjectile::copyData(from);
+    const CProjectileForCC* p = DCAST(from, const CProjectileForCC*);
+    m_mapAniInfos = p->m_mapAniInfos;
+    m_stFrmInfo = p->m_stFrmInfo;
+    // 如果需要复制位置、高度、AttackData等，应在这里添加代码
 }
 
 void CProjectileForCC::setPosition(const CPoint& p)

@@ -208,6 +208,9 @@ luaL_Reg unit_funcs[] = {
     {"ctor", unit_ctor},
     {"setMaxHp", unit_setMaxHp},
     {"getMaxHp", unit_getMaxHp},
+    {"setExMaxHp", unit_setExMaxHp},
+    {"getExMaxHp", unit_getExMaxHp},
+    {"getRealMaxHp", unit_getRealMaxHp},
     {"setHp", unit_setHp},
     {"getHp", unit_getHp},
     {"setForceByIndex", unit_setForceByIndex},
@@ -271,26 +274,60 @@ int unit_setMaxHp(lua_State* L)
 int unit_getMaxHp(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    lua_pushnumber(L, u->getMaxHp());
     
+    lua_pushnumber(L, u->getMaxHp());
+
+    return 1;
+}
+
+int unit_setExMaxHp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    float exA = lua_tonumber(L, 2);
+    float exB = lua_tonumber(L, 3);
+    
+    u->setExMaxHp(CExtraCoeff(exA, exB));
+
+    return 0;
+}
+
+int unit_getExMaxHp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    
+    const CExtraCoeff& ex = u->getExMaxHp();
+    
+    lua_pushnumber(L, ex.getMulriple());
+    lua_pushnumber(L, ex.getAddend());
+    
+    return 2;
+}
+
+int unit_getRealMaxHp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushnumber(L, u->getRealMaxHp());
+
     return 1;
 }
 
 int unit_setHp(lua_State* L)
 {
     float n = lua_tonumber(L, 2);
-    
+
     CUnit* u = luaL_tounitptr(L);
     u->setHp(n);
-    
+
     return 0;
 }
 
 int unit_getHp(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
+
     lua_pushnumber(L, u->getHp());
-    
+
     return 1;
 }
 
@@ -612,6 +649,8 @@ luaL_Reg ability_funcs[] = {
     {"isCoolingDown", ability_isCoolingDown},
     {"resetCD", ability_resetCD},
     {"coolDown", ability_coolDown},
+    {"setLevel", ability_setLevel},
+    {"getLevel", ability_getLevel},
     {NULL, NULL}
 };
 
@@ -804,6 +843,25 @@ int ability_coolDown(lua_State* L)
     _p->coolDown();
 
     return 0;
+}
+
+int ability_setLevel(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    int lvl = lua_tointeger(L, 2);
+    
+    _p->setLevel(lvl);
+    
+    return 0;
+}
+
+int ability_getLevel(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    
+    lua_pushinteger(L, _p->getLevel());
+    
+    return 1;
 }
 
 luaL_Reg ActiveAbility_funcs[] = {
@@ -1250,17 +1308,19 @@ int DamageBuffMakerBuff_ctor(lua_State* L)
     return 0;
 }
 
-luaL_Reg attackData_funcs[] = {
-    {"ctor", attackData_ctor},
-    {"setAttackType", attackData_setAttackType},
-    {"getAttackType", attackData_getAttackType},
-    {"setAttackValue", attackData_setAttackValue},
-    {"getAttackValue", attackData_getAttackValue},
-    {"addAttackBuff", attackData_addAttackBuff},
+luaL_Reg AttackData_funcs[] = {
+    {"ctor", AttackData_ctor},
+    {"setAttack", AttackData_setAttack},
+    {"getAttack", AttackData_getAttack},
+    {"setAttackType", AttackData_setAttackType},
+    {"getAttackType", AttackData_getAttackType},
+    {"setAttackValue", AttackData_setAttackValue},
+    {"getAttackValue", AttackData_getAttackValue},
+    {"addAttackBuff", AttackData_addAttackBuff},
     {NULL, NULL}
 };
 
-int attackData_ctor(lua_State* L)
+int AttackData_ctor(lua_State* L)
 {
     // TODO: get init params
 
@@ -1272,7 +1332,29 @@ int attackData_ctor(lua_State* L)
     return 0;
 }
 
-int attackData_setAttackType(lua_State* L)
+int AttackData_setAttack(lua_State* L)
+{
+    int type = lua_tointeger(L, 2);
+    float value = lua_tonumber(L, 3);
+    
+    CAttackData* _p = NULL;
+    luaL_toobjptr(L, 1, _p)->setAttackValue(type, value);
+    
+    return 0;
+}
+
+int AttackData_getAttack(lua_State* L)
+{
+    CAttackData* _p = NULL;
+    const CAttackValue& av = luaL_toobjptr(L, 1, _p)->getAttackValue();
+    
+    lua_pushinteger(L, av.getType());
+    lua_pushinteger(L, av.getValue());
+    
+    return 2;
+}
+
+int AttackData_setAttackType(lua_State* L)
 {
     int type = lua_tointeger(L, 2);
 
@@ -1282,7 +1364,7 @@ int attackData_setAttackType(lua_State* L)
     return 0;
 }
 
-int attackData_getAttackType(lua_State* L)
+int AttackData_getAttackType(lua_State* L)
 {
     CAttackData* _p = NULL;
     int type = luaL_toobjptr(L, 1, _p)->getAttackValue().getType();
@@ -1292,7 +1374,7 @@ int attackData_getAttackType(lua_State* L)
     return 1;
 }
 
-int attackData_setAttackValue(lua_State* L)
+int AttackData_setAttackValue(lua_State* L)
 {
     float value = lua_tonumber(L, 2);
 
@@ -1302,7 +1384,7 @@ int attackData_setAttackValue(lua_State* L)
     return 0;
 }
 
-int attackData_getAttackValue(lua_State* L)
+int AttackData_getAttackValue(lua_State* L)
 {
     CAttackData* _p = NULL;
     float value = luaL_toobjptr(L, 1, _p)->getAttackValue().getValue();
@@ -1312,7 +1394,7 @@ int attackData_getAttackValue(lua_State* L)
     return 1;
 }
 
-int attackData_addAttackBuff(lua_State* L)
+int AttackData_addAttackBuff(lua_State* L)
 {
     int buff = lua_tointeger(L, 2);
     int level = lua_tointeger(L, 3);
@@ -1320,6 +1402,16 @@ int attackData_addAttackBuff(lua_State* L)
     CAttackData* _p = NULL;
     luaL_toobjptr(L, 1, _p)->addAttackBuff(CAttackBuff(buff, level));
 
+    return 0;
+}
+
+int g_onWorldInit( lua_State* L )
+{
+    return 0;
+}
+
+int g_onWorldTick( lua_State* L )
+{
     return 0;
 }
 
@@ -1374,6 +1466,8 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_setglobal(L, "_world");
 
     // TODO: reg global funcs
+    lua_register(L, "onWorldInit", g_onWorldInit);
+    lua_register(L, "onWorldTick", g_onWorldTick);
     lua_register(L, "addTemplateAbility", g_addTemplateAbility);
     lua_register(L, "setControlUnit", g_setControlUnit);
     lua_register(L, "getControlUnit", g_getControlUnit);
@@ -1451,8 +1545,8 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
 
     lua_getglobal(L, "class");
     lua_call(L, 0, 1);
-    int attackData = lua_gettop(L);
-    luaL_setfuncs(L, attackData_funcs, 0);
+    int AttackData = lua_gettop(L);
+    luaL_setfuncs(L, AttackData_funcs, 0);
     lua_setglobal(L, "AttackData");
     
     return 0;

@@ -442,6 +442,49 @@ CUnit::~CUnit()
     setDraw(NULL);
 }
 
+CMultiRefObject* CUnit::copy() const
+{
+    CUnit* ret = new CUnit(CONST_ROOT_ID.c_str());
+    ret->copyData(this);
+    return ret;
+}
+
+void CUnit::copyData( const CUnit* from )
+{
+    setDraw(DCAST(from->m_pDraw->copy(), CUnitDraw*));
+
+    m_sName = from->m_sName;
+    m_dwForceFlag = from->m_dwForceFlag;
+    m_dwAllyMaskFlag = from->m_dwAllyMaskFlag;
+    m_iMaxLvl = from->m_iMaxLvl;
+    m_iLvl = from->m_iLvl;
+    m_iMaxExp = from->m_iMaxExp;
+    m_iExp = from->m_iExp;
+    //m_pUpdate
+    m_fMaxHp = from->m_fMaxHp;
+    m_oExMaxHp = from->m_oExMaxHp;
+    m_fHp = from->m_fHp;
+    //m_pAI
+    M_MAP_FOREACH(from->m_mapActAbilitys)
+    {
+        CActiveAbility* a = M_MAP_EACH;
+        addActiveAbility(DCAST(a->copy(), CActiveAbility*));
+        M_MAP_NEXT;
+    }
+
+    M_MAP_FOREACH(from->m_mapPasAbilitys)
+    {
+        CPassiveAbility* a = M_MAP_EACH;
+        addPassiveAbility(DCAST(a->copy(), CPassiveAbility*));
+        M_MAP_NEXT;
+    }
+
+    m_oBaseArmor = from->m_oBaseArmor;
+    m_oExArmorValue = from->m_oExArmorValue;
+    m_bRevivable = from->m_bRevivable;
+}
+
+
 const char* CUnit::getDbgTag() const
 {
     return getName();
@@ -470,13 +513,18 @@ bool CUnit::revive(float fHp)
 {
     if (isDead())
     {
-        m_fHp = min(max(fHp, 1.0f), m_fMaxHp);
+        m_fHp = min(max(fHp, 1.0f), getRealMaxHp());
         onChangeHp(m_fHp);
         onRevive();
         return true;
     }
 
     return false;
+}
+
+bool CUnit::isDead() const
+{
+    return m_fHp <= 0;
 }
 
 bool CUnit::setHp(float fHp)
@@ -486,8 +534,9 @@ bool CUnit::setHp(float fHp)
         return false;
     }
 
+    float fMaxHp = getRealMaxHp();
     float fOldHp = m_fHp;
-    m_fHp = min(fHp, m_fMaxHp);
+    m_fHp = min(fHp, fMaxHp);
     if (m_fHp != fOldHp)
     {
         onChangeHp(m_fHp - fOldHp);
@@ -503,9 +552,9 @@ bool CUnit::setHp(float fHp)
 
 void CUnit::setMaxHp(float fMaxHp)
 {
-    float fOldMaxHp = m_fMaxHp;
+    float fOldMaxHp = getRealMaxHp();
     m_fMaxHp = max(fMaxHp, 1.0f);
-    float fNewHp = m_fHp * m_fMaxHp / fOldMaxHp;
+    float fNewHp = m_fHp * getRealMaxHp() / fOldMaxHp;
     if (fNewHp < 1)
     {
         fNewHp = 1;
@@ -513,9 +562,21 @@ void CUnit::setMaxHp(float fMaxHp)
     setHp(fNewHp);
 }
 
-bool CUnit::isDead() const
+void CUnit::setExMaxHp(const CExtraCoeff& var)
 {
-    return m_fHp <= 0;
+    float fOldMaxHp = getRealMaxHp();
+    m_oExMaxHp = var;
+    float fNewHp = m_fHp * getRealMaxHp() / fOldMaxHp;
+    if (fNewHp < 1)
+    {
+        fNewHp = 1;
+    }
+    setHp(fNewHp);
+}
+
+float CUnit::getRealMaxHp() const
+{
+    return m_oExMaxHp.getValue(m_fMaxHp);
 }
 
 void CUnit::onChangeLevel(int iChanged)
@@ -653,7 +714,7 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
     }
     
     LOG("%s受到%d点伤害", getName(), toInt(fDamage));
-    LOG("%s HP: %d/%d\n", getName(), toInt(getHp()), toInt(getMaxHp()));
+    LOG("%s HP: %d/%d\n", getName(), toInt(getHp()), toInt(getRealMaxHp()));
 
     if (m_pAI)
     {
@@ -1062,6 +1123,13 @@ void CUnit::delBuffAbility(int id, bool bNotify)
 CBuffAbility* CUnit::getBuffAbility(int id)
 {
     return id != 0 ? m_mapBuffAbilitys.getObject(id) : NULL;
+}
+
+void CUnit::addSystemAbility( CPassiveAbility* pAbility )
+{
+    m_mapSysAbilitys.addObject(pAbility);
+    pAbility->onAddToUnit(this);  // 消息传递
+    addAbilityToTriggers(pAbility);
 }
 
 void CUnit::updateBuffAbilityElapsed(float dt)

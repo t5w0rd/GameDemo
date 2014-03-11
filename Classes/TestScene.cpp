@@ -52,9 +52,9 @@ CCScene* CCTestSceneLayer::scene()
     return pScene;
 }
 
-#define PLIST_NAME "Global"
-#define PLIST_FILE_NAME ("Global.plist")
-#define PLIST_SAVE_NAME ("Saved/Global")
+#define PLIST_NAME "Global0"
+#define PLIST_FILE_NAME ("Global0.plist")
+#define PLIST_SAVE_NAME ("Saved/Global0")
 
 const char* g_files[] = {
     "enemies_demons-ipadhd",

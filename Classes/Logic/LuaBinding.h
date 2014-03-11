@@ -64,6 +64,9 @@ int mrobj_getId(lua_State* L);
 int unit_ctor(lua_State* L);
 int unit_setMaxHp(lua_State* L);
 int unit_getMaxHp(lua_State* L);
+int unit_setExMaxHp(lua_State* L);
+int unit_getExMaxHp(lua_State* L);
+int unit_getRealMaxHp(lua_State* L);
 int unit_setHp(lua_State* L);
 int unit_getHp(lua_State* L);
 int unit_setForceByIndex(lua_State* L);
@@ -119,7 +122,8 @@ int ability_getCoolDown(lua_State* L);
 int ability_isCoolingDown(lua_State* L);
 int ability_resetCD(lua_State* L);
 int ability_coolDown(lua_State* L);
-
+int ability_setLevel(lua_State* L);
+int ability_getLevel(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -154,13 +158,17 @@ int EvadeBuff_ctor(lua_State* L);
 int BuffMakerAct_ctor(lua_State* L);
 int DamageBuffMakerBuff_ctor(lua_State* L);
 
-int attackData_ctor(lua_State* L);
-int attackData_setAttackType(lua_State* L);
-int attackData_getAttackType(lua_State* L);
-int attackData_setAttackValue(lua_State* L);
-int attackData_getAttackValue(lua_State* L);
-int attackData_addAttackBuff(lua_State* L);
+int AttackData_ctor(lua_State* L);
+int AttackData_setAttack(lua_State* L);
+int AttackData_getAttack(lua_State* L);
+int AttackData_setAttackType(lua_State* L);
+int AttackData_getAttackType(lua_State* L);
+int AttackData_setAttackValue(lua_State* L);
+int AttackData_getAttackValue(lua_State* L);
+int AttackData_addAttackBuff(lua_State* L);
 
+int g_onWorldInit(lua_State* L);
+int g_onWorldTick(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
 int g_setControlUnit(lua_State* L);
 int g_getControlUnit(lua_State* L);
