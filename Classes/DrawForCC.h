@@ -42,6 +42,7 @@ public:
 
     // ·µ»ØactionTag
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
+    virtual void updateMoveTo(const CPoint& rPos);
     virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone, float fSpeed = 1.0f);
     virtual void stopAction(int tag);
     virtual void setActionSpeed(int tag, float fSpeed);
@@ -134,6 +135,14 @@ public:
     CCLayer* createLayer();
 };
 
+class CUnitPathForCC : public CUnitPath
+{
+public:
+    CUnitPathForCC(const char* pFileName);
+
+    void addPoints(const char* pFileName);
+    void saveAsFile(const char* pFileName);
+};
 
 class CCWinUnitLayer : public CCUnitLayer
 {

@@ -76,6 +76,10 @@ bool CBattleWorld::onInit()
     gc->loadTexture("Global0");
     gc->loadTexture("Global1");
     gc->loadTexture("Global2");
+    gc->loadTexture("Global3");
+    gc->loadTexture("Global4");
+    gc->loadTexture("Global5");
+    gc->loadTexture("Global6");
 
     m_oULib.init();
 
@@ -87,8 +91,9 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Units/Matchstick/act4", "Units/Matchstick/act4", 0.08f);
 
     
-    u = m_oULib.copyUnit(CUnitLibraryForCC::kAlric);
+    u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
     addUnit(u);
+    u->setForceByIndex(1);
     setControlUnit(u->getId());
     ud = DCAST(u->getDraw(), CUnitDrawForCC*);
 #if 1
@@ -169,7 +174,7 @@ bool CBattleWorld::onInit()
 #endif
     u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 10.0f, CExtraCoeff(0.5, 0)));
 
-    ud->setBaseMoveSpeed(80.0f);
+    ud->setBaseMoveSpeed(180.0f);
     ud->setPosition(CPoint(vs.width * 0.6, vs.height * 0.5));
     //ud->setHeight(30);
 
@@ -198,10 +203,14 @@ bool CBattleWorld::onInit()
 
     CUnitDrawForCC* hero = ud;
     
-    u = m_oULib.copyUnit(CUnitLibraryForCC::kReinforce);
+    u = m_oULib.copyUnit(CUnitLibraryForCC::kMalik);
     addUnit(u);
     u->getDraw()->dcast(ud);
+    u->setForceByIndex(0);
     ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.2));
+    CUnitPathForCC* up = new CUnitPathForCC("BackgroundHD.pth");
+    ud->cmdMoveAlongPath(up, true);
+    //return true;
     
     // create other units
     ud = new CUnitDrawForCC("Matchstick");
@@ -243,8 +252,9 @@ bool CBattleWorld::onInit()
 
     onLuaWorldInit();
 
-    hero->setCastTarget(CCommandTarget(u->getId()));
-    hero->cmdCastSpell(bm->getId());
+    //hero->setCastTarget(CCommandTarget(u->getId()));
+    //hero->cmdCastSpell(bm->getId());
+
 
     return true;
 }

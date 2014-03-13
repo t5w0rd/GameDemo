@@ -111,6 +111,22 @@ int unit4cc_addBattleTip(lua_State* L)
     return 0;
 }
 
+luaL_Reg UnitPath4CC_funcs[] = {
+    {"addPoints", UnitPath4CC_addPoints},
+    {NULL, NULL}
+};
+
+int UnitPath4CC_addPoints(lua_State* L)
+{
+    CUnitPathForCC* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    const char* f = lua_tostring(L, 2);
+
+    _p->addPoints(f);
+
+    return 0;
+}
+
 CUnitDrawForCC* luaL_tospriteptr(lua_State* L, int idx /*= 1*/)
 {
     lua_getfield(L, idx, "_p");
@@ -175,7 +191,7 @@ int sprite4cc_setGeometry(lua_State* L)
     return 0;
 }
 
-int g_cclog(lua_State* L)
+int g_log(lua_State* L)
 {
     lua_getglobal(L, "string");
     lua_getfield(L, -1, "format");
@@ -235,20 +251,33 @@ int g_createUnit( lua_State* L )
     return 1;
 }
 
+int g_showDebug( lua_State* L )
+{
+    bool bOn = lua_toboolean(L, 1) != 0;
+    
+    CCDirector::sharedDirector()->setDisplayStats(bOn);
+
+    return 0;
+}
+
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
 
     // TODO: reg global funcs
+    lua_register(L, "log", g_log);
     lua_register(L, "loadTexture", g_loadTexture);
     lua_register(L, "loadAnimation", g_loadAnimation);
     lua_register(L, "createUnit", g_createUnit);
+    lua_register(L, "showDebug", g_showDebug);
     
-    lua_register(L, "cclog", g_cclog);
-
     // TODO: reg global class members
     lua_getglobal(L, "Unit");
     luaL_setfuncs(L, unit4cc_funcs, 0);
+    lua_pop(L, 1);
+
+    lua_getglobal(L, "UnitPath");
+    luaL_setfuncs(L, UnitPath4CC_funcs, 0);
     lua_pop(L, 1);
 
     lua_getglobal(L, "class");

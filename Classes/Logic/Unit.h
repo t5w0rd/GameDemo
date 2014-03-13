@@ -268,7 +268,7 @@ class CDefaultAI : public CUnitEventAdapter
 {
 public:
     virtual void onUnitTick(float dt);
-    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+    virtual void onUnitDamagedDone(float fDamage, CUnit* pSource);
 };
 
 class CUnitDraw;
@@ -647,6 +647,7 @@ public:
     void delProjectile(int id);
 
 };
+
 
 
 

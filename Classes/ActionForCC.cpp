@@ -159,6 +159,26 @@ void CCFadeInOutScale4::startWithTarget(CCNode *pTarget)
     m_pTarget->setScale(m_fScaleStart);
 }
 
+// CCSequenceEx
+CCSequenceEx* CCSequenceEx::createWithTwoActions( CCFiniteTimeAction *pActionOne, CCFiniteTimeAction *pActionTwo )
+{
+    CCSequenceEx *pSequence = new CCSequenceEx();
+    pSequence->initWithTwoActions(pActionOne, pActionTwo);
+    pSequence->autorelease();
+
+    return pSequence;
+}
+
+CCFiniteTimeAction* CCSequenceEx::getActionOne()
+{
+    return m_pActions[0];
+}
+
+CCFiniteTimeAction* CCSequenceEx::getActionTwo()
+{
+    return m_pActions[1];
+}
+
 // CCMoveToNode
 CCMoveToNode::CCMoveToNode()
     : m_pToNode(NULL)
@@ -271,8 +291,9 @@ void CCMoveToNode::startWithTarget(CCNode *pTarget)
         m_eFromType = kDraw;
         CUnitDrawForCC* d = ((CCUnitSprite*)pTarget)->getDraw();
         const CPoint& p = d->getPosition();
-        m_oStartPos.setPoint(p.x, p.y);
-        m_fFromHeight = d->getHeight();
+        m_oStartPos.y = p.y;
+        m_oStartPos.x = p.x + (d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x);
+        m_fFromHeight = d->getHeight() + d->getFirePoint().y;
     }
     else
     {

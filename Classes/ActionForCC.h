@@ -55,6 +55,14 @@ protected:
     float m_fScaleStart;
 };
 
+class CCSequenceEx : public CCSequence
+{
+public:
+    static CCSequenceEx* createWithTwoActions(CCFiniteTimeAction *pActionOne, CCFiniteTimeAction *pActionTwo);
+    virtual CCFiniteTimeAction* getActionOne();
+    virtual CCFiniteTimeAction* getActionTwo();
+};
+
 class CUnitDrawForCC;
 class CProjectileForCC;
 

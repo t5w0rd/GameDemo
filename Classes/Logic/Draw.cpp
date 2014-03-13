@@ -101,8 +101,13 @@ CUnitDraw2D::CUnitDraw2D(const char* pName)
     , m_fHeight(0.0f)
     , m_fBaseMoveSpeed(CONST_MIN_MOVE_SPEED)
     , m_bFixed(false)
+    , m_fHostilityRange(150.0f)
     , m_iMoveToActionId(0)
     , m_iMoveActionId(0)
+    , m_pMovePath(NULL)
+    , m_dwPathCurPos(0)
+    , m_bPathObstinate(false)
+    , m_fPathBufArrive(5.0f)
     , m_iCastActionId(0)
     , m_iCastActiveAbilityId(0)
 {
@@ -111,6 +116,7 @@ CUnitDraw2D::CUnitDraw2D(const char* pName)
 
 CUnitDraw2D::~CUnitDraw2D()
 {
+    M_SAFE_RELEASE(m_pMovePath);
 }
 
 CMultiRefObject* CUnitDraw2D::copy() const
@@ -144,9 +150,66 @@ void CUnitDraw2D::onUnitDying()
     die();
 }
 
+void CUnitDraw2D::onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData)
+{
+    CUnit* u = getUnit();
+    CWorld* w = u->getWorld();
+    if (u->isDead() == false)
+    {
+        return;
+    }
+
+    u->endDoing(0xFFFFFFFF);
+    int id = u->getId();
+    w->delUnit(id, u->isRevivable());
+
+    if (w->getUnitToRevive(id) != NULL)
+    {
+        // !!! 只有能重生的单位才会触发此事件，不合理
+        u->onDead();
+    }
+}
+
 void CUnitDraw2D::onUnitTick(float dt)
 {
     CUnit* u = getUnit();
+    
+    // 路径逻辑
+    if (m_pMovePath != NULL)
+    {
+        // 正在运行路径
+        const CPoint* pTarget = m_pMovePath->getCurTargetPoint(m_dwPathCurPos);
+        assert(pTarget != NULL);
+        bool bArrive = false;
+        bool bPathEnd = false;
+        if (pTarget->getDistance(getPosition()) < m_fPathBufArrive)
+        {
+            bArrive = true;
+            bPathEnd = m_pMovePath->arriveCurTargetPoint(m_dwPathCurPos);
+            pTarget->getDistance(getPosition());
+        }
+
+        if (bPathEnd)
+        {
+            m_pMovePath->release();
+            m_pMovePath = NULL;
+        }
+        else if ((*pTarget != getLastMoveToTarget() || u->isDoingOr(CUnit::kMoving) == false) && u->isDoingOr(CUnit::kCasting) == false)
+        {
+            // 单位没有施法，并且当前路径目标点不是移动目标点 或 单位没在移动，则继续沿路径行进
+            if (m_bPathObstinate)
+            {
+                u->startDoing(CUnit::kObstinate);
+            }
+            else
+            {
+                u->endDoing(CUnit::kObstinate);
+            }
+
+            move(*pTarget);
+        }
+    }
+
     if (u->isDoingAnd(CUnit::kCasting) && isDoingAction(getCastActionId()) == false)
     {
         // 正在施法，且不是在施法动画中
@@ -191,7 +254,7 @@ void CUnitDraw2D::onUnitTick(float dt)
         }
         else
         {
-            u->endDoing(CUnit::kObstinate);  // 没有成功施法，需要取出固执状态
+            u->endDoing(CUnit::kObstinate);  // 没有成功施法，需要去除固执状态
         }
     }
 
@@ -200,6 +263,11 @@ void CUnitDraw2D::onUnitTick(float dt)
 int CUnitDraw2D::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed /*= 1.0f*/)
 {
     return 0;
+}
+
+void CUnitDraw2D::updateMoveTo( const CPoint& rPos )
+{
+    return;
 }
 
 bool CUnitDraw2D::isFlipX() const
@@ -279,12 +347,12 @@ void CUnitDraw2D::cmdMove(const CPoint& roPos, bool bObstinate)
         u->endDoing(CUnit::kObstinate);
     }
 
-    UNIT_MOVE_PARAMS mp;
-    mp.bAutoFlipX = true;
+//     UNIT_MOVE_PARAMS mp;
+//     mp.bAutoFlipX = true;
     move(roPos);
 }
 
-void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
+void CUnitDraw2D::move(const CPoint& roPos)  //, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
 {
     CUnit* u = getUnit();
 
@@ -295,11 +363,12 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
 
     m_oLastMoveToTarget = roPos;
 
-    if (roMoveParams.bAutoFlipX)
-    {
-        setFlipX(getPosition().x > roPos.x);
-    }
+//     if (roMoveParams.bAutoFlipX)
+//     {
+//         setFlipX(getPosition().x > roPos.x);
+//     }
 
+    setFlipX(getPosition().x > roPos.x);
     float fMoveSpeed = getBaseMoveSpeed();
     float fDur = getPosition().getDistance(roPos) / max(fMoveSpeed, FLT_EPSILON);
     float fSpeed = getRealMoveSpeed() / fMoveSpeed;
@@ -317,12 +386,15 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
     }
     u->startDoing(CUnit::kMoving);
 
-    int id = doMoveTo(roPos,
-        fDur,
-        new CCallFuncData(this,
-        (FUNC_CALLFUNC_ND)&CUnitDraw2D::onMoveDone),
-        fSpeed);
-    setMoveToActionId(id);
+    if (getMoveToActionId() == 0)
+    {
+        int id = doMoveTo(roPos,
+            fDur,
+            new CCallFuncData(this,
+            (FUNC_CALLFUNC_ND)&CUnitDraw2D::onMoveDone),
+            fSpeed);
+        setMoveToActionId(id);
+    }
 
     if (getMoveActionId() == 0 && u->isDoingOr(CUnit::kSpinning) == false)
     {
@@ -336,55 +408,61 @@ void CUnitDraw2D::move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams
     }
 }
 
-void CUnitDraw2D::follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
+void CUnitDraw2D::follow(int iTargetUnit)  //, const UNIT_MOVE_PARAMS& roMoveParams /*= CONST_DEFAULT_MOVE_PARAMS*/)
 {
 }
 
-//void CUnitDrawForCC::moveAlongPath(CUnitPath* pPath, bool bObstinate /*= true*/, bool bRestart /*= false*/, float fBufArrive /*= 5.0*/)
-//{
-//    if (pPath != m_pMovePath)
-//    {
-//        CC_SAFE_RETAIN(pPath);
-//        CC_SAFE_RELEASE(m_pMovePath);
-//        m_pMovePath = pPath;
-//    }
-//
-//    if (!m_pMovePath)
-//    {
-//        return;
-//    }
-//
-//    if (bRestart)
-//    {
-//        m_dwPathCurPos = 0;
-//    }
-//
-//    if (m_fPathBufArrive != fBufArrive)
-//    {
-//        m_fPathBufArrive = MAX(FLT_EPSILON, fBufArrive);
-//    }
-//
-//    setPathObstinate(bObstinate);
-//
-//    const CCPoint* pTarget = m_pMovePath->getCurTargetPoint(m_dwPathCurPos);
-//    if (pTarget)
-//    {
-//        UNIT_MOVE_PARAMS oMp;
-//        oMp.bObstinate = m_bPathObstinate;
-//        moveTo(*pTarget, oMp);
-//    }
-//}
-#if 0
-void CUnitDraw2D::setPathObstinate(bool bPathObstinate /*= true*/)
+void CUnitDraw2D::cmdMoveAlongPath(CUnitPath* pPath, bool bObstinate /*= true*/, float fBufArrive /*= 5.0*/)
 {
-    m_bPathObstinate = bPathObstinate;
+    CUnit* u = getUnit();
+    if (u->isDead() || u->isSuspended() || isFixed())
+    {
+        return;
+    }
+
+    if (pPath != m_pMovePath)
+    {
+        M_SAFE_RETAIN(pPath);
+        M_SAFE_RELEASE(m_pMovePath);
+        m_pMovePath = pPath;
+    }
+
+    m_bPathObstinate = bObstinate;
+
+    if (!m_pMovePath)
+    {
+        return;
+    }
+
+    m_dwPathCurPos = 0;
+
+    if (m_fPathBufArrive != fBufArrive)
+    {
+        m_fPathBufArrive = MAX(FLT_EPSILON, fBufArrive);
+    }
+
+    if (u->isDoingOr(CUnit::kCasting))
+    {
+        u->endDoing(CUnit::kCasting);
+        setCastActiveAbilityId(0);
+    }
+
+    if (bObstinate)
+    {
+        u->startDoing(CUnit::kObstinate);
+    }
+    else
+    {
+        u->endDoing(CUnit::kObstinate);
+    }
+
+    const CPoint* pTarget = m_pMovePath->getCurTargetPoint(m_dwPathCurPos);
+    if (pTarget)
+    {
+        move(*pTarget);
+    }
 }
 
-bool CUnitDraw2D::isPathObstinate() const
-{
-    return m_bPathObstinate;
-}
-#endif
 void CUnitDraw2D::stopMove()
 {
     stopAction(getMoveToActionId());
@@ -591,17 +669,16 @@ void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
     const CPoint& roPos1 = getPosition();
     const CPoint& roPos2 = (td != NULL ? td->getPosition() : getCastTarget().getTargetPoint());
 
-    UNIT_MOVE_PARAMS oMp;
     if (pAbility->isCastHorizontal())
     {
         // 近战施法位置修正
-        move(CPoint(roPos2.x + ((roPos1.x > roPos2.x) ? fDis : -fDis), roPos2.y), oMp);
+        move(CPoint(roPos2.x + ((roPos1.x > roPos2.x) ? fDis : -fDis), roPos2.y));
     }
     else
     {
         // 远程施法位置修正
         float fA = -(roPos1 - roPos2).getAngle();
-        move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis), oMp);
+        move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis));
     }
 }
 
@@ -708,24 +785,44 @@ void CUnitDraw2D::die()
         1.0f);
 }
 
-void CUnitDraw2D::onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData)
+// CUnitPath
+CUnitPath::CUnitPath()
 {
-    CUnit* u = getUnit();
-    CWorld* w = u->getWorld();
-    if (u->isDead() == false)
+    m_vecPoints.clear();
+}
+
+CUnitPath::CUnitPath( const VEC_POINTS& roVecPoints )
+{
+    m_vecPoints = roVecPoints;
+}
+
+void CUnitPath::addPoint( const CPoint& roPos )
+{
+    m_vecPoints.push_back(roPos);
+}
+
+const CPoint* CUnitPath::getCurTargetPoint(uint32_t dwCurPos)
+{
+    if (dwCurPos < m_vecPoints.size())
     {
-        return;
+        return &m_vecPoints[dwCurPos];
+    }
+    return NULL;
+}
+
+bool CUnitPath::arriveCurTargetPoint(uint32_t& rCurPos)
+{
+    if (rCurPos < m_vecPoints.size())
+    {
+        ++rCurPos;
     }
 
-    u->endDoing(0xFFFFFFFF);
-    int id = u->getId();
-    w->delUnit(id, u->isRevivable());
-
-    if (w->getUnitToRevive(id) != NULL)
+    if (rCurPos < m_vecPoints.size())
     {
-        // !!! 只有能重生的单位才会触发此事件，不合理
-        u->onDead();
+        return false;
     }
+
+    return true;
 }
 
 // CUnitGroup

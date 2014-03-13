@@ -94,6 +94,15 @@ int unit2d_setExMoveSpeed(lua_State* L);
 int unit2d_getExMoveSpeed(lua_State* L);
 int unit2d_setPosition(lua_State* L);
 int unit2d_getPosition(lua_State* L);
+int unit2d_getNearestEnemyInRange(lua_State* L);
+int unit2d_move(lua_State* L);
+int unit2d_moveAlongPath(lua_State* L);
+int unit2d_castSpell(lua_State* L);
+int unit2d_stop(lua_State* L);
+
+int UnitPath_ctor(lua_State* L);
+int UnitPath_addPoint(lua_State* L);
+int UnitPath_getFirstPoint(lua_State* L);
 
 int ability_ctor(lua_State* L);
 int ability_onUnitAddAbility(lua_State* L);

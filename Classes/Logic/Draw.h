@@ -73,6 +73,7 @@ public:
 
 };
 
+class CUnitPath;
 class CUnitDraw2D : public CUnitDraw
 {
 public:
@@ -94,6 +95,7 @@ public:
 
     /////////////////////// move //////////////////////////////
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
+    virtual void updateMoveTo(const CPoint& rPos);
     
     virtual void setFlipX(bool bFlipX = true);
     virtual bool isFlipX() const;
@@ -125,6 +127,7 @@ public:
     M_SYNTHESIZE_READONLY(float, m_fBaseMoveSpeed, BaseMoveSpeed);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(CExtraCoeff, m_oExMoveSpeed, ExMoveSpeed);
     M_SYNTHESIZE_BOOL(Fixed);
+    M_SYNTHESIZE(float, m_fHostilityRange, HostilityRange);
     //M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oMoveTarget, MoveTarget);
 
     void setBaseMoveSpeed(float fMoveSpeed);
@@ -138,18 +141,21 @@ public:
     M_SYNTHESIZE(int, m_iMoveToActionId, MoveToActionId);
     M_SYNTHESIZE(int, m_iMoveActionId, MoveActionId);
     void cmdMove(const CPoint& roPos, bool bObstinate = true);
-    void move(const CPoint& roPos, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
-    void follow(int iTargetUnit, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
-    //virtual void moveAlongPath(CUnitPath* pPath, bool bObstinate = true, bool bRestart = false, float fBufArrive = 5.0);
+    void move(const CPoint& roPos);  //, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
+    void follow(int iTargetUnit);  //, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
+    void cmdMoveAlongPath(CUnitPath* pPath, bool bObstinate = true, float fBufArrive = 5.0);
     void stopMove();
     void onMoveDone(CMultiRefObject* pUnit, CCallFuncData* pData);
 
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oLastMoveToTarget, LastMoveToTarget);
-    //M_SYNTHESIZE(uint32_t, m_dwPathCurPos, PathCurPos);
-    //virtual void setPathObstinate(bool bPathObstinate = true);
-    //virtual bool isPathObstinate() const;
+    M_SYNTHESIZE_READONLY(CUnitPath*, m_pMovePath, MovePath);
+    M_SYNTHESIZE(uint32_t, m_dwPathCurPos, PathCurPos);
+    M_SYNTHESIZE(float, m_fPathBufArrive, PathBufArrive);
 
-    
+protected:
+    bool m_bPathObstinate;
+
+public:
     // /////////////////////// cast /////////////////////////////
     M_SYNTHESIZE_PASS_BY_REF(CCommandTarget, m_oCastTarget, CastTarget);
     M_SYNTHESIZE(int, m_iCastActionId, CastActionId);
@@ -168,6 +174,23 @@ public:
 
     void die();
     void onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData);
+};
+
+class CUnitPath : public CMultiRefObject
+{
+public:
+    typedef vector<CPoint> VEC_POINTS;
+
+public:
+    CUnitPath();
+    CUnitPath(const VEC_POINTS& roVecPoints);
+
+    void addPoint(const CPoint& roPos);
+    const CPoint* getCurTargetPoint(uint32_t dwCurPos);
+    bool arriveCurTargetPoint(uint32_t& rCurPos);  // return true when end
+
+public:
+    VEC_POINTS m_vecPoints;
 };
 
 typedef bool (*FUNC_UNIT_CONDITION)(CUnit* pUnit, void* pParam);

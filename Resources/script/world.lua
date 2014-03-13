@@ -59,7 +59,7 @@ end
 
 function DefPas:onUnitAttackTarget(ad, target)
     o = self:getOwner()
-    --cclog("lua ad: %s", ad._p)
+    --log("lua ad: %s", ad._p)
     --ad:setAttackValue(ad:getAttackValue() * 10)
     ad:addAttackBuff(self.buff, self:getLevel())
     --o:addBattleTip(math.ceil(ad:getAttackValue()), "Arial", 18, 0, 0, 0)
@@ -110,6 +110,7 @@ function ArmorBuff:onUnitDelAbility()
 end 
 
 function onWorldInit()
+    do return end
     math.randomseed(os.time())
 
     c = getControlUnit()
@@ -119,7 +120,11 @@ function onWorldInit()
     c:setMaxHp(1000)
 
     for i = 1, 3 do
-        u = createUnit(0x100 + math.random(0, 11))
+        if i == 3 then
+            u = createUnit(0x100 + 3)
+        else
+            u = createUnit(0x100 + math.random(0, 11))
+        end
 
         u:setForceByIndex(3)
         u:setMaxHp(200.0)

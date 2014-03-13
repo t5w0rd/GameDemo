@@ -94,15 +94,15 @@ bool CUnitLibraryForCC::init()
     p->setFireType(CProjectile::kFireFollow);
     addProjectile(kLumberjackProy, p);
 
-    // Reinforce
-    gc->loadAnimation("Units/Reinforce/move", "Units/Reinforce/move", 0.08f);
-    gc->loadAnimation("Units/Reinforce/die", "Units/Reinforce/die", 0.1f);
-    gc->loadAnimation("Units/Reinforce/act1", "Units/Reinforce/act1", 0.1f);
-    gc->loadAnimation("Units/Reinforce/act2", "Units/Reinforce/act2", 0.1f);
-    gc->loadAnimation("Units/Reinforce/act3", "Units/Reinforce/act3", 0.1f);
-    gc->loadAnimation("Units/Reinforce/act4", "Units/Reinforce/act4", 0.1f);
-    gc->loadAnimation("Units/Reinforce/act5", "Units/Reinforce/act5", 0.1f);
-    d = new CUnitDrawForCC("Reinforce");
+    // Malik
+    gc->loadAnimation("Units/Malik/move", "Units/Malik/move", 0.08f);
+    gc->loadAnimation("Units/Malik/die", "Units/Malik/die", 0.1f);
+    gc->loadAnimation("Units/Malik/act1", "Units/Malik/act1", 0.1f);
+    gc->loadAnimation("Units/Malik/act2", "Units/Malik/act2", 0.1f);
+    gc->loadAnimation("Units/Malik/act3", "Units/Malik/act3", 0.1f);
+    gc->loadAnimation("Units/Malik/act4", "Units/Malik/act4", 0.1f);
+    gc->loadAnimation("Units/Malik/act5", "Units/Malik/act5", 0.1f);
+    d = new CUnitDrawForCC("Malik");
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
@@ -130,7 +130,7 @@ bool CUnitLibraryForCC::init()
     atk->addCastAnimation(CUnitDraw::kAniAct2);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
-    addUnit(kReinforce, u);
+    addUnit(kMalik, u);
 
     // Mage
     gc->loadAnimation("Units/Mage/move", "Units/Mage/move", 0.08f);
@@ -405,7 +405,7 @@ bool CUnitLibraryForCC::init()
     d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 5);
     d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 4);
     d->prepareAnimation(CUnitDraw::kAniAct5, "act5", 3);
-    d->setGeometry(40.0f, 29.0f, ccp(124.0 / 240, 52.0 / 192), CPoint(59.0f, -4.0f));
+    d->setGeometry(40.0f, 29.0f, ccp(124.0 / 240, 52.0 / 192), CPoint(59.0f, 30.0f));
     u = new CUnit(d->getName());
     u->setDraw(d);
     u->setName(d->getName());
@@ -420,6 +420,7 @@ bool CUnitLibraryForCC::init()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(150.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
+    atk->setTemplateProjectile(kLightning);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kThor, u);

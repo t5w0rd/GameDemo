@@ -12,7 +12,7 @@ public:
 
     enum ORG_UNIT
     {
-        kReinforce = 0x100,
+        kMalik = 0x100,
         kMage,
         kBarracks,
         kArcher,
@@ -23,7 +23,16 @@ public:
         kThor,
         kViking,
         kLumberjack,
-        kAlric
+        kAlric,
+        kAlien,
+        kBeastMaster,
+        kCrabman,
+        kGiant,
+        kMinotaur,
+        kMirage,
+        kPirate,
+        kPriest,
+        kVhelsing,
     };
 
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
@@ -39,7 +48,17 @@ public:
         kArcherArrow,
         kLightning,
         kThorHammer,
-        kLumberjackProy
+        kLumberjackProy,
+        kAlienProy,
+        kVoodooProy,
+        kGiantProy,
+        kMirageProy,
+        kKungFuProy,
+        kPirateProy,
+        kPriestBolt,
+        kWizardBolt,
+        kWizardLightning,
+        kWizardProy
     };
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;

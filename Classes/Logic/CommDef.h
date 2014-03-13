@@ -293,6 +293,8 @@ inline void cirDec(int& i, int min, int num)
     --i < min && (i = min + num - 1);
 }
 
+#define M_SAFE_RETAIN(p) do { if (p) { (p)->retain(); } } while(0)
+#define M_SAFE_RELEASE(p) do { if (p) { (p)->release(); } } while(0)
 
 #endif	/* __COMDEF_H__ */
 

@@ -79,3 +79,65 @@ SET_STR* CCSpriteFrameCacheEx::getLoadedFileNames()
 {
     return m_pLoadedFileNames;
 }
+
+// CCGameFile
+CCGameFile::CCGameFile(void)
+{
+}
+
+
+CCGameFile::~CCGameFile(void)
+{
+}
+
+bool CCGameFile::init( const char* pFileName, const char* pMode )
+{
+    M_DEF_FU(pFu);
+    m_uPos = m_uSize = 0;
+    m_pData = pFu->getFileData(pFu->fullPathForFilename(pFileName).c_str(), pMode, &m_uSize);
+    if (!m_pData)
+    {
+        return false;
+    }
+    return true;
+}
+
+size_t CCGameFile::tell() const
+{
+    return m_uPos;
+}
+
+bool CCGameFile::eof() const
+{
+    return m_uPos >= m_uSize;
+}
+
+bool CCGameFile::seek( long lOffset, FILE_ORIGIN eOrigin )
+{
+    unsigned long uPos = 0;
+    switch (eOrigin)
+    {
+    case kBegin:
+        uPos = lOffset;
+        break;
+
+    case kCur:
+        uPos = m_uPos + lOffset;
+        break;
+
+    case kEnd:
+        uPos = m_uSize + lOffset;
+        break;
+
+    default:
+        return false;
+    }
+
+    if (uPos < 0 || uPos > m_uSize)
+    {
+        return false;
+    }
+
+    m_uPos = uPos;
+    return true;
+}

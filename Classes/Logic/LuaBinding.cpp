@@ -236,6 +236,11 @@ luaL_Reg unit_funcs[] = {
     {"getExMoveSpeed", unit2d_getExMoveSpeed},
     {"setPosition", unit2d_setPosition},
     {"getPosition", unit2d_getPosition},
+    {"getNearestEnemyInRange", unit2d_getNearestEnemyInRange},
+    {"move", unit2d_move},
+    {"moveAlongPath", unit2d_moveAlongPath},
+    {"castSpell", unit2d_castSpell},
+    {"stop", unit2d_stop},
     {NULL, NULL}
 };
 
@@ -619,6 +624,117 @@ int unit2d_getPosition(lua_State* L)
     lua_pushnumber(L, p.x);
     lua_pushnumber(L, p.y);
     
+    return 2;
+}
+
+int unit2d_getNearestEnemyInRange( lua_State* L )
+{
+    CUnit* u = luaL_tounitptr(L);
+    float r = lua_tonumber(L, 2);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    CUnit* _p = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), r, (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
+    lua_pop(L, 1);
+
+    luaL_pushobjptr(L, "Unit", _p);
+
+    return 1;
+}
+
+int unit2d_move(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    float x = lua_tonumber(L, 2);
+    float y = lua_tonumber(L, 3);
+    bool ob = lua_gettop(L) < 4 ? true : (lua_toboolean(L, 4) != 0);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    d->cmdMove(CPoint(x, y), ob);
+
+    return 0;
+}
+
+int unit2d_moveAlongPath(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CUnitPath* up = NULL;
+    luaL_toobjptr(L, 2, up);
+    bool ob = lua_gettop(L) < 3 ? true : (lua_toboolean(L, 3) != 0);
+    float ba = lua_gettop(L) < 4 ? 5.0f : lua_tonumber(L, 4);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    d->cmdMoveAlongPath(up, ob, ba);
+
+    return 0;
+}
+
+int unit2d_castSpell(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int id = lua_tointeger(L, 2);
+    bool ob = lua_gettop(L) < 3 ? true : (lua_toboolean(L, 3) != 0);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    int res = d->cmdCastSpell(id, ob);
+
+    lua_pushinteger(L, res);
+
+    return 1;
+}
+
+int unit2d_stop(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    d->cmdStop();
+
+    return 0;
+}
+
+luaL_Reg UnitPath_funcs[] = {
+    {"ctor", UnitPath_ctor},
+    {"addPoint", UnitPath_addPoint},
+    {"getFirstPoint", UnitPath_getFirstPoint},
+    {NULL, NULL}
+};
+
+int UnitPath_ctor(lua_State* L)
+{
+    return 0;
+}
+
+int UnitPath_addPoint(lua_State* L)
+{
+    CUnitPath* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    float x = lua_tonumber(L, 2);
+    float y = lua_tonumber(L, 3);
+
+    _p->addPoint(CPoint(x, y));
+
+    return 0;
+}
+
+int UnitPath_getFirstPoint(lua_State* L)
+{
+    CUnitPath* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    const CPoint* p = _p->getCurTargetPoint(0);
+    if (p != NULL)
+    {
+        lua_pushnumber(L, p->x);
+        lua_pushnumber(L, p->y);
+    }
+    else
+    {
+        lua_pushnil(L);
+        lua_pushnil(L);
+    }
+
     return 2;
 }
 
@@ -1483,6 +1599,12 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_call(L, 1, 1);  // ret a class
     luaL_setfuncs(L, unit_funcs, 0);
     lua_setglobal(L, "Unit");
+
+    lua_getglobal(L, "class");
+    lua_call(L, 0, 1);
+    int UnitPath = lua_gettop(L);
+    luaL_setfuncs(L, UnitPath_funcs, 0);
+    lua_setglobal(L, "UnitPath");
 
     lua_getglobal(L, "class");
     lua_getglobal(L, "MRObj");

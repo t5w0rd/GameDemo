@@ -26,6 +26,7 @@ public:
     
     inline CPoint& operator=(const CPoint& p) { x = p.x; y = p.y; return *this; }
     inline bool operator==(const CPoint& p) const { return (p.x == x) && (p.y == y); }
+    inline bool operator!=(const CPoint& p) const { return (p.x != x) || (p.y != y); }
     inline CPoint operator+(const CPoint& p) const { return CPoint(x + p.x, y + p.y); }
     inline CPoint operator-(const CPoint& p) const { return CPoint(x - p.x, y - p.y); }
     inline CPoint operator*(float f) const { return CPoint(x * f, y * f); }

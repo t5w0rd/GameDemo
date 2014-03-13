@@ -103,6 +103,10 @@ void CCUnitSprite::setPosition(const CCPoint& roPos)
 void CCUnitSprite::draw()
 {
     CCSprite::draw();
+    if (!CCDirector::sharedDirector()->isDisplayStats())
+    {
+        return;
+    }
 #if 1
     const CCPoint& p = getAnchorPoint();
     //oPos = pDr->convertToGL(oPos);
@@ -160,7 +164,7 @@ int CUnitDrawForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData*
     CCPoint ccPos(rPos.x, rPos.y + getHeight());
 
     CCActionInterval* act = CCMoveTo::create(fDuration, ccPos);
-    act = CCSequence::createWithTwoActions(
+    act = CCSequenceEx::createWithTwoActions(
         act,
         CCCallFuncNMultiObj::create(
             getSprite(),
@@ -174,6 +178,15 @@ int CUnitDrawForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData*
     getSprite()->runAction(spd);
 
     return tag;
+}
+
+void CUnitDrawForCC::updateMoveTo( const CPoint& rPos )
+{
+    CCSpeed* spd = DCAST(getAction(getMoveToActionId()), CCSpeed*);
+    CCSequenceEx* seq = DCAST(spd->getInnerAction(), CCSequenceEx*);
+    CCMoveTo* mt = DCAST(seq->getActionOne(), CCMoveTo*);
+    //mt->set
+    return;
 }
 
 int CUnitDrawForCC::doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone, float fSpeed /*= 1.0f*/)
@@ -521,14 +534,13 @@ void CWorldForCC::onAddUnit(CUnit* pUnit)
     if (pSprite == NULL)
     {
         pSprite = pDraw->createSprite();
+        pUnit->addSystemAbility(new CStatusShowPas);
+        pUnit->setAI(CDefaultAI());
+        //pDraw->updateMoveSpeedDelta();
     }
 
     pLayer->addChild(pSprite);
     pLayer->addChild(pSprite->getShadow());
-
-    pUnit->addSystemAbility(new CStatusShowPas);
-    pUnit->setAI(CDefaultAI());
-    //pDraw->updateMoveSpeedDelta();
 }
 
 void CWorldForCC::onDelUnit(CUnit* pUnit)
@@ -596,6 +608,50 @@ CCLayer* CWorldForCC::createLayer()
     m_pLayer->retain();
 
     return m_pLayer;
+}
+
+// CUnitPathForCC
+CUnitPathForCC::CUnitPathForCC( const char* pFileName )
+{
+    addPoints(pFileName);
+}
+
+void CUnitPathForCC::addPoints( const char* pFileName )
+{
+    M_DEF_FU(pFu);
+    CCGameFile* pFile = CCGameFile::create(pFileName, "rb");
+    if (!pFile)
+    {
+        return;
+    }
+    uint32_t dwHdr = 0;
+    pFile->read(&dwHdr);
+    if (dwHdr != 'HTP')
+    {
+        return;
+    }
+    CPoint oP;
+    for (;;)
+    {
+        if (pFile->read(&oP.x) != 1 || pFile->read(&oP.y) != 1)
+        {
+            break;
+        }
+        addPoint(oP);
+    }
+}
+
+void CUnitPathForCC::saveAsFile( const char* pFileName )
+{
+    string sFullName = CCFileUtils::sharedFileUtils()->fullPathForFilename(pFileName);
+    FILE* pFile = fopen(sFullName.c_str(), "wb");
+    fwrite("PTH", 1, 4, pFile);
+    for (CUnitPath::VEC_POINTS::iterator it = m_vecPoints.begin(); it != m_vecPoints.end(); ++it)
+    {
+        fwrite(&it->x, sizeof(it->x), 1, pFile);
+        fwrite(&it->y, sizeof(it->y), 1, pFile);
+    }
+    fclose(pFile);
 }
 
 // CCWinUnitLayer

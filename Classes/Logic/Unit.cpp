@@ -358,8 +358,9 @@ CUnitEventAdapter::~CUnitEventAdapter()
 void CDefaultAI::onUnitTick(float dt)
 {
     CUnit* u = getNotifyUnit();
-    if (u->isDoingNothing() == false)
+    if (u->isDoingOr(CUnit::kObstinate | CUnit::kCasting))
     {
+        // 如果正在固执做事或正在施法
         return;
     }
 
@@ -375,10 +376,10 @@ void CDefaultAI::onUnitTick(float dt)
         return;
     }
 
-    CUnit* t = CUnitGroup::getNearestUnitInRange(u->getWorld(), d->getPosition(), 200.0, (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
+    CUnit* t = CUnitGroup::getNearestUnitInRange(u->getWorld(), d->getPosition(), d->getHostilityRange(), (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
     if (t == NULL || t->isDead())
     {
-        d->stop();
+        //d->stop();
         return;
     }
 
@@ -386,36 +387,50 @@ void CDefaultAI::onUnitTick(float dt)
     d->cmdCastSpell(atk);
 }
 
-CAttackData* CDefaultAI::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
+void CDefaultAI::onUnitDamagedDone(float fDamage, CUnit* pSource)
 {
-    if (pSource->isDead())
-    {
-        return pAttack;
-    }
-
     CUnit* u = getNotifyUnit();
-    if (u->isDoingOr(CUnit::kCasting | CUnit::kObstinate))
+    //CCLOG("%s", u->isDoingAnd(CUnit::kObstinate) ? "Obs" : "NOT");
+    if (pSource == NULL || pSource->isDead() || pSource->isAllyOf(u))
     {
-        // 正在施法，或者处于固执状态
-        return pAttack;
-    }
-
-    int atk = u->getAttackAbilityId();
-    if (atk == 0)
-    {
-        return pAttack;
+        return;
     }
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     if (d == NULL)
     {
-        return pAttack;
+        return;
+    }
+    CActiveAbility* casting = u->getActiveAbility(d->getCastActiveAbilityId());
+    CUnitDraw2D* td = NULL;
+    if (casting != NULL && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+    {
+        if (d->getCastTarget().getTargetUnit() != pSource->getId())
+        {
+            CUnit* t = u->getUnit(d->getCastTarget().getTargetUnit());
+            td = DCAST(t->getDraw(), CUnitDraw2D*);
+        }
+    }
+
+    if (u->isDoingOr(CUnit::kObstinate) || !(
+        (td != NULL && d->checkCastTargetDistance(casting, d->getPosition(), td) == false) ||
+        u->isDoingNothing() ||
+        (u->isDoingOr(CUnit::kMoving | CUnit::kSpinning) && !u->isDoingOr(CUnit::kCasting))
+        ))
+    {
+        return;
+    }
+
+    int atk = u->getAttackAbilityId();
+    if (atk == 0)
+    {
+        return;
     }
 
     d->setCastTarget(CCommandTarget(pSource->getId()));
     d->cmdCastSpell(atk, false);
 
-    return pAttack;
+    return;
 }
 
 // CUnit
@@ -2040,3 +2055,4 @@ lua_State* CWorld::getLuaHandle()
 
     return L;
 }
+
