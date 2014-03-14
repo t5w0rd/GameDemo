@@ -82,10 +82,8 @@ int unit_resume(lua_State* L);
 int unit_getBuffStackSize(lua_State* L);
 int unit_attack(lua_State* L);
 int unit_damaged(lua_State* L);
-int unit_attackM(lua_State* L);
-int unit_damagedM(lua_State* L);
-int unit_attackL(lua_State* L);
-int unit_damagedL(lua_State* L);
+int unit_attackLow(lua_State* L);
+int unit_damagedLow(lua_State* L);
 
 int unit_addActiveAbility(lua_State* L);
 int unit_addPassiveAbility(lua_State* L);

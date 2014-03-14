@@ -62,8 +62,8 @@ public:
     virtual void onUnitChangeHp(float fChanged);
     virtual void onUnitTick(float dt);
     virtual void onUnitInterval();
-    virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
-    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
+    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
     virtual void onUnitDamaged(CAttackData* pAttack, CUnit* pSource);
     virtual void onUnitDamagedDone(float fDamage, CUnit* pSource);
     virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
@@ -237,7 +237,7 @@ public:
     CAttackBuffMakerPas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
     virtual CMultiRefObject* copy() const;
     
-    virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
+    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
     
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
@@ -287,7 +287,7 @@ public:
     CDoubleAttackPas(const char* pRootId, const char* pName, float fChance, const CExtraCoeff& roExAttackValue = CExtraCoeff());
     virtual CMultiRefObject* copy() const;
     
-    virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
+    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
     
 };
 
@@ -358,7 +358,7 @@ public:
     CEvadePas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff = 0);
     virtual CMultiRefObject* copy() const;
 
-    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
 
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
@@ -371,7 +371,7 @@ public:
     CEvadeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance);
     virtual CMultiRefObject* copy() const;
 
-    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
 
     M_SYNTHESIZE(float, m_fChance, Chance);
 };

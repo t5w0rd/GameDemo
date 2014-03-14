@@ -266,11 +266,11 @@ void CAbility::onUnitInterval()
     lua_pop(L, 1);  // pop 'a'
 }
 
-CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
+void CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     if (getScriptHandler() == 0)
     {
-        return pAttack;
+        return;
     }
     
     lua_State* L = CWorld::getLuaHandle();
@@ -280,23 +280,16 @@ CAttackData* CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
     lua_pushvalue(L, a);
     luaL_pushobjptr(L, "AttackData", pAttack);
     luaL_pushobjptr(L, "Unit", pTarget);
-    lua_call(L, 3, 1);
+    lua_call(L, 3, 0);
     
-    if (lua_isnil(L, -1))
-    {
-        pAttack = NULL;
-    }
-    
-    lua_pop(L, 2);  // pop 'a' and ret
-
-    return pAttack;
+    lua_pop(L, 1);  // pop 'a'
 }
 
-CAttackData* CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
+bool CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     if (getScriptHandler() == 0)
     {
-        return pAttack;
+        return true;
     }
     
     lua_State* L = CWorld::getLuaHandle();
@@ -308,14 +301,11 @@ CAttackData* CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
     luaL_pushobjptr(L, "Unit", pSource);
     lua_call(L, 3, 1);
 
-    if (lua_isnil(L, -1))
-    {
-        pAttack = NULL;
-    }
+    bool res = (lua_toboolean(L, -1) != 0);
 
     lua_pop(L, 2);  // pop 'a' and ret
 
-    return pAttack;
+    return res;
 }
 
 void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
@@ -700,15 +690,11 @@ void CAttackAct::onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget)
     CAttackData* ad = new CAttackData();
     ad->setAttackValue(getBaseAttack().getType(), getRealAttackValue());
 
-    ad = o->attackAdv(ad, pTarget);
-    if (ad == NULL)
-    {
-        return;
-    }
+    o->attack(ad, pTarget);
 
     if (pTarget != NULL)
     {
-        pTarget->damagedAdv(ad, o);
+        pTarget->damaged(ad, o);
     }
 }
 
@@ -805,7 +791,7 @@ void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
     
     if (t != NULL && t->isDead() == false)
     {
-        t->damagedAdv(ad, o);
+        t->damaged(ad, o);
     }
     
     ad->release();
@@ -1023,18 +1009,18 @@ CMultiRefObject* CAttackBuffMakerPas::copy() const
     return ret;
 }
 
-CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
+void CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     if (isCoolingDown())
     {
-        return pAttack;
+        return;
     }
 
     coolDown();
 
     if (M_RAND_HIT(m_fChance) == false)
     {
-        return pAttack;
+        return;
     }
     
     pAttack->getAttackValue().setValue(m_oExAttackValue.getValue(pAttack->getAttackValue().getValue()));
@@ -1051,8 +1037,6 @@ CAttackData* CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit
             pAttack->addAttackBuff(CAttackBuff(m_iTemplateBuff, getLevel()));
         }
     }
-    
-    return pAttack;
 }
 
 // CDamageBuffMakerBuff
@@ -1109,7 +1093,7 @@ void CDamageBuffMakerBuff::onUnitAddAbility()
         
     }
 
-    o->damagedAdv(ad, s);
+    o->damaged(ad, s);
 }
 
 // CVampirePas
@@ -1214,24 +1198,24 @@ CMultiRefObject* CDoubleAttackPas::copy() const
     return new CDoubleAttackPas(getRootId(), getName(), m_fChance, m_oExAttackValue);
 }
 
-CAttackData* CDoubleAttackPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
+void CDoubleAttackPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     CUnit* o = getOwner();
     if (o->getAttackAbilityId() == 0)
     {
-        return pAttack;
+        return;
     }
 
     if (isCoolingDown())
     {
-        return pAttack;
+        return;
     }
 
     coolDown();
 
     if (M_RAND_HIT(m_fChance) == false)
     {
-        return pAttack;
+        return;
     }
 
     pAttack->getAttackValue().setValue(m_oExAttackValue.getValue(pAttack->getAttackValue().getValue()));
@@ -1242,8 +1226,6 @@ CAttackData* CDoubleAttackPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* p
     pAtk->resetCD();
     
     LOG("%s½«½øÐÐ%s", o->getName(), getName());
-
-    return pAttack;
 }
 
 // CSpeedBuff
@@ -1486,7 +1468,7 @@ CMultiRefObject* CEvadePas::copy() const
     return new CEvadePas(getRootId(), getName(), m_fChance, m_iTemplateBuff);
 }
 
-CAttackData* CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
+bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     if (M_RAND_HIT(getChance()))
     {
@@ -1510,10 +1492,10 @@ CAttackData* CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
         }
 #endif
-        return NULL;
+        return false;
     }
 
-    return pAttack;
+    return true;
 }
 
 // CEvadeBuff
@@ -1530,7 +1512,7 @@ CMultiRefObject* CEvadeBuff::copy() const
     return new CEvadeBuff(getRootId(), getName(), getDuration(), isStackable(), m_fChance);
 }
 
-CAttackData* CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
+bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     if (M_RAND_HIT(getChance()))
     {
@@ -1548,10 +1530,10 @@ CAttackData* CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             sprintf(sz, "%s!", getName());
             ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
         }
-        return NULL;
+        return false;
 #endif
     }
     
-    return pAttack;
+    return true;
 }
 

@@ -673,26 +673,25 @@ void CUnit::onTick(float dt)
     }
 }
 
-CAttackData* CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+void CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
     if (!(dwTriggerMask & kOnAttackTargetTrigger))
     {
-        pAttack = triggerOnAttackTarget(pAttack, pTarget);
+        triggerOnAttackTarget(pAttack, pTarget);
     }
     
     if (m_pAI)
     {
         m_pAI->onUnitAttackTarget(pAttack, pTarget);
     }
-    
-    return pAttack;
 }
 
-CAttackData* CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
+bool CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
+    bool res = true;
     if (!(dwTriggerMask & kOnAttackedTrigger))
     {
-        pAttack = triggerOnAttacked(pAttack, pSource);;
+        res = triggerOnAttacked(pAttack, pSource);
     }
     
     if (m_pAI)
@@ -700,7 +699,7 @@ CAttackData* CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dw
         m_pAI->onUnitAttacked(pAttack, pSource);
     }
     
-    return pAttack;
+    return res;
 }
 
 void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
@@ -856,35 +855,23 @@ void CUnit::delAI()
     }
 }
 
-CAttackData* CUnit::attackAdv(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+void CUnit::attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    return attackMid(pAttack, pTarget, dwTriggerMask);
+    onAttackTarget(pAttack, pTarget, dwTriggerMask);
+    attackLow(pAttack, pTarget, dwTriggerMask);
 }
 
-CAttackData* CUnit::attackMid(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+void CUnit::attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    pAttack = onAttackTarget(pAttack, pTarget, dwTriggerMask);
-    return attackBot(pAttack, pTarget, dwTriggerMask);
 }
 
-CAttackData* CUnit::attackBot(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    return pAttack;
-}
-
-bool CUnit::damagedAdv(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
-{
-    pAttack = onAttacked(pAttack, pSource, dwTriggerMask);
-    if (!pAttack)
+    if (onAttacked(pAttack, pSource, dwTriggerMask) == false)
     {
         return false;
     }
-    damagedMid(pAttack, pSource, dwTriggerMask);
-    return true;
-}
-
-void CUnit::damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
-{
+    
     onDamaged(pAttack, pSource, dwTriggerMask);
 
     //transformDamageByAttribute(pAttack);
@@ -893,7 +880,7 @@ void CUnit::damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerM
                                (CArmorValue::ARMOR_TYPE)getBaseArmor().getType(),
                                getRealArmorValue());
     
-    damagedBot(fDamage, pSource, dwTriggerMask);
+    damagedLow(fDamage, pSource, dwTriggerMask);
     
     M_VEC_FOREACH(pAttack->getAttackBuffs())
     {
@@ -902,9 +889,11 @@ void CUnit::damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerM
         addBuffAbility(pAb->getTemplateBuff(), pSource->getId(), pAb->getBuffLevel());
         M_MAP_NEXT;
     }
+    
+    return true;
 }
 
-void CUnit::damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
+void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
     if (fDamage > m_fHp)
     {
@@ -1434,38 +1423,34 @@ void CUnit::triggerOnTick(float dt)
     endTrigger();
 }
 
-CAttackData* CUnit::triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget)
+void CUnit::triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     beginTrigger();
     M_MAP_FOREACH(m_mapOnAttackTargetTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAttack = pAbility->onUnitAttackTarget(pAttack, pTarget);
-        if (pAttack == NULL)
-        {
-            break;
-        }
+        pAbility->onUnitAttackTarget(pAttack, pTarget);
         M_MAP_NEXT;
     }
     endTrigger();
-    return pAttack;
 }
 
-CAttackData* CUnit::triggerOnAttacked(CAttackData* pAttack, CUnit* pSource)
+bool CUnit::triggerOnAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     beginTrigger();
+    bool res = true;
     M_MAP_FOREACH(m_mapOnAttackedTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAttack = pAbility->onUnitAttacked(pAttack, pSource);
-        if (pAttack == NULL)
+        if (pAbility->onUnitAttacked(pAttack, pSource) == false)
         {
+            res = false;
             break;
         }
         M_MAP_NEXT;
     }
     endTrigger();
-    return pAttack;
+    return res;
 }
 
 void CUnit::triggerOnDamagedSurface(CAttackData* pAttack, CUnit* pSource)
