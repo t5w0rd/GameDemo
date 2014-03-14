@@ -226,10 +226,8 @@ luaL_Reg unit_funcs[] = {
     {"getBuffStackSize", unit_getBuffStackSize},
     {"attack", unit_attack},
     {"damaged", unit_damaged},
-    {"attackM", unit_attackM},
-    {"damagedM", unit_damagedM},
-    {"attackL", unit_attackL},
-    {"damagedL", unit_damagedL},
+    {"attackLow", unit_attackLow},
+    {"damagedLow", unit_damagedLow},
     {"addActiveAbility", unit_addActiveAbility},
     {"addPassiveAbility", unit_addPassiveAbility},
     {"addBuffAbility", unit_addBuffAbility},
@@ -470,12 +468,10 @@ int unit_attack(lua_State* L)
     luaL_toobjptr(L, 2, ad);
     CUnit* t = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+    
+    u->attack(ad, t, mask);
 
-    ad = u->attackAdv(ad, t, mask);
-
-    luaL_pushobjptr(L, "AttackData", ad);
-
-    return 1;
+    return 0;
 }
 
 int unit_damaged(lua_State* L)
@@ -486,12 +482,12 @@ int unit_damaged(lua_State* L)
     CUnit* s = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
 
-    u->damagedAdv(ad, s, mask);
+    lua_pushboolean(L, u->damaged(ad, s, mask));
 
-    return 0;
+    return 1;
 }
 
-int unit_attackM(lua_State* L)
+int unit_attackLow(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     CAttackData* ad = NULL;
@@ -499,49 +495,19 @@ int unit_attackM(lua_State* L)
     CUnit* t = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
 
-    ad = u->attackMid(ad, t, mask);
+    u->attackLow(ad, t, mask);
 
-    luaL_pushobjptr(L, "AttackData", ad);
-    
-    return 1;
-}
-
-int unit_damagedM(lua_State* L)
-{
-    CUnit* u = luaL_tounitptr(L);
-    CAttackData* ad = NULL;
-    luaL_toobjptr(L, 2, ad);
-    CUnit* s = luaL_tounitptr(L, 3);
-    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
-
-    u->damagedMid(ad, s, mask);
-    
     return 0;
 }
 
-int unit_attackL(lua_State* L)
-{
-    CUnit* u = luaL_tounitptr(L);
-    CAttackData* ad = NULL;
-    luaL_toobjptr(L, 2, ad);
-    CUnit* t = luaL_tounitptr(L, 3);
-    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
-
-    ad = u->attackBot(ad, t, mask);
-
-    luaL_pushobjptr(L, "AttackData", ad);
-    
-    return 1;
-}
-
-int unit_damagedL(lua_State* L)
+int unit_damagedLow(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     float dmg = lua_tonumber(L, 2);
     CUnit* s = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
 
-    u->damagedBot(dmg, s, mask);
+    u->damagedLow(dmg, s, mask);
     
     return 0;
 }
@@ -936,20 +902,14 @@ int ability_onUnitInterval(lua_State* L)
 
 int ability_onUnitAttackTarget(lua_State* L)
 {
-    int ad = 2;
-    
-    lua_pushvalue(L, ad);
-    
-    return 1;
+    return 0;
 }
 
 int ability_onUnitAttacked(lua_State* L)
 {
-    int ad = 2;
+    lua_pushboolean(L, true);
     
-    lua_pushvalue(L, ad);
-    
-    return 0;
+    return 1;
 }
 
 int ability_onUnitDamaged(lua_State* L)

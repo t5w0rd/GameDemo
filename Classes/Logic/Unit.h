@@ -244,8 +244,8 @@ public:
     inline virtual void onUnitDead() {}
     inline virtual void onUnitChangeHp(float fChanged) {}
     inline virtual void onUnitTick(float dt) {}
-    inline virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget) { return pAttack; }
-    inline virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource) { return pAttack; }
+    inline virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget) {}
+    inline virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource) { return true; }
     inline virtual void onUnitDamaged(CAttackData* pAttack, CUnit* pSource) {}
     inline virtual void onUnitDamagedDone(float fDamage, CUnit* pSource) {}
     inline virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget) {}
@@ -322,9 +322,9 @@ public:
     virtual void step(float dt);
     virtual void onTick(float dt);
     // 攻击发出时，攻击者被通知
-    virtual CAttackData* onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask);
+    virtual void onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask);
     // 攻击抵达时，受害者被通知
-    virtual CAttackData* onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask);
+    virtual bool onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask);
     // 攻击命中时，受害者被通知
     virtual void onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask);
     // 攻击命中时，受害者被通知
@@ -388,31 +388,25 @@ public:
     // 攻击数据，描述这次攻击的数据体，详见 CAttackData 定义
     // 内部会自行调用中层、底层攻击函数，对攻击数据进行传递并处理，通常返回处理后的攻击数据，也可以返回 NULL
     // 内部会根据人物属性对攻击数据进行一次变换，如力量加成等
-    CAttackData* attackAdv(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
-    
-    // 中层攻击函数
     // 触发 onAttackTarget，
-    CAttackData* attackMid(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
+    void attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
     
     // 底层攻击函数，目前无逻辑，只是将传递过来的攻击数据返回给上层
-    CAttackData* attackBot(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
+    void attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
     
     // 高层伤害函数，攻击者生成的攻击到达目标后，目标将调用该函数，计算自身伤害
     // 内部会对攻击数据进行向下传递
     // 触发 onAttacked，如果onAttacked返回 NULL，伤害将不会继续向下层函数传递，函数返回false。比如说，闪避成功，伤害无需继续计算
-    bool damagedAdv(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
-    
-    // 中层伤害函数，攻击数据已经不可消除，但可以改变伤害数据，如一次全额伤害的抵挡，虽然结果上看HP没有受损，但仍然会进行一次0伤害判定
     // 触发 onDamaged
     // 遍历攻击数据携带的BUFF链，根据附着概率对单位自身进行BUFF附加
     // 根据单位属性，进行攻击数据变换，如抗性对攻击数据的影响
     // 根据单位护甲，进行攻击数据中的攻击数值变换
-    void damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
+    bool damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     // 底层伤害函数，直接扣除指定量的HP值
     // 触发伤害源的 onDamaeTarget
     // 调用 setHp，从而会触发 onChangeHp，可能会触发onDying
-    void damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
+    void damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
     
@@ -493,8 +487,8 @@ protected:
     void triggerOnDead();
     void triggerOnChangeHp(float fChanged);
     void triggerOnTick(float dt);
-    CAttackData* triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget);
-    CAttackData* triggerOnAttacked(CAttackData* pAttack, CUnit* pSource);
+    void triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget);
+    bool triggerOnAttacked(CAttackData* pAttack, CUnit* pSource);
     void triggerOnDamagedSurface(CAttackData* pAttack, CUnit* pSource);
     void triggerOnDamagedInner(CAttackData* pAttack, CUnit* pSource);
     void triggerOnDamagedDone(float fDamage, CUnit* pSource);
