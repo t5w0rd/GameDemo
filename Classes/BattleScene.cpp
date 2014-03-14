@@ -252,8 +252,8 @@ bool CBattleWorld::onInit()
 
     onLuaWorldInit();
 
-    //hero->setCastTarget(CCommandTarget(u->getId()));
-    //hero->cmdCastSpell(bm->getId());
+    hero->setCastTarget(CCommandTarget(u->getId()));
+    hero->cmdCastSpell(bm->getId());
 
 
     return true;

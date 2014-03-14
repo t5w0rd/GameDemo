@@ -703,6 +703,13 @@ luaL_Reg UnitPath_funcs[] = {
 
 int UnitPath_ctor(lua_State* L)
 {
+    // TODO: get init params
+
+    // TODO: bind class to _p
+    CUnitPath* _p = new CUnitPath;
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+    
     return 0;
 }
 
@@ -1441,7 +1448,7 @@ int AttackData_ctor(lua_State* L)
     // TODO: get init params
 
     // TODO: bind class to _p
-    CAttackData* _p = new CAttackData();
+    CAttackData* _p = new CAttackData;
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
