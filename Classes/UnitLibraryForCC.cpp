@@ -19,7 +19,6 @@ bool CUnitLibraryForCC::init()
     CAttackAct* atk = NULL;
     M_DEF_GC(gc);
 
-    
     // MageBolt
     gc->loadAnimation("Units/MageBolt/move", "Units/MageBolt/move", 0.1f);
     gc->loadAnimation("Units/MageBolt/die", "Units/MageBolt/die", 0.1f);
@@ -93,6 +92,34 @@ bool CUnitLibraryForCC::init()
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
     addProjectile(kLumberjackProy, p);
+
+    // ArcaneRay
+    gc->loadAnimation("Units/ArcaneRay/die", "Units/ArcaneRay/die", 0.1f);
+    p = new CProjectileForCC("ArcaneRay");
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setPenaltyFlags(CProjectile::kOnDying);
+    p->setFireType(CProjectile::kFireLink);
+    addProjectile(kArcaneRay, p);
+
+    // ArcaneRay2
+    gc->loadAnimation("Units/ArcaneRay2/die", "Units/ArcaneRay2/die", 0.1f);
+    p = new CProjectileForCC("ArcaneRay2");
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setPenaltyFlags(CProjectile::kOnDying);
+    p->setFireType(CProjectile::kFireLink);
+    addProjectile(kArcaneRay2, p);
+
+    // TeslaRay
+    gc->loadAnimation("Units/TeslaRay/die", "Units/TeslaRay/die", 0.1f);
+    p = new CProjectileForCC("TeslaRay");
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setPenaltyFlags(CProjectile::kOnDying);
+    p->setFireType(CProjectile::kFireLink);
+    addProjectile(kTeslaRay, p);
+
 
     // Malik
     gc->loadAnimation("Units/Malik/move", "Units/Malik/move", 0.08f);
@@ -536,6 +563,133 @@ bool CUnitLibraryForCC::init()
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kAlric, u);
+
+
+
+    // Soldier
+    gc->loadAnimation("Units/Soldier/move", "Units/Soldier/move", 0.08f);
+    gc->loadAnimation("Units/Soldier/die", "Units/Soldier/die", 0.1f);
+    gc->loadAnimation("Units/Soldier/act1", "Units/Soldier/act1", 0.08f);
+    gc->loadAnimation("Units/Soldier/act2", "Units/Soldier/act2", 0.1f);
+    gc->loadAnimation("Units/Soldier/act3", "Units/Soldier/act3", 0.1f);
+    gc->loadAnimation("Units/Soldier/act5", "Units/Soldier/act5", 0.1f);
+    d = new CUnitDrawForCC("Soldier");
+    d->prepareFrame(CUnitDraw::kFrmDefault, "default");
+    d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+    d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 2);
+    d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 3);
+    d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 11);
+    d->prepareAnimation(CUnitDraw::kAniAct4, "act4", 9);
+    d->setGeometry(25.0f, 21.0f, ccp(94.0 / 188, 17.0 / 104), CPoint(40.0f, 21.0f));
+    u = new CUnit(d->getName());
+    u->setDraw(d);
+    u->setName(d->getName());
+    u->setMaxHp(550.0f);
+    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 2.0f));
+    atk = new CAttackAct(
+        "Attack",
+        "¹¥»÷",
+        1.00,
+        CAttackValue(CAttackValue::kPhysical, 21.0),
+        0.19f);
+    atk->setCastMinRange(0.0f);
+    atk->setCastRange(20.0f);
+    atk->setCastHorizontal();
+    atk->addCastAnimation(CUnitDraw::kAniAct1);
+    atk->addCastAnimation(CUnitDraw::kAniAct2);
+    u->addActiveAbility(atk);
+    d->setBaseMoveSpeed(80.0f);
+    addUnit(kSoldier, u);
+
+    // Templar
+    gc->loadAnimation("Units/Templar/move", "Units/Templar/move", 0.08f);
+    gc->loadAnimation("Units/Templar/die", "Units/Templar/die", 0.1f);
+    gc->loadAnimation("Units/Templar/act1", "Units/Templar/act1", 0.07f);
+    gc->loadAnimation("Units/Templar/act2", "Units/Templar/act2", 0.1f);
+    gc->loadAnimation("Units/Templar/act3", "Units/Templar/act3", 0.1f);
+    d = new CUnitDrawForCC("Templar");
+    d->prepareFrame(CUnitDraw::kFrmDefault, "default");
+    d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+    d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 3);
+    d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 9);
+    d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 2);
+    d->setGeometry(19.0f, 20.0f, ccp(74.0 / 144, 16.0 / 84), CPoint(32.0f, 20.0f));
+    u = new CUnit(d->getName());
+    u->setDraw(d);
+    u->setName(d->getName());
+    u->setMaxHp(550.0f);
+    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 2.0f));
+    atk = new CAttackAct(
+        "Attack",
+        "¹¥»÷",
+        1.00,
+        CAttackValue(CAttackValue::kPhysical, 21.0),
+        0.19f);
+    atk->setCastMinRange(0.0f);
+    atk->setCastRange(20.0f);
+    atk->setCastHorizontal();
+    atk->addCastAnimation(CUnitDraw::kAniAct1);
+    u->addActiveAbility(atk);
+    d->setBaseMoveSpeed(50.0f);
+    addUnit(kTemplar, u);
+
+    // Arcane
+    gc->loadAnimation("Units/Arcane/die", "Units/Arcane/die", 0.1f);
+    gc->loadAnimation("Units/Arcane/act1", "Units/Arcane/act1", 0.08f);
+    d = new CUnitDrawForCC("Arcane");
+    d->prepareFrame(CUnitDraw::kFrmDefault, "default");
+    d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 9);
+    d->setGeometry(63.0f, 30.0f, ccp(120.0 / 240, 44.0 / 184), CPoint(0.0f, 118.0f));
+    u = new CUnit(d->getName());
+    u->setDraw(d);
+    u->setName(d->getName());
+    u->setMaxHp(1300.0f);
+    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 18.0f));
+    atk = new CAttackAct(
+        "Attack",
+        "¹¥»÷",
+        1.00,
+        CAttackValue(CAttackValue::kPhysical, 110.0),
+        0.1818f);
+    atk->setCastMinRange(0.0f);
+    atk->setCastRange(250.0f);
+    atk->addCastAnimation(CUnitDraw::kAniAct1);
+    atk->setTemplateProjectile(kArcaneRay);
+    u->addActiveAbility(atk);
+    d->setFixed();
+    d->setHostilityRange(800.0f);
+    addUnit(kArcane, u);
+
+    // Tesla
+    gc->loadAnimation("Units/Tesla/die", "Units/Tesla/die", 0.1f);
+    gc->loadAnimation("Units/Tesla/act1", "Units/Tesla/act1", 0.031f);
+    d = new CUnitDrawForCC("Tesla");
+    d->prepareFrame(CUnitDraw::kFrmDefault, "default");
+    d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 23);
+    d->setGeometry(63.0f, 30.0f, ccp(120.0 / 240, 44.0 / 184), CPoint(0.0f, 118.0f));
+    u = new CUnit(d->getName());
+    u->setDraw(d);
+    u->setName(d->getName());
+    u->setMaxHp(1300.0f);
+    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 18.0f));
+    atk = new CAttackAct(
+        "Attack",
+        "¹¥»÷",
+        1.00,
+        CAttackValue(CAttackValue::kPhysical, 110.0),
+        0.1818f);
+    atk->setCastMinRange(0.0f);
+    atk->setCastRange(250.0f);
+    atk->addCastAnimation(CUnitDraw::kAniAct1);
+    atk->setTemplateProjectile(kTeslaRay);
+    u->addActiveAbility(atk);
+    d->setFixed();
+    d->setHostilityRange(800.0f);
+    addUnit(kTesla, u);
 
     return true;
 }

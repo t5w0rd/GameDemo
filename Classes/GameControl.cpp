@@ -24,7 +24,6 @@ void CCGameControler::loadTexture(const char* pPath)
 
 CCAnimation* CCGameControler::loadAnimation(const char* pPath, const char* pName, float fDelay)
 {
-    // loadAnimation("Units/Malik/move", "/Malik/move")
     CCSpriteFrame* pSf;
     CCAnimation* pAni = NULL;
     char sz[256];

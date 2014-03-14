@@ -33,6 +33,13 @@ public:
         kPirate,
         kPriest,
         kVhelsing,
+        kSoldier,
+        kTemplar,
+        kBarrack,
+        kTemplars,
+        kArcane,
+        kTesla
+
     };
 
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
@@ -58,7 +65,10 @@ public:
         kPriestBolt,
         kWizardBolt,
         kWizardLightning,
-        kWizardProy
+        kWizardProy,
+        kArcaneRay,
+        kArcaneRay2,
+        kTeslaRay
     };
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;

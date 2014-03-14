@@ -384,7 +384,7 @@ void CDefaultAI::onUnitTick(float dt)
     }
 
     d->setCastTarget(CCommandTarget(t->getId()));
-    d->cmdCastSpell(atk);
+    d->cmdCastSpell(atk, false);
 }
 
 void CDefaultAI::onUnitDamagedDone(float fDamage, CUnit* pSource)

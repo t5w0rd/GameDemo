@@ -110,6 +110,15 @@ function ArmorBuff:onUnitDelAbility()
 end 
 
 function onWorldInit()
+    for i = 1, 5 do
+    u = createUnit(0x100 + 25);
+    u:setForceByIndex(1)
+    u:setPosition(500, 1000 + i * 90)
+
+    u = createUnit(0x100 + 26);
+    u:setForceByIndex(2)
+    u:setPosition(690, 1000 + i * 90)
+    end
     do return end
     math.randomseed(os.time())
 

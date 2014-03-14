@@ -74,12 +74,14 @@ bool CBattleWorld::onInit()
 
     M_DEF_GC(gc);
     gc->loadTexture("Global0");
-    gc->loadTexture("Global1");
-    gc->loadTexture("Global2");
-    gc->loadTexture("Global3");
-    gc->loadTexture("Global4");
-    gc->loadTexture("Global5");
-    gc->loadTexture("Global6");
+    gc->loadTexture("Heroes0");
+    gc->loadTexture("Heroes1");
+    gc->loadTexture("Heroes2");
+    gc->loadTexture("Heroes3");
+    gc->loadTexture("Heroes4");
+    gc->loadTexture("Heroes5");
+    gc->loadTexture("Projectiles0");
+    gc->loadTexture("Battle0");
 
     m_oULib.init();
 

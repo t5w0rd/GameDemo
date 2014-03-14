@@ -390,7 +390,7 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
 {
     CCNode* l = getSprite()->getParent();
     const CPoint& up = getPosition();
-    CCPoint p(up.x, up.y + getHalfOfHeight() * 2 + 50.0f);
+    CCPoint p(up.x, up.y + getHalfOfHeight() * 2 + 30.0f);
     int curTipId = getCurTipId();
     cirInc(curTipId, getBaseTipId(), getMaxTips());
     setCurTipId(curTipId);

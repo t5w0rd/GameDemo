@@ -137,6 +137,7 @@ void CUnitDraw2D::copyData( const CUnitDraw* from )
     m_fBaseMoveSpeed = d->m_fBaseMoveSpeed;
     m_oExMoveSpeed = d->m_oExMoveSpeed;
     m_bFixed = d->m_bFixed;
+    m_fHostilityRange = d->m_fHostilityRange;
 }
 
 void CUnitDraw2D::onUnitDying()
@@ -243,12 +244,25 @@ void CUnitDraw2D::onUnitTick(float dt)
             if (checkCastTargetDistance(pAbility, getPosition(), td))
             {
                 // Ê©·¨
-                setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
+                if (!isFixed())
+                {
+                    setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
+                }
+                
                 castSpell(pAbility);
             }
             else if (pAbility->isCoolingDown() == false && (u->isDoingOr(CUnit::kMoving) == false || checkCastTargetDistance(pAbility, getLastMoveToTarget(), td) == false))
             {
-                moveToCastPosition(pAbility, td);
+                if (!td->isFixed())
+                {
+                    moveToCastPosition(pAbility, td);
+                }
+                else
+                {
+                    u->endDoing(CUnit::kCasting | CUnit::kObstinate);
+                    setCastActiveAbilityId(0);
+                }
+                
             }
             return;
         }
@@ -580,7 +594,7 @@ int CUnitDraw2D::cmdCastSpell(int iActiveAbilityId, bool bObstinate)
         return 0;
     }
 
-    if (bNeedFlipX)
+    if (bNeedFlipX && !isFixed())
     {
         setFlipX(getCastTarget().getTargetPoint().x < getPosition().x);
     }
