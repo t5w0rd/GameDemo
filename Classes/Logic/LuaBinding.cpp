@@ -247,6 +247,8 @@ luaL_Reg unit_funcs[] = {
     {"stop", unit2d_stop},
     {"setHostilityRange", unit2d_setHostilityRange},
     {"getHostilityRange", unit2d_getHostilityRange},
+    {"setFixed", unit2d_setFixed},
+    {"isFixed", unit2d_isFixed},
     {NULL, NULL}
 };
 
@@ -773,6 +775,28 @@ int unit2d_getHostilityRange(lua_State* L)
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     
     lua_pushnumber(L, d->getHostilityRange());
+    
+    return 1;
+}
+
+int unit2d_setFixed(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    bool fx = lua_gettop(L) < 2 ? true : (lua_toboolean(L, 2) != 0);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    d->setFixed(fx);
+    
+    return 0;
+}
+
+int unit2d_isFixed(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    
+    lua_pushboolean(L, d->isFixed());
     
     return 1;
 }
