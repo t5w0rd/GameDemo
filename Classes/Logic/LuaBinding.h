@@ -82,6 +82,10 @@ int unit_resume(lua_State* L);
 int unit_getBuffStackSize(lua_State* L);
 int unit_attack(lua_State* L);
 int unit_damaged(lua_State* L);
+int unit_attackM(lua_State* L);
+int unit_damagedM(lua_State* L);
+int unit_attackL(lua_State* L);
+int unit_damagedL(lua_State* L);
 
 int unit_addActiveAbility(lua_State* L);
 int unit_addPassiveAbility(lua_State* L);
@@ -99,6 +103,8 @@ int unit2d_move(lua_State* L);
 int unit2d_moveAlongPath(lua_State* L);
 int unit2d_castSpell(lua_State* L);
 int unit2d_stop(lua_State* L);
+int unit2d_setHostilityRange(lua_State* L);
+int unit2d_getHostilityRange(lua_State* L);
 
 int UnitPath_ctor(lua_State* L);
 int UnitPath_addPoint(lua_State* L);

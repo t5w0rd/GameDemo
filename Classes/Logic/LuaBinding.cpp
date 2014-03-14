@@ -226,6 +226,10 @@ luaL_Reg unit_funcs[] = {
     {"getBuffStackSize", unit_getBuffStackSize},
     {"attack", unit_attack},
     {"damaged", unit_damaged},
+    {"attackM", unit_attackM},
+    {"damagedM", unit_damagedM},
+    {"attackL", unit_attackL},
+    {"damagedL", unit_damagedL},
     {"addActiveAbility", unit_addActiveAbility},
     {"addPassiveAbility", unit_addPassiveAbility},
     {"addBuffAbility", unit_addBuffAbility},
@@ -241,6 +245,8 @@ luaL_Reg unit_funcs[] = {
     {"moveAlongPath", unit2d_moveAlongPath},
     {"castSpell", unit2d_castSpell},
     {"stop", unit2d_stop},
+    {"setHostilityRange", unit2d_setHostilityRange},
+    {"getHostilityRange", unit2d_getHostilityRange},
     {NULL, NULL}
 };
 
@@ -483,6 +489,61 @@ int unit_damaged(lua_State* L)
     return 0;
 }
 
+int unit_attackM(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CAttackData* ad = NULL;
+    luaL_toobjptr(L, 2, ad);
+    CUnit* t = luaL_tounitptr(L, 3);
+    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+
+    ad = u->attackMid(ad, t, mask);
+
+    luaL_pushobjptr(L, "AttackData", ad);
+    
+    return 1;
+}
+
+int unit_damagedM(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CAttackData* ad = NULL;
+    luaL_toobjptr(L, 2, ad);
+    CUnit* s = luaL_tounitptr(L, 3);
+    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+
+    u->damagedMid(ad, s, mask);
+    
+    return 0;
+}
+
+int unit_attackL(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CAttackData* ad = NULL;
+    luaL_toobjptr(L, 2, ad);
+    CUnit* t = luaL_tounitptr(L, 3);
+    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+
+    ad = u->attackBot(ad, t, mask);
+
+    luaL_pushobjptr(L, "AttackData", ad);
+    
+    return 1;
+}
+
+int unit_damagedL(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    float dmg = lua_tonumber(L, 2);
+    CUnit* s = luaL_tounitptr(L, 3);
+    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+
+    u->damagedBot(dmg, s, mask);
+    
+    return 0;
+}
+
 int unit_addActiveAbility(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
@@ -692,6 +753,28 @@ int unit2d_stop(lua_State* L)
     d->cmdStop();
 
     return 0;
+}
+
+int unit2d_setHostilityRange(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    float h = lua_tonumber(L, 2);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    d->setHostilityRange(h);
+    
+    return 0;
+}
+
+int unit2d_getHostilityRange(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    
+    lua_pushnumber(L, d->getHostilityRange());
+    
+    return 1;
 }
 
 luaL_Reg UnitPath_funcs[] = {
