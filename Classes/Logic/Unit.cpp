@@ -390,6 +390,10 @@ void CDefaultAI::onUnitTick(float dt)
 void CDefaultAI::onUnitDamagedDone(float fDamage, CUnit* pSource)
 {
     CUnit* u = getNotifyUnit();
+    if (u->isDoingOr(CUnit::kObstinate))
+    {
+        return;
+    }
     //CCLOG("%s", u->isDoingAnd(CUnit::kObstinate) ? "Obs" : "NOT");
     if (pSource == NULL || pSource->isDead() || pSource->isAllyOf(u))
     {
@@ -401,27 +405,39 @@ void CDefaultAI::onUnitDamagedDone(float fDamage, CUnit* pSource)
     {
         return;
     }
-    CActiveAbility* casting = u->getActiveAbility(d->getCastActiveAbilityId());
-    CUnitDraw2D* td = NULL;
-    if (casting != NULL && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+
+    int atk = u->getAttackAbilityId();
+    if (atk == 0)
     {
+        return;
+    }
+
+    CActiveAbility* atking = ((atk == d->getCastActiveAbilityId()) ? u->getActiveAbility(atk) : NULL);
+    CUnitDraw2D* td = NULL;
+    if (atking != NULL && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+    {
+        // 正在试图释放一个目标为单位的攻击技能
         if (d->getCastTarget().getTargetUnit() != pSource->getId())
         {
+            // 伤害源不是当前的攻击目标
             CUnit* t = u->getUnit(d->getCastTarget().getTargetUnit());
             td = DCAST(t->getDraw(), CUnitDraw2D*);
         }
     }
 
-    if (u->isDoingOr(CUnit::kObstinate) || !(
-        (td != NULL && d->checkCastTargetDistance(casting, d->getPosition(), td) == false) ||
-        u->isDoingNothing() ||
-        (u->isDoingOr(CUnit::kMoving | CUnit::kSpinning) && !u->isDoingOr(CUnit::kCasting))
-        ))
+    // 当前目标存在！   如果能打到之前的目标且  (目标非建筑  或(是建筑，且源也是建筑))
+    // 果伤害源
+    if (td != NULL && d->checkCastTargetDistance(atking, d->getPosition(), td))
+    {
+        // 如果能打到之前的目标，不改变攻击目标
+        return;
+    }
+
+    if (u->isDoingOr(CUnit::kSpinning))
     {
         return;
     }
 
-    int atk = u->getAttackAbilityId();
     if (atk == 0)
     {
         return;
@@ -445,6 +461,7 @@ CUnit::CUnit(const char* pRootId)
 , m_iSuspendRef(0)
 , m_bRevivable(false)
 , m_dwDoingFlags(0)
+, m_iPriority(0)
 , m_pDraw(NULL)
 , m_eSpecies(kUnknown)
 {
@@ -604,6 +621,12 @@ void CUnit::onChangeLevel(int iChanged)
 
 void CUnit::onRevive()
 {
+    CUnitDraw* d = getDraw();
+    if (d != NULL)
+    {
+        d->onUnitRevive();
+    }
+
     triggerOnRevive();
     
     if (m_pAI)
@@ -660,14 +683,14 @@ void CUnit::step(float dt)
 void CUnit::onTick(float dt)
 {
     CUnitDraw* d = getDraw();
-    if (d != NULL)
+    if (d != NULL && !isDead())
     {
         d->onUnitTick(dt);
     }
 
     triggerOnTick(dt);
     
-    if (m_pAI)
+    if (m_pAI && !isDead())
     {
         m_pAI->onUnitTick(dt);
     }
@@ -1693,6 +1716,17 @@ bool CUnit::isDoingAnd(uint32_t dwDoingFlags) const
 bool CUnit::isDoingNothing() const
 {
     return m_dwDoingFlags == 0;
+}
+
+bool CUnit::tryDoing( int priority )
+{
+    if (priority > m_iPriority)
+    {
+        m_iPriority = priority;
+        return true;
+    }
+
+    return false;
 }
 
 void CUnit::setDraw(CUnitDraw* pDraw)

@@ -24,8 +24,6 @@ CCTestSceneLayer::CCTestSceneLayer()
     : m_fc(NULL)
     , m_arr(NULL)
     , m_sp(NULL)
-    , m_iSavePos(0)
-    , m_iSaveCount(0)
 {
 }
 
@@ -57,47 +55,7 @@ CCScene* CCTestSceneLayer::scene()
 #define PLIST_SAVE_NAME ("Saved/Global0")
 
 const char* g_files[] = {
-    "enemies_demons-ipadhd",
-    "enemies_effects-ipadhd",
-    "enemies_goblins-ipadhd",
-    "enemies_inferno-ipadhd",
-    "enemies_mercenaries_1-ipadhd",
-    "enemies_mercenaries_2-ipadhd",
-    "enemies_mercenaries_marauder-ipadhd",
-    "enemies_sheeps-ipadhd",
-    "enemies_snow-ipadhd",
-    "enemies_spiders-ipadhd",
-    "heroes_archer-ipadhd",
-    "heroes_denas-ipadhd",
-    "heroes_dwarf-ipadhd",
-    "heroes_fire-ipadhd",
-    "heroes_frost-ipadhd",
-    "heroes_mage-ipadhd",
-    "heroes_paladin-ipadhd",
-    "heroes_reinforcement-ipadhd",
-    "heroes_robot-ipadhd",
-    "heroes_samurai-ipadhd",
-    "heroes_thor-ipadhd",
-    "heroes_viking-ipadhd",
-    "sprite_level12-ipadhd",
-    "sprite_level13-ipadhd",
-    "sprite_level14-ipadhd",
-    "sprite_level15-ipadhd",
-    "sprite_level16-ipadhd",
-    "sprite_level17-ipadhd",
-    "sprite_level18-ipadhd",
-    "sprite_level19-ipadhd",
-    "sprite_level19_3-ipadhd",
-    "sprite_level21-ipadhd",
-    "sprite_level22-ipadhd",
-    "sprite_level6-ipadhd",
-    "sprite_level8-ipadhd",
-    "sprite_level9-ipadhd",
-    "towers-ipadhd",
-    "towers_arcane-ipadhd",
-    "towers_bfg-ipadhd",
-    "towers_tesla-ipadhd"
-
+    "Heroes0"
 };
 
 // on "init" you need to initialize your instance
@@ -245,24 +203,37 @@ void CCTestSceneLayer::updateSprite()
 
 void CCTestSceneLayer::onLabelSave( CCObject* )
 {
-#if 1
-    m_iSavePos = 0;
-    m_iSaveCount = sizeof(g_files) / sizeof(g_files[0]);
-
-    schedule(schedule_selector(CCTestSceneLayer::scheduleSave), 2.0);
-    m_cur = 0;
-#else
-    unsigned int cur = m_cur;
-    for (unsigned int i = 0; i < m_arr->count(); ++i)
+    int n = sizeof(g_files) / sizeof(g_files[0]);
+    for (int i = 0; i < n; ++i)
     {
-        const char* name = DCAST(m_arr->objectAtIndex(i), CCString*)->getCString();
-        saveToPng(name, PLIST_SAVE_NAME);
-    }
-    m_cur = cur;
-    updateSprite();
-#endif
-}
+        char tmp[256];
+        CCSpriteFrameCacheEx fc;
+        fc.init();
 
+        sprintf(tmp, "%s.plist", g_files[i]);
+        fc.addSpriteFramesWithFile(tmp);
+
+        CCDictionary* d = fc.getSpriteFrames();
+        CCLOG("%s has %d Frame(s)", g_files[i], d->count());
+        CCDictElement* e = NULL;
+        int f = 1;
+        CCDICT_FOREACH(d, e)
+        {
+            const char* name = e->getStrKey();
+            sprintf(tmp, "Saved/%s", g_files[i]);
+            CCLOG("%02d%% Saving(%d/%d) %s ..", f * 100 / d->count(), f, d->count(), name);
+            saveToPng(name, tmp, &fc);
+            ++f;
+        }
+        CCLOG("%d Frame(s) Saved", d->count());
+    }
+
+    m_cur = 0;
+}
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+#include <Psapi.h>
+#pragma comment(lib, "Psapi.lib")
+#endif
 bool CCTestSceneLayer::saveToPng( const char* name, const char* path, CCSpriteFrameCache* fc )
 {
     m_sp->setDisplayFrame(fc->spriteFrameByName(name));
@@ -290,33 +261,26 @@ bool CCTestSceneLayer::saveToPng( const char* name, const char* path, CCSpriteFr
     bool res = img->saveToFile(full, false);
     delete img;
 
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+    static HANDLE h = GetCurrentProcess();
+    PROCESS_MEMORY_COUNTERS pmc;
+    GetProcessMemoryInfo(h, &pmc, sizeof(pmc));
+    if (pmc.WorkingSetSize > 0x20000000)
+    {
+        // 512MB
+        CCPoolManager::sharedPoolManager()->pop();
+    }
+#else
+    static int rc = 0;
+    if (rc < 10)
+    {
+        ++rc;
+    }
+    else
+    {
+        CCPoolManager::sharedPoolManager()->pop();
+        rc = 0;
+    }
+#endif
     return res;
-}
-
-void CCTestSceneLayer::scheduleSave( float ft )
-{
-    if (m_iSavePos >= m_iSaveCount)
-    {
-        unschedule(schedule_selector(CCTestSceneLayer::scheduleSave));
-        return;
-    }
-
-    char tmp[256];
-    CCSpriteFrameCacheEx fc;
-    fc.init();
-
-    sprintf(tmp, "%s.plist", g_files[m_iSavePos]);
-    fc.addSpriteFramesWithFile(tmp);
-
-
-    CCDictionary* d = fc.getSpriteFrames();
-    CCDictElement* e = NULL;
-    CCDICT_FOREACH(d, e)
-    {
-        const char* name = e->getStrKey();
-        sprintf(tmp, "Saved/%s", g_files[m_iSavePos]);
-        saveToPng(name, tmp, &fc);
-    }
-
-    ++m_iSavePos;
 }

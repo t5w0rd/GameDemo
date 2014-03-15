@@ -67,7 +67,7 @@ bool CBattleWorld::onInit()
     CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
 
     CUnit* u = NULL;
-    CUnitDrawForCC* ud = NULL;
+    CUnitDrawForCC* d = NULL;
     CAbility* a = NULL;
     int id = 0;
     CAttackAct* atk = NULL;
@@ -85,184 +85,23 @@ bool CBattleWorld::onInit()
 
     m_oULib.init();
 
-    gc->loadAnimation("Units/Matchstick/move", "Units/Matchstick/move", 0.08f);
-    gc->loadAnimation("Units/Matchstick/die", "Units/Matchstick/die", 0.08f);
-    gc->loadAnimation("Units/Matchstick/act1", "Units/Matchstick/act1", 0.08f);
-    gc->loadAnimation("Units/Matchstick/act2", "Units/Matchstick/act2", 0.08f);
-    gc->loadAnimation("Units/Matchstick/act3", "Units/Matchstick/act3", 0.08f);
-    gc->loadAnimation("Units/Matchstick/act4", "Units/Matchstick/act4", 0.08f);
-
-    
     u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
     addUnit(u);
-    u->setForceByIndex(1);
     setControlUnit(u->getId());
-    ud = DCAST(u->getDraw(), CUnitDrawForCC*);
-#if 1
-    a = new CSpeedBuff(
-        "SlowDown",
-        "Slow",
-        5.0f,
-        true,
-        CExtraCoeff(-0.2f, 0.0f),
-        CExtraCoeff(-0.2f, 0.0f));
-    id = addTemplateAbility(a);
-
-    a = new CAttackBuffMakerPas(
-        "AttackBuffMaker.[SlowDown]",
-        "致残",
-        0.2f,
-        id);
-    id = addTemplateAbility(a);
-    u->addPassiveAbility(id);
-
-    a = new CSpeedBuff(
-        "SpeedUp",
-        "SpeedUp",
-        10.0f,
-        true,
-        CExtraCoeff(0.2f, 0.0f),
-        CExtraCoeff(0.2f, 0.0f));
-    id = addTemplateAbility(a);
-
-    a = new CAttackBuffMakerPas(
-        "AttackBuffMaker.[SlowDown]",
-        "兴奋",
-        0.2f,
-        id,
-        true);
-    id = addTemplateAbility(a);
-    u->addPassiveAbility(id);
-
-    a = new CEvadeBuff(
-        "EvadeBuff",
-        "Evade",
-        5.0,
-        true,
-        0.3f);
-    id = addTemplateAbility(a);
-
-    a = new CEvadePas(
-        "EvadePas",
-        "Evade",
-        0.3f,
-        id);
-    id = addTemplateAbility(a);
-    u->addPassiveAbility(id);
-
-    a = new CStunBuff(
-        "Stun2s",
-        "Stun",
-        2.0f,
-        false);
-    id = addTemplateAbility(a);
-
-    a = new CAttackBuffMakerPas(
-        "AttackBuffMaker.[Stun]",
-        "重击",
-        0.2f,
-        id,
-        false,
-        CExtraCoeff(1.0f, 50.0f));
-    id = addTemplateAbility(a);
-    u->addPassiveAbility(id);
-
-    a = new CVampirePas(
-        "Vampire20%",
-        "吸血",
-        0.2f);
-    id = addTemplateAbility(a);
-    u->addPassiveAbility(id);
-#endif
-    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 10.0f, CExtraCoeff(0.5, 0)));
-
-    ud->setBaseMoveSpeed(180.0f);
-    ud->setPosition(CPoint(vs.width * 0.6, vs.height * 0.5));
-    //ud->setHeight(30);
-
-    // 主动技能测试
-    a = new CStunBuff(
-        "Stun2s",
-        "Stun",
-        2.0f,
-        false);
-    id = addTemplateAbility(a);
-
-    a = new CDamageBuffMakerBuff(
-        "锤子伤害",
-        CAttackValue(CAttackValue::kMagical, 0.0f),
-        1.0f,
-        id,
-        false,
-        CExtraCoeff(2.0f, 0.0f));
-    id = addTemplateAbility(a);
-
-    CBuffMakerAct* bm = new CBuffMakerAct("", "锤子", 5.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);
-    bm->setTemplateProjectile(CUnitLibraryForCC::kThorHammer);
-    bm->addCastAnimation(CUnitDraw::kAniAct3);
-    bm->setCastRange(200.0f);
-    u->addActiveAbility(bm);
-
-    CUnitDrawForCC* hero = ud;
-    
-    u = m_oULib.copyUnit(CUnitLibraryForCC::kMalik);
-    addUnit(u);
-    u->getDraw()->dcast(ud);
-    u->setForceByIndex(0);
-    ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.2));
-    CUnitPathForCC* up = new CUnitPathForCC("BackgroundHD.pth");
-    ud->cmdMoveAlongPath(up, true);
-    //return true;
-    
-    // create other units
-    ud = new CUnitDrawForCC("Matchstick");
-    ud->prepareFrame(CUnitDraw::kFrmDefault, "default");
-    ud->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
-    ud->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
-    ud->prepareAnimation(CUnitDraw::kAniAct1, "act1", 3);
-    ud->prepareAnimation(CUnitDraw::kAniAct2, "act2", 2);
-    ud->setGeometry(24.0f, 27.0f, ccp(69.0 / 128, 6.0 / 128), CPoint(41.0f, 29.0f));
-
-    u = new CUnit("CUnit");
-    u->setDraw(ud);
-    u->setName("Matchstick");
-    u->setMaxHp(500.0f);
     u->setForceByIndex(2);
-    u->setAI(CMyAI());
-
-    addUnit(u);
-
-    atk = new CAttackAct(
-        "NormalAttack",
-        "攻击",
-        2.00,
-        CAttackValue(CAttackValue::kPhysical, 50.0),
-        0.5);
-    atk->setCastMinRange(-3.0f);
-    atk->setCastRange(15.0f);
-    atk->setCastHorizontal();
-    atk->addCastAnimation(CUnitDraw::kAniAct1);
-    atk->addCastAnimation(CUnitDraw::kAniAct2);
-    u->addActiveAbility(atk);
-
-    u->addPassiveAbility(new CRebirthPas("Rebirth", "REBIRTH", 10.0f, CExtraCoeff(0.5, 0)));
+    d = DCAST(u->getDraw(), CUnitDrawForCC*);
+    d->setPosition(CPoint(500, 1000));
     
-    u->addPassiveAbility(new CDoubleAttackPas("DoubleAttack", "连击", 0.5f));
-
-    ud->setBaseMoveSpeed(50.0f);
-    ud->setPosition(CPoint(vs.width * 0.4, vs.height * 0.5));
-
     onLuaWorldInit();
-
-    hero->setCastTarget(CCommandTarget(u->getId()));
-    hero->cmdCastSpell(bm->getId());
-
+    DCAST(getLayer(), CCBattleSceneLayer*)->updateTargetInfo(getControlUnit());
 
     return true;
 }
 
 void CBattleWorld::onTick( float dt )
 {
+    CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
+    l->updateTargetInfo();
     onLuaWorldTick(dt);
 }
 
@@ -309,6 +148,8 @@ bool CBattleWorld::onLuaWorldInit()
     }
 
     assert(lua_gettop(L) == 0);
+
+    DCAST(getLayer(), CCBattleSceneLayer*)->initTargetInfoLayer();
 
     return true;
 }
@@ -425,6 +266,9 @@ bool CCBattleSceneLayer::init()
     m_pCtrlLayer = CCLayer::create();
     m_pCtrlLayer->retain();
 
+    M_DEF_GC(gc);
+    gc->getfc()->addSpriteFramesWithFile("Global0.plist");
+
     setBackGroundSprite(CCSprite::create("BackgroundHD.png"));
     setBufferEffectParam(0.9f, 10.0f, 0.1f);
     setPosition(ccp(0, 0));
@@ -451,27 +295,34 @@ void CCBattleSceneLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
     CUnit* hero = w->getUnit(w->getControlUnit());
     if (hero == NULL)
     {
-        return;
+        //return;
     }
 
-    CUnitDraw2D* d = DCAST(hero->getDraw(), CUnitDraw2D*);
+    CUnitDraw2D* d = hero ? DCAST(hero->getDraw(), CUnitDraw2D*) : NULL;
     if (d == NULL)
     {
-        return;
+        //return;
     }
 
     CPoint p(pos.x, pos.y);
     CUnit* t = CUnitGroup::getNearestUnitInRange(w, p, 50.0f);
 
-    if (t != NULL && hero != t)
+    if (d != NULL && t != NULL && t->isEnemyOf(hero))
     {
-        d->setCastTarget(CCommandTarget(t->getId()));
-        d->cmdCastSpell(hero->getAttackAbilityId());
-
+        if (hero != t)
+        {
+            d->setCastTarget(CCommandTarget(t->getId()));
+            d->cmdCastSpell(hero->getAttackAbilityId());
+        }
     }
-    else
+    else if (d != NULL)
     {
         d->cmdMove(p);
+    }
+
+    if (t != NULL)
+    {
+        updateTargetInfo(t->getId());
     }
 }
 
@@ -512,4 +363,240 @@ void CCBattleSceneLayer::log( const char* fmt, ... )
 
         cirDec(j, getBaseLogId(), getMaxLogs());
     }
+}
+
+void CCBattleSceneLayer::initTargetInfoLayer()
+{
+    // 初始化目标信息面板
+    m_oTargetInfoLayer.initWithColor(ccc4(140, 70, 35, 255));
+    m_pCtrlLayer->addChild(&m_oTargetInfoLayer);
+    m_oTargetInfoLayer.setContentSize(CCSizeMake(700, 48));
+    m_oTargetInfoLayer.setPosition(ccp(5, 5));
+
+    CCSprite* pSprite = NULL;
+    pSprite = CCSprite::createWithSpriteFrameName("UI/pos.png");
+    m_pCtrlLayer->addChild(pSprite);
+    pSprite->setPosition(ccp(5, 5));
+
+    // 等级
+    float fW0 = 0;
+    float fW1 = 32;
+    float fBaseX = M_FIX_BASE_X(fW0, fW1, 10);
+    pSprite = CCSprite::createWithSpriteFrameName("UI/ph32.png");
+    m_oTargetInfoLayer.addChild(pSprite);
+    pSprite->setPosition(ccp(fBaseX, 24));
+    pSprite->setColor(ccc3(240, 160, 120));
+
+    fW0 = fW1;
+    fW1 = 64;
+    fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
+    m_oTargetLv.initWithString("12", "Hobo Std", 24, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_oTargetInfoLayer.addChild(&m_oTargetLv);
+    m_oTargetLv.setPosition(ccp(fBaseX, 24));
+    m_oTargetLv.setColor(ccc3(250, 190, 100));
+
+    // hp
+    fW0 = fW1;
+    fW1 = 32;
+    fBaseX += M_FIX_BASE_X(fW0, fW1, 4);
+    pSprite = CCSprite::createWithSpriteFrameName("UI/status/HP.png");
+    m_oTargetInfoLayer.addChild(pSprite);
+    pSprite->setPosition(ccp(fBaseX, 24));
+    //pSprite->setColor(ccc3(100, 185, 75));
+
+    fW0 = fW1;
+    fW1 = 160;
+    fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
+    m_oTargetHp.initWithString("1320/3208", "Hobo Std", 24, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_oTargetInfoLayer.addChild(&m_oTargetHp);
+    m_oTargetHp.setPosition(ccp(fBaseX, 24));
+    m_oTargetHp.setColor(ccc3(250, 190, 100));
+
+    // 攻击
+    fW0 = fW1;
+    fW1 = 32;
+    fBaseX += M_FIX_BASE_X(fW0, fW1, 4);
+    m_pTargetAtk = CCSprite::createWithSpriteFrameName("UI/status/PhysicalAttack.png");
+    m_oTargetInfoLayer.addChild(m_pTargetAtk);
+    m_pTargetAtk->setPosition(ccp(fBaseX, 24));
+    //pSprite->setColor(ccc3(230, 40, 30));
+
+    /*
+    pSprite = CCSprite::createWithSpriteFrameName("UI/pos.png");
+    m_oTargetInfoLayer.addChild(pSprite);
+    pSprite->setPosition(ccp(fBaseX, 24));
+    */
+
+    fW0 = fW1;
+    fW1 = 0; // 锚点在最左处
+    fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
+    m_oTargetAtk.initWithString("", "Hobo Std", 24);
+    m_oTargetAtk.setAnchorPoint(ccp(0.0, 0.5));
+    m_oTargetInfoLayer.addChild(&m_oTargetAtk);
+    m_oTargetAtk.setHorizontalAlignment(kCCTextAlignmentLeft);
+    m_oTargetAtk.setString("105 - 110");
+    //m_oTargetAtk.setDimensions(CCSizeMake(m_oTargetAtk.getTextureRect().size.width, 32));
+    m_oTargetAtk.setPosition(ccp(fBaseX, 24));
+    m_oTargetAtk.setColor(ccc3(250, 190, 100));
+    m_oTargetAtk.setString("150 - 110");
+
+    /*
+    pSprite = CCSprite::createWithSpriteFrameName("UI/pos.png");
+    m_oTargetInfoLayer.addChild(pSprite);
+    pSprite->setTag(100);
+    pSprite->setPosition(ccp(fBaseX, 24));
+    */
+
+    fBaseX += m_oTargetAtk.getTextureRect().size.width;
+    m_oTargetAtkEx.initWithString("", "Hobo Std", 24);
+    m_oTargetAtkEx.setAnchorPoint(ccp(0.0, 0.5));
+    m_oTargetInfoLayer.addChild(&m_oTargetAtkEx);
+    m_oTargetAtkEx.setHorizontalAlignment(kCCTextAlignmentLeft);
+    m_oTargetAtkEx.setString(" +15000");
+    //m_oTargetAtkEx.setDimensions(CCSizeMake(m_oTargetAtkEx.getTextureRect().size.width, 32));
+    m_oTargetAtkEx.setPosition(ccp(fBaseX, 24));
+    m_oTargetAtk.setString("151 - 167");
+    m_oTargetAtkEx.setColor(ccc3(40, 220, 40));
+
+    /*
+    pSprite = CCSprite::createWithSpriteFrameName("UI/pos.png");
+    m_oTargetInfoLayer.addChild(pSprite);
+    pSprite->setTag(101);
+    pSprite->setPosition(ccp(fBaseX, 24));
+    */
+    // 护甲
+    fW1 = 32;
+    fBaseX += 240 - m_oTargetAtk.getTextureRect().size.width + fW1 * 0.5;
+    m_pTargetDef = CCSprite::createWithSpriteFrameName("UI/status/HeavyArmor.png");
+    m_oTargetInfoLayer.addChild(m_pTargetDef);
+    m_pTargetDef->setPosition(ccp(fBaseX, 24));
+    //pSprite->setColor(ccc3(0, 110, 155));
+
+    fW0 = fW1;
+    fW1 = 64;
+    fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
+    m_oTargetDef.initWithString("32", "Hobo Std", 24, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_oTargetInfoLayer.addChild(&m_oTargetDef);
+    m_oTargetDef.setPosition(ccp(fBaseX, 24));
+    m_oTargetDef.setColor(ccc3(250, 190, 100));
+
+    CWorld* w = getWorld();
+    updateTargetInfo(w->getControlUnit());
+}
+
+void CCBattleSceneLayer::updateTargetInfo(int id)
+{
+    static int lastId = 0;
+    if (lastId != id && id != 0)
+    {
+        lastId = id;
+    }
+
+    CUnit* pUnit = getWorld()->getUnit(lastId);
+    if (!pUnit || pUnit->isDead())
+    {
+        return;
+    }
+
+    M_DEF_GC(gc);
+    CCSpriteFrameCache* fc = gc->getfc();
+    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
+    
+    if (!m_oTargetInfoLayer.isVisible())
+    {
+        m_oTargetInfoLayer.setVisible(true);
+    }
+
+    //if (pUnit != m_pLastTarget)
+
+    char szBuf[64];
+
+    uint32_t dwLevel = pUnit->getLevel();
+    if (dwLevel != m_stTargetInfo.dwLevel)
+    {
+        sprintf(szBuf, "%u", pUnit->getLevel());
+        m_oTargetLv.setString(szBuf);
+        m_stTargetInfo.dwLevel = dwLevel;
+    }
+
+    uint32_t dwHp = pUnit->getHp();
+    uint32_t dwMaxHp = pUnit->getRealMaxHp();
+    if ((dwHp != m_stTargetInfo.dwHp) || (dwMaxHp != m_stTargetInfo.dwMaxHp))
+    {
+        sprintf(szBuf, "%u/%u", dwHp, dwMaxHp);
+        m_oTargetHp.setString(szBuf);
+        m_stTargetInfo.dwHp = dwHp;
+        m_stTargetInfo.dwMaxHp = dwMaxHp;
+    }
+
+    CAttackAct* atkAct = DCAST(pUnit->getActiveAbility(pUnit->getAttackAbilityId()), CAttackAct*);
+    if (atkAct != NULL)
+    {
+        switch (atkAct->getBaseAttack().getType())
+        {
+        case CAttackValue::kPhysical:
+            m_pTargetAtk->setDisplayFrame(fc->spriteFrameByName("UI/status/PhysicalAttack.png"));
+            break;
+
+        case CAttackValue::kMagical:
+            m_pTargetAtk->setDisplayFrame(fc->spriteFrameByName("UI/status/MagicalAttack.png"));
+            break;
+        }
+        uint32_t dwAtk0 = 0;
+        uint32_t dwAtk1 = 0;
+        float fAtk = 0;
+        float fAtkRnd = 0;
+        uint32_t dwAtkEx = 0;
+
+        fAtk = atkAct->getBaseAttackValue();
+        fAtkRnd = atkAct->getAttackValueRandomRange() * 0.5;
+        dwAtk0 = fAtk * (1 - fAtkRnd);
+        dwAtk1 = fAtk * (1 + fAtkRnd);
+        dwAtkEx = fAtk * (atkAct->getExAttackValue().getMulriple() - 1.0) + atkAct->getExAttackValue().getAddend();
+
+        if ((dwAtk0 != m_stTargetInfo.dwAtk0) || (dwAtk1 != m_stTargetInfo.dwAtk1) || (dwAtkEx != m_stTargetInfo.dwAtkEx))
+        {
+            sprintf(szBuf, "%u - %u", dwAtk0, dwAtk1);
+            m_oTargetAtk.setString(szBuf);
+            //m_oTargetAtkEx.setPosition();
+            m_stTargetInfo.dwAtk0 = dwAtk0;
+            m_stTargetInfo.dwAtk1 = dwAtk1;
+
+            //m_oTargetInfoLayer.getChildByTag(100)->setPosition(m_oTargetAtk.getPosition());
+
+            if (dwAtkEx)
+            {
+                sprintf(szBuf, " +%u", dwAtkEx);
+                m_oTargetAtkEx.setString(szBuf);
+                //m_oTargetAtkEx.setDimensions(CCSizeMake(m_oTargetAtkEx.getTextureRect().size.width, 32));
+                m_oTargetAtkEx.setPosition(ccpAdd(m_oTargetAtk.getPosition(), ccp(m_oTargetAtk.getTextureRect().size.width, 0)));
+                //m_oTargetInfoLayer.getChildByTag(101)->setPosition(m_oTargetAtkEx.getPosition());
+            }
+            else
+            {
+                m_oTargetAtkEx.setString("");
+            }
+            m_stTargetInfo.dwAtkEx = dwAtkEx;
+        }
+    }
+    
+    switch (pUnit->getBaseArmor().getType())
+    {
+    case CArmorValue::kNormal:
+    case CArmorValue::kHeavy:
+        m_pTargetDef->setDisplayFrame(fc->spriteFrameByName("UI/status/HeavyArmor.png"));
+        break;
+
+    case CArmorValue::kCrystal:
+        m_pTargetDef->setDisplayFrame(fc->spriteFrameByName("UI/status/CrystalArmor.png"));
+        break;
+    }
+    uint32_t dwDef = pUnit->getRealArmorValue();
+    if (dwDef != m_stTargetInfo.dwDef)
+    {
+        sprintf(szBuf, "%u", dwDef);
+        m_oTargetDef.setString(szBuf);
+        m_stTargetInfo.dwDef = dwDef;
+    }
+
 }

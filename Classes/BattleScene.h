@@ -58,6 +58,31 @@ public:
     M_SYNTHESIZE(int, m_iCurLogId, CurLogId);
     void log(const char* fmt, ...);
 
+    // TargetInfoLayer
+    struct TARGET_INFO
+    {
+        uint32_t dwLevel;
+        uint32_t dwHp;
+        uint32_t dwMaxHp;
+        uint32_t dwAtk0;
+        uint32_t dwAtk1;
+        uint32_t dwAtkEx;
+        uint32_t dwDef;
+
+        TARGET_INFO() { memset(this, 0, sizeof(TARGET_INFO)); }
+    };
+    CCLayerColor m_oTargetInfoLayer;
+    CCLabelTTF m_oTargetLv;
+    CCLabelTTF m_oTargetHp;
+    CCLabelTTF m_oTargetAtk;
+    CCLabelTTF m_oTargetAtkEx;
+    CCSprite* m_pTargetAtk;
+    CCLabelTTF m_oTargetDef;
+    CCSprite* m_pTargetDef;
+    TARGET_INFO m_stTargetInfo;
+    void initTargetInfoLayer();
+    void updateTargetInfo(int id = 0);
+
 };
 
 #endif // __BATTLE_SCENE_H__

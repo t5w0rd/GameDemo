@@ -30,10 +30,11 @@ void CStatusShowPas::onUnitAddAbility()
     CCNode* sd = sp->getShadow();
 
     assert(m_pProgressBar == NULL);
-    CCSize sz(d->getHalfOfWidth() * 2 + 20, d->getHalfOfHeight() * 2 + 20);
-    m_pProgressBar = CCProgressBar::create(CCSizeMake(sz.width * sp->getScale(), 10.0f), CCSprite::createWithSpriteFrameName("UI/healthbar/healthbar_fill.png"), CCSprite::createWithSpriteFrameName("UI/healthbar/healthbar_border.png"), 1.0f, 1.0f, true);
+    float fBarWidth = d->getHalfOfWidth() * 2 + 20;
+    float fBarPosHeight = d->getHalfOfHeight() * 2.5 + 10;
+    m_pProgressBar = CCProgressBar::create(CCSizeMake(fBarWidth * sp->getScale(), 10.0f), CCSprite::createWithSpriteFrameName("UI/healthbar/healthbar_fill.png"), CCSprite::createWithSpriteFrameName("UI/healthbar/healthbar_border.png"), 1.0f, 1.0f, true);
     sd->addChild(m_pProgressBar);
-    m_pProgressBar->setPosition(ccpAdd(sd->getAnchorPointInPoints(), ccp(0.0f, sz.height * sp->getScale())));
+    m_pProgressBar->setPosition(ccpAdd(sd->getAnchorPointInPoints(), ccp(0.0f, fBarPosHeight * sp->getScale())));
     onUnitChangeHp(0.0f);
 }
 

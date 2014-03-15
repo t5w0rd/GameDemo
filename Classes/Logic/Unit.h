@@ -537,11 +537,13 @@ public:
     };
     
     M_SYNTHESIZE_READONLY(uint32_t, m_dwDoingFlags, DoingFlags);
-    virtual void startDoing(uint32_t dwFlags);
-    virtual void endDoing(uint32_t dwFlags);
-    virtual bool isDoingOr(uint32_t dwFlags) const;
-    virtual bool isDoingAnd(uint32_t dwFlags) const;
-    virtual bool isDoingNothing() const;
+    void startDoing(uint32_t dwFlags);
+    void endDoing(uint32_t dwFlags);
+    bool isDoingOr(uint32_t dwFlags) const;
+    bool isDoingAnd(uint32_t dwFlags) const;
+    bool isDoingNothing() const;
+    M_SYNTHESIZE(int, m_iPriority, Priority);
+    bool tryDoing(int priority);
     
     // --------------- Action ----------------
 

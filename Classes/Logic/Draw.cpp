@@ -67,6 +67,10 @@ void CUnitDraw::setVisible(bool bVisible /*= true*/)
 {
 }
 
+void CUnitDraw::onUnitRevive()
+{
+}
+
 void CUnitDraw::onUnitDying()
 {
 }
@@ -140,6 +144,12 @@ void CUnitDraw2D::copyData( const CUnitDraw* from )
     m_fHostilityRange = d->m_fHostilityRange;
 }
 
+void CUnitDraw2D::onUnitRevive()
+{
+    setFrame(CUnitDraw::kFrmDefault);
+}
+
+
 void CUnitDraw2D::onUnitDying()
 {
     CUnit* u = getUnit();
@@ -173,6 +183,7 @@ void CUnitDraw2D::onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData)
 
 void CUnitDraw2D::onUnitTick(float dt)
 {
+    // 为了沿路径移动以及校正施法位置
     CUnit* u = getUnit();
     
     // 路径逻辑
@@ -253,7 +264,7 @@ void CUnitDraw2D::onUnitTick(float dt)
             }
             else if (pAbility->isCoolingDown() == false && (u->isDoingOr(CUnit::kMoving) == false || checkCastTargetDistance(pAbility, getLastMoveToTarget(), td) == false))
             {
-                if (!td->isFixed())
+                if (!isFixed())
                 {
                     moveToCastPosition(pAbility, td);
                 }

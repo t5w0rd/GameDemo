@@ -599,7 +599,7 @@ bool CUnitLibraryForCC::init()
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
     u->addActiveAbility(atk);
-    d->setBaseMoveSpeed(80.0f);
+    d->setBaseMoveSpeed(50.0f);
     addUnit(kSoldier, u);
 
     // Templar
@@ -642,7 +642,7 @@ bool CUnitLibraryForCC::init()
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
     d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 9);
-    d->setGeometry(63.0f, 30.0f, ccp(120.0 / 240, 44.0 / 184), CPoint(0.0f, 118.0f));
+    d->setGeometry(63.0f, 60.0f, ccp(120.0 / 240, 44.0 / 184), CPoint(0.0f, 118.0f));
     u = new CUnit(d->getName());
     u->setDraw(d);
     u->setName(d->getName());
@@ -670,7 +670,7 @@ bool CUnitLibraryForCC::init()
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
     d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 23);
-    d->setGeometry(63.0f, 30.0f, ccp(120.0 / 240, 44.0 / 184), CPoint(0.0f, 118.0f));
+    d->setGeometry(63.0f, 60.0f, ccp(120.0 / 240, 44.0 / 184), CPoint(0.0f, 118.0f));
     u = new CUnit(d->getName());
     u->setDraw(d);
     u->setName(d->getName());

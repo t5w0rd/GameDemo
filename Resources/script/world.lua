@@ -1,4 +1,5 @@
- function table.copy(st)
+--require "/sdcard/ts/gamedemo/common.lua"
+function table.copy(st)
     local tab = {}
     st = st or {}
     for k, v in pairs(st) do
@@ -59,11 +60,10 @@ end
 
 function DefPas:onUnitAttackTarget(ad, target)
     o = self:getOwner()
-    --log("lua ad: %s", ad._p)
+    --log(string.format("%s attack %s", o:getName(), target:getName()))
     --ad:setAttackValue(ad:getAttackValue() * 10)
     ad:addAttackBuff(self.buff, self:getLevel())
     --o:addBattleTip(math.ceil(ad:getAttackValue()), "Arial", 18, 0, 0, 0)
-    return ad
 end
 
 DamageBackPas = class(PassiveAbility)
@@ -77,10 +77,20 @@ end
 function DamageBackPas:onUnitDamaged(ad, src)
     local o = self:getOwner()
     local nad = AttackData:new()
-    nad:addAttackBuff(self.buff, self:getLevel())
+    if self.buff ~= 0 then
+        nad:addAttackBuff(self.buff, self:getLevel())
+    end
     local t, v = ad:getAttack()
     nad:setAttack(t, self.per * v)
-    src:damaged(nad, o)
+    if not o then
+        log("o is nil")
+        return
+    else
+        log(string.format("%s %s", nad, o))
+        src:damaged(nad, o, 448)
+    end
+    
+    --
 end
 
 ArmorBuff = class(BuffAbility)
@@ -110,71 +120,135 @@ function ArmorBuff:onUnitDelAbility()
 end 
 
 function onWorldInit()
-    for i = 1, 5 do
-    u = createUnit(0x100 + 25);
-    u:setForceByIndex(1)
-    u:setPosition(500, 1000 + i * 90)
-
-    u = createUnit(0x100 + 26);
-    u:setForceByIndex(2)
-    u:setPosition(690, 1000 + i * 90)
-    end
-    do return end
+    showDebug(false)
     math.randomseed(os.time())
-
+    
     c = getControlUnit()
     local x, y = c:getPosition()
     c:setPosition(x + 200, y)
     local x, y = c:getPosition()
-    c:setMaxHp(1000)
+    c:setMaxHp(100)
 
-    for i = 1, 3 do
-        if i == 3 then
+    game01()
+    do return true end
+    for i = 0, 0 do
+        if i == 12 then
             u = createUnit(0x100 + 3)
         else
-            u = createUnit(0x100 + math.random(0, 11))
+            u = createUnit(0x100 + i)
         end
-
+        
         u:setForceByIndex(3)
-        u:setMaxHp(200.0)
-        u:setBaseArmor(0, 29.0)
+        u:setMaxHp(1000.0)
+        u:setBaseArmor(0, 20.0)
         u:setPosition(500 + math.random(-200, 200), 500 + math.random(-200, 200))
 
-        setControlUnit(u)
-
-        --do return end
-    
-        --u:setExMoveSpeed(2, 0)
-    
         a = ArmorBuff:new("ArmorBreak", "ArmorBreak", 12, true, -0.0, -10.0)
         id = addTemplateAbility(a)
         a = DefPas:new(id)
         u:addPassiveAbility(a) 
 
-        a = ChangeHpBuff:new("+HP", "Heal", 5, true, 0.2, 0.002, 0.0, 0.0, 0.0)
-        id = addTemplateAbility(a)
-        a = EvadePas:new("Evade", 0.30, id)
-        u:addPassiveAbility(a)
+        
 
         a = ChangeHpPas:new("Heal", 0.2, 0.002, 0.0, 0.0, 0.0)
         u:addPassiveAbility(a)
 
-        a = VampirePas:new("Vampire", 0.5)
-        u:addPassiveAbility(a)
-
-        a = SpeedBuff:new("SpeedUp", "SpeedUp", 5, true, 2.0, 0.0, 2.0, 0.0)
-        id = addTemplateAbility(a)
-        a = AttackBuffMakerPas:new("Critical", 0.1, id, true, 10.0, 0.0)
-        u:addPassiveAbility(a)
-    
-        a = CurseBuff:new(13, true, 1, 4, 20 / 100)
-        id = addTemplateAbility(a)
-        a = DamageBackPas:new(1.0, id)
+        --a = CurseBuff:new(13, false, 1, 4, 20 / 100)
+        --id = addTemplateAbility(a)
+        a = DamageBackPas:new(0.2, 0)
         u:addPassiveAbility(a)
     
     end
+    setControlUnit(u)
+    u:setMaxHp(200)
+    u:setBaseArmor(0, 20.0)
+    u:setForceByIndex(5)
+    u:setPosition(1500, 800)
+    
+    a = SpeedBuff:new("SpeedUp", "SpeedUp", 150, true, 0.5, 0.0, 0.5, 0.0)
+    id = addTemplateAbility(a)
+    a = AttackBuffMakerPas:new("Critical", 0.1, id, true, 10.0, 0.0)
+    u:addPassiveAbility(a)
+    
+    a = VampirePas:new("Vampire", 0.5)
+    u:addPassiveAbility(a)
+    
+    a = ChangeHpBuff:new("+HP", "Heal", 5, true, 0.2, 0.002, 0.0, 0.0, 0.0)
+    id = addTemplateAbility(a)
+    a = EvadePas:new("Evade", 0.30, id)
+    u:addPassiveAbility(a)
+    
+    a = RebirthPas:new("re", 1,1)
+    u:addPassiveAbility(a)
+    
+    a = ChangeHpPas:new("Heal", 0.2, 0.01, 0.0, 0.0, 0.0)
+    u:addPassiveAbility(a)
+    
+    up = UnitPath:new()
+    up:addPoint(2000, 1020)
+    up:addPoint(1900, 900)
+    up:addPoint(2000, 1500)
+    --u:moveAlongPath(up)
+    return true
+end
+
+function spawnSoldier(id, force)
+    u = createUnit(0xff + id)
+    u:setForceByIndex(force)
+
+    if force == 1 then
+        u:setPosition(100 + math.random(-50, 50), 500 + math.random(-50, 50))
+        up = UnitPath:new()
+        up:addPoint(u:getPosition())
+        up:addPoint(1900 + math.random(-50, 50), 500 + math.random(-50, 50))
+    else
+        u:setPosition(1900 + math.random(-50, 50), 500 + math.random(-50, 50))
+        up = UnitPath:new()
+        up:addPoint(u:getPosition())
+        up:addPoint(100 + math.random(-50, 50), 500 + math.random(-50, 50))
+    end
+    
+    u:moveAlongPath(up, false)
+end
+
+
+WAVE = 60
+el = 0
+up1 = UnitPath:new()
+up1:addPoint(100, 500)
+up1:addPoint(1900, 500)
+up2 = UnitPath:new()
+up2:addPoint(1900, 500)
+up2:addPoint(100, 500)
+uc = 0
+function onWorldTick(dt)
+    game01_tick(dt)
+end
+
+function game01()
+    u = createUnit(0xff + 26)
+    u:setForceByIndex(1)
+    u:setPosition(100, 500)
+    u = createUnit(0xff + 27)
+    u:setForceByIndex(2)
+    u:setPosition(1900, 500)
     
 end
 
-function onWorldTick(dt)
+function game01_tick(dt)
+    el = el + dt
+    if uc < 5 then
+        if el > 2 then
+            uc = uc + 1
+            el = el - 2
+            spawnSoldier(22, 1)
+            spawnSoldier(23, 2)
+        end
+    else
+        if 	el > WAVE then
+            uc = 0
+            el = el - WAVE
+        end
+    end
 end
+

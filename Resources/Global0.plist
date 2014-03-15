@@ -7,7 +7,7 @@
             <key>Items/Malik/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{84,214},{22,24}}</string>
+                <string>{{232,2},{22,24}}</string>
                 <key>offset</key>
                 <string>{0,-13}</string>
                 <key>rotated</key>
@@ -20,11 +20,11 @@
             <key>UI/coin/nextwave_coin_0001.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,132},{38,40}}</string>
+                <string>{{90,38},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,-4}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,12},{38,40}}</string>
                 <key>sourceSize</key>
@@ -33,11 +33,11 @@
             <key>UI/coin/nextwave_coin_0002.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,174},{38,40}}</string>
+                <string>{{46,78},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,8},{38,40}}</string>
                 <key>sourceSize</key>
@@ -46,11 +46,11 @@
             <key>UI/coin/nextwave_coin_0003.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{38,2},{38,42}}</string>
+                <string>{{2,38},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,5},{38,42}}</string>
                 <key>sourceSize</key>
@@ -59,7 +59,7 @@
             <key>UI/coin/nextwave_coin_0004.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,216},{38,40}}</string>
+                <string>{{88,78},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,5}</string>
                 <key>rotated</key>
@@ -72,11 +72,11 @@
             <key>UI/coin/nextwave_coin_0005.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{42,130},{38,40}}</string>
+                <string>{{130,80},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,7}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,1},{38,40}}</string>
                 <key>sourceSize</key>
@@ -85,11 +85,11 @@
             <key>UI/coin/nextwave_coin_0006.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{38,46},{38,42}}</string>
+                <string>{{46,38},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,7}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{38,42}}</string>
                 <key>sourceSize</key>
@@ -98,11 +98,11 @@
             <key>UI/coin/nextwave_coin_0007.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{42,172},{38,40}}</string>
+                <string>{{172,116},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,8}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{38,40}}</string>
                 <key>sourceSize</key>
@@ -111,11 +111,11 @@
             <key>UI/coin/nextwave_coin_0008.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{44,214},{38,40}}</string>
+                <string>{{214,116},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,8}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{38,40}}</string>
                 <key>sourceSize</key>
@@ -124,7 +124,7 @@
             <key>UI/coin/nextwave_coin_0009.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{82,90},{38,40}}</string>
+                <string>{{2,156},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,7}</string>
                 <key>rotated</key>
@@ -137,11 +137,11 @@
             <key>UI/coin/nextwave_coin_0010.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{78,2},{38,42}}</string>
+                <string>{{132,40},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,5}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,2},{38,42}}</string>
                 <key>sourceSize</key>
@@ -150,11 +150,11 @@
             <key>UI/coin/nextwave_coin_0011.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{78,46},{38,42}}</string>
+                <string>{{176,76},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,3}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,4},{38,42}}</string>
                 <key>sourceSize</key>
@@ -163,7 +163,7 @@
             <key>UI/coin/nextwave_coin_0012.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{82,132},{38,40}}</string>
+                <string>{{2,198},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,1}</string>
                 <key>rotated</key>
@@ -176,7 +176,7 @@
             <key>UI/coin/nextwave_coin_0013.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{82,174},{38,40}}</string>
+                <string>{{44,118},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,-2}</string>
                 <key>rotated</key>
@@ -189,7 +189,7 @@
             <key>UI/coin/nextwave_coin_0014.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{38,90},{38,42}}</string>
+                <string>{{2,78},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,-6}</string>
                 <key>rotated</key>
@@ -202,7 +202,7 @@
             <key>UI/coin/nextwave_coin_0015.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{118,2},{1,1}}</string>
+                <string>{{232,28},{1,1}}</string>
                 <key>offset</key>
                 <string>{-19.5,27.5}</string>
                 <key>rotated</key>
@@ -219,7 +219,7 @@
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{128,16}}</string>
                 <key>sourceSize</key>
@@ -228,15 +228,197 @@
             <key>UI/healthbar/healthbar_fill.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{20,2},{128,16}}</string>
+                <string>{{2,20},{128,16}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{128,16}}</string>
+                <key>sourceSize</key>
+                <string>{128,16}</string>
+            </dict>
+            <key>UI/ph32.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{110,194},{32,32}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{32,32}}</string>
+                <key>sourceSize</key>
+                <string>{32,32}</string>
+            </dict>
+            <key>UI/pos.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{122,160},{32,32}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{32,32}}</string>
+                <key>sourceSize</key>
+                <string>{32,32}</string>
+            </dict>
+            <key>UI/status/AttackSpeed.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{230,32},{24,38}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{13,3},{24,38}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/CrystalArmor.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{220,76},{34,38}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{8,3},{34,38}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/HP.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{76,194},{34,32}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
                 <true/>
                 <key>sourceColorRect</key>
-                <string>{{0,0},{128,16}}</string>
+                <string>{{9,6},{34,32}}</string>
                 <key>sourceSize</key>
-                <string>{128,16}</string>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/HeavyArmor.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{42,158},{34,38}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{8,3},{34,38}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/MagicalAttack.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{42,194},{32,36}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{9,4},{32,36}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/MoveSpeed.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{132,2},{52,36}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,4},{52,36}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/PhysicalAttack.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{186,2},{28,44}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{12,0},{28,44}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/icon_0001.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{82,158},{34,38}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{8,3},{34,38}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/icon_0003.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,118},{40,36}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{5,4},{40,36}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/icon_0008.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{86,118},{38,40}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{6,2},{38,40}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/icon_0011.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{186,32},{42,42}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{5,1},{42,42}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/icon_0012.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{128,120},{38,38}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{7,3},{38,38}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
             </dict>
         </dict>
         <key>metadata</key>
@@ -246,9 +428,9 @@
             <key>realTextureFileName</key>
             <string>Global0.png</string>
             <key>size</key>
-            <string>{128,256}</string>
+            <string>{256,256}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:0cd53fc4f95f7041899b93a7c3ee5a20:2f24f65e5b9e3856fabeb5eff5c65921:193f2f8e6e002b54e84b1ea9f659575a$</string>
+            <string>$TexturePacker:SmartUpdate:62a58f6c99aba7e704a49edf4a921a3d:bf1f09cfabd36e434cbae4ffc3f08705:193f2f8e6e002b54e84b1ea9f659575a$</string>
             <key>textureFileName</key>
             <string>Global0.png</string>
         </dict>

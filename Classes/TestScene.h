@@ -41,8 +41,6 @@ public:
     CCArray* m_arr;
     CCSprite* m_sp;
     unsigned int m_cur;
-    int m_iSavePos;
-    int m_iSaveCount;
 
 };
 

@@ -57,6 +57,7 @@ public:
     
     virtual void setVisible(bool bVisible = true);
 
+    virtual void onUnitRevive();
     virtual void onUnitDying();
     virtual void onUnitTick(float dt);
 
@@ -88,6 +89,7 @@ public:
     M_SYNTHESIZE(float, m_fHalfOfHeight, HalfOfHeight);
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oFirePoint, FirePoint);
 
+    virtual void onUnitRevive();
     virtual void onUnitDying();
     virtual void onUnitTick(float dt);
 
