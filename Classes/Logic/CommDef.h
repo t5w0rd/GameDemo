@@ -155,7 +155,7 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
 #define M_CREATE_ABILITY(name, unit, ability, layer)                CCAbilityButtonAdvance::create(M_ABILITY_PATH(name), M_ABILITY_DOWN_PATH(name), M_ABILITY_DIS_PATH(name), M_ABILITY_PATH("white"), "mask/mask.png", (unit), (ability), (layer))
 #define M_CREATE_ABILITY_PAS(name, unit, ability, layer)            CCAbilityButtonAdvance::create(M_ABILITY_PAS_PATH(name), M_ABILITY_PAS_PATH(name), M_ABILITY_DIS_PATH(name), NULL, NULL, (unit), (ability), (layer))
 
-#define M_RAND_HIT(probability) (rand() % 100 < (int)((probability) * 100))
+#define M_RAND_HIT(probability) (rand() % 1000 < (int)((probability) * 1000))
 
 #define M_GET_TYPE_KEY \
     public: inline virtual int getTypeKey() const\
@@ -277,6 +277,16 @@ const char* GBKToUTF8(const char* pGBKStr);
         \
         return pInst; \
     }
+
+inline double randf()
+{
+    return rand() / (double)(RAND_MAX);
+}
+
+inline float randValue(float base, float randRange)
+{
+    return ((randf() - 0.5) * randRange + 1) * base;
+}
 
 inline int toInt(double fValue)
 {

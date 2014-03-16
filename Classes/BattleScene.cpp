@@ -11,6 +11,27 @@
 #include "LuaBindingForCC.h"
 
 
+class CHeroLevelUp : public CLevelUpdate
+{
+public:
+    int funcExp(int lvl)
+    {
+        return (lvl == 0) ? 0 : (lvl * lvl * 9 + lvl * 3 + 8);
+    }
+
+    virtual void updateExpRange(CLevelExp* pLevel)
+    {
+        int lvl = pLevel->getLevel();
+        pLevel->setBaseExp(lvl - 1);
+        pLevel->setMaxExp(lvl);
+    }
+
+    virtual void onLevelChange(CLevelExp* pLevel, int iChanged)
+    {
+        CCLOG("Level Up!!!");
+    }
+};
+
 class CMyAI : public CDefaultAI
 {
 public:
@@ -21,12 +42,12 @@ public:
     {
     }
 
-    virtual void onUnitTick(float dt)
+    virtual void onUnitTick(CUnit* pUnit, float dt)
     {
-        CDefaultAI::onUnitTick(dt);
+        CDefaultAI::onUnitTick(pUnit, dt);
         return;
 
-        CUnitDraw2D* d = DCAST(getNotifyUnit()->getDraw(), CUnitDraw2D*);
+        CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
         if (isFirstTick())
         {
             setFirstTick(false);
@@ -52,6 +73,8 @@ public:
 };
 
 // CBattleWorld
+const float CBattleWorld::CONST_MAX_REWARD_RANGE = 400;
+
 CBattleWorld::CBattleWorld()
 {
     lua_State* L = CWorld::getLuaHandle();
@@ -88,12 +111,24 @@ bool CBattleWorld::onInit()
     u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
     addUnit(u);
     setControlUnit(u->getId());
+    setHero(u);
     u->setForceByIndex(2);
+
     d = DCAST(u->getDraw(), CUnitDrawForCC*);
-    d->setPosition(CPoint(500, 1000));
-    
+    d->setPosition(CPoint(800, 600));
+
+    CForceResource* fr = new CForceResource(this, (FUNC_CALLFUNC_N)(&CBattleWorld::onChangeGold)); // 势力资源
+    u->setResource(fr);
+    u->setMaxLevel(20);
+
     onLuaWorldInit();
-    DCAST(getLayer(), CCBattleSceneLayer*)->updateTargetInfo(getControlUnit());
+
+    CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
+    l->initTargetInfo();
+    l->updateTargetInfo(getControlUnit());
+
+    l->initResourceInfo();
+    l->updateResourceInfo(fr->getGold());
 
     return true;
 }
@@ -149,8 +184,6 @@ bool CBattleWorld::onLuaWorldInit()
 
     assert(lua_gettop(L) == 0);
 
-    DCAST(getLayer(), CCBattleSceneLayer*)->initTargetInfoLayer();
-
     return true;
 }
 
@@ -180,6 +213,76 @@ CProjectile* CBattleWorld::copyProjectile( int id ) const
     return m_oULib.copyProjectile(id);
 }
 
+void CBattleWorld::onUnitDying(CUnit* pUnit)
+{
+    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
+
+    if (pUnit == getHero())
+    {
+
+    }
+    else if (pUnit->getRewardExp() && pUnit->isEnemyOf(getHero()) && M_RAND_HIT(1.0f))
+    {
+        // 掉落物品
+    }
+
+    // TODO: 金钱经验掉落
+    //CWorld* w = pUnit->getWorld();
+    CWorld::MAP_UNITS& units = getUnits();
+    vector<CUnit*> vec;
+    
+    M_MAP_FOREACH(units)
+    {
+        CUnit* uu = M_MAP_EACH;
+        CUnitDraw2D* dd = DCAST(uu->getDraw(), CUnitDraw2D*);
+        if (!uu->isDead() && uu->getMaxLevel() && uu->isEnemyOf(pUnit) && dd->getPosition().getDistance(d->getPosition()) < CBattleWorld::CONST_MAX_REWARD_RANGE)
+        {
+            vec.push_back(uu);
+        }
+        M_MAP_NEXT;
+    }
+
+    int n = vec.size();
+    if (n != 0)
+    {
+        int iG = toInt(randValue(pUnit->getRewardGold(), 0.2f) / n);
+        int iE = pUnit->getRewardExp() / n;
+        CForceResource* pRes;
+        M_VEC_FOREACH(vec)
+        {
+            CUnit* uu = M_VEC_EACH;
+            uu->addExp(iE);
+            pRes = uu->getResource();
+            if (pRes)
+            {
+                pRes->changeGold(+iG);
+                CUnitDrawForCC* dd = DCAST(uu->getDraw(), CUnitDrawForCC*);
+                char szTip[64];
+                sprintf(szTip, "+%d Gold", iG);
+                dd->addBattleTip(szTip, "fonts/Comic Book.ttf", 18, ccc3(255, 247, 53));
+            }
+            M_VEC_NEXT;
+        }
+    }
+
+    if (pUnit == getHero())
+    {
+        //setHero(NULL);
+    }
+}
+
+void CBattleWorld::onChangeGold( CMultiRefObject* obj )
+{
+    CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
+    CUnit* hero = getHero();
+    if (hero != NULL)
+    {
+        l->updateResourceInfo(hero->getResource()->getGold());
+    }
+}
+
+
+
 // CCBattleScene
 CCBattleScene::CCBattleScene()
     : m_pWorld(NULL)
@@ -188,10 +291,7 @@ CCBattleScene::CCBattleScene()
 
 CCBattleScene::~CCBattleScene()
 {
-    if (m_pWorld != NULL)
-    {
-        m_pWorld->release();
-    }
+    M_SAFE_RELEASE(m_pWorld);
 }
 
 bool CCBattleScene::init()
@@ -210,10 +310,11 @@ CCBattleSceneLayer::CCBattleSceneLayer()
     , m_iBaseLogId(CKeyGen::nextKey())
     , m_iCurLogId(m_iBaseLogId)
 {
-    CCLabelTTF* lbl = CCLabelTTF::create("TestSize", "Arial", 20);
+    CCLabelTTF* lbl = CCLabelTTF::create("TestSize", "fonts/Arial.ttf", 20);
     const CCSize& sz = lbl->getContentSize();
     CCSize winSz = CCDirector::sharedDirector()->getVisibleSize();
     m_iMaxLogs = (winSz.height - 20) / sz.height;
+    memset(&m_stTargetInfo, 0xFF, sizeof(m_stTargetInfo));
 }
 
 CCBattleSceneLayer::~CCBattleSceneLayer()
@@ -346,7 +447,7 @@ void CCBattleSceneLayer::log( const char* fmt, ... )
         lbl->removeFromParentAndCleanup(true);
     }
 
-    lbl = CCLabelTTF::create(sz, "Arial", 20);
+    lbl = CCLabelTTF::create(sz, "fonts/Arial.ttf", 20);
     lbl->setHorizontalAlignment(kCCTextAlignmentLeft);
     lbl->setColor(ccc3(79, 0, 255));
     l->addChild(lbl, 1, getCurLogId());
@@ -365,7 +466,7 @@ void CCBattleSceneLayer::log( const char* fmt, ... )
     }
 }
 
-void CCBattleSceneLayer::initTargetInfoLayer()
+void CCBattleSceneLayer::initTargetInfo()
 {
     // 初始化目标信息面板
     m_oTargetInfoLayer.initWithColor(ccc4(140, 70, 35, 255));
@@ -479,9 +580,6 @@ void CCBattleSceneLayer::initTargetInfoLayer()
     m_oTargetInfoLayer.addChild(&m_oTargetDef);
     m_oTargetDef.setPosition(ccp(fBaseX, 24));
     m_oTargetDef.setColor(ccc3(250, 190, 100));
-
-    CWorld* w = getWorld();
-    updateTargetInfo(w->getControlUnit());
 }
 
 void CCBattleSceneLayer::updateTargetInfo(int id)
@@ -519,8 +617,8 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
         m_stTargetInfo.dwLevel = dwLevel;
     }
 
-    uint32_t dwHp = pUnit->getHp();
-    uint32_t dwMaxHp = pUnit->getRealMaxHp();
+    uint32_t dwHp = toInt(pUnit->getHp());
+    uint32_t dwMaxHp = toInt(pUnit->getRealMaxHp());
     if ((dwHp != m_stTargetInfo.dwHp) || (dwMaxHp != m_stTargetInfo.dwMaxHp))
     {
         sprintf(szBuf, "%u/%u", dwHp, dwMaxHp);
@@ -550,9 +648,9 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
 
         fAtk = atkAct->getBaseAttackValue();
         fAtkRnd = atkAct->getAttackValueRandomRange() * 0.5;
-        dwAtk0 = fAtk * (1 - fAtkRnd);
-        dwAtk1 = fAtk * (1 + fAtkRnd);
-        dwAtkEx = fAtk * (atkAct->getExAttackValue().getMulriple() - 1.0) + atkAct->getExAttackValue().getAddend();
+        dwAtk0 = toInt(fAtk * (1 - fAtkRnd));
+        dwAtk1 = toInt(fAtk * (1 + fAtkRnd));
+        dwAtkEx = toInt(fAtk * (atkAct->getExAttackValue().getMulriple() - 1.0) + atkAct->getExAttackValue().getAddend());
 
         if ((dwAtk0 != m_stTargetInfo.dwAtk0) || (dwAtk1 != m_stTargetInfo.dwAtk1) || (dwAtkEx != m_stTargetInfo.dwAtkEx))
         {
@@ -591,7 +689,7 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
         m_pTargetDef->setDisplayFrame(fc->spriteFrameByName("UI/status/CrystalArmor.png"));
         break;
     }
-    uint32_t dwDef = pUnit->getRealArmorValue();
+    uint32_t dwDef = toInt(pUnit->getRealArmorValue());
     if (dwDef != m_stTargetInfo.dwDef)
     {
         sprintf(szBuf, "%u", dwDef);
@@ -599,4 +697,21 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
         m_stTargetInfo.dwDef = dwDef;
     }
 
+}
+
+void CCBattleSceneLayer::initResourceInfo()
+{
+    CCSize oSz = CCDirector::sharedDirector()->getVisibleSize();
+    m_oGold.initWithString("      ", "fonts/Comic Book.ttf", 24, CCSizeMake(100, 48), kCCTextAlignmentLeft);
+    //m_oGold.initWithString("55", "fonts/Abberancy.ttf", 24);
+    m_pCtrlLayer->addChild(&m_oGold);
+    m_oGold.setPosition(ccp(oSz.width - 50, oSz.height - 30));
+    m_oGold.setColor(ccYELLOW);
+}
+
+void CCBattleSceneLayer::updateResourceInfo( int gold )
+{
+    char sz[64];
+    sprintf(sz, "%d", gold);
+    m_oGold.setString(sz);
 }

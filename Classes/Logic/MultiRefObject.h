@@ -172,10 +172,7 @@ inline void CMultiRefMap<MULTIREF_ID_TYPE_PTR>::delAllObjects()
     M_MAP_FOREACH(*this)
     {
         MULTIREF_ID_TYPE_PTR pObj = M_MAP_EACH;
-        if (pObj != NULL)
-        {
-            pObj->release();
-        }
+        M_SAFE_RELEASE(pObj);
         M_MAP_NEXT;
     }
     this->clear();
@@ -203,16 +200,8 @@ inline void CMultiRefVec<MULTIREF_ID_TYPE_PTR>::setObject(int iIndex, MULTIREF_I
         return;
     }
     
-    if ((*this)[iIndex] != NULL)
-    {
-        (*this)[iIndex]->release();
-    }
-    
-    if (pObj)
-    {
-        pObj->retain();
-    }
-    
+    M_SAFE_RETAIN(pObj);
+    M_SAFE_RELEASE((*this)[iIndex]);
     (*this)[iIndex] = pObj;
 }
 
@@ -227,7 +216,6 @@ inline void CMultiRefVec<MULTIREF_ID_TYPE_PTR>::delObject(int iIndex)
     if ((*this)[iIndex] == NULL)
     {
         return;
-        
     }
     
     (*this)[iIndex]->release();
@@ -240,10 +228,7 @@ inline void CMultiRefVec<MULTIREF_ID_TYPE_PTR>::delAllObjects()
     M_VEC_FOREACH(*this)
     {
         MULTIREF_ID_TYPE_PTR pObj = M_VEC_EACH;
-        if (pObj != NULL)
-        {
-            pObj->release();
-        }
+        M_SAFE_RELEASE(pObj);
         
         M_MAP_NEXT;
     }

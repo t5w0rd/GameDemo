@@ -437,17 +437,18 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 6.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
         1.75,
-        CAttackValue(CAttackValue::kMagical, 30.0),
-        0.5);
+        CAttackValue(CAttackValue::kPhysical, 855.5f),
+        0.1261f);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(150.0f);
+    atk->setCastRange(20.0f);
+    atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
-    atk->setTemplateProjectile(kLightning);
+    //atk->setTemplateProjectile(kLightning);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kThor, u);
@@ -593,12 +594,14 @@ bool CUnitLibraryForCC::init()
         1.00,
         CAttackValue(CAttackValue::kPhysical, 21.0),
         0.19f);
-    atk->setCastMinRange(0.0f);
+    atk->setCastMinRange(-9.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
     u->addActiveAbility(atk);
+    u->setRewardGold(10);
+    u->setRewardExp(7);
     d->setBaseMoveSpeed(50.0f);
     addUnit(kSoldier, u);
 
@@ -627,11 +630,13 @@ bool CUnitLibraryForCC::init()
         1.00,
         CAttackValue(CAttackValue::kPhysical, 21.0),
         0.19f);
-    atk->setCastMinRange(0.0f);
+    atk->setCastMinRange(-7.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     u->addActiveAbility(atk);
+    u->setRewardGold(10);
+    u->setRewardExp(7);
     d->setBaseMoveSpeed(50.0f);
     addUnit(kTemplar, u);
 

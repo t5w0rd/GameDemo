@@ -9,6 +9,9 @@
 class CBattleWorld : public CWorldForCC
 {
 public:
+    static const float CONST_MAX_REWARD_RANGE;
+
+public:
     CBattleWorld();
     virtual ~CBattleWorld();
 
@@ -16,8 +19,13 @@ public:
     virtual void onTick(float dt);
     bool onLuaWorldInit();
     void onLuaWorldTick(float dt);
-
+    
     virtual CProjectile* copyProjectile(int id) const;
+
+    virtual void onUnitDying(CUnit* pUnit);
+    void onChangeGold(CMultiRefObject* obj);
+
+    M_SYNTHESIZE(CUnit*, m_pHero, Hero);
 
     CUnitLibraryForCC m_oULib;
 
@@ -80,8 +88,13 @@ public:
     CCLabelTTF m_oTargetDef;
     CCSprite* m_pTargetDef;
     TARGET_INFO m_stTargetInfo;
-    void initTargetInfoLayer();
+    void initTargetInfo();
     void updateTargetInfo(int id = 0);
+
+    // Gold
+    CCLabelTTF m_oGold;
+    void initResourceInfo();
+    void updateResourceInfo(int gold);
 
 };
 

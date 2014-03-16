@@ -710,7 +710,8 @@ float CAttackAct::getRealAttackValue(bool bUseRandomRange) const
         float fAttackValueRandomRange = m_oExAttackValueRandomRange.getValue(m_fAttackValueRandomRange);
         if (fAttackValueRandomRange > 0.001)
         {
-            return m_aoExAttackValue.getValue(m_oAttackValue.getValue()) * (1 - fAttackValueRandomRange * 0.5 + (rand() % (int)(fAttackValueRandomRange * 1000)) * 0.001);
+            //return m_aoExAttackValue.getValue(m_oAttackValue.getValue()) * (1 - fAttackValueRandomRange * 0.5 + (rand() % (int)(fAttackValueRandomRange * 1000)) * 0.001);
+            return randValue(m_aoExAttackValue.getValue(m_oAttackValue.getValue()), fAttackValueRandomRange);
         }
     }
     return m_aoExAttackValue.getValue(m_oAttackValue.getValue());

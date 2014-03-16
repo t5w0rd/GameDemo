@@ -1124,15 +1124,8 @@ void CProjectile::setAttackData(CAttackData* pAttackData)
         return;
     }
 
-    if (m_pAttackData != NULL)
-    {
-        m_pAttackData->release();
-    }
-    else
-    {
-        pAttackData->retain();
-    }
-
+    M_SAFE_RETAIN(pAttackData);
+    M_SAFE_RELEASE(m_pAttackData);
     m_pAttackData = pAttackData;
 }
 
@@ -1143,15 +1136,8 @@ void CProjectile::setSrcAbility(CAbility* pSrcAbility)
         return;
     }
 
-    if (m_pSrcAbility != NULL)
-    {
-        m_pSrcAbility->release();
-    }
-    else
-    {
-        pSrcAbility->retain();
-    }
-
+    M_SAFE_RETAIN(pSrcAbility);
+    M_SAFE_RELEASE(m_pSrcAbility);
     m_pSrcAbility = pSrcAbility;
 }
 

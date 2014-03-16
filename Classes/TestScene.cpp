@@ -52,11 +52,7 @@ CCScene* CCTestSceneLayer::scene()
 
 #define PLIST_NAME "Global0"
 #define PLIST_FILE_NAME ("Global0.plist")
-#define PLIST_SAVE_NAME ("Saved/Global0")
-
-const char* g_files[] = {
-    "Heroes0"
-};
+#define PLIST_SAVE_NAME ("Unpack/Global0")
 
 // on "init" you need to initialize your instance
 bool CCTestSceneLayer::init()
@@ -159,6 +155,22 @@ void CCTestSceneLayer::onLabelNext( CCObject* )
     updateSprite();
 }
 
+#if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
+void GetAllFileName(const char* path, vector<string>& rFileNames)
+{
+    char szFind[1024];
+    sprintf(szFind, "%s\\*.plist", path);
+    WIN32_FIND_DATAA wfd;
+    HANDLE h = FindFirstFileA(szFind, &wfd);
+    for (BOOL res = (h != INVALID_HANDLE_VALUE); res; res = FindNextFileA(h, &wfd))
+    {
+        string f(wfd.cFileName);
+        rFileNames.push_back(f.substr(0, f.rfind('.')));
+        CCLOG("Add %s to Saving List", rFileNames.back().c_str());
+    }
+}
+#endif
+
 void MakeDir(const char* name)
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
@@ -203,29 +215,31 @@ void CCTestSceneLayer::updateSprite()
 
 void CCTestSceneLayer::onLabelSave( CCObject* )
 {
-    int n = sizeof(g_files) / sizeof(g_files[0]);
-    for (int i = 0; i < n; ++i)
+    vector<string> files;
+    GetAllFileName(CCFileUtils::sharedFileUtils()->fullPathForFilename("Unpack").c_str(), files);
+    
+    for (auto it = files.begin(); it != files.end(); ++it)
     {
         char tmp[256];
         CCSpriteFrameCacheEx fc;
         fc.init();
 
-        sprintf(tmp, "%s.plist", g_files[i]);
+        sprintf(tmp, "Unpack/%s.plist", it->c_str());
         fc.addSpriteFramesWithFile(tmp);
 
         CCDictionary* d = fc.getSpriteFrames();
-        CCLOG("%s has %d Frame(s)", g_files[i], d->count());
+        CCLOG("%s has %d Frame(s)", it->c_str(), d->count());
         CCDictElement* e = NULL;
         int f = 1;
         CCDICT_FOREACH(d, e)
         {
             const char* name = e->getStrKey();
-            sprintf(tmp, "Saved/%s", g_files[i]);
+            sprintf(tmp, "Unpack/%s", it->c_str());
             CCLOG("%02d%% Saving(%d/%d) %s ..", f * 100 / d->count(), f, d->count(), name);
             saveToPng(name, tmp, &fc);
             ++f;
         }
-        CCLOG("%d Frame(s) Saved", d->count());
+        CCLOG("%d Frame(s) Unpacked", d->count());
     }
 
     m_cur = 0;

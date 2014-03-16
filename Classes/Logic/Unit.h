@@ -238,41 +238,39 @@ public:
     CUnitEventAdapter();
     virtual ~CUnitEventAdapter();
     
-    inline virtual void onUnitChangeLevel(int iChanged) {}
-    inline virtual void onUnitRevive() {}
-    inline virtual void onUnitDying() {}
-    inline virtual void onUnitDead() {}
-    inline virtual void onUnitChangeHp(float fChanged) {}
-    inline virtual void onUnitTick(float dt) {}
-    inline virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget) {}
-    inline virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource) { return true; }
-    inline virtual void onUnitDamaged(CAttackData* pAttack, CUnit* pSource) {}
-    inline virtual void onUnitDamagedDone(float fDamage, CUnit* pSource) {}
-    inline virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget) {}
-    inline virtual void onUnitProjectileEffect(const CPoint& p, CUnit* pTarget) {}
-    inline virtual void onUnitAddActiveAbility(CActiveAbility* pAbility) {}
-    inline virtual void onUnitDelActiveAbility(CActiveAbility* pAbility) {}
-    inline virtual void onUnitAddPassiveAbility(CPassiveAbility* pAbility) {}
-    inline virtual void onUnitDelPassiveAbility(CPassiveAbility* pAbility) {}
-    inline virtual void onUnitAddBuffAbility(CBuffAbility* pAbility) {}
-    inline virtual void onUnitDelBuffAbility(CBuffAbility* pAbility) {}
-    inline virtual void onUnitAbilityReady(CAbility* pAbility) {}
-    inline virtual void onUnitAddItem(int iIndex) {}
-    inline virtual void onUnitDelItem(int iIndex) {}
-    //inline virtual void onUnitChangeItemStackCount(CItem* pItem, int iChange) {}
-    
-    M_SYNTHESIZE(CUnit*, m_pNotifyUnit, NotifyUnit);
+    inline virtual void onUnitChangeLevel(CUnit* pUnit, int iChanged) {}
+    inline virtual void onUnitRevive(CUnit* pUnit) {}
+    inline virtual void onUnitDying(CUnit* pUnit) {}
+    inline virtual void onUnitDead(CUnit* pUnit) {}
+    inline virtual void onUnitChangeHp(CUnit* pUnit, float fChanged) {}
+    inline virtual void onUnitTick(CUnit* pUnit, float dt) {}
+    inline virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget) {}
+    inline virtual bool onUnitAttacked(CUnit* pUnit, CAttackData* pAttack, CUnit* pSource) { return true; }
+    inline virtual void onUnitDamaged(CUnit* pUnit, CAttackData* pAttack, CUnit* pSource) {}
+    inline virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource) {}
+    inline virtual void onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget) {}
+    inline virtual void onUnitProjectileEffect(CUnit* pUnit, const CPoint& p, CUnit* pTarget) {}
+    inline virtual void onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) {}
+    inline virtual void onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) {}
+    inline virtual void onUnitAddPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility) {}
+    inline virtual void onUnitDelPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility) {}
+    inline virtual void onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility) {}
+    inline virtual void onUnitDelBuffAbility(CUnit* pUnit, CBuffAbility* pAbility) {}
+    inline virtual void onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility) {}
+    inline virtual void onUnitAddItem(CUnit* pUnit, int iIndex) {}
+    inline virtual void onUnitDelItem(CUnit* pUnit, int iIndex) {}
+    //inline virtual void onUnitChangeItemStackCount(CUnit* pUnit, CItem* pItem, int iChange) {}
 };
 
 class CDefaultAI : public CUnitEventAdapter
 {
 public:
-    virtual void onUnitTick(float dt);
-    virtual void onUnitDamagedDone(float fDamage, CUnit* pSource);
+    virtual void onUnitTick(CUnit* pUnit, float dt);
+    virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource);
 };
 
 class CUnitDraw;
-
+class CForceResource;
 class CUnit : public CMultiRefObject, public CUnitForce, public CLevelExp
 {
 protected:
@@ -354,7 +352,9 @@ public:
     template <typename ADAPTER>
     void setAI(const ADAPTER&);
     void delAI();
-    
+
+    M_SYNTHESIZE_READONLY(CUnitEventAdapter*, m_pEventAdapter, EventAdapter);
+    void setEventAdapter(CUnitEventAdapter* var);
 
     ////////////////////////  trigger /////////////////    
     enum TRIGGER_FLAG_BIT
@@ -515,6 +515,11 @@ public:
     float getRealArmorValue() const;
     
     M_SYNTHESIZE_BOOL(Revivable);
+
+    M_SYNTHESIZE_READONLY(CForceResource*, m_pResource, Resource);
+    void setResource(CForceResource* var);
+    M_SYNTHESIZE(int, m_iRewardGold, RewardGold);
+    M_SYNTHESIZE(int, m_iRewardExp, RewardExp);
     
     ///////////////////////// item //////////////////////
     typedef CMultiRefVec<CItem*> VEC_ITEMS;
@@ -583,7 +588,7 @@ public:
     
 };
 
-class CWorld : public CMultiRefObject
+class CWorld : public CMultiRefObject, public CUnitEventAdapter
 {
 public:
     CWorld();
@@ -644,6 +649,19 @@ public:
 
 };
 
+class CForceResource : public CMultiRefObject, public CUnitForce
+{
+public:
+    CForceResource(CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc);
+
+    M_SYNTHESIZE(int, m_iGold, Gold);
+    void changeGold(int iChange);
+    virtual void onGoldChange(int iChange);
+
+    M_SYNTHESIZE(CMultiRefObject*, m_pSender, Sender);
+    M_SYNTHESIZE(FUNC_CALLFUNC_N, m_pCallback, Callback);
+};
+
 
 
 
@@ -667,7 +685,6 @@ inline void CUnit::setAI(const ADAPTER&)
     }
     
     m_pAI = pAI;
-    m_pAI->setNotifyUnit(this);
 }
 
 #endif  /* __UNIT_H__ */

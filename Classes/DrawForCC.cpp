@@ -52,10 +52,7 @@ CCUnitSprite::CCUnitSprite()
 
 CCUnitSprite::~CCUnitSprite()
 {
-    if (m_pShadow != NULL)
-    {
-        m_pShadow->release();
-    }
+    CC_SAFE_RELEASE(m_pShadow);
 }
 
 bool CCUnitSprite::initWithDraw(CUnitDrawForCC* pDraw)
@@ -137,10 +134,7 @@ CUnitDrawForCC::CUnitDrawForCC(const char* pName)
 
 CUnitDrawForCC::~CUnitDrawForCC()
 {
-    if (m_pSprite != NULL)
-    {
-        m_pSprite->release();
-    }
+    CC_SAFE_RELEASE(m_pSprite);
 }
 
 CMultiRefObject* CUnitDrawForCC::copy() const
@@ -515,10 +509,7 @@ CWorldForCC::CWorldForCC()
 
 CWorldForCC::~CWorldForCC()
 {
-    if (m_pLayer != NULL)
-    {
-        m_pLayer->release();
-    }
+    CC_SAFE_RELEASE(m_pLayer);
 }
 
 void CWorldForCC::onAddUnit(CUnit* pUnit)
@@ -583,20 +574,18 @@ void CWorldForCC::onDelProjectile(CProjectile* pProjectile)
 
 void CWorldForCC::setLayer(CCUnitLayer* pLayer)
 {
-    if (pLayer != m_pLayer)
+    if (pLayer == m_pLayer)
     {
-        if (m_pLayer != NULL)
-        {
-            m_pLayer->release();
-        }
-        else
-        {
-            pLayer->retain();
-            pLayer->setWorld(this);
-        }
-
-        m_pLayer = pLayer;
+        return;
     }
+
+    if (pLayer != NULL)
+    {
+        pLayer->retain();
+        pLayer->setWorld(this);
+    }
+    M_SAFE_RELEASE(m_pLayer);
+    m_pLayer = pLayer;
 }
 
 CCLayer* CWorldForCC::createLayer()
@@ -904,10 +893,7 @@ CProjectileForCC::CProjectileForCC(const char* pName)
 
 CProjectileForCC::~CProjectileForCC()
 {
-    if (m_pSprite != NULL)
-    {
-        m_pSprite->release();
-    }
+    CC_SAFE_RELEASE(m_pSprite);
 }
 
 CMultiRefObject* CProjectileForCC::copy() const

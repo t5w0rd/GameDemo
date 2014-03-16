@@ -2178,13 +2178,13 @@
             <key>Units/Templar/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{676,1508},{48,54}}</string>
+                <string>{{796,1424},{64,48}}</string>
                 <key>offset</key>
-                <string>{-2,-3}</string>
+                <string>{-12,-7}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
-                <string>{{46,18},{48,54}}</string>
+                <string>{{28,25},{64,48}}</string>
                 <key>sourceSize</key>
                 <string>{144,84}</string>
             </dict>
@@ -2204,13 +2204,13 @@
             <key>Units/Templar/default3.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{796,1424},{64,48}}</string>
+                <string>{{676,1508},{48,54}}</string>
                 <key>offset</key>
-                <string>{-12,-7}</string>
+                <string>{-2,-3}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
-                <string>{{28,25},{64,48}}</string>
+                <string>{{46,18},{48,54}}</string>
                 <key>sourceSize</key>
                 <string>{144,84}</string>
             </dict>
@@ -3186,7 +3186,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:b4ed516e674bf99bc41d2266c9371889:3abfd7038090f4b444a0adaff667b8ab:f37b9dd762c974965aacd987e7f3b816$</string>
+            <string>$TexturePacker:SmartUpdate:e03798afb9a920956984588df3ccb3a4:eb75e8b797c15ecf381176125ad451f8:f37b9dd762c974965aacd987e7f3b816$</string>
             <key>textureFileName</key>
             <string>Battle0.png</string>
         </dict>

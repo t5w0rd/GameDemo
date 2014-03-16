@@ -8,18 +8,12 @@
 // CCCallFuncNMultiObj
 CCCallFuncNMultiObj::~CCCallFuncNMultiObj()
 {
-    if (m_pData != NULL)
-    {
-        ((CMultiRefObject*)m_pData)->release();
-    }
+    M_SAFE_RELEASE((CMultiRefObject*)m_pData);
 }
 
 bool CCCallFuncNMultiObj::initWithTarget(CCObject* pSelectorTarget, SEL_CallFuncND selector, CCallFuncData* d)
 {
-    if (d != NULL)
-    {
-        d->retain();
-    }
+    M_SAFE_RETAIN(d);
 
     return CCCallFuncND::initWithTarget(pSelectorTarget, selector, d);
 }
@@ -46,10 +40,7 @@ CCObject* CCCallFuncNMultiObj::copyWithZone(CCZone *zone)
 // CCNotifyAnimate
 CCNotifyAnimate::~CCNotifyAnimate()
 {
-    if (m_pData != NULL)
-    {
-        m_pData->release();
-    }
+    M_SAFE_RELEASE(m_pData);
 }
 
 bool CCNotifyAnimate::initWithAnimation(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData)
@@ -63,10 +54,7 @@ bool CCNotifyAnimate::initWithAnimation(CCAnimation* pAnimation, int iNotifyFram
     m_pSelector = pSelector;
     m_pCallback = pCallback;
 
-    if (pData != NULL)
-    {
-        pData->retain();
-    }
+    M_SAFE_RETAIN(pData);
     m_pData = pData;
     
     return true;

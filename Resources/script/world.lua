@@ -27,7 +27,7 @@ end
 function CurseBuff:onUnitAddAbility()
     o = self:getOwner()
     self.hp = o:getHp()
-    o:addBattleTip("Curse", "Arial", 18, 255, 0, 255)
+    o:addBattleTip("Curse", "fonts/Arial.ttf", 18, 255, 0, 255)
 end
 
 function CurseBuff:onUnitInterval()
@@ -43,7 +43,7 @@ function CurseBuff:onUnitInterval()
         damage = 0
     end
     damage = damage + self.damage
-    o:addBattleTip(string.format("-%d", damage), "Arial", 18, 255, 0, 0)
+    o:addBattleTip(string.format("-%d", damage), "fonts/Arial.ttf", 18, 255, 0, 0)
     o:setHp(o:getHp() - damage)
 end
 
@@ -63,7 +63,7 @@ function DefPas:onUnitAttackTarget(ad, target)
     --log(string.format("%s attack %s", o:getName(), target:getName()))
     --ad:setAttackValue(ad:getAttackValue() * 10)
     ad:addAttackBuff(self.buff, self:getLevel())
-    --o:addBattleTip(math.ceil(ad:getAttackValue()), "Arial", 18, 0, 0, 0)
+    --o:addBattleTip(math.ceil(ad:getAttackValue()), "fonts/Arial.ttf", 18, 0, 0, 0)
 end
 
 DamageBackPas = class(PassiveAbility)
@@ -109,7 +109,7 @@ function ArmorBuff:onUnitAddAbility()
     self.change = self.exA * av + self.exB
     o:setExArmorValue(exA, exB + self.change)
     
-    o:addBattleTip(math.ceil(av), "Arial", 18, 0, 0, 0)
+    o:addBattleTip(math.ceil(av), "fonts/Arial.ttf", 18, 0, 0, 0)
 
 end
 
@@ -127,7 +127,7 @@ function onWorldInit()
     local x, y = c:getPosition()
     c:setPosition(x + 200, y)
     local x, y = c:getPosition()
-    c:setMaxHp(100)
+    c:setMaxHp(687)
 
     game01()
     do return true end

@@ -346,7 +346,6 @@ CCommandTarget::CCommandTarget(int iTargetUnit)
 
 // CUnitEventAdapter
 CUnitEventAdapter::CUnitEventAdapter()
-: m_pNotifyUnit(NULL)
 {
 }
 
@@ -355,28 +354,27 @@ CUnitEventAdapter::~CUnitEventAdapter()
 }
 
 // CDefaultAI
-void CDefaultAI::onUnitTick(float dt)
+void CDefaultAI::onUnitTick(CUnit* pUnit, float dt)
 {
-    CUnit* u = getNotifyUnit();
-    if (u->isDoingOr(CUnit::kObstinate | CUnit::kCasting))
+    if (pUnit->isDoingOr(CUnit::kObstinate | CUnit::kCasting))
     {
         // 如果正在固执做事或正在施法
         return;
     }
 
-    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
     if (d == NULL)
     {
         return;
     }
 
-    int atk = u->getAttackAbilityId();
+    int atk = pUnit->getAttackAbilityId();
     if (atk == 0)
     {
         return;
     }
 
-    CUnit* t = CUnitGroup::getNearestUnitInRange(u->getWorld(), d->getPosition(), d->getHostilityRange(), (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
+    CUnit* t = CUnitGroup::getNearestUnitInRange(pUnit->getWorld(), d->getPosition(), d->getHostilityRange(), (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(pUnit, CUnitForce*));
     if (t == NULL || t->isDead())
     {
         //d->stop();
@@ -387,32 +385,31 @@ void CDefaultAI::onUnitTick(float dt)
     d->cmdCastSpell(atk, false);
 }
 
-void CDefaultAI::onUnitDamagedDone(float fDamage, CUnit* pSource)
+void CDefaultAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
 {
-    CUnit* u = getNotifyUnit();
-    if (u->isDoingOr(CUnit::kObstinate))
+    if (pUnit->isDoingOr(CUnit::kObstinate))
     {
         return;
     }
     //CCLOG("%s", u->isDoingAnd(CUnit::kObstinate) ? "Obs" : "NOT");
-    if (pSource == NULL || pSource->isDead() || pSource->isAllyOf(u))
+    if (pSource == NULL || pSource->isDead() || pSource->isAllyOf(pUnit))
     {
         return;
     }
 
-    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
     if (d == NULL)
     {
         return;
     }
 
-    int atk = u->getAttackAbilityId();
+    int atk = pUnit->getAttackAbilityId();
     if (atk == 0)
     {
         return;
     }
 
-    CActiveAbility* atking = ((atk == d->getCastActiveAbilityId()) ? u->getActiveAbility(atk) : NULL);
+    CActiveAbility* atking = ((atk == d->getCastActiveAbilityId()) ? pUnit->getActiveAbility(atk) : NULL);
     CUnitDraw2D* td = NULL;
     if (atking != NULL && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
     {
@@ -420,8 +417,16 @@ void CDefaultAI::onUnitDamagedDone(float fDamage, CUnit* pSource)
         if (d->getCastTarget().getTargetUnit() != pSource->getId())
         {
             // 伤害源不是当前的攻击目标
-            CUnit* t = u->getUnit(d->getCastTarget().getTargetUnit());
-            td = DCAST(t->getDraw(), CUnitDraw2D*);
+            CUnit* t = pUnit->getUnit(d->getCastTarget().getTargetUnit());
+            if (t != NULL)
+            {
+                td = DCAST(t->getDraw(), CUnitDraw2D*);
+            }
+            else
+            {
+                d->setCastTarget(CCommandTarget());
+                t = NULL;
+            }
         }
     }
 
@@ -433,7 +438,7 @@ void CDefaultAI::onUnitDamagedDone(float fDamage, CUnit* pSource)
         return;
     }
 
-    if (u->isDoingOr(CUnit::kSpinning))
+    if (pUnit->isDoingOr(CUnit::kSpinning))
     {
         return;
     }
@@ -456,10 +461,14 @@ CUnit::CUnit(const char* pRootId)
 , m_fHp(1.001f)
 , m_fMaxHp(1.001f)
 , m_pAI(NULL)
+, m_pEventAdapter(NULL)
 , m_iAttackAbilityId(0)
 , m_iTriggerRefCount(0)
 , m_iSuspendRef(0)
 , m_bRevivable(false)
+, m_pResource(NULL)
+, m_iRewardGold(0)
+, m_iRewardExp(0)
 , m_dwDoingFlags(0)
 , m_iPriority(0)
 , m_pDraw(NULL)
@@ -471,7 +480,9 @@ CUnit::CUnit(const char* pRootId)
 CUnit::~CUnit()
 {
     delAI();
+    //setEventAdapter(NULL);
     setDraw(NULL);
+    setResource(NULL);
 }
 
 CMultiRefObject* CUnit::copy() const
@@ -514,6 +525,8 @@ void CUnit::copyData( const CUnit* from )
     m_oBaseArmor = from->m_oBaseArmor;
     m_oExArmorValue = from->m_oExArmorValue;
     m_bRevivable = from->m_bRevivable;
+    m_iRewardGold = from->m_iRewardGold;
+    m_iRewardExp = from->m_iRewardExp;
 }
 
 
@@ -613,9 +626,9 @@ float CUnit::getRealMaxHp() const
 
 void CUnit::onChangeLevel(int iChanged)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitChangeLevel(iChanged);
+        m_pAI->onUnitChangeLevel(this, iChanged);
     }
 }
 
@@ -629,9 +642,9 @@ void CUnit::onRevive()
 
     triggerOnRevive();
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitRevive();
+        m_pAI->onUnitRevive(this);
     }
 }
 
@@ -645,9 +658,14 @@ void CUnit::onDying()
 
     triggerOnDying();
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDying();
+        m_pAI->onUnitDying(this);
+    }
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitDying(this);
     }
 }
 
@@ -655,9 +673,9 @@ void CUnit::onDead()
 {
     triggerOnDead();
 
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDead();
+        m_pAI->onUnitDead(this);
     }
 }
 
@@ -665,9 +683,9 @@ void CUnit::onChangeHp(float fChanged)
 {
     triggerOnChangeHp(fChanged);
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitChangeHp(fChanged);
+        m_pAI->onUnitChangeHp(this, fChanged);
     }
 }
 
@@ -692,7 +710,7 @@ void CUnit::onTick(float dt)
     
     if (m_pAI && !isDead())
     {
-        m_pAI->onUnitTick(dt);
+        m_pAI->onUnitTick(this, dt);
     }
 }
 
@@ -703,9 +721,9 @@ void CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTrig
         triggerOnAttackTarget(pAttack, pTarget);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAttackTarget(pAttack, pTarget);
+        m_pAI->onUnitAttackTarget(this, pAttack, pTarget);
     }
 }
 
@@ -717,9 +735,9 @@ bool CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerM
         res = triggerOnAttacked(pAttack, pSource);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAttacked(pAttack, pSource);
+        m_pAI->onUnitAttacked(this, pAttack, pSource);
     }
     
     return res;
@@ -737,9 +755,9 @@ void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMa
         triggerOnDamagedInner(pAttack, pSource);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDamaged(pAttack, pSource);
+        m_pAI->onUnitDamaged(this, pAttack, pSource);
     }
 }
 
@@ -753,9 +771,9 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
     LOG("%s受到%d点伤害", getName(), toInt(fDamage));
     LOG("%s HP: %d/%d\n", getName(), toInt(getHp()), toInt(getRealMaxHp()));
 
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDamagedDone(fDamage, pSource);
+        m_pAI->onUnitDamagedDone(this, fDamage, pSource);
     }
 
 #ifdef DEBUG_FOR_CC
@@ -779,9 +797,9 @@ void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTrigger
         triggerOnDamageTargetDone(fDamage, pTarget);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDamageTargetDone(fDamage, pTarget);
+        m_pAI->onUnitDamageTargetDone(this, fDamage, pTarget);
     }
 }
 
@@ -789,57 +807,57 @@ void CUnit::onProjectileEffect(const CPoint& p, CUnit* pTarget)
 {
     triggerOnProjectileEffect(p, pTarget);
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitProjectileEffect(p, pTarget);
+        m_pAI->onUnitProjectileEffect(this, p, pTarget);
     }
 }
 
 void CUnit::onAddActiveAbility(CActiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddActiveAbility(pAbility);
+        m_pAI->onUnitAddActiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onDelActiveAbility(CActiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelActiveAbility(pAbility);
+        m_pAI->onUnitDelActiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onAddPassiveAbility(CPassiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddPassiveAbility(pAbility);
+        m_pAI->onUnitAddPassiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onDelPassiveAbility(CPassiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelPassiveAbility(pAbility);
+        m_pAI->onUnitDelPassiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onAddBuffAbility(CBuffAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddBuffAbility(pAbility);
+        m_pAI->onUnitAddBuffAbility(this, pAbility);
     }
 }
 
 void CUnit::onDelBuffAbility(CBuffAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelBuffAbility(pAbility);
+        m_pAI->onUnitDelBuffAbility(this, pAbility);
     }
 }
 
@@ -847,25 +865,25 @@ void CUnit::onAbilityReady(CAbility* pAbility)
 {
     pAbility->onUnitAbilityReady();
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAbilityReady(pAbility);
+        m_pAI->onUnitAbilityReady(this, pAbility);
     }
 }
 
 void CUnit::onAddItem(int iIndex)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddItem(iIndex);
+        m_pAI->onUnitAddItem(this, iIndex);
     }
 }
 
 void CUnit::onDelItem(int iIndex)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelItem(iIndex);
+        m_pAI->onUnitDelItem(this, iIndex);
     }
 }
 
@@ -876,6 +894,16 @@ void CUnit::delAI()
         delete m_pAI;
         m_pAI = NULL;
     }
+}
+
+void CUnit::setEventAdapter( CUnitEventAdapter* pEventAdapter )
+{
+    if (pEventAdapter == m_pEventAdapter)
+    {
+        return;
+    }
+
+    m_pEventAdapter = pEventAdapter;
 }
 
 void CUnit::attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
@@ -1572,6 +1600,13 @@ float CUnit::getRealArmorValue() const
     return m_oExArmorValue.getValue(m_oBaseArmor.getValue());
 }
 
+void CUnit::setResource( CForceResource* var )
+{
+    M_SAFE_RETAIN(var);
+    M_SAFE_RELEASE(m_pResource);
+    m_pResource = var;
+}
+
 void CUnit::setPackageSize(int iSize)
 {
     m_vecItems.resize(iSize);
@@ -1731,20 +1766,18 @@ bool CUnit::tryDoing( int priority )
 
 void CUnit::setDraw(CUnitDraw* pDraw)
 {
-    if (pDraw != m_pDraw)
+    if (pDraw == m_pDraw)
     {
-        if (m_pDraw != NULL)
-        {
-            m_pDraw->release();
-        }
-        else
-        {
-            pDraw->retain();
-            pDraw->setUnit(this);
-        }
-
-        m_pDraw = pDraw;
+        return;
     }
+    
+    if (pDraw != NULL)
+    {
+        pDraw->retain();
+        pDraw->setUnit(this);
+    }
+    M_SAFE_RELEASE(m_pDraw);
+    m_pDraw = pDraw;
 }
 
 void CUnit::runAction(CAction* pAction)
@@ -1759,13 +1792,26 @@ CAction* CUnit::getActionByTag(int iTag)
 
 // CWorld
 CWorld::CWorld()
-: m_iControlUnit(0)
+: m_iScriptHandler(0)
+, m_iControlUnit(0)
 {
     setDbgClassName("CWorld");
 }
 
 CWorld::~CWorld()
 {
+}
+
+lua_State* CWorld::getLuaHandle()
+{
+    static lua_State* L = NULL;
+    if (L == NULL)
+    {
+        L = luaL_newstate();
+        luaL_openlibs(L);
+    }
+
+    return L;
 }
 
 bool CWorld::onInit()
@@ -1803,6 +1849,7 @@ void CWorld::addUnit(CUnit* pUnit)
     onAddUnit(pUnit);
 
     pUnit->setWorld(this);
+    pUnit->setEventAdapter(this);
     m_mapUnits.addObject(pUnit);
 }
 
@@ -1827,6 +1874,10 @@ void CWorld::delUnit(int id, bool bRevivable /*= false*/)
     {
         // 如果不可以复活，该单位将不再拥有世界，清除该单位的所有CD中的技能
         pUnit->setWorld(NULL);
+        if (pUnit->getEventAdapter() == this)
+        {
+            pUnit->setEventAdapter(NULL);
+        }
         cleanAbilitysCD(pUnit);
     }
 
@@ -2063,15 +2114,26 @@ void CWorld::delProjectile(int id)
     m_mapProjectiles.erase(it);
 }
 
-lua_State* CWorld::getLuaHandle()
+CForceResource::CForceResource( CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc )
 {
-    static lua_State* L = NULL;
-    if (L == NULL)
-    {
-        L = luaL_newstate();
-        luaL_openlibs(L);
-    }
-
-    return L;
+    setGold(0);
+    m_pSender = pSender;
+    m_pCallback = pFunc;
 }
 
+void CForceResource::changeGold( int iChange )
+{
+    m_iGold += iChange;
+    if (iChange)
+    {
+        onGoldChange(iChange);
+    }
+}
+
+void CForceResource::onGoldChange( int iChange )
+{
+    if (m_pSender && m_pCallback)
+    {
+        (m_pSender->*m_pCallback)(DCAST(this, CMultiRefObject*));
+    }
+}
