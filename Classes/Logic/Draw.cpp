@@ -185,6 +185,10 @@ void CUnitDraw2D::onUnitTick(float dt)
 {
     // 为了沿路径移动以及校正施法位置
     CUnit* u = getUnit();
+    if (u->isSuspended())
+    {
+        return;
+    }
     
     // 路径逻辑
     if (m_pMovePath != NULL)
@@ -595,10 +599,14 @@ int CUnitDraw2D::cmdCastSpell(int iActiveAbilityId, bool bObstinate)
     }
 
     // 施法
-    getCastTarget().setTargetPoint(td->getPosition());
-    bool bNeedFlipX = getCastTarget().getTargetType() != CCommandTarget::kNoTarget &&
-        isFlipX() != (getCastTarget().getTargetPoint().x < getPosition().x);
-
+    bool bNeedFlipX = false;
+    if (td != NULL)
+    {
+        getCastTarget().setTargetPoint(td->getPosition());
+        bNeedFlipX = getCastTarget().getTargetType() != CCommandTarget::kNoTarget &&
+            isFlipX() != (getCastTarget().getTargetPoint().x < getPosition().x);
+    }
+    
     if (bSameAbility && isDoingAction(getCastActionId()) && bNeedFlipX == false)
     {
         // 如果是同一个技能正在释放，并且面向同一个方向，则不用重新施法
@@ -1102,9 +1110,9 @@ void CProjectile::onEffect(CMultiRefObject* pProjectile, CCallFuncData* pData)
     
     if (getSrcAbility() != NULL)
     {
-        getSrcAbility()->onUnitAbilityProjectileEffect(getPosition(), t);
+        getSrcAbility()->onUnitAbilityProjectileEffect(this, t);
     }
-    s->onProjectileEffect(getPosition(), t);
+    s->onProjectileEffect(this, t);
 }
 
 void CProjectile::onDyingDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
@@ -1183,7 +1191,7 @@ void CProjectile::fireLink(int iFromUnit, int iToUnit)
     CWorld* w = getWorld();
     assert(w != NULL);
 
-    setFromUnit(iFromUnit);;
+    setFromUnit(iFromUnit);
     setToUnit(iToUnit);
     
     CUnit* u = w->getUnit(iFromUnit);
@@ -1260,6 +1268,32 @@ void CProjectile::fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint,
 
 void CProjectile::fire()
 {
+    // DemoTemp
+    char sz[1024];
+    SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
+    if (strcmp(getName(), "ArcaneRay") == 0)
+    {
+        ae->playEffect("sounds/Effect/ArcaneRay.mp3");
+    }
+    else if (strcmp(getName(), "TeslaRay") == 0)
+    {
+        sprintf(sz, "sounds/Effect/TeslaRay%02d.mp3", rand() % 2);
+        ae->playEffect(sz);
+    }
+    else if (strcmp(getName(), "MageBolt") == 0)
+    {
+        ae->playEffect("sounds/Effect/MageShot.mp3");
+    }
+    else if (strcmp(getName(), "ArcherArrow") == 0)
+    {
+        sprintf(sz, "sounds/Effect/ArrowRelease%02d.mp3", rand() % 2);
+        ae->playEffect(sz);
+    }
+    else if (strcmp(getName(), "ThorHammer") == 0)
+    {
+        sprintf(sz, "sounds/Effect/HammerThrow.mp3", rand() % 2);
+    }
+
     CWorld* w = getWorld();
 
     switch (getFireType())

@@ -260,6 +260,24 @@ int g_showDebug( lua_State* L )
     return 0;
 }
 
+int g_playEffect(lua_State* L)
+{
+    const char* eff = lua_tostring(L, 1);
+
+    SimpleAudioEngine::sharedEngine()->playEffect(eff);
+
+    return 0;
+}
+
+int g_isEffectPlaying(lua_State* L)
+{
+    const char* eff = lua_tostring(L, 1);
+
+    lua_pushboolean(L, SimpleAudioEngine::sharedEngine()->isEffectPlaying(eff));
+
+    return 1;
+}
+
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -270,6 +288,8 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "loadAnimation", g_loadAnimation);
     lua_register(L, "createUnit", g_createUnit);
     lua_register(L, "showDebug", g_showDebug);
+    lua_register(L, "playEffect", g_playEffect);
+    lua_register(L, "isEffectPlaying", g_isEffectPlaying);
     
     // TODO: reg global class members
     lua_getglobal(L, "Unit");

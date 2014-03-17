@@ -162,4 +162,19 @@ protected:
     bool m_bFireFrom;
 };
 
+class CCShake : public CCSequence
+{
+public:
+    CCShake();
+    virtual bool init(float fDuration, int iTimes, float fRange);
+    M_CREATE_FUNC_PARAM(CCShake, (float fDuration, int iTimes, float fRange), fDuration, iTimes, fRange);
+
+    virtual void startWithTarget(CCNode* pTarget);
+    virtual void stop(void);
+
+
+public:
+    CCPoint m_oLoc;
+};
+
 #endif  /* __ACTIONFORCC_H__ */

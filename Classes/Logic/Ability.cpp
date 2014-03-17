@@ -12,6 +12,7 @@
 #include "Application.h"
 #include "Draw.h"
 #include "LuaBinding.h"
+#include "GameControl.h"
 
 
 // CAbility
@@ -108,6 +109,13 @@ void CAbility::fireProjectile(int iProjectile, const CCommandTarget& rTarget)
         p->setToUnit(t->getId());
 
         p->fire();
+
+        // DemoTemp
+        static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
+        if (strcmp(p->getName(), "ThorHammer") == 0)
+        {
+            ae->playEffect("sounds/Effect/HammerThrow.mp3");
+        }
     }
 }
 
@@ -365,7 +373,7 @@ void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     lua_pop(L, 1);  // pop 'a'
 }
 
-void CAbility::onUnitProjectileEffect(const CPoint& p, CUnit* pTarget)
+void CAbility::onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     if (getScriptHandler() == 0)
     {
@@ -377,6 +385,7 @@ void CAbility::onUnitProjectileEffect(const CPoint& p, CUnit* pTarget)
 
     lua_getfield(L, a, "onUnitProjectileEffect");
     lua_pushvalue(L, a);
+    const CPoint& p = pProjectile->getPosition();
     lua_pushnumber(L, p.x);
     lua_pushnumber(L, p.y);
     luaL_pushobjptr(L, "Unit", pTarget);
@@ -385,9 +394,8 @@ void CAbility::onUnitProjectileEffect(const CPoint& p, CUnit* pTarget)
     lua_pop(L, 1);  // pop 'a'
 }
 
-void CAbility::onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget)
+void CAbility::onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
-
 }
 
 
@@ -554,6 +562,7 @@ void CActiveAbility::effect()
     switch (getCastTargetType())
     {
     case CCommandTarget::kNoTarget:
+        onUnitAbilityProjectileEffect(NULL, NULL);
         break;
 
     case CCommandTarget::kUnitTarget:
@@ -571,7 +580,7 @@ void CActiveAbility::effect()
             }
             else
             {
-                onUnitAbilityProjectileEffect(d->getCastTarget().getTargetPoint(), t);
+                onUnitAbilityProjectileEffect(NULL, t);
             }
         }
         break;
@@ -618,7 +627,6 @@ CBuffAbility::CBuffAbility(const char* pRootId, const char* pName, float fDurati
 CMultiRefObject* CBuffAbility::copy() const
 {
     CBuffAbility* ret = new CBuffAbility(getRootId(), getName(), m_fDuration, m_bStackable);
-    //ret->setScriptHandler(getScriptHandler());
     ret->setSrcUnit(getSrcUnit());
     ret->setLevel(getLevel());
     ret->setInterval(getInterval());
@@ -683,7 +691,7 @@ void CAttackAct::onUnitCastAbility()
 {
 }
 
-void CAttackAct::onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget)
+void CAttackAct::onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     CUnit* o = getOwner();
 
@@ -862,9 +870,18 @@ void CBuffMakerAct::onUnitCastAbility()
 {
 }
 
-void CBuffMakerAct::onUnitAbilityProjectileEffect( const CPoint& p, CUnit* pTarget )
+void CBuffMakerAct::onUnitAbilityProjectileEffect( CProjectile* pProjectile, CUnit* pTarget )
 {
     CUnit* o = getOwner();
+    
+    // DemoTemp
+    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
+    if (strcmp(getName(), "HammerThrow") == 0)
+    {
+    }
+    else if (strcmp(getName(), "ThunderCap") == 0)
+    {
+    }
 
     switch (getCastTargetType())
     {
@@ -908,7 +925,9 @@ void CBuffMakerAct::onUnitAbilityProjectileEffect( const CPoint& p, CUnit* pTarg
 
         CUnitDraw2D* ud  = DCAST(u->getDraw(), CUnitDraw2D*);
         assert(ud != NULL);
-        if (ud->getPosition().getDistance(od->getPosition()) > getCastTargetRadius())
+        
+        const CPoint& p = ((pProjectile != NULL) ? pProjectile->getPosition() : od->getPosition());
+        if (ud->getPosition().getDistance(p) > getCastTargetRadius())
         {
             continue;
         }
@@ -916,10 +935,15 @@ void CBuffMakerAct::onUnitAbilityProjectileEffect( const CPoint& p, CUnit* pTarg
         if (pBuff == NULL)
         {
             w->copyAbility(getTemplateBuff())->dcast(pBuff);
+            pBuff->setSrcUnit(o->getId());
+            pBuff->setLevel(getLevel());
         }
         else
         {
             pBuff->copy()->dcast(pBuff);
+            // !!! copy is not work well
+            pBuff->setSrcUnit(o->getId());
+            pBuff->setLevel(getLevel());
         }
 
         u->addBuffAbility(pBuff);
@@ -933,6 +957,7 @@ CAuraPas::CAuraPas(const char* pRootId, const char* pName, float fInterval, int 
 , m_iTemplateBuff(iTemplateBuff)
 , m_fRange(fRange)
 , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
+, m_fEffectCD(0.0f)
 {
     setDbgClassName("CAuraPas");
     setInterval(fInterval);
@@ -952,9 +977,29 @@ void CAuraPas::onUnitInterval()
     CUnit* o = getOwner();
     CWorld* w = o->getWorld();
     CBuffAbility* pBuff = NULL;
-    
     CUnitDraw2D* od = DCAST(o->getDraw(), CUnitDraw2D*);
     assert(od != NULL);
+    
+    // DemoTemp
+    m_fEffectCD += getInterval();
+    if (m_fEffectCD > 2.0f)
+    {
+        m_fEffectCD = 0.0f;
+        CCSprite* sp = CCSprite::createWithSpriteFrameName("UI/cmd/Target2.png");
+        CCNode* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+        sn->addChild(sp);
+        sp->setColor(ccc3(236, 156, 85));
+        sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
+        sp->runAction(CCSequence::create(CCSpawn::create(CCScaleTo::create(1.0f, 3.5f, 3.5f), CCFadeOut::create(1.0f), NULL), CCRemoveSelf::create(true), NULL));
+        
+        sp = CCSprite::createWithSpriteFrameName("UI/cmd/Target.png");
+        sn->addChild(sp);
+        sp->setColor(ccc3(236, 156, 85));
+        sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
+        sp->runAction(CCSequence::create(CCDelayTime::create(0.5f), CCSpawn::create(CCScaleTo::create(1.0f, 3.5f, 3.5f), CCFadeOut::create(1.0f), NULL), CCRemoveSelf::create(true), NULL));
+    }
+    
+    
     CWorld::MAP_UNITS& mapUnits = w->getUnits();
     M_MAP_FOREACH(mapUnits)
     {
@@ -1171,7 +1216,27 @@ void CStunBuff::onUnitAddAbility()
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
+        ccd->addBattleTip(sz, "fonts/Comic Book.ttf", 18, ccc3(250, 104, 16));
+
+        M_DEF_GC(gc);
+
+        CCNode* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+        CCSprite* sp = DCAST(sn->getChildByTag(4242), CCSprite*);
+        if (sp == NULL)
+        {
+            sp = CCSprite::createWithSpriteFrameName("Effects/BigStun/00.png");
+            sn->addChild(sp, M_BASE_Z - sn->getPosition().y, 4242);
+        }
+        else
+        {
+            sp->stopAllActions();
+        }
+
+        CCAnimation* pAni = gc->getAnimation("Effects/BigStun");
+        pAni->setLoops(2);
+        
+        sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
+        sp->runAction(CCSequence::create(CCAnimate::create(pAni), CCRemoveSelf::create(), NULL));
     }
 #endif
 }
@@ -1184,6 +1249,14 @@ void CStunBuff::onUnitDelAbility()
     if (!o->isSuspended())
     {
         LOG("%s²»ÔÚ%s", o->getName(), getName());
+
+        CCNode* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+        CCSprite* sp = DCAST(sn->getChildByTag(4242), CCSprite*);
+        if (sp != NULL)
+        {
+            sp->stopAllActions();
+            sp->removeFromParentAndCleanup(true);
+        }
     }
 }
 

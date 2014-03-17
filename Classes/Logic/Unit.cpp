@@ -356,7 +356,7 @@ CUnitEventAdapter::~CUnitEventAdapter()
 // CDefaultAI
 void CDefaultAI::onUnitTick(CUnit* pUnit, float dt)
 {
-    if (pUnit->isDoingOr(CUnit::kObstinate | CUnit::kCasting))
+    if (pUnit->isSuspended() || pUnit->isDoingOr(CUnit::kObstinate | CUnit::kCasting))
     {
         // 如果正在固执做事或正在施法
         return;
@@ -387,7 +387,7 @@ void CDefaultAI::onUnitTick(CUnit* pUnit, float dt)
 
 void CDefaultAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
 {
-    if (pUnit->isDoingOr(CUnit::kObstinate))
+    if (pUnit->isSuspended() || pUnit->isDoingOr(CUnit::kObstinate))
     {
         return;
     }
@@ -725,6 +725,11 @@ void CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTrig
     {
         m_pAI->onUnitAttackTarget(this, pAttack, pTarget);
     }
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitAttackTarget(this, pAttack, pTarget);
+    }
 }
 
 bool CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
@@ -803,13 +808,18 @@ void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTrigger
     }
 }
 
-void CUnit::onProjectileEffect(const CPoint& p, CUnit* pTarget)
+void CUnit::onProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
-    triggerOnProjectileEffect(p, pTarget);
+    triggerOnProjectileEffect(pProjectile, pTarget);
     
     if (m_pAI != NULL)
     {
-        m_pAI->onUnitProjectileEffect(this, p, pTarget);
+        m_pAI->onUnitProjectileEffect(this, pProjectile, pTarget);
+    }
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitProjectileEffect(this, pProjectile, pTarget);
     }
 }
 
@@ -1552,13 +1562,13 @@ void CUnit::triggerOnDamageTargetDone(float fDamage, CUnit* pTarget)
     endTrigger();
 }
 
-void CUnit::triggerOnProjectileEffect(const CPoint& p, CUnit* pTarget)
+void CUnit::triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     beginTrigger();
     M_MAP_FOREACH(m_mapOnProjectileEffectTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAbility->onUnitProjectileEffect(p, pTarget);
+        pAbility->onUnitProjectileEffect(pProjectile, pTarget);
         M_MAP_NEXT;
     }
     endTrigger();

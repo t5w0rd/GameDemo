@@ -38,11 +38,11 @@ public:
     M_SYNTHESIZE(int, m_iBaseExp, BaseExp);
     M_SYNTHESIZE(int, m_iMaxExp, MaxExp);
     M_SYNTHESIZE_READONLY(CLevelUpdate*, m_pUpdate, Update);
-
+    
     void setLevel(int iLvl);
     void setMaxLevel(int iMaxLvl);
     void setLevelUpdate(CLevelUpdate* pUpdate);
-    
+    bool canIncreaseExp() const;
 };
 
 

@@ -98,3 +98,155 @@ void CCProgressBar::setFillColor(const ccColor3B& roColor)
     m_pPt->setColor(roColor);
 }
 
+// CCTouchSprite
+CCTouchSprite::CCTouchSprite()
+: m_state(kStateUngrabbed)
+{
+}
+
+CCTouchSprite* CCTouchSprite::createWithSpriteFrameName(const char *pszSpriteFrameName)
+{
+    CCSpriteFrame *pFrame = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(pszSpriteFrameName);
+    
+#if COCOS2D_DEBUG > 0
+    char msg[256] = {0};
+    sprintf(msg, "Invalid spriteFrameName: %s", pszSpriteFrameName);
+    CCAssert(pFrame != NULL, msg);
+#endif
+    
+    return createWithSpriteFrame(pFrame);
+}
+
+CCObject* CCTouchSprite::copyWithZone(CCZone *pZone)
+{
+    this->retain();
+    return this;
+}
+
+void CCTouchSprite::onEnter()
+{
+    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
+    CCSprite::onEnter();
+}
+
+void CCTouchSprite::onExit()
+{
+    CCDirector::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
+    CCSprite::onExit();
+}    
+
+bool CCTouchSprite::ccTouchBegan(CCTouch* touch, CCEvent* event)
+{
+    if (m_state != kStateUngrabbed || !containsTouchLocation(touch))
+    {
+        return false;
+    }
+    
+    //m_state = kStateGrabbed;
+    
+    return true;
+}
+
+void CCTouchSprite::ccTouchMoved(CCTouch* touch, CCEvent* event)
+{
+    // If it weren't for the TouchDispatcher, you would need to keep a reference
+    // to the touch from touchBegan and check that the current touch is the same
+    // as that one.
+    // Actually, it would be even more complicated since in the Cocos dispatcher
+    // you get CCSets instead of 1 UITouch, so you'd need to loop through the set
+    // in each touchXXX method.
+    
+    CCAssert(m_state == kStateGrabbed, "CCTouchSprite - Unexpected state!");    
+    
+    CCPoint touchPoint = touch->getLocation();
+    
+    setPosition( ccp(touchPoint.x, getPosition().y) );
+}
+
+void CCTouchSprite::ccTouchEnded(CCTouch* touch, CCEvent* event)
+{
+    CCAssert(m_state == kStateGrabbed, "CCTouchSprite - Unexpected state!");    
+    
+    m_state = kStateUngrabbed;
+} 
+
+bool CCTouchSprite::containsTouchLocation(CCTouch* touch)
+{
+    CCSize s = getTexture()->getContentSize();
+    CCRect rt(-s.width / 2, -s.height / 2, s.width, s.height);
+    return rt.containsPoint(convertTouchToNodeSpaceAR(touch));
+}
+
+void CCTouchSprite::touchDelegateRetain()
+{
+    this->retain();
+}
+
+void CCTouchSprite::touchDelegateRelease()
+{
+    this->release();
+}
+
+// CCEffect
+CCEffect::CCEffect()
+    : m_pAni(NULL)
+    , CONST_ACT_TAG(CKeyGen::nextKey())
+{
+}
+
+CCEffect::~CCEffect()
+{
+    CC_SAFE_RELEASE(m_pAni);
+}
+
+bool CCEffect::initWithPath( const char* path, float delay )
+{
+    CCSpriteFrameCache* fc = CCSpriteFrameCache::sharedSpriteFrameCache();
+    CCSpriteFrame* sf = NULL;
+    bool res = false;
+    char sz[256];
+    for (int i = 0; ; ++i)
+    {
+        sprintf(sz, "%s/%02d.png", path, i);
+        sf = fc->spriteFrameByName(sz);
+        if (sf == NULL)
+        {
+            if (i == 0)
+            {
+                return false;
+            }
+            break;
+        }
+        if (!m_pAni)
+        {
+            m_pAni = CCAnimation::create();
+            res = initWithSpriteFrame(sf);
+        }
+        m_pAni->addSpriteFrame(sf);
+    }
+
+    m_pAni->setDelayPerUnit(delay);
+
+    return res;
+}
+
+void CCEffect::play( float speed /*= 1.0f*/, int times /*= 1.0*/ )
+{
+    CCAction* act = CCSpeed::create(CCRepeat::create(CCAnimate::create(m_pAni), times), speed);
+    act->setTag(CONST_ACT_TAG);
+    runAction(act);
+}
+
+void CCEffect::playRelease( float speed /*= 1.0f*/, int times /*= 1.0*/ )
+{
+    CCAction* act = CCSpeed::create(CCSequence::createWithTwoActions(CCRepeat::create(CCAnimate::create(m_pAni), times), CCRemoveSelf::create()), speed);
+    act->setTag(CONST_ACT_TAG);
+    runAction(act);
+}
+
+void CCEffect::playForever( float speed /*= 1.0f*/ )
+{
+    CCAction* act = CCSpeed::create(CCRepeatForever::create(CCAnimate::create(m_pAni)), speed);
+    act->setTag(CONST_ACT_TAG);
+    runAction(act);
+}

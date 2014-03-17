@@ -63,7 +63,9 @@ public:
 
     enum FRM_ID
     {
-        kFrmDefault
+        kFrmDefault,
+        kFrmPortraitHero,
+        kFrmPortraitSel
     };
     
     virtual void setFrame(FRM_ID id);

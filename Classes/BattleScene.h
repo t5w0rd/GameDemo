@@ -23,9 +23,16 @@ public:
     virtual CProjectile* copyProjectile(int id) const;
 
     virtual void onUnitDying(CUnit* pUnit);
+    virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget);
+    virtual void onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget);
+
     void onChangeGold(CMultiRefObject* obj);
 
+    void onAniDone(CMultiRefObject* obj, void* data);
+
     M_SYNTHESIZE(CUnit*, m_pHero, Hero);
+    M_SYNTHESIZE(CActiveAbility*, m_pThunderCapAct, ThunderCapAct);
+    M_SYNTHESIZE(CActiveAbility*, m_pHammerThrowAct, HammerThrowAct);
 
     CUnitLibraryForCC m_oULib;
 
@@ -44,6 +51,7 @@ public:
 
 };
 
+class CCProgressBar;
 class CCBattleSceneLayer : public CCWinUnitLayer
 {
 public:
@@ -79,23 +87,41 @@ public:
 
         TARGET_INFO() { memset(this, 0, sizeof(TARGET_INFO)); }
     };
-    CCLayerColor m_oTargetInfoLayer;
-    CCLabelTTF m_oTargetLv;
-    CCLabelTTF m_oTargetHp;
-    CCLabelTTF m_oTargetAtk;
-    CCLabelTTF m_oTargetAtkEx;
-    CCSprite* m_pTargetAtk;
-    CCLabelTTF m_oTargetDef;
-    CCSprite* m_pTargetDef;
+    CCSprite* m_pTargetInfoPanel;
+    CCLabelTTF* m_pTargetLv;
+    CCLabelTTF* m_pTargetHp;
+    CCLabelTTF* m_pTargetAtk;
+    CCLabelTTF* m_pTargetAtkEx;
+    CCSprite* m_pTargetAtkIcon;
+    CCLabelTTF* m_pTargetDef;
+    CCSprite* m_pTargetDefIcon;
     TARGET_INFO m_stTargetInfo;
+    bool m_bShowTargetInfo;
+    CCSprite* m_pPortraitSel;
+    CCLabelTTF* m_pNameSel;
     void initTargetInfo();
     void updateTargetInfo(int id = 0);
+    void showTargetInfo(bool bShow = true);
+
+    CCSprite* m_pHeroPortrait;
+    CCProgressBar* m_pHeroHpBar;
+    CCProgressBar* m_pHeroExpBar;
+    CCLabelTTF* m_pHeroLevel;
+    struct HERO_INFO
+    {
+        float fHpPer;
+        float fExpPer;
+        int iLevel;
+        HERO_INFO() { memset(this, 0, sizeof(HERO_INFO)); }
+    };
+    HERO_INFO m_stHeroInfo;
+    void initHeroPortrait();
+    void updateHeroPortrait();
 
     // Gold
-    CCLabelTTF m_oGold;
+    CCLabelTTF* m_pGold;
     void initResourceInfo();
     void updateResourceInfo(int gold);
-
 };
 
 #endif // __BATTLE_SCENE_H__

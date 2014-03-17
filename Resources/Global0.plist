@@ -4,23 +4,1271 @@
     <dict>
         <key>frames</key>
         <dict>
+            <key>Effects/BigStun/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{920,844},{56,62}}</string>
+                <key>offset</key>
+                <string>{-11,9}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{1,6},{56,62}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{918,994},{56,60}}</string>
+                <key>offset</key>
+                <string>{-11,8}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{1,8},{56,60}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{918,1052},{56,60}}</string>
+                <key>offset</key>
+                <string>{-11,8}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{1,8},{56,60}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{664,866},{36,46}}</string>
+                <key>offset</key>
+                <string>{-22,15}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,8},{36,46}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{664,914},{36,46}}</string>
+                <key>offset</key>
+                <string>{-22,14}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,9},{36,46}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,768},{64,36}}</string>
+                <key>offset</key>
+                <string>{-8,9}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,19},{64,36}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/06.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,806},{64,36}}</string>
+                <key>offset</key>
+                <string>{-8,9}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,19},{64,36}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/07.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,728},{64,38}}</string>
+                <key>offset</key>
+                <string>{-8,9}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,18},{64,38}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/08.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,648},{66,38}}</string>
+                <key>offset</key>
+                <string>{-7,9}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,18},{66,38}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/09.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,606},{66,40}}</string>
+                <key>offset</key>
+                <string>{-7,10}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,16},{66,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/10.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,688},{66,38}}</string>
+                <key>offset</key>
+                <string>{-7,10}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,17},{66,38}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/11.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{406,554},{68,50}}</string>
+                <key>offset</key>
+                <string>{-6,6}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,15},{68,50}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/12.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,384},{68,50}}</string>
+                <key>offset</key>
+                <string>{-6,6}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,15},{68,50}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/13.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{950,2},{68,52}}</string>
+                <key>offset</key>
+                <string>{-6,6}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,14},{68,52}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/14.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,436},{68,50}}</string>
+                <key>offset</key>
+                <string>{-6,5}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,16},{68,50}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/15.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{406,500},{68,52}}</string>
+                <key>offset</key>
+                <string>{-6,5}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,15},{68,52}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/16.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,548},{66,56}}</string>
+                <key>offset</key>
+                <string>{-7,6}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,12},{66,56}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/17.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,488},{66,58}}</string>
+                <key>offset</key>
+                <string>{-7,6}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,11},{66,58}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/18.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{154,1272},{50,58}}</string>
+                <key>offset</key>
+                <string>{1,6}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{16,11},{50,58}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/19.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{154,1220},{50,60}}</string>
+                <key>offset</key>
+                <string>{1,7}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{16,9},{50,60}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/20.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{916,1110},{52,60}}</string>
+                <key>offset</key>
+                <string>{1,7}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{15,9},{52,60}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/21.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{916,1164},{52,60}}</string>
+                <key>offset</key>
+                <string>{1,8}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{15,8},{52,60}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/22.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{916,1218},{52,60}}</string>
+                <key>offset</key>
+                <string>{0,8}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{14,8},{52,60}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/23.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{656,962},{44,60}}</string>
+                <key>offset</key>
+                <string>{-5,8}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{13,8},{44,60}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/24.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{920,902},{44,62}}</string>
+                <key>offset</key>
+                <string>{-5,9}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{13,6},{44,62}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/BigStun/25.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{920,948},{44,62}}</string>
+                <key>offset</key>
+                <string>{-5,9}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{13,6},{44,62}}</string>
+                <key>sourceSize</key>
+                <string>{80,92}</string>
+            </dict>
+            <key>Effects/Lightning/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{476,2},{50,472}}</string>
+                <key>offset</key>
+                <string>{0,64}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{95,0},{50,472}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,2},{58,472}}</string>
+                <key>offset</key>
+                <string>{1,57}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{92,7},{58,472}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{476,54},{52,446}}</string>
+                <key>offset</key>
+                <string>{0,56}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{94,21},{52,446}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,62},{38,430}}</string>
+                <key>offset</key>
+                <string>{3,43}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{104,42},{38,430}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning/04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{434,62},{40,400}}</string>
+                <key>offset</key>
+                <string>{2,46}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{102,54},{40,400}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning/05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,102},{36,422}}</string>
+                <key>offset</key>
+                <string>{4,36}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{106,53},{36,422}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning/06.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,174},{34,402}}</string>
+                <key>offset</key>
+                <string>{4,31}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{107,68},{34,402}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning/07.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,140},{32,410}}</string>
+                <key>offset</key>
+                <string>{3,18}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{107,77},{32,410}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,100},{98,40}}</string>
+                <key>offset</key>
+                <string>{3,-213}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{74,493},{98,40}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,1220},{148,150}}</string>
+                <key>offset</key>
+                <string>{-3,-177}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{43,402},{148,150}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{232,432},{172,172}}</string>
+                <key>offset</key>
+                <string>{-5,-166}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{29,380},{172,172}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{706,332},{216,192}}</string>
+                <key>offset</key>
+                <string>{3,-160}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{15,364},{216,192}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{220,1020},{214,192}}</string>
+                <key>offset</key>
+                <string>{3,-154}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{16,358},{214,192}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,1026},{214,192}}</string>
+                <key>offset</key>
+                <string>{3,-154}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{16,358},{214,192}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/06.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{436,1204},{212,194}}</string>
+                <key>offset</key>
+                <string>{1,-158}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{15,361},{212,194}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/07.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{706,108},{216,222}}</string>
+                <key>offset</key>
+                <string>{-1,-148}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{11,337},{216,222}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/08.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,210},{220,232}}</string>
+                <key>offset</key>
+                <string>{-2,-144}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{8,328},{220,232}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/09.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{692,1226},{128,124}}</string>
+                <key>offset</key>
+                <string>{-3,-168}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{53,406},{128,124}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning2/10.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,1370},{134,134}}</string>
+                <key>offset</key>
+                <string>{-3,-164}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{50,397},{134,134}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{414,246},{4,4}}</string>
+                <key>offset</key>
+                <string>{7,-215}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{125,513},{4,4}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{702,526},{220,150}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{10,429},{220,150}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{700,1110},{214,114}}</string>
+                <key>offset</key>
+                <string>{0,-203}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{13,446},{214,114}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,774},{216,126}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{12,441},{216,126}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,432},{228,188}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{6,410},{228,188}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{476,108},{228,188}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{6,410},{228,188}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/06.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{702,956},{214,152}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{13,428},{214,152}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/07.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{436,1056},{214,146}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{13,431},{214,146}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/08.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{224,748},{220,146}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{10,431},{220,146}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/09.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{236,210},{220,168}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{10,420},{220,168}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/10.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{232,606},{222,140}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{9,434},{222,140}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/11.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{474,682},{222,128}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{9,440},{222,128}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/12.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{476,426},{224,128}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{8,440},{224,128}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/13.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{476,556},{224,124}}</string>
+                <key>offset</key>
+                <string>{0,-203}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{8,441},{224,124}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/14.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{702,830},{216,124}}</string>
+                <key>offset</key>
+                <string>{0,-203}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{12,441},{216,124}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/15.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{220,896},{216,122}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{12,443},{216,122}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/16.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,902},{216,122}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{12,443},{216,122}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/17.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{218,1214},{210,124}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{15,442},{210,124}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/18.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{702,678},{220,150}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{10,429},{220,150}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/19.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,622},{220,150}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{10,429},{220,150}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/20.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{438,940},{216,114}}</string>
+                <key>offset</key>
+                <string>{0,-203}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{12,446},{216,114}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/21.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{446,812},{216,126}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{12,441},{216,126}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/Lightning3/22.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{476,298},{228,126}}</string>
+                <key>offset</key>
+                <string>{0,-204}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{6,441},{228,126}}</string>
+                <key>sourceSize</key>
+                <string>{240,600}</string>
+            </dict>
+            <key>Effects/SmallStun/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{906,1272},{36,40}}</string>
+                <key>offset</key>
+                <string>{-2,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{20,8},{36,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{864,1304},{36,40}}</string>
+                <key>offset</key>
+                <string>{-2,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{20,8},{36,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{978,1116},{38,40}}</string>
+                <key>offset</key>
+                <string>{-3,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{18,8},{38,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{992,628},{24,30}}</string>
+                <key>offset</key>
+                <string>{-9,8}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{19,9},{24,30}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{994,430},{26,30}}</string>
+                <key>offset</key>
+                <string>{-10,8}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{17,9},{26,30}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{994,56},{42,24}}</string>
+                <key>offset</key>
+                <string>{-1,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{18,16},{42,24}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/06.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,54},{44,24}}</string>
+                <key>offset</key>
+                <string>{-1,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{17,16},{44,24}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/07.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{406,362},{44,26}}</string>
+                <key>offset</key>
+                <string>{-1,5}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{17,14},{44,26}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/08.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{406,314},{46,26}}</string>
+                <key>offset</key>
+                <string>{-1,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{16,15},{46,26}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/09.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{406,408},{44,26}}</string>
+                <key>offset</key>
+                <string>{0,5}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{18,14},{44,26}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/10.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{406,454},{44,26}}</string>
+                <key>offset</key>
+                <string>{0,5}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{18,14},{44,26}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/11.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{990,808},{46,32}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{17,14},{46,32}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/12.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{652,1172},{46,32}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{17,14},{46,32}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/13.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{652,1064},{46,34}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{17,13},{46,34}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/14.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{652,1100},{46,34}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{17,13},{46,34}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/15.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{652,1136},{46,34}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{17,14},{46,34}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/16.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{984,856},{44,38}}</string>
+                <key>offset</key>
+                <string>{0,3}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{18,10},{44,38}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/17.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{984,902},{44,38}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{18,11},{44,38}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/18.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{946,1312},{34,38}}</string>
+                <key>offset</key>
+                <string>{6,3}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{29,10},{34,38}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/19.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{434,464},{34,40}}</string>
+                <key>offset</key>
+                <string>{5,3}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{28,9},{34,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/20.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{986,1314},{34,38}}</string>
+                <key>offset</key>
+                <string>{5,3}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{28,10},{34,38}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/21.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{822,1306},{34,40}}</string>
+                <key>offset</key>
+                <string>{5,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{28,8},{34,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/22.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{948,1276},{34,40}}</string>
+                <key>offset</key>
+                <string>{5,4}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{28,8},{34,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/23.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{992,502},{30,40}}</string>
+                <key>offset</key>
+                <string>{1,4}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{26,8},{30,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/24.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{992,544},{30,40}}</string>
+                <key>offset</key>
+                <string>{1,4}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{26,8},{30,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
+            <key>Effects/SmallStun/25.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{992,586},{30,40}}</string>
+                <key>offset</key>
+                <string>{1,4}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{26,8},{30,40}}</string>
+                <key>sourceSize</key>
+                <string>{80,64}</string>
+            </dict>
             <key>Items/Malik/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{232,2},{22,24}}</string>
+                <string>{{992,654},{22,24}}</string>
                 <key>offset</key>
                 <string>{0,-13}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{13,31},{22,24}}</string>
                 <key>sourceSize</key>
                 <string>{48,60}</string>
             </dict>
+            <key>UI/cmd/Target.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{154,1324},{108,52}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{22,10},{108,52}}</string>
+                <key>sourceSize</key>
+                <string>{152,72}</string>
+            </dict>
+            <key>UI/cmd/Target2.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,338},{92,44}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{30,14},{92,44}}</string>
+                <key>sourceSize</key>
+                <string>{152,72}</string>
+            </dict>
             <key>UI/coin/nextwave_coin_0001.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{90,38},{38,40}}</string>
+                <string>{{978,1156},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,-4}</string>
                 <key>rotated</key>
@@ -33,7 +1281,7 @@
             <key>UI/coin/nextwave_coin_0002.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{46,78},{38,40}}</string>
+                <string>{{978,1196},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -46,11 +1294,11 @@
             <key>UI/coin/nextwave_coin_0003.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,38},{38,42}}</string>
+                <string>{{984,948},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{0,5},{38,42}}</string>
                 <key>sourceSize</key>
@@ -59,7 +1307,7 @@
             <key>UI/coin/nextwave_coin_0004.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{88,78},{38,40}}</string>
+                <string>{{978,1236},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,5}</string>
                 <key>rotated</key>
@@ -72,7 +1320,7 @@
             <key>UI/coin/nextwave_coin_0005.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{130,80},{38,40}}</string>
+                <string>{{650,1206},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,7}</string>
                 <key>rotated</key>
@@ -85,11 +1333,11 @@
             <key>UI/coin/nextwave_coin_0006.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{46,38},{38,42}}</string>
+                <string>{{984,992},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,7}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{38,42}}</string>
                 <key>sourceSize</key>
@@ -98,7 +1346,7 @@
             <key>UI/coin/nextwave_coin_0007.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{172,116},{38,40}}</string>
+                <string>{{650,1246},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,8}</string>
                 <key>rotated</key>
@@ -111,7 +1359,7 @@
             <key>UI/coin/nextwave_coin_0008.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{214,116},{38,40}}</string>
+                <string>{{650,1286},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,8}</string>
                 <key>rotated</key>
@@ -124,11 +1372,11 @@
             <key>UI/coin/nextwave_coin_0009.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,156},{38,40}}</string>
+                <string>{{650,1326},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,7}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,1},{38,40}}</string>
                 <key>sourceSize</key>
@@ -137,7 +1385,7 @@
             <key>UI/coin/nextwave_coin_0010.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{132,40},{38,42}}</string>
+                <string>{{656,1024},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,5}</string>
                 <key>rotated</key>
@@ -150,7 +1398,7 @@
             <key>UI/coin/nextwave_coin_0011.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{176,76},{38,42}}</string>
+                <string>{{980,1036},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,3}</string>
                 <key>rotated</key>
@@ -163,11 +1411,11 @@
             <key>UI/coin/nextwave_coin_0012.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,198},{38,40}}</string>
+                <string>{{822,1226},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,7},{38,40}}</string>
                 <key>sourceSize</key>
@@ -176,7 +1424,7 @@
             <key>UI/coin/nextwave_coin_0013.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{44,118},{38,40}}</string>
+                <string>{{864,1226},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,-2}</string>
                 <key>rotated</key>
@@ -189,7 +1437,7 @@
             <key>UI/coin/nextwave_coin_0014.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,78},{38,42}}</string>
+                <string>{{980,1076},{38,42}}</string>
                 <key>offset</key>
                 <string>{-1,-6}</string>
                 <key>rotated</key>
@@ -202,7 +1450,7 @@
             <key>UI/coin/nextwave_coin_0015.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{232,28},{1,1}}</string>
+                <string>{{1020,2},{1,1}}</string>
                 <key>offset</key>
                 <string>{-19.5,27.5}</string>
                 <key>rotated</key>
@@ -215,11 +1463,11 @@
             <key>UI/healthbar/healthbar_border.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,2},{128,16}}</string>
+                <string>{{992,678},{128,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{128,16}}</string>
                 <key>sourceSize</key>
@@ -228,11 +1476,11 @@
             <key>UI/healthbar/healthbar_fill.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,20},{128,16}}</string>
+                <string>{{456,606},{128,16}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,0},{128,16}}</string>
                 <key>sourceSize</key>
@@ -241,7 +1489,7 @@
             <key>UI/ph32.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{110,194},{32,32}}</string>
+                <string>{{898,1350},{32,32}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -254,7 +1502,7 @@
             <key>UI/pos.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{122,160},{32,32}}</string>
+                <string>{{862,1376},{32,32}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -267,7 +1515,7 @@
             <key>UI/status/AttackSpeed.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{230,32},{24,38}}</string>
+                <string>{{994,462},{24,38}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -280,7 +1528,59 @@
             <key>UI/status/CrystalArmor.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{220,76},{34,38}}</string>
+                <string>{{946,1348},{34,38}}</string>
+                <key>offset</key>
+                <string>{-1,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{8,3},{34,38}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/ExpBarBorder.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{426,102},{104,6}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{104,6}}</string>
+                <key>sourceSize</key>
+                <string>{104,8}</string>
+            </dict>
+            <key>UI/status/ExpBarFill.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{414,140},{104,6}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{104,6}}</string>
+                <key>sourceSize</key>
+                <string>{104,8}</string>
+            </dict>
+            <key>UI/status/HP.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{862,1342},{34,32}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{9,6},{34,32}}</string>
+                <key>sourceSize</key>
+                <string>{52,44}</string>
+            </dict>
+            <key>UI/status/HeavyArmor.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{986,1354},{34,38}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -290,36 +1590,49 @@
                 <key>sourceSize</key>
                 <string>{52,44}</string>
             </dict>
-            <key>UI/status/HP.png</key>
+            <key>UI/status/HeroSelected.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{76,194},{34,32}}</string>
+                <string>{{924,142},{106,96}}</string>
                 <key>offset</key>
-                <string>{0,0}</string>
+                <string>{0,11}</string>
                 <key>rotated</key>
                 <true/>
                 <key>sourceColorRect</key>
-                <string>{{9,6},{34,32}}</string>
+                <string>{{3,3},{106,96}}</string>
                 <key>sourceSize</key>
-                <string>{52,44}</string>
+                <string>{112,124}</string>
             </dict>
-            <key>UI/status/HeavyArmor.png</key>
+            <key>UI/status/HpBarBorder.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{42,158},{34,38}}</string>
+                <string>{{422,208},{104,6}}</string>
                 <key>offset</key>
-                <string>{-1,0}</string>
+                <string>{0,1}</string>
                 <key>rotated</key>
                 <true/>
                 <key>sourceColorRect</key>
-                <string>{{8,3},{34,38}}</string>
+                <string>{{0,0},{104,6}}</string>
                 <key>sourceSize</key>
-                <string>{52,44}</string>
+                <string>{104,8}</string>
+            </dict>
+            <key>UI/status/HpBarFill.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{406,174},{104,6}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{104,6}}</string>
+                <key>sourceSize</key>
+                <string>{104,8}</string>
             </dict>
             <key>UI/status/MagicalAttack.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{42,194},{32,36}}</string>
+                <string>{{990,1276},{32,36}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -332,11 +1645,11 @@
             <key>UI/status/MoveSpeed.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{132,2},{52,36}}</string>
+                <string>{{664,812},{52,36}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,4},{52,36}}</string>
                 <key>sourceSize</key>
@@ -345,11 +1658,11 @@
             <key>UI/status/PhysicalAttack.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{186,2},{28,44}}</string>
+                <string>{{994,384},{28,44}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{12,0},{28,44}}</string>
                 <key>sourceSize</key>
@@ -358,7 +1671,7 @@
             <key>UI/status/icon_0001.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{82,158},{34,38}}</string>
+                <string>{{822,1342},{34,38}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -371,7 +1684,7 @@
             <key>UI/status/icon_0003.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,118},{40,36}}</string>
+                <string>{{864,1266},{40,36}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -384,7 +1697,7 @@
             <key>UI/status/icon_0008.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{86,118},{38,40}}</string>
+                <string>{{822,1266},{38,40}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
@@ -397,7 +1710,7 @@
             <key>UI/status/icon_0011.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{186,32},{42,42}}</string>
+                <string>{{950,56},{42,42}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -410,7 +1723,7 @@
             <key>UI/status/icon_0012.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{128,120},{38,38}}</string>
+                <string>{{906,1310},{38,38}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -420,6 +1733,19 @@
                 <key>sourceSize</key>
                 <string>{52,44}</string>
             </dict>
+            <key>UI/status/portrait_sel.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{924,250},{92,86}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,1},{92,86}}</string>
+                <key>sourceSize</key>
+                <string>{92,92}</string>
+            </dict>
         </dict>
         <key>metadata</key>
         <dict>
@@ -428,9 +1754,9 @@
             <key>realTextureFileName</key>
             <string>Global0.png</string>
             <key>size</key>
-            <string>{256,256}</string>
+            <string>{1024,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:62a58f6c99aba7e704a49edf4a921a3d:bf1f09cfabd36e434cbae4ffc3f08705:193f2f8e6e002b54e84b1ea9f659575a$</string>
+            <string>$TexturePacker:SmartUpdate:d5a01c39645f2292ca9ee08bd8c56da4:e95f8d79f3ca92f6f43266b59fe3a2b6:193f2f8e6e002b54e84b1ea9f659575a$</string>
             <key>textureFileName</key>
             <string>Global0.png</string>
         </dict>

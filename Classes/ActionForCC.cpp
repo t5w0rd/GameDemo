@@ -633,3 +633,30 @@ void CCLink::fixTargetPosition(CCNode* pTarget)
     pTarget->setRotation(fR);
     pTarget->setScaleX(fScale);
 }
+
+// CCShake
+CCShake::CCShake()
+{
+}
+
+bool CCShake::init( float fDuration, int iTimes, float fRange )
+{
+    float fDur = m_fDuration / max(iTimes, 1) / 4;
+    
+    return CCSequence::initWithTwoActions(CCSequence::create(CCMoveBy::create(fDur, ccp(fRange, 0.0f)), CCMoveBy::create(fDur, ccp(0.0f, -fRange)), CCMoveBy::create(fDur, ccp(-fRange, 0.0f)), NULL), CCMoveBy::create(fDur, ccp(0.0f, fRange)));
+}
+
+void CCShake::startWithTarget(CCNode* pTarget)
+{
+    m_oLoc = pTarget->getPosition();
+    CCSequence::startWithTarget(pTarget);
+}
+
+void CCShake::stop(void)
+{
+    if (m_pTarget)
+    {
+        m_pTarget->setPosition(m_oLoc);
+    }
+    CCSequence::stop();
+}

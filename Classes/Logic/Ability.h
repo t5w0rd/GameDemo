@@ -67,8 +67,8 @@ public:
     virtual void onUnitDamaged(CAttackData* pAttack, CUnit* pSource);
     virtual void onUnitDamagedDone(float fDamage, CUnit* pSource);
     virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
-    virtual void onUnitProjectileEffect(const CPoint& p, CUnit* pTarget);
-    virtual void onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget);
+    virtual void onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
+    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     
 public:
     // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生
@@ -160,7 +160,7 @@ public:
     virtual void onUnitDelAbility();
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
-    virtual void onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget);
+    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
         
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, BaseAttack);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_aoExAttackValue, ExAttackValue);
@@ -205,7 +205,7 @@ public:
     
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
-    virtual void onUnitAbilityProjectileEffect(const CPoint& p, CUnit* pTarget);
+    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
@@ -228,6 +228,8 @@ public:
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
     M_SYNTHESIZE(float, m_fRange, Range);
     M_SYNTHESIZE(uint32_t, m_dwEffectiveTypeFlags, TargetFlags);
+    
+    M_SYNTHESIZE(float, m_fEffectCD, EffectCD);
 };
 
 // 攻击数据变更，攻击时机会型BUFF附加器

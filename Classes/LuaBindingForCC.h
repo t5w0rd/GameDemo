@@ -23,6 +23,8 @@ int g_loadTexture(lua_State* L);
 int g_loadAnimation(lua_State* L);
 int g_createUnit(lua_State* L);
 int g_showDebug(lua_State* L);
+int g_playEffect(lua_State* L);
+int g_isEffectPlaying(lua_State* L);
 
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld);
 

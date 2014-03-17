@@ -74,7 +74,7 @@ bool CUnitLibraryForCC::init()
     p->prepareFrame(CProjectile::kFrmDefault, "default");
     p->prepareAnimation(CProjectile::kAniMove, "move", -1);
     p->prepareAnimation(CProjectile::kAniDie, "die", 0);
-    p->setMoveSpeed(500.0f);
+    p->setMoveSpeed(800.0f);
     p->setMaxHeightDelta(0.0f);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
@@ -180,21 +180,22 @@ bool CUnitLibraryForCC::init()
     u = new CUnit(d->getName());
     u->setDraw(d);
     u->setName(d->getName());
-    u->setMaxHp(1000.0f);
+    u->setMaxHp(500.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
         1.75,
-        CAttackValue(CAttackValue::kMagical, 30.0),
+        CAttackValue(CAttackValue::kMagical, 60.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(150.0f);
+    atk->setCastRange(250.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
     atk->setTemplateProjectile(kMageBolt);
     u->addActiveAbility(atk);
-    d->setBaseMoveSpeed(80.0f);
+    d->setBaseMoveSpeed(50.0f);
+    d->setHostilityRange(300.0f);
     addUnit(kMage, u);
 
     // Barracks
@@ -256,20 +257,21 @@ bool CUnitLibraryForCC::init()
     u = new CUnit(d->getName());
     u->setDraw(d);
     u->setName(d->getName());
-    u->setMaxHp(1000.0f);
+    u->setMaxHp(500.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
         1.75,
-        CAttackValue(CAttackValue::kPhysical, 30.0),
+        CAttackValue(CAttackValue::kPhysical, 60.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(150.0f);
+    atk->setCastRange(250.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->setTemplateProjectile(kArcherArrow);
     u->addActiveAbility(atk);
-    d->setBaseMoveSpeed(80.0f);
+    d->setBaseMoveSpeed(50.0f);
+    d->setHostilityRange(300.0f);
     addUnit(kArcher, u);
 
     // Frost
@@ -293,20 +295,21 @@ bool CUnitLibraryForCC::init()
     u = new CUnit(d->getName());
     u->setDraw(d);
     u->setName(d->getName());
-    u->setMaxHp(1000.0f);
+    u->setMaxHp(500.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
         1.75,
-        CAttackValue(CAttackValue::kMagical, 30.0),
+        CAttackValue(CAttackValue::kMagical, 60.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(150.0f);
+    atk->setCastRange(250.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->setTemplateProjectile(kFrostBolt);
     u->addActiveAbility(atk);
-    d->setBaseMoveSpeed(80.0f);
+    d->setBaseMoveSpeed(50.0f);
+    d->setHostilityRange(300.0f);
     addUnit(kFrost, u);
 
     // Artillery
@@ -421,7 +424,7 @@ bool CUnitLibraryForCC::init()
     gc->loadAnimation("Units/Thor/move", "Units/Thor/move", 0.08f);
     gc->loadAnimation("Units/Thor/die", "Units/Thor/die", 0.1f);
     gc->loadAnimation("Units/Thor/act1", "Units/Thor/act1", 0.1f);
-    gc->loadAnimation("Units/Thor/act2", "Units/Thor/act2", 0.1f);
+    gc->loadAnimation("Units/Thor/act2", "Units/Thor/act2", 0.08f);
     gc->loadAnimation("Units/Thor/act3", "Units/Thor/act3", 0.1f);
     gc->loadAnimation("Units/Thor/act5", "Units/Thor/act5", 0.1f);
     d = new CUnitDrawForCC("Thor");
@@ -442,7 +445,7 @@ bool CUnitLibraryForCC::init()
         "Attack",
         "¹¥»÷",
         1.75,
-        CAttackValue(CAttackValue::kPhysical, 855.5f),
+        CAttackValue(CAttackValue::kPhysical, 55.5f),
         0.1261f);
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
@@ -657,7 +660,7 @@ bool CUnitLibraryForCC::init()
         "Attack",
         "¹¥»÷",
         1.00,
-        CAttackValue(CAttackValue::kPhysical, 110.0),
+        CAttackValue(CAttackValue::kMagical, 110.0),
         0.1818f);
     atk->setCastMinRange(0.0f);
     atk->setCastRange(250.0f);
@@ -685,7 +688,7 @@ bool CUnitLibraryForCC::init()
         "Attack",
         "¹¥»÷",
         1.00,
-        CAttackValue(CAttackValue::kPhysical, 110.0),
+        CAttackValue(CAttackValue::kMagical, 110.0),
         0.1818f);
     atk->setCastMinRange(0.0f);
     atk->setCastRange(250.0f);

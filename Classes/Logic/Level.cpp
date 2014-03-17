@@ -12,11 +12,11 @@
 
 // CLevelExp
 CLevelExp::CLevelExp()
-: m_iLvl(0)
-, m_iMaxLvl(0)
+: m_iLvl(1)
+, m_iMaxLvl(1)
 , m_iExp(0)
 , m_iBaseExp(0)
-, m_iMaxExp(0)
+, m_iMaxExp(1)
 , m_pUpdate(NULL)
 {
 }
@@ -49,8 +49,13 @@ void CLevelExp::addLevel(int iLvl)
 
 void CLevelExp::addExp(int iExp)
 {
+    if (m_iLvl == m_iMaxLvl)
+    {
+        return;
+    }
+
     m_iExp += iExp;
-    while (m_iExp >= m_iMaxExp)
+    while (m_iExp >= m_iMaxExp && m_iLvl < m_iMaxLvl)
     {
         ++m_iLvl;
         updateExpRange();
@@ -59,6 +64,11 @@ void CLevelExp::addExp(int iExp)
             m_pUpdate->onLevelChange(this, 1);
         }
         onChangeLevel(1);
+    }
+
+    if (m_iLvl == m_iMaxLvl)
+    {
+        m_iExp = m_iBaseExp;
     }
 }
 
@@ -118,4 +128,9 @@ void CLevelExp::setLevelUpdate(CLevelUpdate* pUpdate)
     {
     }
     m_pUpdate = pUpdate;
+}
+
+bool CLevelExp::canIncreaseExp() const
+{
+    return m_iLvl < m_iMaxLvl;
 }

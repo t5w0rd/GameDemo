@@ -8,6 +8,9 @@
 #include <cocos2d.h>
 USING_NS_CC;
 
+#include <SimpleAudioEngine.h>
+using namespace CocosDenshion;
+
 
 #include "CommInc.h"
 #include "Unit.h"

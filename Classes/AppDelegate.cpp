@@ -32,10 +32,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setContentScaleFactor(1.0);
 
     // create a scene. it's an autorelease object
-#if 1
-    CCScene* pScene = CCBattleSceneLayer::scene();
-#else
+#if GD_UNPACK
     CCScene* pScene = CCTestSceneLayer::scene();
+#else
+    CCScene* pScene = CCBattleSceneLayer::scene();
 #endif
     if (pScene == NULL)
     {
@@ -54,7 +54,8 @@ void AppDelegate::applicationDidEnterBackground() {
     CCDirector::sharedDirector()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->pauseAllEffects();
 }
 
 // this function will be called when the app is active again
@@ -62,5 +63,6 @@ void AppDelegate::applicationWillEnterForeground() {
     CCDirector::sharedDirector()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->resumeAllEffects();
 }
