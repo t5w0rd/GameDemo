@@ -641,7 +641,7 @@ CCShake::CCShake()
 
 bool CCShake::init( float fDuration, int iTimes, float fRange )
 {
-    float fDur = m_fDuration / max(iTimes, 1) / 4;
+    float fDur = fDuration / max(iTimes, 1) / 4;
     
     return CCSequence::initWithTwoActions(CCSequence::create(CCMoveBy::create(fDur, ccp(fRange, 0.0f)), CCMoveBy::create(fDur, ccp(0.0f, -fRange)), CCMoveBy::create(fDur, ccp(-fRange, 0.0f)), NULL), CCMoveBy::create(fDur, ccp(0.0f, fRange)));
 }

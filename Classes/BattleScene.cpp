@@ -389,7 +389,7 @@ void CBattleWorld::onUnitAttackTarget( CUnit* pUnit, CAttackData* pAttack, CUnit
     static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
     if (strcmp(pUnit->getDraw()->getName(), "Soldier") == 0 || strcmp(pUnit->getDraw()->getName(), "Templar") == 0)
     {
-        if (!ae->isEffectPlaying("sounds/Effect/Fighting.mp3") && g_fight > MAX_FIGHT)
+        if (g_fight > MAX_FIGHT)
         {
             g_fightId = ae->playEffect("sounds/Effect/Fighting.mp3");
             g_fight = 0.0f;
@@ -402,13 +402,14 @@ void CBattleWorld::onUnitAttackTarget( CUnit* pUnit, CAttackData* pAttack, CUnit
     if (pTarget == getHero() && hd->getCastActionId() == 0 && !pTarget->isDoingOr(CUnit::kObstinate))
     {
         float dis = hd->getPosition().getDistance(d->getPosition());
-        if (dis < 100 && !getThunderCapAct()->isCoolingDown())
+        if (dis < 150 && !getThunderCapAct()->isCoolingDown())
         {
             hd->setCastTarget(CCommandTarget());
             hd->cmdCastSpell(getThunderCapAct()->getId());
             ae->playEffect("sounds/Effect/ThunderCap.mp3");
+            getLayer()->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0.4f), CCShake::create(0.4f, 4, 10.0f)));
         }
-        else if (!getHammerThrowAct()->isCoolingDown())
+        else if (dis >= 150 && !getHammerThrowAct()->isCoolingDown())
         {
             hd->setCastTarget(pUnit->getId());
             hd->cmdCastSpell(getHammerThrowAct()->getId());
@@ -433,6 +434,7 @@ void CBattleWorld::onUnitProjectileEffect( CUnit* pUnit, CProjectile* pProjectil
         CCSprite* sp3 = CCSprite::createWithSpriteFrameName("Effects/Lightning3/00.png");
 
         CCNode* sn = DCAST(pTarget->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+        sn->getParent()->runAction(CCShake::create(0.5f, 4, 10.0f));
         
         sn->addChild(sp, M_BASE_Z - sn->getPosition().y);
         sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5 - 100.0f));
@@ -614,7 +616,7 @@ void CCBattleSceneLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
             // DemoTemp
             char sz[256];
             sprintf(sz, "sounds/Units/Thor/move/%02d.mp3", g_moveIndex);
-            if (!ae->isEffectPlaying(sz) && !hero->isDead() && g_move > MAX_MOVE[g_moveIndex])
+            if (!hero->isDead() && g_move > MAX_MOVE[g_moveIndex])
             {
                 int me = rand() % 4;
                 while (me == g_moveIndex) me = rand() % 4;
@@ -643,7 +645,7 @@ void CCBattleSceneLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
 
         char sz[256];
         sprintf(sz, "sounds/Units/Thor/move/%02d.mp3", g_moveIndex);
-        if (!ae->isEffectPlaying(sz) && !hero->isDead() && g_move > MAX_MOVE[g_moveIndex])
+        if (!hero->isDead() && g_move > MAX_MOVE[g_moveIndex])
         {
             int me = rand() % 4;
             while (me == g_moveIndex) me = rand() % 4;

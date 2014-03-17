@@ -13,9 +13,6 @@
     <Filter Include="Classes\lua">
       <UniqueIdentifier>{3cdfe9fa-f4f9-4e03-a013-fe4a3a68e464}</UniqueIdentifier>
     </Filter>
-    <Filter Include="script">
-      <UniqueIdentifier>{5a2211d5-9026-4c5a-970d-d770e7699a01}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -328,8 +325,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\script\world.lua">
-      <Filter>script</Filter>
-    </None>
+    <None Include="..\Resources\scripts\world.lua" />
   </ItemGroup>
 </Project>

@@ -28,8 +28,8 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     //eglView->setFrameSize(1024, 768);
     //eglView->setFrameZoomFactor(0.8f);
 #else
-    eglView->setFrameSize(800, 600);
-    eglView->setFrameZoomFactor(1.0f);
+    eglView->setFrameSize(2048, 1536);
+    eglView->setFrameZoomFactor(0.4f);
 #endif
     return CCApplication::sharedApplication()->run();
 }
