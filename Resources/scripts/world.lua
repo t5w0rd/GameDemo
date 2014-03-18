@@ -251,9 +251,7 @@ function game01_tick(dt)
         if el > 2 then
             uc = uc + 1
             el = el - 2
-            if not isEffectPlaying("sounds/Effect/OpenDoor.mp3") then
-                playEffect("sounds/Effect/OpenDoor.mp3")
-            end
+            playEffect("sounds/Effect/OpenDoor.mp3")
             if uc == 4 then
                 u = spawnSoldier(2, 1)
                 u:addPassiveAbility(id)

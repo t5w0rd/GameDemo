@@ -1,8 +1,8 @@
 #ifndef __GAMECONTROL_H__
 #define __GAMECONTROL_H__
 
-
 #include <cocos2d.h>
+
 
 class CCGameControler : public cocos2d::CCObject
 {
