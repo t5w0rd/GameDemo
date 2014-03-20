@@ -6,6 +6,7 @@
 #include "Unit.h"
 #include "MultiRefObject.h"
 #include "AbilityForCC.h"
+#include "ComponentForCC.h"
 
 
 // CCActionSprite

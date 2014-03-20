@@ -2,6 +2,7 @@
 
 #include "TestScene.h"
 #include "GameControl.h"
+#include "ComponentForCC.h"
 
 
 // CCTestScene

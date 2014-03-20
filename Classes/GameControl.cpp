@@ -2,6 +2,7 @@
 #include "GameControl.h"
 
 
+// CCameControler
 CCGameControler::CCGameControler(void)
 {
 
@@ -63,80 +64,45 @@ CCAnimation* CCGameControler::getAnimation(const char* pName)
     return m_ac->animationByName(pName);
 }
 
-// CCSpriteFrameCacheEx
-CCDictionary* CCSpriteFrameCacheEx::getSpriteFrames()
+void CCGameControler::step( float dt )
 {
-    return m_pSpriteFrames;
-}
-
-CCDictionary* CCSpriteFrameCacheEx::getSpriteFramesAliases()
-{
-    return m_pSpriteFramesAliases;
-}
-
-SET_STR* CCSpriteFrameCacheEx::getLoadedFileNames()
-{
-    return m_pLoadedFileNames;
-}
-
-// CCGameFile
-CCGameFile::CCGameFile(void)
-{
-}
-
-
-CCGameFile::~CCGameFile(void)
-{
-}
-
-bool CCGameFile::init( const char* pFileName, const char* pMode )
-{
-    M_DEF_FU(pFu);
-    m_uPos = m_uSize = 0;
-    m_pData = pFu->getFileData(pFu->fullPathForFilename(pFileName).c_str(), pMode, &m_uSize);
-    if (!m_pData)
+    M_MAP_FOREACH(m_mapEffectDur)
     {
-        return false;
+        if (it->second - dt <= 0.0f)
+        {
+            M_MAP_DEL_CUR_NEXT(m_mapEffectDur);
+        }
+        else
+        {
+            it->second -= dt;
+            M_MAP_NEXT;
+        }
     }
-    return true;
 }
 
-size_t CCGameFile::tell() const
+int CCGameControler::playEffect(const char* effect, float duration)
 {
-    return m_uPos;
-}
-
-bool CCGameFile::eof() const
-{
-    return m_uPos >= m_uSize;
-}
-
-bool CCGameFile::seek( long lOffset, FILE_ORIGIN eOrigin )
-{
-    unsigned long uPos = 0;
-    switch (eOrigin)
+    int id = m_ae->playEffect(effect);
+    if (duration > 0.0f)
     {
-    case kBegin:
-        uPos = lOffset;
-        break;
-
-    case kCur:
-        uPos = m_uPos + lOffset;
-        break;
-
-    case kEnd:
-        uPos = m_uSize + lOffset;
-        break;
-
-    default:
-        return false;
+        m_mapEffectDur[id] = duration;
     }
 
-    if (uPos < 0 || uPos > m_uSize)
-    {
-        return false;
-    }
+    return id;
+}
 
-    m_uPos = uPos;
-    return true;
+bool CCGameControler::isEffectPlaying( int id ) const
+{
+    return m_mapEffectDur.find(id) != m_mapEffectDur.end();
+}
+
+void CCGameControler::stopEffect( int id )
+{
+    m_ae->stopEffect(id);
+    m_mapEffectDur.erase(id);
+}
+
+void CCGameControler::playMusic( const char* music )
+{
+    m_ae->playBackgroundMusic(music);
 }
