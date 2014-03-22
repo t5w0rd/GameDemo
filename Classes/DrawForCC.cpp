@@ -194,7 +194,8 @@ int CUnitDrawForCC::doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iR
         pAniInfo->iNotifyFrameIndex,
         getSprite(),
         callfuncND_selector(CCUnitSprite::onNotifyFrame),
-        pOnNotifyFrame);
+        pOnNotifyFrame,
+        pAniInfo->sSound.empty() ? NULL : pAniInfo->sSound.c_str());
 
     if (iRepeatTimes == INFINITE)
     {
@@ -282,7 +283,7 @@ bool CUnitDrawForCC::isFlipX() const
     return getSprite()->isFlipX();
 }
 
-void CUnitDrawForCC::prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex)
+void CUnitDrawForCC::prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex, const char* pSound)
 {
     M_DEF_GC(gc);
 
@@ -297,6 +298,11 @@ void CUnitDrawForCC::prepareAnimation(ANI_ID id, const char* pName, int iNotifyF
     ANI_INFO stAi = {};
     stAi.iNotifyFrameIndex = iNotifyFrameIndex;
     stAi.pAni = pAni;
+    if (pSound != NULL)
+    {
+        stAi.sSound = pSound;
+        gc->preloadSound(pSound);
+    }
     m_mapAniInfos.insert(make_pair(id, stAi));
 }
 
@@ -304,7 +310,7 @@ CUnitDrawForCC::ANI_INFO* CUnitDrawForCC::getAnimationInfo(ANI_ID id)
 {
     auto it = m_mapAniInfos.find(id);
     assert(it != m_mapAniInfos.end());
-
+    
     return &it->second;
 }
 
@@ -383,6 +389,7 @@ void CUnitDrawForCC::setGeometry(float fHalfOfWidth, float fHalfOfHeight, const 
 
 void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFontSize, ccColor3B color)
 {
+    //return;
     CCNode* l = getSprite()->getParent();
     const CPoint& up = getPosition();
     CCPoint p(up.x, up.y + getHalfOfHeight() * 2 + 30.0f);
@@ -457,19 +464,19 @@ bool CCUnitLayer::initWithWorld(CWorldForCC* pWorld)
 
     setWorld(pWorld);
 
-    return CCLayer::init();
+    return CCWinLayer::init();
 }
 
 void CCUnitLayer::onEnter()
 {
-    CCLayer::onEnter();
+    CCWinLayer::onEnter();
     schedule(schedule_selector(CCUnitLayer::onWorldInterval), m_fWorldInterval);
 }
 
 void CCUnitLayer::onExit()
 {
     unschedule(schedule_selector(CCUnitLayer::onWorldInterval));
-    CCLayer::onExit();
+    CCWinLayer::onExit();
 }
 
 void CCUnitLayer::setWorldInterval(float fInterval)
@@ -642,220 +649,6 @@ void CUnitPathForCC::saveAsFile( const char* pFileName )
         fwrite(&it->y, sizeof(it->y), 1, pFile);
     }
     fclose(pFile);
-}
-
-// CCWinUnitLayer
-const float CCWinUnitLayer::CONST_MIN_MOVE_DELTA = 10.0f;
-const float CCWinUnitLayer::CONST_MAX_CAN_MOVE_DURATION = 0.15f;
-
-CCWinUnitLayer::CCWinUnitLayer()
-    : m_iPendingAbilityOwner(0)
-    , m_bIsTouching(false)
-    , m_fMoveK(0.0f)
-    , m_fBuffRange(0.0f)
-    , m_fEdgeK(0.0f)
-    , m_fMoveDelta(0.0f)
-    , m_fTouchMovedDuration(0.0f)
-    , m_fMoveR(0.0f)
-    , m_bCanMove(false)
-{
-}
-
-bool CCWinUnitLayer::init()
-{
-    setBufferEffectParam(0, 0, 0);
-    m_bIsTouching = false;
-    return CCUnitLayer::init();
-}
-
-void CCWinUnitLayer::setBackGroundSprite(CCSprite* pSprite)
-{
-    CCSize oSz = pSprite->getContentSize();
-    oSz.width *= pSprite->getScaleX();
-    oSz.height *= pSprite->getScaleY();
-    CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
-    setContentSize(oSz);
-    addChild(pSprite);
-    pSprite->setPosition(getAnchorPointInPoints());
-    setPosition(ccp((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
-
-}
-
-void CCWinUnitLayer::setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag)
-{
-    CCSize oSz = pSprite->getContentSize();
-    oSz.width *= pSprite->getScaleX();
-    oSz.height *= pSprite->getScaleY();
-    CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
-    setContentSize(oSz);
-    addChild(pSprite, zOrder, tag);
-    pSprite->setPosition(getAnchorPointInPoints());
-    setPosition(ccp((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
-}
-
-void CCWinUnitLayer::onEnter()
-{
-    CCUnitLayer::onEnter();
-    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
-    schedule(schedule_selector(CCWinUnitLayer::bufferWindowEffect), 1.0f / 200.0f);
-}
-
-void CCWinUnitLayer::onExit()
-{
-    CCDirector::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
-    unschedule(schedule_selector(CCWinUnitLayer::bufferWindowEffect));
-    CCUnitLayer::onExit();
-}
-
-bool CCWinUnitLayer::ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent)
-{
-    m_bIsTouching = true;
-    m_fTouchMovedDuration = 0;
-    m_oMoveStart = pTouch->getLocation();
-    m_fMoveDelta = 0;
-    m_bCanMove = false;
-    return true;
-}
-
-void CCWinUnitLayer::ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent)
-{
-    CCPoint oT = ccpAdd(getPosition(), pTouch->getDelta());
-    adjustWinPos(oT);
-    setPosition(oT);
-}
-
-void CCWinUnitLayer::ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent)
-{
-    m_bIsTouching = false;
-    m_fMoveDelta = ccpDistance(pTouch->getLocation(), m_oMoveStart);
-    m_fMoveR = -ccpToAngle(ccpSub(pTouch->getLocation(), m_oMoveStart));
-    (m_fTouchMovedDuration <= CONST_MAX_CAN_MOVE_DURATION && !isClickAction()) && (m_bCanMove = true);
-}
-
-void CCWinUnitLayer::ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent)
-{
-}
-
-void CCWinUnitLayer::touchDelegateRetain()
-{
-    this->retain();
-}
-
-void CCWinUnitLayer::touchDelegateRelease()
-{
-    this->release();
-}
-
-void CCWinUnitLayer::bufferWindowEffect(float fDt)
-{
-    if (m_bIsTouching)
-    {
-        m_fTouchMovedDuration += fDt;
-        return;
-    }
-    static CCSize oSzWin = CCDirector::sharedDirector()->getVisibleSize();
-    CCSize oSz = getContentSize();
-    CCPoint oT = getPosition();
-
-    bool bOut = false;
-    float fMax;
-    if (oT.x > -m_fBuffRange * getScaleX())
-    {
-        oT.x += (-oT.x - m_fBuffRange) * m_fEdgeK;
-        !bOut && (bOut = true);
-    }
-    else if (oT.x < (fMax = (oSzWin.width - oSz.width + m_fBuffRange) * getScaleX()))
-    {
-        oT.x += (-oT.x + fMax) * m_fEdgeK;
-        !bOut && (bOut = true);
-    }
-    if (oT.y > -m_fBuffRange * getScaleY())
-    {
-        oT.y += (-oT.y - m_fBuffRange) * m_fEdgeK;
-        !bOut && (bOut = true);
-    }
-    else if (oT.y < (fMax = (oSzWin.height - oSz.height + m_fBuffRange) * getScaleY()))
-    {
-        oT.y += (-oT.y + fMax) * m_fEdgeK;
-        !bOut && (bOut = true);
-    }
-    if (bOut)
-    {
-        setPosition(oT);
-        m_fMoveDelta = 0;
-    }
-    else if (m_bCanMove)
-    {
-        m_fMoveDelta *= m_fMoveK;
-        if (m_fMoveDelta >= CONST_MIN_MOVE_DELTA)
-        {
-            float fMove = m_fMoveDelta * fDt / m_fTouchMovedDuration;
-            CCPoint oP = ccpAdd(oT, ccp(cos(m_fMoveR) * fMove, sin(-m_fMoveR) * fMove));
-            adjustWinPos(oP);
-            setPosition(oP);
-        }
-    }
-}
-
-void CCWinUnitLayer::setBufferEffectParam(float fMoveK, float fBuffRange, float fEdgeK)
-{
-    m_fMoveK = MIN(1, MAX(0, fMoveK));
-
-    CCSize oSz = getContentSize();
-    CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
-    oSz.width = MAX(0, oSz.width - oWinSz.width);
-    oSz.height = MAX(0, oSz.height - oWinSz.height);
-    m_fBuffRange = MIN(MIN(oSz.width, oSz.height) / 2, MAX(0, fBuffRange));
-
-    m_fEdgeK = MIN(1, MAX(0, fEdgeK));
-}
-
-float CCWinUnitLayer::getTouchMovedDuration() const
-{
-    return m_fTouchMovedDuration;
-}
-
-float CCWinUnitLayer::getTouchMovedDistance() const
-{
-    return m_fMoveDelta;
-}
-
-float CCWinUnitLayer::getTouchMovedRadian() const
-{
-    return m_fMoveR;
-}
-
-bool CCWinUnitLayer::isSlideAction() const
-{
-    return m_bCanMove;
-}
-
-bool CCWinUnitLayer::isClickAction() const
-{
-    return m_fMoveDelta < CONST_MIN_MOVE_DELTA;
-}
-
-void CCWinUnitLayer::adjustWinPos(CCPoint& roPos)
-{
-    static CCSize oSzWin = CCDirector::sharedDirector()->getVisibleSize();
-    CCSize oSz = getContentSize();
-    roPos.x = MAX(roPos.x, (oSzWin.width - oSz.width) * getScaleX());
-    roPos.y = MAX(roPos.y, (oSzWin.height - oSz.height) * getScaleY());
-    roPos.x = MIN(roPos.x, 0);
-    roPos.y = MIN(roPos.y, 0);
-}
-
-int CCWinUnitLayer::touchActionIndex() const
-{
-    if (isSlideAction())
-    {
-        return kSlideWindow;
-    }
-    else if (isClickAction())
-    {
-        return m_iPendingAbilityOwner != 0 ? kUnitCastTarget : kClickPoint;
-    }
-    return m_iPendingAbilityOwner != 0 ? kUnitCastTarget : kNormalTouch;
 }
 
 // CCProjectileSprite
@@ -1133,4 +926,24 @@ CCProjectileSprite* CProjectileForCC::createSprite()
     m_pSprite->setAnchorPoint(getAnchorPoint());
 
     return m_pSprite;
+}
+
+void CProjectileForCC::playFireSound()
+{
+    if (m_vecFireSounds.empty())
+    {
+        return;
+    }
+    M_DEF_GC(gc);
+    gc->playSound(m_vecFireSounds[rand() % m_vecFireSounds.size()].c_str());
+}
+
+void CProjectileForCC::playEffectSound()
+{
+    if (m_vecEffectSounds.empty())
+    {
+        return;
+    }
+    M_DEF_GC(gc);
+    gc->playSound(m_vecEffectSounds[rand() % m_vecEffectSounds.size()].c_str());
 }

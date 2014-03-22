@@ -84,6 +84,12 @@ int unit_attack(lua_State* L);
 int unit_damaged(lua_State* L);
 int unit_attackLow(lua_State* L);
 int unit_damagedLow(lua_State* L);
+int unit_getLevel(lua_State* L);
+int unit_addExp(lua_State* L);
+int unit_setRewardGold(lua_State* L);
+int unit_getRewardGold(lua_State* L);
+int unit_setRewardExp(lua_State* L);
+int unit_getRewardExp(lua_State* L);
 
 int unit_addActiveAbility(lua_State* L);
 int unit_addPassiveAbility(lua_State* L);
@@ -144,7 +150,10 @@ int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
 int ActiveAbility_onUnitCastAbility(lua_State* L);
 int PassiveAbility_ctor(lua_State* L);
+
 int BuffAbility_ctor(lua_State* L);
+int BuffAbility_getSrcUnit(lua_State* L);
+int BuffAbility_setAppendBuff(lua_State* L);
 
 int AttackAct_ctor(lua_State* L);
 int AttackAct_setBaseAttack(lua_State* L);
@@ -171,7 +180,10 @@ int RebirthPas_ctor(lua_State* L);
 int EvadePas_ctor(lua_State* L);
 int EvadeBuff_ctor(lua_State* L);
 int BuffMakerAct_ctor(lua_State* L);
-int DamageBuffMakerBuff_ctor(lua_State* L);
+int DamageBuff_ctor(lua_State* L);
+int TransitiveLinkBuff_ctor(lua_State* L);
+int SplashPas_ctor(lua_State* L);
+int KnockBackBuff_ctor(lua_State* L);
 
 int AttackData_ctor(lua_State* L);
 int AttackData_setAttack(lua_State* L);

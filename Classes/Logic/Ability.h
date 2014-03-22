@@ -79,6 +79,11 @@ public:
     M_SYNTHESIZE_READONLY(uint32_t, m_dwTriggerFlags, TriggerFlags);
     virtual void setTriggerFlags(uint32_t dwTriggerFlags);
     virtual void unsetTriggerFlags(uint32_t dwTriggerFlags);
+
+    typedef vector<string> VEC_SOUNDS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_SOUNDS, m_vecEffectSounds, EffectSounds);
+    void addEffectSound(const char* pSounds);
+    virtual void playEffectSound();
     
 };
 
@@ -139,6 +144,8 @@ public:
     
     M_SYNTHESIZE_BOOL(Stackable);
     M_SYNTHESIZE(int, m_iSrcUnit, SrcUnit);
+
+    M_SYNTHESIZE(int, m_iAppendBuff, AppendBuff);
     
 };
 
@@ -247,17 +254,16 @@ public:
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
 };
 
-class CDamageBuffMakerBuff : public CBuffAbility
+class CDamageBuff : public CBuffAbility
 {
 public:
-    CDamageBuffMakerBuff(const char* pName, const CAttackValue& rDamage, float fChance, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
+    CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
     virtual CMultiRefObject* copy() const;
 
     virtual void onUnitAddAbility();
 
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oDamage, Damage);
     M_SYNTHESIZE(float, m_fChance, Chance);
-    M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
     M_SYNTHESIZE_BOOL(ToSelf);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
 };
@@ -377,6 +383,74 @@ public:
 
     M_SYNTHESIZE(float, m_fChance, Chance);
 };
+
+// …¡µÁ¡¥
+class CTransitiveLinkBuff : public CBuffAbility
+{
+public:
+    typedef set<int> SET_DAMAGED;
+
+public:    
+    CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, const CAttackValue& roDamage);
+    virtual CMultiRefObject* copy() const;
+
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
+    virtual void onUnitDead();
+
+    void TransmitNext();
+
+    M_SYNTHESIZE(float, m_fRange, Range);
+    M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oDamage, Damage);
+
+    M_SYNTHESIZE(int, m_iMaxTimes, MaxTimes);
+    M_SYNTHESIZE(int, m_iTimesLeft, TimesLeft);
+    M_SYNTHESIZE(int, m_iFromUnit, FromUnit);
+    M_SYNTHESIZE(int, m_iToUnit, ToUnit);
+
+    M_SYNTHESIZE(int, m_iTemplateProjectile, TemplateProjectile);
+
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(SET_DAMAGED, m_setDamaged, UnitsDamaged);
+
+    static bool checkConditions(CUnit* pUnit, CTransitiveLinkBuff* pBuff);
+
+protected:
+    bool m_bTransmited;
+};
+
+class CSplashPas : public CPassiveAbility
+{
+public:
+    CSplashPas(const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage);
+    virtual CMultiRefObject* copy() const;
+
+    virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
+
+    M_SYNTHESIZE(float, m_fNearRange, NearRange);
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExNearDamage, ExNearDamage);
+    M_SYNTHESIZE(float, m_fFarRange, FarRange);
+    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExFarDamage, ExFarDamage);
+
+};
+
+class CKnockBackBuff : public CStunBuff
+{
+protected:
+    static const int CONST_ACT_TAG;
+
+public:
+    CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fDistance);
+    virtual CMultiRefObject* copy() const;
+
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
+
+    void onKnockBackEnd(CCNode* pNode);
+
+    M_SYNTHESIZE(float, m_fDistance, Distance);
+
+};
+
 
 #endif  /* __ABILITY_H__ */
 

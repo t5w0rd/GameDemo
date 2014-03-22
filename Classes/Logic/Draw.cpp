@@ -172,12 +172,17 @@ void CUnitDraw2D::onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData)
 
     u->endDoing(0xFFFFFFFF);
     int id = u->getId();
-    w->delUnit(id, u->isRevivable());
 
-    if (w->getUnitToRevive(id) != NULL)
+    u->onDead();
+//     if (w->getUnitToRevive(id) != NULL)
+//     {
+//         // !!! 只有能重生的单位才会触发此事件，不合理
+//         u->onDead();
+//     }
+    
+    if (u->isDead())
     {
-        // !!! 只有能重生的单位才会触发此事件，不合理
-        u->onDead();
+        w->delUnit(id, u->isRevivable());
     }
 }
 
@@ -1003,6 +1008,7 @@ CProjectile::CProjectile(const char* pName)
     , m_iFromUnit(0)
     , m_iToUnit(0)
     , m_pAttackData(NULL)
+    , m_dwTriggerMask(CUnit::kNoMasked)
     , m_pSrcAbility(NULL)
     , m_eFromToType(kPointToPoint)
     , m_eFireType(kFireFollow)
@@ -1031,6 +1037,8 @@ void CProjectile::copyData( const CProjectile* from )
     setPenaltyFlags(from->getPenaltyFlags());
     setFromToType(from->getFromToType());
     setFireType(from->getFireType());
+    m_vecFireSounds = from->m_vecFireSounds;
+    m_vecEffectSounds = from->m_vecEffectSounds;
 }
 
 int CProjectile::doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone)
@@ -1097,6 +1105,7 @@ void CProjectile::onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
 
 void CProjectile::onEffect(CMultiRefObject* pProjectile, CCallFuncData* pData)
 {
+    playEffectSound();
     CWorld* w = getWorld();
     assert(w != NULL);
     CUnit* s = w->getUnit(getSrcUnit());
@@ -1107,9 +1116,15 @@ void CProjectile::onEffect(CMultiRefObject* pProjectile, CCallFuncData* pData)
 
     CUnit* t = (getToUnit() != 0) ? s->getUnit(getToUnit()) : NULL;
     assert(getToUnit() == 0 || getFromToType() == kPointToUnit || getFromToType() == kUnitToUnit);
+
+    if (getAttackData() != NULL)
+    {
+        t->damaged(getAttackData(), s, getTriggerMask());
+    }
     
     if (getSrcAbility() != NULL)
     {
+        getSrcAbility()->playEffectSound();
         getSrcAbility()->onUnitAbilityProjectileEffect(this, t);
     }
     s->onProjectileEffect(this, t);
@@ -1268,32 +1283,7 @@ void CProjectile::fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint,
 
 void CProjectile::fire()
 {
-    // DemoTemp
-    char sz[1024];
-    SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
-    if (strcmp(getName(), "ArcaneRay") == 0)
-    {
-        ae->playEffect("sounds/Effect/ArcaneRay.mp3");
-    }
-    else if (strcmp(getName(), "TeslaRay") == 0)
-    {
-        sprintf(sz, "sounds/Effect/TeslaRay%02d.mp3", rand() % 2);
-        ae->playEffect(sz);
-    }
-    else if (strcmp(getName(), "MageBolt") == 0)
-    {
-        ae->playEffect("sounds/Effect/MageShot.mp3");
-    }
-    else if (strcmp(getName(), "ArcherArrow") == 0)
-    {
-        sprintf(sz, "sounds/Effect/ArrowRelease%02d.mp3", rand() % 2);
-        ae->playEffect(sz);
-    }
-    else if (strcmp(getName(), "ThorHammer") == 0)
-    {
-        sprintf(sz, "sounds/Effect/HammerThrow.mp3", rand() % 2);
-    }
-
+    playFireSound();
     CWorld* w = getWorld();
 
     switch (getFireType())
@@ -1339,4 +1329,22 @@ void CProjectile::fire()
     case kFireStraight:
         break;
     }
+}
+
+void CProjectile::addFireSound( const char* pSounds )
+{
+    m_vecFireSounds.push_back(pSounds);
+}
+
+void CProjectile::addEffectSound( const char* pSounds )
+{
+    m_vecEffectSounds.push_back(pSounds);
+}
+
+void CProjectile::playFireSound()
+{
+}
+
+void CProjectile::playEffectSound()
+{
 }

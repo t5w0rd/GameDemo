@@ -29,10 +29,11 @@ public:
 class CCNotifyAnimate : public CCAnimate
 {
 public:
+    CCNotifyAnimate();
     virtual ~CCNotifyAnimate();
 
-    virtual bool initWithAnimation(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData);
-    M_CREATE_INITWITH_FUNC_PARAM(Animation, CCNotifyAnimate, (CCAnimation *pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData), pAnimation, iNotifyFrameIndex, pSelector, pCallback, pData);
+    virtual bool initWithAnimation(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData, const char* pSound = NULL);
+    M_CREATE_INITWITH_FUNC_PARAM(Animation, CCNotifyAnimate, (CCAnimation *pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData, const char* pSound = NULL), pAnimation, iNotifyFrameIndex, pSelector, pCallback, pData, pSound);
     virtual CCObject* copyWithZone(CCZone* pZone);
     virtual void update(float t);
 
@@ -41,6 +42,8 @@ protected:
     CCObject* m_pSelector;
     SEL_CallFuncND m_pCallback;
     CCallFuncData* m_pData;
+    bool m_bNotified;
+    string m_sSound;
 };
 
 class CCFadeInOutScale4 : public CCSequence

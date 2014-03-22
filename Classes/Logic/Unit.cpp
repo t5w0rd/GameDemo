@@ -1146,6 +1146,11 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
     {
         onAddBuffAbility(pAbility);
     }
+
+    if (pAbility->getAppendBuff() != 0)
+    {
+        addBuffAbility(pAbility->getAppendBuff(), pAbility->getSrcUnit(), pAbility->getLevel());
+    }
 }
 
 void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel)

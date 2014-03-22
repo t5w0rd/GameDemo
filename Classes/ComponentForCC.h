@@ -60,17 +60,67 @@ protected:
     unsigned long m_uPos;
 };
 
-template <typename TYPE>
-size_t CCGameFile::read( TYPE* pData, size_t uCount /*= 1*/ )
+class CCWinLayer : public CCLayer
 {
-    size_t uRead;
-    TYPE* pCur = (TYPE*)((size_t)m_pData + m_uPos);
-    for (uRead = 0; uRead < uCount && m_uPos + (uRead + 1) * sizeof(TYPE) <= m_uSize; ++uRead);
-    size_t uReadSize = uRead * sizeof(TYPE);
-    memmove(pData, pCur, uReadSize);
-    m_uPos += uReadSize;
-    return uRead;
-}
+public:
+    enum TOUCH_ACTION_INDEX
+    {
+        kNormalTouch = 0, // move, attack, select
+        kUnitCastTarget = 1,
+        kClickPoint = 2,
+        kSlideWindow = 3
+    };
+
+public:
+    static const float CONST_MIN_MOVE_DELTA;
+    static const float CONST_MAX_CAN_MOVE_DURATION;
+
+public:
+    CCWinLayer();
+    virtual bool init();
+    CREATE_FUNC(CCWinLayer);
+
+    // default implements are used to call script callback if exist
+    void setBackGroundSprite(CCSprite* pSprite);
+    void setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag);
+    void setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK);
+    virtual void setScale(float fScale);
+    
+    float getTouchMovedDuration() const;
+    float getTouchMovedDistance() const;
+    float getTouchMovedRadian() const;
+    virtual bool isSlideAction() const;
+    virtual bool isClickAction() const;
+
+protected:
+    virtual int touchActionIndex() const;
+    virtual void onEnter();
+    virtual void onExit();
+    void bufferWindowEffect(float fDt);
+    void adjustWinPos(CCPoint& roPos);
+
+    virtual void ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent);
+
+protected:
+    int m_iPendingAbilityOwner;
+    bool m_bIsTouching;
+    float m_fMoveK;
+    float m_fBuffRange;
+    float m_fEdgeK;
+    float m_fMoveDelta;
+    CCPoint m_oMoveStart;
+    float m_fTouchMovedDuration;
+    float m_fMoveR;
+    bool m_bCanMove;
+    CCSprite* m_pBackground;
+
+    CCPoint m_oLast;
+    float m_fStartScale;
+    float m_fStartDis;
+};
 
 class CCTouchSprite : public CCSprite, public CCTargetedTouchDelegate
 {
@@ -122,6 +172,23 @@ public:
 protected:
     const int CONST_ACT_TAG;
 };
+
+
+
+////////////////////////////////// Inline ////////////////////////////////////////
+// CCGameFile
+template <typename TYPE>
+size_t CCGameFile::read( TYPE* pData, size_t uCount /*= 1*/ )
+{
+    size_t uRead;
+    TYPE* pCur = (TYPE*)((size_t)m_pData + m_uPos);
+    for (uRead = 0; uRead < uCount && m_uPos + (uRead + 1) * sizeof(TYPE) <= m_uSize; ++uRead);
+    size_t uReadSize = uRead * sizeof(TYPE);
+    memmove(pData, pCur, uReadSize);
+    m_uPos += uReadSize;
+    return uRead;
+}
+
 
 
 #endif  /* __COMPONENTFORCC_H__ */

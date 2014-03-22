@@ -66,11 +66,11 @@ CCAnimation* CCGameControler::getAnimation(const char* pName)
 
 void CCGameControler::step( float dt )
 {
-    M_MAP_FOREACH(m_mapEffectDur)
+    M_MAP_FOREACH(m_mapSoundDur)
     {
         if (it->second - dt <= 0.0f)
         {
-            M_MAP_DEL_CUR_NEXT(m_mapEffectDur);
+            M_MAP_DEL_CUR_NEXT(m_mapSoundDur);
         }
         else
         {
@@ -80,26 +80,31 @@ void CCGameControler::step( float dt )
     }
 }
 
-int CCGameControler::playEffect(const char* effect, float duration)
+void CCGameControler::preloadSound(const char* sound)
 {
-    int id = m_ae->playEffect(effect);
+    m_ae->preloadEffect(sound);
+}
+
+int CCGameControler::playSound(const char* sound, float duration)
+{
+    int id = m_ae->playEffect(sound);
     if (duration > 0.0f)
     {
-        m_mapEffectDur[id] = duration;
+        m_mapSoundDur[id] = duration;
     }
 
     return id;
 }
 
-bool CCGameControler::isEffectPlaying( int id ) const
+bool CCGameControler::isSoundPlaying( int id ) const
 {
-    return m_mapEffectDur.find(id) != m_mapEffectDur.end();
+    return m_mapSoundDur.find(id) != m_mapSoundDur.end();
 }
 
-void CCGameControler::stopEffect( int id )
+void CCGameControler::stopSound( int id )
 {
     m_ae->stopEffect(id);
-    m_mapEffectDur.erase(id);
+    m_mapSoundDur.erase(id);
 }
 
 void CCGameControler::playMusic( const char* music )

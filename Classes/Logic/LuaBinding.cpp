@@ -173,6 +173,11 @@ int luaRegCommFunc(lua_State* L)
 
 CUnit* luaL_tounitptr(lua_State* L, int idx)
 {
+    if (lua_istable(L, idx) == false)
+    {
+        return NULL;
+    }
+
     lua_getfield(L, idx, "_p");
     CUnit* ret = (CUnit*)lua_touserdata(L, lua_gettop(L));
     lua_pop(L, 1);
@@ -182,6 +187,11 @@ CUnit* luaL_tounitptr(lua_State* L, int idx)
 
 CAbility* luaL_toabilityptr(lua_State* L, int idx)
 {
+    if (lua_istable(L, idx) == false)
+    {
+        return NULL;
+    }
+
     lua_getfield(L, idx, "_p");
     CAbility* ret = (CAbility*)lua_touserdata(L, lua_gettop(L));
     lua_pop(L, 1);
@@ -228,6 +238,12 @@ luaL_Reg unit_funcs[] = {
     {"damaged", unit_damaged},
     {"attackLow", unit_attackLow},
     {"damagedLow", unit_damagedLow},
+    {"getLevel", unit_getLevel},
+    {"addExp", unit_addExp},
+    {"setRewardGold", unit_setRewardGold},
+    {"getRewardGold", unit_getRewardGold},
+    {"setRewardExp", unit_setRewardExp},
+    {"getRewardExp", unit_getRewardExp},
     {"addActiveAbility", unit_addActiveAbility},
     {"addPassiveAbility", unit_addPassiveAbility},
     {"addBuffAbility", unit_addBuffAbility},
@@ -510,6 +526,63 @@ int unit_damagedLow(lua_State* L)
     u->damagedLow(dmg, s, mask);
     
     return 0;
+}
+
+int unit_getLevel(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushinteger(L, u->getLevel());
+
+    return 1;
+}
+
+int unit_addExp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int exp = lua_tointeger(L, 2);
+
+    u->addExp(exp);
+
+    return 0;
+}
+
+int unit_setRewardGold(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int gold = lua_tointeger(L, 2);
+    
+    u->setRewardGold(gold);
+
+    return 0;
+}
+
+int unit_getRewardGold(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushinteger(L, u->getRewardGold());
+
+    return 1;
+}
+
+int unit_setRewardExp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int exp = lua_tointeger(L, 2);
+
+    u->setRewardExp(exp);
+
+    return 0;
+}
+
+int unit_getRewardExp(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushinteger(L, u->getRewardExp());
+
+    return 1;
 }
 
 int unit_addActiveAbility(lua_State* L)
@@ -1107,6 +1180,13 @@ int PassiveAbility_ctor(lua_State* L)
     return 0;
 }
 
+luaL_Reg BuffAbility_funcs[] = {
+    {"ctor", BuffAbility_ctor},
+    {"getSrcUnit", BuffAbility_getSrcUnit},
+    {"setAppendBuff", BuffAbility_setAppendBuff},
+    {NULL, NULL}
+};
+
 int BuffAbility_ctor(lua_State* L)
 {
     // TODO: get init params
@@ -1120,6 +1200,35 @@ int BuffAbility_ctor(lua_State* L)
     _p->setScriptHandler(luaL_setregistry(L, 1));
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int BuffAbility_getSrcUnit(lua_State* L)
+{
+    CBuffAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    CUnit* s = _p->getOwner()->getUnit(_p->getSrcUnit());
+    if (s == NULL)
+    {
+        lua_pushnil(L);
+    }
+    else
+    {
+        luaL_pushobjptr(L, "Unit", s);
+    }
+    
+    return 1;
+}
+
+int BuffAbility_setAppendBuff(lua_State* L)
+{
+    CBuffAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    int id = lua_tointeger(L, 2);
+
+    _p->setAppendBuff(id);
 
     return 0;
 }
@@ -1480,18 +1589,67 @@ int BuffMakerAct_ctor(lua_State* L)
     return 0;
 }
 
-int DamageBuffMakerBuff_ctor(lua_State* L)
+int DamageBuff_ctor(lua_State* L)
 {
     const char* name = lua_tostring(L, 2);
     int damageType = lua_tointeger(L, 3);
     float damageValue = lua_tonumber(L, 4);
     float chance = lua_tonumber(L, 5);
-    int buff = lua_tointeger(L, 6);
-    bool toself = lua_tounsigned(L, 7) != 0;
-    float exAvA = lua_tonumber(L, 8);
-    float exAvB = lua_tonumber(L, 9);
+    bool toself = lua_toboolean(L, 6) != 0;
+    float exAvA = lua_tonumber(L, 7);
+    float exAvB = lua_tonumber(L, 8);
 
-    CDamageBuffMakerBuff* _p = new CDamageBuffMakerBuff(name, CAttackValue(damageType, damageValue), chance, buff, toself, CExtraCoeff(exAvA, exAvB));
+    CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), chance, toself, CExtraCoeff(exAvA, exAvB));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int TransitiveLinkBuff_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float duration = lua_tonumber(L, 3);
+    float range = lua_tonumber(L, 4);
+    int maxTimes = lua_tointeger(L, 5);
+    float t = lua_tonumber(L, 6);
+    float v = lua_tonumber(L, 7);
+    int projectile = lua_tointeger(L, 8);
+
+    CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, CAttackValue(t, v));
+    _p->setTemplateProjectile(projectile);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int SplashPas_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float nearRange = lua_tonumber(L, 3);
+    float exNearA = lua_tonumber(L, 4);
+    float exNearB = lua_tonumber(L, 5);
+    float farRange = lua_tonumber(L, 6);
+    float exFarA = lua_tonumber(L, 7);
+    float exFarB = lua_tonumber(L, 8);
+
+    CSplashPas* _p = new CSplashPas(name, nearRange, CExtraCoeff(exNearA, exNearB), farRange, CExtraCoeff(exFarA, exFarB));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int KnockBackBuff_ctor(lua_State* L)
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+    bool stackable = lua_toboolean(L, 5) != 0;
+    float distance = lua_tonumber(L, 6);
+
+    CKnockBackBuff* _p = new CKnockBackBuff(root, name, duration, stackable, distance);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -1709,6 +1867,10 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_setfield(L, ability, "kOnDamageTargetDoneTrigger");
     lua_pushunsigned(L, CUnit::kOnProjectileEffectTrigger);
     lua_setfield(L, ability, "kOnProjectileEffectTrigger");
+    lua_pushunsigned(L, CUnit::kMaskActiveTrigger);
+    lua_setfield(L, ability, "kMaskActiveTrigger");
+    lua_pushunsigned(L, CUnit::kMaskAll);
+    lua_setfield(L, ability, "kMaskAll");
     lua_setglobal(L, "Ability");
     
     lua_getglobal(L, "class");
@@ -1718,7 +1880,12 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_setglobal(L, "ActiveAbility");
 
     M_LUA_BIND_CLASS_EX(L, PassiveAbility, Ability);
-    M_LUA_BIND_CLASS_EX(L, BuffAbility, Ability);
+
+    lua_getglobal(L, "class");
+    lua_getglobal(L, "Ability");
+    lua_call(L, 1, 1);  // ret a class
+    luaL_setfuncs(L, BuffAbility_funcs, 0);
+    lua_setglobal(L, "BuffAbility");
     
     lua_getglobal(L, "class");
     lua_getglobal(L, "ActiveAbility");
@@ -1737,7 +1904,10 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     M_LUA_BIND_CLASS_EX(L, RebirthPas, PassiveAbility);
     M_LUA_BIND_CLASS_EX(L, EvadePas, PassiveAbility);
     M_LUA_BIND_CLASS_EX(L, EvadeBuff, BuffAbility);
-    M_LUA_BIND_CLASS_EX(L, DamageBuffMakerBuff, BuffAbility);
+    M_LUA_BIND_CLASS_EX(L, DamageBuff, BuffAbility);
+    M_LUA_BIND_CLASS_EX(L, TransitiveLinkBuff, BuffAbility);
+    M_LUA_BIND_CLASS_EX(L, SplashPas, PassiveAbility);
+    M_LUA_BIND_CLASS_EX(L, KnockBackBuff, BuffAbility);
 
     lua_getglobal(L, "class");
     lua_call(L, 0, 1);

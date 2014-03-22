@@ -28,12 +28,13 @@ public:
     
 protected:
     typedef map<int, float> MAP_DURATION;
-    MAP_DURATION m_mapEffectDur;
+    MAP_DURATION m_mapSoundDur;
 
 public:
-    int playEffect(const char* effect, float duration = 0.0f);
-    bool isEffectPlaying(int id) const;
-    void stopEffect(int id);
+    void preloadSound(const char* sound);
+    int playSound(const char* sound, float duration = 0.0f);
+    bool isSoundPlaying(int id) const;
+    void stopSound(int id);
 
     void playMusic(const char* music);
     

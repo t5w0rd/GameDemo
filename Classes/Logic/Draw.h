@@ -296,6 +296,7 @@ public:
 
     M_SYNTHESIZE_READONLY(CAttackData*, m_pAttackData, AttackData);
     void setAttackData(CAttackData* pAttackData);
+    M_SYNTHESIZE(uint32_t, m_dwTriggerMask, TriggerMask);
 
     M_SYNTHESIZE_READONLY(CAbility*, m_pSrcAbility, SrcAbility);
     void setSrcAbility(CAbility* pSrcAbility);
@@ -338,6 +339,15 @@ public:
     void fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint, float fDuration, float fMaxHeightDelta);
 
     void fire();
+
+    typedef vector<string> VEC_SOUNDS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_SOUNDS, m_vecFireSounds, FireSounds);
+    void addFireSound(const char* pSounds);
+    virtual void playFireSound();
+
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_SOUNDS, m_vecEffectSounds, EffectSounds);
+    void addEffectSound(const char* pSounds);
+    virtual void playEffectSound();
 
 protected:
 

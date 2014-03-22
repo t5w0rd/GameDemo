@@ -2,6 +2,7 @@
 #define __DRAWFORCC_H__
 
 #include "Draw.h"
+#include "ComponentForCC.h"
 
 
 class CUnitDrawForCC;
@@ -61,12 +62,13 @@ public:
     {
         int iNotifyFrameIndex;
         CCAnimation* pAni;
+        string sSound;
     };
 
     typedef map<ANI_ID, ANI_INFO> MAP_ANI_INFOS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ANI_INFOS, m_mapAniInfos, AnimationInfos);
     
-    void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex);
+    void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex, const char* pSound = NULL);
 
     ANI_INFO* getAnimationInfo(ANI_ID id);
 
@@ -101,7 +103,7 @@ public:
 
 class CWorldForCC;
 
-class CCUnitLayer : public CCLayer
+class CCUnitLayer : public CCWinLayer
 {
 public:
     CCUnitLayer();
@@ -142,62 +144,6 @@ public:
 
     void addPoints(const char* pFileName);
     void saveAsFile(const char* pFileName);
-};
-
-class CCWinUnitLayer : public CCUnitLayer
-{
-public:
-    enum TOUCH_ACTION_INDEX
-    {
-        kNormalTouch = 0, // move, attack, select
-        kUnitCastTarget = 1,
-        kClickPoint = 2,
-        kSlideWindow = 3
-    };
-
-public:
-    static const float CONST_MIN_MOVE_DELTA;
-    static const float CONST_MAX_CAN_MOVE_DURATION;
-
-public:
-    CCWinUnitLayer();
-    virtual bool init();
-    CREATE_FUNC(CCWinUnitLayer);
-
-    // default implements are used to call script callback if exist
-    virtual void setBackGroundSprite(CCSprite* pSprite);
-    virtual void setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag);
-    virtual void setBufferEffectParam(float fMoveK, float fBuffRange, float fEdgeK);
-    virtual float getTouchMovedDuration() const;
-    virtual float getTouchMovedDistance() const;
-    virtual float getTouchMovedRadian() const;
-    virtual bool isSlideAction() const;
-    virtual bool isClickAction() const;
-    virtual int touchActionIndex() const;
-    
-    virtual void onEnter();
-    virtual void onExit();
-    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void touchDelegateRetain();
-    virtual void touchDelegateRelease();
-    virtual void bufferWindowEffect(float fDt);
-
-    void adjustWinPos(CCPoint& roPos);
-
-protected:
-    int m_iPendingAbilityOwner;
-    bool m_bIsTouching;
-    float m_fMoveK;
-    float m_fBuffRange;
-    float m_fEdgeK;
-    float m_fMoveDelta;
-    CCPoint m_oMoveStart;
-    float m_fTouchMovedDuration;
-    float m_fMoveR;
-    bool m_bCanMove;
 };
 
 class CProjectileForCC;
@@ -264,6 +210,9 @@ public:
     M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
     M_SYNTHESIZE_READONLY(CCProjectileSprite*, m_pSprite, Sprite);
     CCProjectileSprite* createSprite();
+
+    virtual void playFireSound();
+    virtual void playEffectSound();
     
 };
 

@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "DrawForCC.h"
 #include "UnitLibraryForCC.h"
+#include "ComponentForCC.h"
 
 
 class CBattleWorld : public CWorldForCC
@@ -33,6 +34,7 @@ public:
     M_SYNTHESIZE(CUnit*, m_pHero, Hero);
     M_SYNTHESIZE(CActiveAbility*, m_pThunderCapAct, ThunderCapAct);
     M_SYNTHESIZE(CActiveAbility*, m_pHammerThrowAct, HammerThrowAct);
+    M_SYNTHESIZE(CActiveAbility*, m_pWarCryAct, WarCryAct);
 
     CUnitLibraryForCC m_oULib;
 
@@ -52,7 +54,7 @@ public:
 };
 
 class CCProgressBar;
-class CCBattleSceneLayer : public CCWinUnitLayer
+class CCBattleSceneLayer : public CCUnitLayer
 {
 public:
     CCBattleSceneLayer();
@@ -66,7 +68,7 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(CCBattleSceneLayer);
 
-    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
+    virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
     M_SYNTHESIZE(CCLayer*, m_pCtrlLayer, CtrlLayer);
 
     M_SYNTHESIZE(int, m_iMaxLogs, MaxLogs);
@@ -83,7 +85,7 @@ public:
         uint32_t dwAtk0;
         uint32_t dwAtk1;
         uint32_t dwAtkEx;
-        uint32_t dwDef;
+        int iDef;
 
         TARGET_INFO() { memset(this, 0, sizeof(TARGET_INFO)); }
     };

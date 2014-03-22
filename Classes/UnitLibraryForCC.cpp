@@ -30,6 +30,7 @@ bool CUnitLibraryForCC::init()
     p->setMaxHeightDelta(50.0f);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
+    p->addFireSound("sounds/Effect/MageShot.mp3");
     addProjectile(kMageBolt, p);
 
     // FrostBolt
@@ -43,6 +44,7 @@ bool CUnitLibraryForCC::init()
     p->setMaxHeightDelta(10.0f);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
+    p->addFireSound("sounds/Effect/MageShot.mp3");
     addProjectile(kFrostBolt, p);
 
     // ArcherArrow
@@ -56,6 +58,8 @@ bool CUnitLibraryForCC::init()
     p->setMaxHeightDelta(20.0f);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
+    p->addFireSound("sounds/Effect/ArrowRelease00.mp3");
+    p->addFireSound("sounds/Effect/ArrowRelease01.mp3");
     addProjectile(kArcherArrow, p);
 
     // Lightning
@@ -78,6 +82,7 @@ bool CUnitLibraryForCC::init()
     p->setMaxHeightDelta(0.0f);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
+    p->addFireSound("sounds/Effect/HammerThrow.mp3");
     addProjectile(kThorHammer, p);
 
     // LumberjackProy
@@ -100,6 +105,7 @@ bool CUnitLibraryForCC::init()
     p->prepareAnimation(CProjectile::kAniDie, "die", 0);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireLink);
+    p->addFireSound("sounds/Effect/ArcaneRay.mp3");
     addProjectile(kArcaneRay, p);
 
     // ArcaneRay2
@@ -118,6 +124,8 @@ bool CUnitLibraryForCC::init()
     p->prepareAnimation(CProjectile::kAniDie, "die", 0);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireLink);
+    p->addFireSound("sounds/Effect/TeslaRay00.mp3");
+    p->addFireSound("sounds/Effect/TeslaRay01.mp3");
     addProjectile(kTeslaRay, p);
 
 
@@ -189,7 +197,7 @@ bool CUnitLibraryForCC::init()
         CAttackValue(CAttackValue::kMagical, 60.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(250.0f);
+    atk->setCastRange(200.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->addCastAnimation(CUnitDraw::kAniAct2);
     atk->setTemplateProjectile(kMageBolt);
@@ -266,7 +274,7 @@ bool CUnitLibraryForCC::init()
         CAttackValue(CAttackValue::kPhysical, 60.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(250.0f);
+    atk->setCastRange(200.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->setTemplateProjectile(kArcherArrow);
     u->addActiveAbility(atk);
@@ -324,7 +332,7 @@ bool CUnitLibraryForCC::init()
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
-    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4, "sounds/Effect/ShootGun.mp3");
     d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 8);
     d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 2);
     d->prepareAnimation(CUnitDraw::kAniAct4, "act4", 3);
@@ -424,17 +432,17 @@ bool CUnitLibraryForCC::init()
     gc->loadAnimation("Units/Thor/move", "Units/Thor/move", 0.08f);
     gc->loadAnimation("Units/Thor/die", "Units/Thor/die", 0.1f);
     gc->loadAnimation("Units/Thor/act1", "Units/Thor/act1", 0.1f);
-    gc->loadAnimation("Units/Thor/act2", "Units/Thor/act2", 0.08f);
+    gc->loadAnimation("Units/Thor/act2", "Units/Thor/act2", 0.05f);
     gc->loadAnimation("Units/Thor/act3", "Units/Thor/act3", 0.1f);
     gc->loadAnimation("Units/Thor/act5", "Units/Thor/act5", 0.1f);
     d = new CUnitDrawForCC("Thor");
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
-    d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    d->prepareAnimation(CUnitDraw::kAniDie, "die", -1, "sounds/Units/Thor/die/00.mp3");
     d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 6);
-    d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 5);
+    d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 5, "sounds/Effect/ThunderCap.mp3");
     d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 4);
-    d->prepareAnimation(CUnitDraw::kAniAct5, "act5", 3);
+    d->prepareAnimation(CUnitDraw::kAniAct5, "act5", 3, "sounds/Effect/LevelUp.mp3");
     d->setGeometry(40.0f, 29.0f, ccp(124.0 / 240, 52.0 / 192), CPoint(59.0f, 30.0f));
     u = new CUnit(d->getName());
     u->setDraw(d);

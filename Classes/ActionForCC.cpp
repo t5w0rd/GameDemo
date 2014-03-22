@@ -3,6 +3,7 @@
 #include "ActionForCC.h"
 #include "DrawForCC.h"
 #include "Draw.h"
+#include "GameControl.h"
 
 
 // CCCallFuncNMultiObj
@@ -38,12 +39,21 @@ CCObject* CCCallFuncNMultiObj::copyWithZone(CCZone *zone)
 }
 
 // CCNotifyAnimate
+CCNotifyAnimate::CCNotifyAnimate()
+    : m_iNotifyFrameIndex(0)
+    , m_pSelector(NULL)
+    , m_pCallback(NULL)
+    , m_pData(NULL)
+    , m_bNotified(false)
+{
+}
+
 CCNotifyAnimate::~CCNotifyAnimate()
 {
     M_SAFE_RELEASE(m_pData);
 }
 
-bool CCNotifyAnimate::initWithAnimation(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData)
+bool CCNotifyAnimate::initWithAnimation(CCAnimation* pAnimation, int iNotifyFrameIndex, CCObject* pSelector, SEL_CallFuncND pCallback, CCallFuncData* pData, const char* pSound)
 {
     if (!CCAnimate::initWithAnimation(pAnimation))
     {
@@ -56,6 +66,13 @@ bool CCNotifyAnimate::initWithAnimation(CCAnimation* pAnimation, int iNotifyFram
 
     M_SAFE_RETAIN(pData);
     m_pData = pData;
+
+    m_bNotified = false;
+
+    if (pSound != NULL)
+    {
+        m_sSound = pSound;
+    }
     
     return true;
 }
@@ -71,6 +88,7 @@ void CCNotifyAnimate::update(float t)
         if(loopNumber > m_uExecutedLoops) {
             m_nNextFrame = 0;
             m_uExecutedLoops++;
+            m_bNotified = false;
         }
 
         // new t for animations
@@ -81,6 +99,7 @@ void CCNotifyAnimate::update(float t)
     unsigned int numberOfFrames = frames->count();
     CCSpriteFrame *frameToDisplay = NULL;
 
+    M_DEF_GC(gc);
     for(unsigned int i=m_nNextFrame; i < numberOfFrames; i++) {
         float splitTime = m_pSplitTimes->at(i);
 
@@ -96,8 +115,18 @@ void CCNotifyAnimate::update(float t)
             }
             m_nNextFrame = i+1;
 
-            if (i == m_iNotifyFrameIndex && m_pSelector && m_pCallback)
+            if (i == 0 && m_iNotifyFrameIndex < 0 && m_sSound.empty() == false)
             {
+                gc->playSound(m_sSound.c_str());
+            }
+
+            if ((int)i >= m_iNotifyFrameIndex && m_bNotified == false && m_pSelector && m_pCallback)
+            {
+                if (m_sSound.empty() == false)
+                {
+                    gc->playSound(m_sSound.c_str());
+                }
+                m_bNotified = true;
                 (m_pSelector->*m_pCallback)(m_pTarget, m_pData);
             }
 
