@@ -107,6 +107,11 @@ void CCGameControler::stopSound( int id )
     m_mapSoundDur.erase(id);
 }
 
+void CCGameControler::preloadMusic( const char* music )
+{
+    m_ae->preloadBackgroundMusic(music);
+}
+
 void CCGameControler::playMusic( const char* music )
 {
     m_ae->playBackgroundMusic(music);

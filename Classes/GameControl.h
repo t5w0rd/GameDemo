@@ -36,6 +36,7 @@ public:
     bool isSoundPlaying(int id) const;
     void stopSound(int id);
 
+    void preloadMusic(const char* music);
     void playMusic(const char* music);
     
 };

@@ -1242,7 +1242,7 @@ void CStunBuff::onUnitAddAbility()
         CCSprite* sp = DCAST(sn->getChildByTag(4242), CCSprite*);
         if (sp == NULL)
         {
-            sp = CCSprite::createWithSpriteFrameName("Effects/BigStun/00.png");
+            sp = CCSprite::createWithSpriteFrameName("Effects/Stun/Big/00.png");
             sn->addChild(sp, M_BASE_Z - sn->getPosition().y, 4242);
         }
         else
@@ -1250,7 +1250,7 @@ void CStunBuff::onUnitAddAbility()
             sp->stopAllActions();
         }
 
-        CCAnimation* pAni = gc->getAnimation("Effects/BigStun");
+        CCAnimation* pAni = gc->getAnimation("Effects/Stun/Big");
         pAni->setLoops(2);
         
         sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));

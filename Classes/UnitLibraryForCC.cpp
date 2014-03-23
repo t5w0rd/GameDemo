@@ -551,7 +551,7 @@ bool CUnitLibraryForCC::init()
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
     d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 4);
     d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 3);
-    d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 8);
+    d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 8, "sounds/Effect/hero_alric_flurry.mp3");
     d->prepareAnimation(CUnitDraw::kAniAct4, "act4", 10);
     d->prepareAnimation(CUnitDraw::kAniAct5, "act5", 3);
     d->setGeometry(26.0f, 24.0f, ccp(83.0 / 164, 17.0 / 180), CPoint(62.0f, 26.0f));

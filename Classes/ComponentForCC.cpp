@@ -525,14 +525,12 @@ void CCTouchSprite::touchDelegateRelease()
 
 // CCEffect
 CCEffect::CCEffect()
-    : m_pAni(NULL)
-    , CONST_ACT_TAG(CKeyGen::nextKey())
+    : CONST_ACT_TAG(CKeyGen::nextKey())
 {
 }
 
 CCEffect::~CCEffect()
 {
-    CC_SAFE_RELEASE(m_pAni);
 }
 
 bool CCEffect::initWithPath( const char* path, float delay )
@@ -541,6 +539,7 @@ bool CCEffect::initWithPath( const char* path, float delay )
     CCSpriteFrame* sf = NULL;
     bool res = false;
     char sz[256];
+    CCAnimation* pAni = NULL;
     for (int i = 0; ; ++i)
     {
         sprintf(sz, "%s/%02d.png", path, i);
@@ -553,39 +552,103 @@ bool CCEffect::initWithPath( const char* path, float delay )
             }
             break;
         }
-        if (!m_pAni)
+        if (!pAni)
         {
-            m_pAni = CCAnimation::create();
+            pAni = CCAnimation::create();
             res = initWithSpriteFrame(sf);
         }
-        m_pAni->addSpriteFrame(sf);
+        pAni->addSpriteFrame(sf);
     }
 
-    m_pAni->setDelayPerUnit(delay);
-
-    M_SAFE_RETAIN(m_pAni);
+    pAni->setDelayPerUnit(delay);
+    CCAnimationCache::sharedAnimationCache()->addAnimation(pAni, path);
+    m_vecAnis.push_back(path);
 
     return res;
 }
 
-void CCEffect::play( float speed /*= 1.0f*/, int times /*= 1.0*/ )
+void CCEffect::play( int index /*= 0*/, float speed /*= 1.0f*/, int times /*= 1.0*/, CCObject* target /*= NULL*/, SEL_CallFuncN done /*= NULL*/ )
 {
-    CCAction* act = CCSpeed::create(CCRepeat::create(CCAnimate::create(m_pAni), times), speed);
+    if (index >= (int)m_vecAnis.size())
+    {
+        return;
+    }
+    CCAnimation* pAni = CCAnimationCache::sharedAnimationCache()->animationByName(m_vecAnis[index].c_str());
+
+    CCActionInterval* actInner = CCRepeat::create(CCAnimate::create(pAni), times);
+    if (target != NULL && done != NULL)
+    {
+        actInner = CCSequence::createWithTwoActions(actInner, CCCallFuncN::create(target, done));
+    }
+
+    CCAction* act = CCSpeed::create(actInner, speed);
     act->setTag(CONST_ACT_TAG);
+    stop();
     runAction(act);
 }
 
-void CCEffect::playRelease( float speed /*= 1.0f*/, int times /*= 1.0*/ )
+void CCEffect::playRelease( int index, float speed /*= 1.0f*/, int times /*= 1.0*/ )
 {
-    //CCAction* act = CCSpeed::create(CCSequence::createWithTwoActions(CCRepeat::create(CCAnimate::create(m_pAni), times), CCRemoveSelf::create(false)), speed);
-    CCAction* act = CCSequence::createWithTwoActions(CCRepeat::create(CCAnimate::create(m_pAni), times), CCRemoveSelf::create());
+    if (index >= (int)m_vecAnis.size())
+    {
+        return;
+    }
+    CCAnimation* pAni = CCAnimationCache::sharedAnimationCache()->animationByName(m_vecAnis[index].c_str());
+
+    CCAction* act = CCSpeed::create(CCSequence::createWithTwoActions(CCRepeat::create(CCAnimate::create(pAni), times), CCRemoveSelf::create()), speed);
     act->setTag(CONST_ACT_TAG);
+    stop();
     runAction(act);
 }
 
-void CCEffect::playForever( float speed /*= 1.0f*/ )
+void CCEffect::playForever( int index, float speed /*= 1.0f*/ )
 {
-    CCAction* act = CCSpeed::create(CCRepeatForever::create(CCAnimate::create(m_pAni)), speed);
+    if (index >= (int)m_vecAnis.size())
+    {
+        return;
+    }
+    CCAnimation* pAni = CCAnimationCache::sharedAnimationCache()->animationByName(m_vecAnis[index].c_str());
+
+    CCAction* act = CCSpeed::create(CCRepeatForever::create(CCAnimate::create(pAni)), speed);
     act->setTag(CONST_ACT_TAG);
+    stop();
     runAction(act);
+}
+
+CCAnimation* CCEffect::addAnimation( const char* path, float delay )
+{
+    CCSpriteFrameCache* fc = CCSpriteFrameCache::sharedSpriteFrameCache();
+    CCSpriteFrame* sf = NULL;
+    bool res = false;
+    char sz[256];
+    CCAnimation* pAni = NULL;
+    for (int i = 0; ; ++i)
+    {
+        sprintf(sz, "%s/%02d.png", path, i);
+        sf = fc->spriteFrameByName(sz);
+        if (sf == NULL)
+        {
+            if (i == 0)
+            {
+                return NULL;
+            }
+            break;
+        }
+        if (!pAni)
+        {
+            pAni = CCAnimation::create();
+        }
+        pAni->addSpriteFrame(sf);
+    }
+
+    pAni->setDelayPerUnit(delay);
+    CCAnimationCache::sharedAnimationCache()->addAnimation(pAni, path);
+    m_vecAnis.push_back(path);
+
+    return pAni;
+}
+
+void CCEffect::stop()
+{
+    stopActionByTag(CONST_ACT_TAG);
 }

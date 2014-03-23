@@ -5,6 +5,7 @@
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
 #include "TestScene.h"
+#include "LogoScene.h"
 
 
 // AppDelegate
@@ -24,7 +25,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setOpenGLView(pEGLView);
 	
     // turn on display FPS
-    pDirector->setDisplayStats(true);
+    pDirector->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
@@ -35,7 +36,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #if GD_UNPACK
     CCScene* pScene = CCTestSceneLayer::scene();
 #else
-    CCScene* pScene = CCBattleSceneLayer::scene();
+    //CCScene* pScene = CCBattleSceneLayer::scene();
+    //CCScene* pScene = CCBattleSceneLayer::scene();
+    CCScene* pScene = CCLogoSceneLayer::scene();
+    
 #endif
     if (pScene == NULL)
     {

@@ -165,7 +165,7 @@ protected:
     bool m_bFireFrom;
 };
 
-class CCShake : public CCSequence
+class CCShake : public CCRepeat
 {
 public:
     CCShake();

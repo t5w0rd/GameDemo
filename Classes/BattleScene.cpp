@@ -125,8 +125,8 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Effects/Lightning", "Effects/Lightning", 0.05f);
     gc->loadAnimation("Effects/Lightning2", "Effects/Lightning2", 0.05f);
     gc->loadAnimation("Effects/Lightning3", "Effects/Lightning3", 0.05f);
-    gc->loadAnimation("Effects/BigStun", "Effects/BigStun", 0.1f);
-    gc->loadAnimation("Effects/SmallStun", "Effects/SmallStun", 0.1f);
+    gc->loadAnimation("Effects/Stun/Big", "Effects/Stun/Big", 0.1f);
+    gc->loadAnimation("Effects/Stun/Small", "Effects/Stun/Small", 0.1f);
 
     m_oULib.init();
 
@@ -229,7 +229,6 @@ bool CBattleWorld::onInit()
     ae->preloadEffect("sounds/Effect/ArrowRelease02.mp3");
     ae->preloadEffect("sounds/Effect/MageShot.mp3");
     
-
     ae->playBackgroundMusic("sounds/Background/Prebattle_Rising_Tides.mp3", true);
     ae->playEffect("sounds/Effect/WaveIncoming.mp3");
 
@@ -433,7 +432,7 @@ void CBattleWorld::onUnitAttackTarget( CUnit* pUnit, CAttackData* pAttack, CUnit
             hd->setCastTarget(CCommandTarget());
             hd->cmdCastSpell(getThunderCapAct()->getId());
             //ae->playEffect("sounds/Effect/ThunderCap.mp3");
-            getLayer()->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0.4f), CCShake::create(0.4f, 4, 10.0f)));
+            getLayer()->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0.4f), CCShake::create(0.2f, 4, 10.0f)));
         }
         else if (dis >= 150 && !getHammerThrowAct()->isCoolingDown() && !pTarget->isDoingOr(CUnit::kObstinate))
         {
@@ -461,7 +460,7 @@ void CBattleWorld::onUnitProjectileEffect( CUnit* pUnit, CProjectile* pProjectil
         CCAnimation* pAni3 = gc->getAnimation("Effects/Lightning3");
         CCSprite* sp3 = CCSprite::createWithSpriteFrameName("Effects/Lightning3/00.png");
 
-        sn->getParent()->runAction(CCShake::create(0.5f, 4, 10.0f));
+        sn->getParent()->runAction(CCShake::create(0.2f, 4, 10.0f));
         
         sn->addChild(sp, M_BASE_Z - sn->getPosition().y);
         sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5 - 100.0f));

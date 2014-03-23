@@ -672,13 +672,20 @@ bool CCShake::init( float fDuration, int iTimes, float fRange )
 {
     float fDur = fDuration / max(iTimes, 1) / 4;
     
-    return CCSequence::initWithTwoActions(CCSequence::create(CCMoveBy::create(fDur, ccp(fRange, 0.0f)), CCMoveBy::create(fDur, ccp(0.0f, -fRange)), CCMoveBy::create(fDur, ccp(-fRange, 0.0f)), NULL), CCMoveBy::create(fDur, ccp(0.0f, fRange)));
+    return CCRepeat::initWithAction(
+        CCSequence::create(
+            CCMoveBy::create(fDur, ccp(fRange, 0.0f)),
+            CCMoveBy::create(fDur, ccp(0.0f, -fRange)),
+            CCMoveBy::create(fDur, ccp(-fRange, 0.0f)),
+            CCMoveBy::create(fDur, ccp(0.0f, fRange)),
+            NULL),
+        iTimes);
 }
 
 void CCShake::startWithTarget(CCNode* pTarget)
 {
     m_oLoc = pTarget->getPosition();
-    CCSequence::startWithTarget(pTarget);
+    CCRepeat::startWithTarget(pTarget);
 }
 
 void CCShake::stop(void)
@@ -687,5 +694,5 @@ void CCShake::stop(void)
     {
         m_pTarget->setPosition(m_oLoc);
     }
-    CCSequence::stop();
+    CCRepeat::stop();
 }

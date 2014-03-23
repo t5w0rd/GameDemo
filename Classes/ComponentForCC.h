@@ -156,6 +156,9 @@ protected:
 
 class CCEffect : public CCSprite
 {
+protected:
+    const int CONST_ACT_TAG;
+
 public:
     CCEffect();
     virtual ~CCEffect();
@@ -163,14 +166,23 @@ public:
     virtual bool initWithPath(const char* path, float delay);
     M_CREATE_INITWITH_FUNC_PARAM(Path, CCEffect, (const char* path, float delay), path, delay);
 
-    void play(float speed = 1.0f, int times = 1.0);
-    void playRelease(float speed = 1.0f, int times = 1.0);
-    void playForever(float speed = 1.0f);
+    void play(int index = 0, float speed = 1.0f, int times = 1.0, CCObject* target = NULL, SEL_CallFuncN done = NULL);
+    void playRelease(int index = 0, float speed = 1.0f, int times = 1.0);
+    void playForever(int index = 0, float speed = 1.0f);
 
-    M_SYNTHESIZE(CCAnimation*, m_pAni, Animation);
+    CCAnimation* addAnimation(const char* path, float delay);
+    void stop();
 
-protected:
-    const int CONST_ACT_TAG;
+    typedef vector<string> VEC_ANIS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ANIS, m_vecAnis, AnimationNames);
+};
+
+class CAsyncLoadingInterface
+{
+public:
+    inline virtual ~CAsyncLoadingInterface() {}
+    virtual void onLoading(int iStage) = 0;
+    inline virtual void onLoadingEnd() {}
 };
 
 

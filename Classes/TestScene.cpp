@@ -92,7 +92,6 @@ bool CCTestSceneLayer::init()
     CC_SAFE_RETAIN(m_fc);
     //m_fc->addSpriteFramesWithFile("Global.plist");
     m_fc->addSpriteFramesWithFile(PLIST_FILE_NAME);
-    
 
     fprintf(out, "LoadedFileNames:\n");
     SET_STR* set = m_fc->getLoadedFileNames();
