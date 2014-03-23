@@ -56,6 +56,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/lua/lundump.c \
 ../../Classes/lua/lvm.c \
 ../../Classes/lua/lzio.c \
+../../Classes/LogoScene.cpp \
 ../../Classes/LuaBindingForCC.cpp \
 ../../Classes/UnitLibraryForCC.cpp
 
