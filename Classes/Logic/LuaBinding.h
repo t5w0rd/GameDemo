@@ -69,6 +69,7 @@ int unit_getExMaxHp(lua_State* L);
 int unit_getRealMaxHp(lua_State* L);
 int unit_setHp(lua_State* L);
 int unit_getHp(lua_State* L);
+int unit_isDead(lua_State* L);
 int unit_setForceByIndex(lua_State* L);
 int unit_setAlly(lua_State* L);
 int unit_setBaseArmor(lua_State* L);

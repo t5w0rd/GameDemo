@@ -410,7 +410,7 @@ public:
 
     M_SYNTHESIZE(int, m_iTemplateProjectile, TemplateProjectile);
 
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(SET_DAMAGED, m_setDamaged, UnitsDamaged);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(SET_DAMAGED, m_setTransmited, UnitsTransmited);
 
     static bool checkConditions(CUnit* pUnit, CTransitiveLinkBuff* pBuff);
 

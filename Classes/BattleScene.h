@@ -1,11 +1,11 @@
 #ifndef __BATTLE_SCENE_H__
 #define __BATTLE_SCENE_H__
 
-#include "cocos2d.h"
-#include "DrawForCC.h"
 #include "UnitLibraryForCC.h"
 #include "ComponentForCC.h"
 
+
+class CStunBuff;
 
 class CBattleWorld : public CWorldForCC
 {
@@ -35,6 +35,8 @@ public:
     M_SYNTHESIZE(CActiveAbility*, m_pThunderCapAct, ThunderCapAct);
     M_SYNTHESIZE(CActiveAbility*, m_pHammerThrowAct, HammerThrowAct);
     M_SYNTHESIZE(CActiveAbility*, m_pWarCryAct, WarCryAct);
+    M_SYNTHESIZE(CPassiveAbility*, m_pRebirthPas, RebirthPas);
+    M_SYNTHESIZE(CStunBuff*, m_pDragonStrikeBuff, DragonStrikeBuff);
 
     CUnitLibraryForCC m_oULib;
 
@@ -105,7 +107,7 @@ public:
     void updateTargetInfo(int id = 0);
     void showTargetInfo(bool bShow = true);
 
-    CCSprite* m_pHeroPortrait;
+    //CCSprite* m_pHeroPortrait;
     CCProgressBar* m_pHeroHpBar;
     CCProgressBar* m_pHeroExpBar;
     CCLabelTTF* m_pHeroLevel;
@@ -124,6 +126,13 @@ public:
     CCLabelTTF* m_pGold;
     void initResourceInfo();
     void updateResourceInfo(int gold);
+
+    int m_dscur;
+    void onDragonStrikeUpdate(CCNode* pNode);
+
+    void onClickFist(CCNode* pNode);
+    void onClickHeroPortrait(CCNode* pNode);
+
 };
 
 #endif // __BATTLE_SCENE_H__

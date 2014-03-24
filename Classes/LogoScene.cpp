@@ -115,7 +115,7 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
         addChild(sp, 0, 1002);
         sp->setPosition(ccp(wsz.width * 0.8 * 0.91, wsz.height * 0.5));
         sp->setOpacity(0);
-        scale = getChildByTag(1001)->getContentSize().height / sp->getContentSize().height;
+        scale = getChildByTag(1001)->getScale();
         sp->setScale(scale);
         sp->runAction(
             CCSequence::create(
@@ -142,12 +142,13 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
                 CCCallFuncN::create(this, callfuncN_selector(CCLogoSceneLayer::onEffectUpdate)),
                 NULL));
 
-        gc->playSound("sounds/Effect/GUITransitionClose.mp3");
+        gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
         break;
 
     case 5:
         sp = CCSprite::create("UI/Loading.png");
         addChild(sp);
+        //sp->setPosition(ccp(wsz.width - sp->getContentSize().width * 0.5 - 50, sp->getContentSize().height * 0.5 + 50));
         sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
         sp->setScale(getChildByTag(1001)->getContentSize().height / sp->getContentSize().height);
 
@@ -167,6 +168,7 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
         gc->loadTexture("Heroes3");
         gc->loadTexture("Heroes4");
         gc->loadTexture("Heroes5");
+        gc->loadTexture("Heroes6");
         gc->loadTexture("Projectiles0");
         gc->preloadSound("sounds/Effect/Sound_Sheep.mp3");
         gc->preloadSound("sounds/Effect/inapp_atfreezeend.mp3");
@@ -180,6 +182,8 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
         gc->preloadSound("sounds/Effect/KidnapGrab.mp3");
         gc->preloadSound("sounds/Effect/Sound_FireballHit.mp3");
         gc->preloadSound("sounds/Effect/GUITransitionClose.mp3");
+        gc->preloadSound("sounds/Effect/Sound_GUIButtonCommon.mp3");
+        gc->preloadSound("sounds/Effect/GUITransitionOpen.mp3");
         gc->preloadMusic("sounds/Background/savage_music_desert_preparation.mp3");
         gc->preloadMusic("sounds/Background/Desert_Battle.mp3");
         
@@ -202,6 +206,8 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
 
 // CCLogoScene2Layer
 CCLogoScene2Layer::CCLogoScene2Layer()
+    : m_ctrl(NULL)
+    , m_cur(0)
 {
 }
 
@@ -221,7 +227,7 @@ CCScene* CCLogoScene2Layer::scene()
     {
         layer->setOpacity(0);
         pScene->addChild(layer);
-        //layer->runAction(CCSequence::createWithTwoActions(CCFadeIn::create(0.5f), CCCallFuncN::create(layer, callfuncN_selector(CCLogoScene2Layer::onShowDone))));
+        pScene->addChild(layer->m_ctrl, 20);
     }
 
     // return the scene
@@ -244,7 +250,7 @@ bool CCLogoScene2Layer::init()
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     m_cur = 0;
     
-    CCSprite* sp = CCSprite::create("UI/LogoScene1.png");
+    CCSprite* sp = CCSprite::create("backgrounds/BackgroundHD00.png");
     sp->setScale(1.5f);
     addChild(sp);
     sp->setPosition(ccp(wsz.width * 0.5, wsz.height - sp->getContentSize().height * 0.5 - (sp->getScale() - 1.0) * 0.5 * sp->getContentSize().height));
@@ -274,6 +280,15 @@ bool CCLogoScene2Layer::init()
 
     M_DEF_GC(gc);
     gc->playMusic("sounds/Background/savage_music_desert_preparation.mp3");
+
+    m_ctrl = CCLayer::create();
+    CCMenu* mn = CCMenu::create();
+    m_ctrl->addChild(mn);
+    mn->setPosition(CCPointZero);
+    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("Skip", "fonts/Comic Book.ttf", 48), this, menu_selector(CCLogoScene2Layer::onClickSkip));
+    mn->addChild(lbl);
+    lbl->setColor(ccc3(41, 57, 85));
+    lbl->setPosition(ccp(wsz.width - lbl->getContentSize().width * 0.5 - 50, lbl->getContentSize().height + 50));
 
     return true;
 }
@@ -339,8 +354,7 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
 
         stopAllActions();
         runAction(CCScaleTo::create(0.3f, 2.0f));
-        gc->playSound("sounds/Effect/HeadlessHorseman-03a_WET.mp3");
-        //gc->playSound("sounds/Effect/KidnapGrab.mp3");
+        gc->playSound("sounds/Effect/KidnapGrab.mp3");
         break;
 
     case 3:
@@ -348,9 +362,10 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
         gc->playMusic("sounds/Background/Desert_Battle.mp3");
         eff->runAction(
             CCSequence::create(
-            CCDelayTime::create(2.0f),
+            CCDelayTime::create(1.0f),
             CCCallFuncN::create(this, callfuncN_selector(CCLogoScene2Layer::onEffectUpdate)),
             NULL));
+        gc->playSound("sounds/Effect/HeadlessHorseman-03a_WET.mp3");
         break;
 
     case 4:  // ¿¸Å®ÈËÅÜ
@@ -399,7 +414,7 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
 
         eff = CCEffect::create("Units/Thor/move", 0.08f);
         eff->addAnimation("Units/Thor/act3", 0.1f);
-        addChild(eff);
+        addChild(eff, 5);
         eff->setTag(1102);
         eff->setPosition(ccp(wsz.width * 0.5, wsz.height + 400));
         eff->playForever();
@@ -445,7 +460,7 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
                     CCCallFuncN::create(this, callfuncN_selector(CCLogoScene2Layer::onEffectUpdate)),
                     NULL),
                 CCSequence::create(
-                    CCDelayTime::create(1.6f),
+                    CCDelayTime::create(1.5f),
                     CCCallFuncN::create(this, callfuncN_selector(CCLogoScene2Layer::onSoldierTurn)),
                     NULL),
                 NULL));
@@ -549,16 +564,17 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
     case 12:
         eff = (CCEffect*)getChildByTag(1102);
         sp = CCSprite::createWithSpriteFrameName("Units/ThorHammer/default.png");
-        addChild(sp, 2);
-        sp->setPosition(ccpAdd(eff->getPosition(), ccp(0.0f, 0.0f)));
+        addChild(sp, 6);
+        sp->setPosition(ccpAdd(eff->getPosition(), ccp(-100.0f, 0.0f)));
         sp->setFlipX(true);
 
         sp->runAction(
             CCSequence::create(
+                CCEaseExponentialIn::create(
                 CCSpawn::create(
-                    CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height * 0.5)),
-                    CCScaleTo::create(0.5f, 100.f),
-                    NULL),
+                    CCMoveTo::create(0.3f, ccp(wsz.width * 0.5, wsz.height * 0.5)),
+                    CCScaleTo::create(0.3f, 100.f),
+                    NULL)),
                 CCCallFuncN::create(this, callfuncN_selector(CCLogoScene2Layer::onEffectUpdate)),
                 NULL));
 
@@ -576,18 +592,19 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
 
     case 14:
         pNode = CCLayerColor::create(ccc4(0, 0, 0, 0));
-        addChild(pNode, 10);
+        getParent()->addChild(pNode, 10);
         sp = CCSprite::create("UI/Loading.png");
         pNode->addChild(sp);
+        //sp->setPosition(ccp(wsz.width - sp->getContentSize().width * 0.5 - 50, sp->getContentSize().height * 0.5 + 50));
         sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
-
         pNode->runAction(
             CCSequence::create(
                 CCFadeIn::create(0.3f),
                 CCCallFuncN::create(this, callfuncN_selector(CCLogoScene2Layer::onEffectUpdate)),
                 NULL));
 
-        gc->playSound("sounds/Effect/GUITransitionClose.mp3");
+        gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
+        m_ctrl->setVisible(false);
         break;
 
     case 15:
@@ -622,3 +639,10 @@ void CCLogoScene2Layer::onSoldierTurn( CCNode* pNode )
     }
     
 }
+
+void CCLogoScene2Layer::onClickSkip( CCObject* pObject )
+{
+    m_cur = 14;
+    m_ctrl->setVisible(false);
+}
+

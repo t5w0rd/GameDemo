@@ -38,6 +38,10 @@ public:
 
     void onEffectUpdate(CCNode* pNode);
     void onSoldierTurn(CCNode* pNode);
+    void onClickSkip(CCObject* pObject);
+
+public:
+    CCLayer* m_ctrl;
 
 protected:
     int m_cur;

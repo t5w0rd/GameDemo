@@ -239,8 +239,9 @@ void CCTestSceneLayer::onLabelSave( CCObject* )
             saveToPng(name, tmp, &fc);
             ++f;
         }
-        CCLOG("%d Frame(s) Unpacked", d->count());
+        CCLOG("%d Frame(s) Unpacked", (int)d->count());
     }
+    CCLOG("Done. %d File(s) Unpacked", (int)files.size());
 
     m_cur = 0;
 }

@@ -670,8 +670,8 @@ bool CUnitLibraryForCC::init()
         1.00,
         CAttackValue(CAttackValue::kMagical, 110.0),
         0.1818f);
-    atk->setCastMinRange(0.0f);
-    atk->setCastRange(250.0f);
+    atk->setCastMinRange(-60.0f);
+    atk->setCastRange(300.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->setTemplateProjectile(kArcaneRay);
     u->addActiveAbility(atk);
@@ -698,8 +698,8 @@ bool CUnitLibraryForCC::init()
         1.00,
         CAttackValue(CAttackValue::kMagical, 110.0),
         0.1818f);
-    atk->setCastMinRange(0.0f);
-    atk->setCastRange(250.0f);
+    atk->setCastMinRange(-60.0f);
+    atk->setCastRange(300.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->setTemplateProjectile(kTeslaRay);
     u->addActiveAbility(atk);

@@ -223,6 +223,7 @@ luaL_Reg unit_funcs[] = {
     {"getRealMaxHp", unit_getRealMaxHp},
     {"setHp", unit_setHp},
     {"getHp", unit_getHp},
+    {"isDead", unit_isDead},
     {"setForceByIndex", unit_setForceByIndex},
     {"setAlly", unit_setAlly},
     {"setBaseArmor", unit_setBaseArmor},
@@ -354,6 +355,15 @@ int unit_getHp(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
 
     lua_pushnumber(L, u->getHp());
+
+    return 1;
+}
+
+int unit_isDead(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushboolean(L, u->isDead());
 
     return 1;
 }

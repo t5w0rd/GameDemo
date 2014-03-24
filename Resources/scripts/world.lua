@@ -164,6 +164,10 @@ end
 
 function OnDyingPas:onUnitDying()
     hero = nil
+    if me:isDead() then
+        return
+    end
+    
     kill = kill + 1
     atk = me:getAttackAbility()
     atk:setExAttackValue(1.0 + kill / 3.0, kill * 5.9 + 17)
@@ -363,15 +367,14 @@ function game01_tick(dt)
                 u = spawnSoldier(2, 1)
                 u:addPassiveAbility(arid)
                 u:addPassiveAbility(SplashPas:new("SplashBolt", 75, 1.0, 0.0, 150, 0.5, 0.0))
-                spawnSoldier(4, 2)
+                u:setRewardGold(20)
+                u:setRewardExp(14)
+                u = spawnSoldier(4, 2)
+                u:setRewardGold(20)
+                u:setRewardExp(14)
             else
-                u = spawnSoldier(22, 1)
-                u:setRewardGold(20)
-                u:setRewardExp(14)
-                
-                u = spawnSoldier(23, 2)
-                u:setRewardGold(20)
-                u:setRewardExp(14)
+                spawnSoldier(22, 1)
+                spawnSoldier(23, 2)
             end
             if not hero then
                 spawnHero()

@@ -1463,7 +1463,8 @@ CMultiRefObject* CChangeHpBuff::copy() const
 void CChangeHpBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
-    LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), getChangeHp().getValue(o->getRealMaxHp()));
+    float change = getChangeHp().getValue(o->getRealMaxHp());
+    LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), change);
 }
 
 void CChangeHpBuff::onUnitDelAbility()
@@ -1661,7 +1662,7 @@ CMultiRefObject* CTransitiveLinkBuff::copy() const
     ret->setAppendBuff(getAppendBuff());
     ret->setTimesLeft(getTimesLeft());
     ret->setTemplateProjectile(getTemplateProjectile());
-    ret->m_setDamaged = m_setDamaged;
+    ret->m_setTransmited = m_setTransmited;
 
     return ret;
 }
@@ -1671,7 +1672,7 @@ void CTransitiveLinkBuff::onUnitAddAbility()
     CUnit* o = getOwner();
     m_iFromUnit = o->getId();
     setTimesLeft(getTimesLeft() - 1);
-    m_setDamaged.insert(m_iFromUnit);
+    m_setTransmited.insert(m_iFromUnit);
 }
 
 void CTransitiveLinkBuff::onUnitDelAbility()
@@ -1739,7 +1740,7 @@ bool CTransitiveLinkBuff::checkConditions( CUnit* pUnit, CTransitiveLinkBuff* pB
 {
     if (!CUnitGroup::isLivingAllyOf(pUnit, pBuff->getOwner())
         || pUnit == pBuff->getOwner()
-        || pBuff->getUnitsDamaged().find(pUnit->getId()) != pBuff->getUnitsDamaged().end())
+        || pBuff->getUnitsTransmited().find(pUnit->getId()) != pBuff->getUnitsTransmited().end())
     {
         return false;
     }

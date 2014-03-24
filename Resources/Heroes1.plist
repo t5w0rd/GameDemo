@@ -2526,32 +2526,6 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/PriestBolt/default.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1686,1258},{40,24}}</string>
-                <key>offset</key>
-                <string>{-8,-2}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{12,16},{40,24}}</string>
-                <key>sourceSize</key>
-                <string>{80,52}</string>
-            </dict>
-            <key>Units/PriestBolt/move/00.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1686,1258},{40,24}}</string>
-                <key>offset</key>
-                <string>{-8,-2}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{12,16},{40,24}}</string>
-                <key>sourceSize</key>
-                <string>{80,52}</string>
-            </dict>
             <key>Units/Thor/act2/05.png</key>
             <dict>
                 <key>frame</key>
@@ -3124,6 +3098,19 @@
                 <key>sourceSize</key>
                 <string>{144,156}</string>
             </dict>
+            <key>Units/Wizard/act4/19.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1686,1258},{22,22}}</string>
+                <key>offset</key>
+                <string>{-1,-13}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{60,80},{22,22}}</string>
+                <key>sourceSize</key>
+                <string>{144,156}</string>
+            </dict>
             <key>Units/Wizard/act4/29.png</key>
             <dict>
                 <key>frame</key>
@@ -3173,7 +3160,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:085ef1d9d34ee6e2ff30e310a00eda09:0c0f940e94d8cf20931de10e46a1af90:cbc7ffaea9b3cb73f4655ba87628df80$</string>
+            <string>$TexturePacker:SmartUpdate:164286376505720fcbb595e6ffe70c1c:51ee621e799719639a02f455865c3d4c:e6a3ae3d4a8f5548e27217f53cf27eab$</string>
             <key>textureFileName</key>
             <string>Heroes1.png</string>
         </dict>

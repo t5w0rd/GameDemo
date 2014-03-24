@@ -95,8 +95,6 @@ void CUnitDraw::loadFrame(int id, const char* pName)
 {
 }
 
-
-
 // CUnitDraw2D
 CUnitDraw2D::CUnitDraw2D(const char* pName)
     : CUnitDraw(pName)
@@ -105,7 +103,7 @@ CUnitDraw2D::CUnitDraw2D(const char* pName)
     , m_fHeight(0.0f)
     , m_fBaseMoveSpeed(CONST_MIN_MOVE_SPEED)
     , m_bFixed(false)
-    , m_fHostilityRange(150.0f)
+    , m_fHostilityRange(300.0f)
     , m_iMoveToActionId(0)
     , m_iMoveActionId(0)
     , m_pMovePath(NULL)
