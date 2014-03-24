@@ -27,13 +27,44 @@ import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.content.Context;
 
 public class GameDemo extends Cocos2dxActivity{
+	private WakeLock wakeLock = null;
 	
     protected void onCreate(Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);	
+		super.onCreate(savedInstanceState);
 	}
-
+    
+    @Override
+	protected void onPause() {
+		super.onPause();
+		releaseWakeLock();
+	}
+    
+	@Override
+	protected void onResume() {
+		super.onResume();
+		acquireWakeLock();
+	}
+	
+	private void acquireWakeLock() {  
+		if (wakeLock == null) {
+			PowerManager pm = (PowerManager)getSystemService(Context.POWER_SERVICE);
+			wakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, this.getClass().getCanonicalName());
+			wakeLock.acquire();
+		}
+	}
+	
+	private void releaseWakeLock() {  
+		if (wakeLock != null && wakeLock.isHeld()) {  
+			wakeLock.release();  
+			wakeLock = null;  
+		}
+	}
+	
     public Cocos2dxGLSurfaceView onCreateView() {
     	Cocos2dxGLSurfaceView glSurfaceView = new Cocos2dxGLSurfaceView(this);
     	// GameDemo should create stencil buffer
@@ -41,7 +72,7 @@ public class GameDemo extends Cocos2dxActivity{
     	
     	return glSurfaceView;
     }
-
+    
     static {
         System.loadLibrary("cocos2dcpp");
     }     
