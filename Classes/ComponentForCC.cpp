@@ -247,6 +247,15 @@ void CCWinLayer::setScale(float fScale)
     CCLayer::setScale(MIN(MAX(MAX(sz.width / oSz.width, sz.height / oSz.height), fScale), 4.0f));
 }
 
+void CCWinLayer::setPosition( const CCPoint& newPosition )
+{
+    static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
+    CCSize oSz = getContentSize() * getScale();
+    float fX = (1 - 1 / getScale()) *  0.5 * oSz.width;
+    float fY = (1 - 1 / getScale()) *  0.5 * oSz.height;
+    CCLayer::setPosition(ccp(min(max(newPosition.x, (oWinSz.width - oSz.width) + fX), fX), min(max(newPosition.y, (oWinSz.height - oSz.height) + fY), fY)));
+}
+
 float CCWinLayer::getTouchMovedDuration() const
 {
     return m_fTouchMovedDuration;
@@ -325,7 +334,7 @@ void CCWinLayer::bufferWindowEffect(float fDt)
     }
     if (bOut)
     {
-        setPosition(oT);
+        CCLayer::setPosition(oT);
         m_fMoveDelta = 0;
     }
     else if (m_bCanMove && m_bMoveEnabled)
@@ -335,7 +344,7 @@ void CCWinLayer::bufferWindowEffect(float fDt)
         {
             float fMove = m_fMoveDelta * fDt / m_fTouchMovedDuration;
             CCPoint oP = ccpAdd(oT, ccp(cos(m_fMoveR) * fMove, sin(-m_fMoveR) * fMove));
-            adjustWinPos(oP);
+            //adjustWinPos(oP);
             setPosition(oP);
         }
         else
@@ -349,7 +358,7 @@ bool CCWinLayer::isClickAction() const
 {
     return m_fMoveDelta < CONST_MIN_MOVE_DELTA;
 }
-
+/*
 void CCWinLayer::adjustWinPos(CCPoint& roPos)
 {
     static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
@@ -361,7 +370,7 @@ void CCWinLayer::adjustWinPos(CCPoint& roPos)
     roPos.x = MIN(roPos.x, fX);
     roPos.y = MIN(roPos.y, fY);
 }
-
+*/
 int CCWinLayer::touchActionIndex() const
 {
     if (isSlideAction())
@@ -405,7 +414,7 @@ void CCWinLayer::ccTouchesMoved( CCSet *pTouches, CCEvent *pEvent )
     if (pTouches->count() == 1)
     {
         CCPoint oT = ccpAdd(getPosition(), pTouch->getDelta());
-        adjustWinPos(oT);
+        //adjustWinPos(oT);
         setPosition(oT);
     }
     else if (pTouches->count() == 2)
@@ -417,7 +426,7 @@ void CCWinLayer::ccTouchesMoved( CCSet *pTouches, CCEvent *pEvent )
         float fScale = fDis / MAX(m_fStartDis, 1.0f) * m_fStartScale;
         CCPoint oT = getPosition();
         setScale(fScale);
-        adjustWinPos(oT);
+        //adjustWinPos(oT);
         setPosition(oT);
     }
 }
@@ -437,7 +446,6 @@ void CCWinLayer::ccTouchesEnded( CCSet *pTouches, CCEvent *pEvent )
 
 void CCWinLayer::ccTouchesCancelled( CCSet *pTouches, CCEvent *pEvent )
 {
-
 }
 
 // CCTouchSprite

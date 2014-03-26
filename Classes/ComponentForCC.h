@@ -85,6 +85,7 @@ public:
     void setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag);
     void setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK);
     virtual void setScale(float fScale);
+    virtual void setPosition(const CCPoint& newPosition);
     
     float getTouchMovedDuration() const;
     float getTouchMovedDistance() const;
@@ -99,7 +100,7 @@ protected:
     virtual void onEnter();
     virtual void onExit();
     void bufferWindowEffect(float fDt);
-    void adjustWinPos(CCPoint& roPos);
+    //void adjustWinPos(CCPoint& roPos);
 
     virtual void ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent);
     virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent);
