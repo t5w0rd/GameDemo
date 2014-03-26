@@ -57,7 +57,7 @@ end
 function CurseBuff:onUnitAddAbility()
     o = self:getOwner()
     self.hp = o:getHp()
-    o:addBattleTip("Curse", "fonts/Arial.ttf", 18, 255, 0, 255)
+    o:addBattleTip("Curse", "", 18, 255, 0, 255)
 end
 
 function CurseBuff:onUnitInterval()
@@ -73,7 +73,7 @@ function CurseBuff:onUnitInterval()
         damage = 0
     end
     damage = damage + self.damage
-    --o:addBattleTip(string.format("-%d", damage), "fonts/Arial.ttf", 18, 255, 0, 0)
+    --o:addBattleTip(string.format("-%d", damage), "", 18, 255, 0, 0)
     ad = AttackData:new()
     ad:setAttack(2, damage)
     s = self:getSrcUnit()
@@ -102,34 +102,24 @@ function DefPas:onUnitAttackTarget(ad, target)
     --log(string.format("%s attack %s", o:getName(), target:getName()))
     --ad:setAttackValue(ad:getAttackValue() * 10)
     --ad:addAttackBuff(self.buff, self:getLevel())
-    --o:addBattleTip(math.ceil(ad:getAttackValue()), "fonts/Arial.ttf", 18, 0, 0, 0)
+    --o:addBattleTip(math.ceil(ad:getAttackValue()), "", 18, 0, 0, 0)
 end
 
 DamageBackPas = class(PassiveAbility)
-function DamageBackPas:ctor(per, buff)
+function DamageBackPas:ctor(per)
     self:sctor("DamageBack", "DamageBack", 0)
-    self:setTriggerFlags(Ability.kOnDamagedSurfaceTrigger)
+    self:setTriggerFlags(Ability.kOnDamagedDoneTrigger)
     self.per = per
-    self.buff = buff
 end
 
-function DamageBackPas:onUnitDamaged(ad, src)
+function DamageBackPas:onUnitDamagedDone(damage, src)
     local o = self:getOwner()
-    local nad = AttackData:new()
-    if self.buff ~= 0 then
-        nad:addAttackBuff(self.buff, self:getLevel())
-    end
-    local t, v = ad:getAttack()
-    nad:setAttack(t, self.per * v)
     if not o then
         --log("o is nil")
         return
     else
-        --log(string.format("%s %s", nad, o))
-        src:damaged(nad, o, 448)
+        src:damagedLow(self.per * damage, o, 0xFFFFFFFF)
     end
-
-    --
 end
 
 ArmorBuff = class(BuffAbility)
@@ -147,7 +137,7 @@ function ArmorBuff:onUnitAddAbility()
     --local s = string.format()
     self.change = self.exA * av + self.exB
     o:setExArmorValue(exA, exB + self.change)
-    o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Arial.ttf", 18, 0, 0, 0)
+    o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "", 18, 0, 0, 0)
 end
 
 function ArmorBuff:onUnitDelAbility()
@@ -170,7 +160,7 @@ function OnDyingPas:onUnitDying()
     
     kill = kill + 1
     atk = me:getAttackAbility()
-    atk:setExAttackValue(1.0 + kill / 3.0, kill * 5.9 + 17)
+    atk:setExAttackValue(1.0 + kill / 40.0, kill * 3.9 + 17)
     a, b = atk:getExAttackSpeed()
     atk:setExAttackSpeed(a + kill / 10, b)
     local level = math.ceil(kill / 2)
@@ -178,7 +168,7 @@ function OnDyingPas:onUnitDying()
         if level > learned then
             me:addPassiveAbility(aaa[level])
             learned = level
-            me:addBattleTip(string.format("Learn New Ability (%d/%d)", learned, c), "fonts/Arial.ttf", 32, 235, 170, 68)
+            me:addBattleTip(string.format("Learn New Ability (%d/%d)", learned, c), "", 32, 235, 170, 68)
         end
     end
 
@@ -193,10 +183,14 @@ function onWorldInit()
     local x, y = me:getPosition()
     me:setPosition(x + 500, y - 200)
     me:setMaxHp(687)
-
+    
     game01()
     
     return true
+end
+
+function onWorldTick(dt)
+    game01_tick(dt)
 end
 
 function spawnSoldier(id, force)
@@ -235,19 +229,6 @@ function spawnHero()
     end
 end
 
-WAVE = 30
-el = 0
-up1 = UnitPath:new()
-up1:addPoint(100, 500)
-up1:addPoint(1900, 500)
-up2 = UnitPath:new()
-up2:addPoint(1900, 500)
-up2:addPoint(100, 500)
-uc = 0
-function onWorldTick(dt)
-    game01_tick(dt)
-end
-
 function initAAA()
 
     a = DoubleAttackPas:new("DA", 0.2, 0.5, 0.0)
@@ -258,7 +239,7 @@ function initAAA()
     c = c + 1
     aaa[c] = addTemplateAbility(a)
     
-    a = SplashPas:new("SplashBolt", 75, 1.0, 0.0, 150, 0.5, 0.0)
+    a = SplashPas:new("SplashBolt", 25, 0.50, 0.0, 50, 0.25, 0.0)
     c = c + 1
     aaa[c] = addTemplateAbility(a)
 
@@ -286,7 +267,7 @@ function initAAA()
     c = c + 1
     aaa[c] = addTemplateAbility(a)
     
-    a = ArmorBuff:new("ArmorBreak", "ArmorBreak", 12, true, -0.0, -5.0)
+    a = ArmorBuff:new("ArmorBreak", "ArmorBreak", 12, true, -0.0, -1.0)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("Critical", 0.5, id, false, 1.0, 0.0)
     c = c + 1
@@ -315,6 +296,16 @@ function initAAA()
     aaa[c] = addTemplateAbility(a)
     taid2 = aaa[c]
 end
+
+WAVE = 30
+el = 0
+up1 = UnitPath:new()
+up1:addPoint(100, 500)
+up1:addPoint(1900, 500)
+up2 = UnitPath:new()
+up2:addPoint(1900, 500)
+up2:addPoint(100, 500)
+uc = 0
 
 function game01()
     a = ChangeHpBuff:new("heal", "heal", 5, false, 0.3, 0.006, 0, 0, -1)

@@ -62,7 +62,7 @@ public:
     {
         int iNotifyFrameIndex;
         CCAnimation* pAni;
-        string sSound;
+        vector<string> vecSounds;
     };
 
     typedef map<ANI_ID, ANI_INFO> MAP_ANI_INFOS;
@@ -71,6 +71,7 @@ public:
     void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex, const char* pSound = NULL);
 
     ANI_INFO* getAnimationInfo(ANI_ID id);
+    void addAnimationSound(ANI_ID id, const char* sound);
 
     struct FRM_INFO
     {

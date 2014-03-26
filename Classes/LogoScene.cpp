@@ -65,7 +65,7 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
     switch (m_cur)
     {
     case 0:
-        sp = CCSprite::create("UI/TouchWood.png");
+        sp = CCSprite::create("UI/TorchWood.png");
         addChild(sp, 1, 1001);
         sp->setOpacity(0);
         scale = wsz.width / sp->getContentSize().width * 0.75 * 0.6;
@@ -77,7 +77,7 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
             CCFadeIn::create(0.2f),
             NULL));
 
-        sp = CCSprite::create("UI/TouchWood.png");
+        sp = CCSprite::create("UI/TorchWood.png");
         addChild(sp);
         sp->setOpacity(20);
         sp->setScale(scale * 8);
@@ -148,9 +148,8 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
     case 5:
         sp = CCSprite::create("UI/Loading.png");
         addChild(sp);
-        //sp->setPosition(ccp(wsz.width - sp->getContentSize().width * 0.5 - 50, sp->getContentSize().height * 0.5 + 50));
+        sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
         sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
-        sp->setScale(getChildByTag(1001)->getContentSize().height / sp->getContentSize().height);
 
         runAction(
             CCSequence::create(
@@ -285,7 +284,7 @@ bool CCLogoScene2Layer::init()
     CCMenu* mn = CCMenu::create();
     m_ctrl->addChild(mn);
     mn->setPosition(CCPointZero);
-    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("Skip", "fonts/Comic Book.ttf", 48), this, menu_selector(CCLogoScene2Layer::onClickSkip));
+    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("Skip", FONT_COMIC_BOOK, 48), this, menu_selector(CCLogoScene2Layer::onClickSkip));
     mn->addChild(lbl);
     lbl->setColor(ccc3(41, 57, 85));
     lbl->setPosition(ccp(wsz.width - lbl->getContentSize().width * 0.5 - 50, lbl->getContentSize().height + 50));
@@ -595,7 +594,7 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
         getParent()->addChild(pNode, 10);
         sp = CCSprite::create("UI/Loading.png");
         pNode->addChild(sp);
-        //sp->setPosition(ccp(wsz.width - sp->getContentSize().width * 0.5 - 50, sp->getContentSize().height * 0.5 + 50));
+        sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
         sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
         pNode->runAction(
             CCSequence::create(

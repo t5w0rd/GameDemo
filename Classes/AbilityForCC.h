@@ -17,6 +17,8 @@ public:
     virtual void onUnitDelAbility();
 
     virtual void onUnitChangeHp(float fChanged);
+    virtual void onUnitRevive();
+    virtual void onUnitDying();
 
 public:
     CCProgressBar* m_pProgressBar;

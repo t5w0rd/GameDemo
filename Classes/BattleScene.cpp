@@ -42,6 +42,9 @@ public:
         d->setCastTarget(CCommandTarget());
         d->cmdCastSpell(w->getWarCryAct()->getId());
         u->addBuffAbility(new CChangeHpBuff("LevelUpHeal", "LevelUpHeal", 5.0f, false, 0.2f, CExtraCoeff(0.02f, 0.0f)));
+        CAttackAct* atk = DCAST(u->getActiveAbility(u->getAttackAbilityId()), CAttackAct*);
+        atk->getBaseAttack().setValue(atk->getBaseAttack().getValue() + 27.8);
+        d->setBaseMoveSpeed(d->getBaseMoveSpeed() + 1);
     }
 };
 
@@ -403,7 +406,7 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
                 CUnitDrawForCC* dd = DCAST(uu->getDraw(), CUnitDrawForCC*);
                 char szTip[64];
                 sprintf(szTip, "+%d Gold", iG);
-                dd->addBattleTip(szTip, "fonts/Comic Book.ttf", 18, ccc3(255, 247, 53));
+                dd->addBattleTip(szTip, FONT_COMIC_BOOK, 18, ccc3(255, 247, 53));
             }
             M_VEC_NEXT;
         }
@@ -540,7 +543,7 @@ CCBattleSceneLayer::CCBattleSceneLayer()
     , m_pTargetDef(NULL)
     , m_bShowTargetInfo(false)
 {
-    CCLabelTTF* lbl = CCLabelTTF::create("TestSize", "fonts/Arial.ttf", 20);
+    CCLabelTTF* lbl = CCLabelTTF::create("TestSize", FONT_ARIAL, 20);
     const CCSize& sz = lbl->getContentSize();
     static CCSize winSz = CCDirector::sharedDirector()->getVisibleSize();
     m_iMaxLogs = (winSz.height - 20) / sz.height;
@@ -736,7 +739,7 @@ void CCBattleSceneLayer::log( const char* fmt, ... )
         lbl->removeFromParentAndCleanup(true);
     }
 
-    lbl = CCLabelTTF::create(sz, "fonts/Arial.ttf", 20);
+    lbl = CCLabelTTF::create(sz, FONT_ARIAL, 20);
     lbl->setHorizontalAlignment(kCCTextAlignmentLeft);
     lbl->setColor(ccc3(79, 0, 255));
     l->addChild(lbl, 1, getCurLogId());
@@ -783,7 +786,7 @@ void CCBattleSceneLayer::initTargetInfo()
     float fW0 = 0;
     float fW1 = 100;
     float fBaseX = M_FIX_BASE_X(fW0, fW1, 80);
-    m_pNameSel = CCLabelTTF::create("", "fonts/Comic Book.ttf", fFontSize);
+    m_pNameSel = CCLabelTTF::create("", FONT_COMIC_BOOK, fFontSize);
     m_pNameSel->setAnchorPoint(ccp(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pNameSel);
     m_pNameSel->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -793,14 +796,14 @@ void CCBattleSceneLayer::initTargetInfo()
     fW0 = fW1;
     fW1 = 52;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 130);
-    pLabel = CCLabelTTF::create("Lv", "fonts/Comic Book.ttf", fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    pLabel = CCLabelTTF::create("Lv", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
     m_pTargetInfoPanel->addChild(pLabel);
     pLabel->setPosition(ccp(fBaseX, fBaseY));
 
     fW0 = fW1;
     fW1 = 32;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetLv = CCLabelTTF::create("12", "fonts/Comic Book.ttf", fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_pTargetLv = CCLabelTTF::create("12", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
     m_pTargetInfoPanel->addChild(m_pTargetLv);
     m_pTargetLv->setPosition(ccp(fBaseX, fBaseY));
 
@@ -815,7 +818,7 @@ void CCBattleSceneLayer::initTargetInfo()
     fW0 = fW1;
     fW1 = 200;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetHp = CCLabelTTF::create("1320/3208", "fonts/Comic Book.ttf", fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_pTargetHp = CCLabelTTF::create("1320/3208", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
     m_pTargetInfoPanel->addChild(m_pTargetHp);
     m_pTargetHp->setPosition(ccp(fBaseX, fBaseY));
 
@@ -831,7 +834,7 @@ void CCBattleSceneLayer::initTargetInfo()
     fW0 = fW1;
     fW1 = 0; // 锚点在最左处
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetAtk = CCLabelTTF::create("", "fonts/Comic Book.ttf", fFontSize);
+    m_pTargetAtk = CCLabelTTF::create("", FONT_COMIC_BOOK, fFontSize);
     m_pTargetAtk->setAnchorPoint(ccp(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pTargetAtk);
     m_pTargetAtk->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -840,7 +843,7 @@ void CCBattleSceneLayer::initTargetInfo()
     m_pTargetAtk->setString("150 - 110");
 
     fBaseX += m_pTargetAtk->getTextureRect().size.width;
-    m_pTargetAtkEx = CCLabelTTF::create("", "fonts/Comic Book.ttf", fFontSize);
+    m_pTargetAtkEx = CCLabelTTF::create("", FONT_COMIC_BOOK, fFontSize);
     m_pTargetAtkEx->setAnchorPoint(ccp(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pTargetAtkEx);
     m_pTargetAtkEx->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -859,7 +862,7 @@ void CCBattleSceneLayer::initTargetInfo()
     fW0 = fW1;
     fW1 = 64;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetDef = CCLabelTTF::create("32", "fonts/Comic Book.ttf", fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_pTargetDef = CCLabelTTF::create("32", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
     m_pTargetInfoPanel->addChild(m_pTargetDef);
     m_pTargetDef->setPosition(ccp(fBaseX, fBaseY));
 }
@@ -1069,7 +1072,7 @@ void CCBattleSceneLayer::initHeroPortrait()
     btn->addChild(m_pHeroExpBar);
     m_pHeroExpBar->setPosition(ccp(btn->getContentSize().width * 0.5, 6));
 
-    m_pHeroLevel = CCLabelTTF::create("1", "fonts/Arial.ttf", 24, CCSizeMake(28, 28), kCCTextAlignmentCenter);
+    m_pHeroLevel = CCLabelTTF::create("1", FONT_ARIAL, 24, CCSizeMake(28, 28), kCCTextAlignmentCenter);
     //m_pHeroPortrait->addChild(m_pHeroLevel);
     btn->addChild(m_pHeroLevel);
     m_pHeroLevel->setPosition(ccp(94, 40));
@@ -1112,7 +1115,7 @@ void CCBattleSceneLayer::initResourceInfo()
     sp->setTag(1000);
     const CCSize& spSz = sp->getContentSize();
     sp->setPosition(ccp(spSz.width * 0.5 + 50, oSz.height - spSz.height * 0.5 - 50));
-    m_pGold = CCLabelTTF::create("      ", "fonts/Comic Book.ttf", 28, CCSizeMake(100, 48), kCCTextAlignmentLeft);
+    m_pGold = CCLabelTTF::create("      ", FONT_COMIC_BOOK, 28, CCSizeMake(100, 48), kCCTextAlignmentLeft);
     sp->addChild(m_pGold);
     m_pGold->setPosition(ccp(310, 85));
 }
@@ -1334,7 +1337,7 @@ void CCBattleSceneLayer::onClickFist( CCNode* pNode )
     CCEffect* eff = CCEffect::create("Units/KungFu/move", 0.03f);
     eff->addAnimation("Units/KungFu/act8", 0.05f);
     addChild(eff, M_BASE_Z - d->getPosition().y, 77777);
-    eff->setPosition(ccp(getContentSize().width * getScale() + 100, d->getPosition().y + 133.0f));
+    eff->setPosition(ccp(getContentSize().width * getScale() + 100, d->getPosition().y + 150.0f));
     eff->playForever();
     eff->setFlipX(true);
     m_dscur = 0;

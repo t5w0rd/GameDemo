@@ -13,7 +13,7 @@ CStatusShowPas::CStatusShowPas()
     , m_pProgressBar(NULL)
 {
     setDbgClassName("CStatusShowPas");
-    setTriggerFlags(CUnit::kOnChangeHpTrigger);
+    setTriggerFlags(CUnit::kOnChangeHpTrigger | CUnit::kOnReviveTrigger | CUnit::kOnDyingTrigger);
 }
 
 CMultiRefObject* CStatusShowPas::copy() const
@@ -54,3 +54,12 @@ void CStatusShowPas::onUnitChangeHp(float fChanged)
     m_pProgressBar->setFillColor(ccc3(min(255, (int)((100.0 - fPer) * 2.56 / 0.5)), min(255, (int)(2.56 / 0.5  * fPer)), 0));
 }
 
+void CStatusShowPas::onUnitRevive()
+{
+    m_pProgressBar->setVisible(true);
+}
+
+void CStatusShowPas::onUnitDying()
+{
+    m_pProgressBar->setVisible(false);
+}

@@ -439,7 +439,9 @@ bool CUnitLibraryForCC::init()
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1, "sounds/Units/Thor/die/00.mp3");
-    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 6);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 6, "sounds/Effect/MetalHeavyBashFlesh00.mp3");
+    d->addAnimationSound(CUnitDraw::kAniAct1, "sounds/Effect/MetalHeavyBashFlesh01.mp3");
+    d->addAnimationSound(CUnitDraw::kAniAct1, "sounds/Effect/MetalHeavyBashFlesh02.mp3");
     d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 5, "sounds/Effect/ThunderCap.mp3");
     d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 4);
     d->prepareAnimation(CUnitDraw::kAniAct5, "act5", 3, "sounds/Effect/LevelUp.mp3");
@@ -685,7 +687,7 @@ bool CUnitLibraryForCC::init()
     d = new CUnitDrawForCC("Tesla");
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
-    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 23);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 17);
     d->setGeometry(63.0f, 60.0f, ccp(120.0 / 240, 44.0 / 184), CPoint(0.0f, 118.0f));
     u = new CUnit(d->getName());
     u->setDraw(d);

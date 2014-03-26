@@ -195,7 +195,7 @@ int CUnitDrawForCC::doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iR
         getSprite(),
         callfuncND_selector(CCUnitSprite::onNotifyFrame),
         pOnNotifyFrame,
-        pAniInfo->sSound.empty() ? NULL : pAniInfo->sSound.c_str());
+        pAniInfo->vecSounds.empty() ? NULL : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
 
     if (iRepeatTimes == INFINITE)
     {
@@ -300,7 +300,7 @@ void CUnitDrawForCC::prepareAnimation(ANI_ID id, const char* pName, int iNotifyF
     stAi.pAni = pAni;
     if (pSound != NULL)
     {
-        stAi.sSound = pSound;
+        stAi.vecSounds.push_back(pSound);
         gc->preloadSound(pSound);
     }
     m_mapAniInfos.insert(make_pair(id, stAi));
@@ -312,6 +312,13 @@ CUnitDrawForCC::ANI_INFO* CUnitDrawForCC::getAnimationInfo(ANI_ID id)
     assert(it != m_mapAniInfos.end());
     
     return &it->second;
+}
+
+void CUnitDrawForCC::addAnimationSound( ANI_ID id, const char* sound )
+{
+    auto it = m_mapAniInfos.find(id);
+    assert(it != m_mapAniInfos.end());
+    it->second.vecSounds.push_back(sound);
 }
 
 void CUnitDrawForCC::prepareFrame(FRM_ID id, const char* pName)

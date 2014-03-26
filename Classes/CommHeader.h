@@ -32,5 +32,13 @@ using namespace CocosDenshion;
 #define M_DEF_GC(var) CCGameControler* var = CCGameControler::sharedGameControler()
 #define M_BASE_Z 10000
 
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+#define FONT_COMIC_BOOK "Comic Book"
+#define FONT_ARIAL "Arial"
+#else
+#define FONT_COMIC_BOOK "fonts/Comic Book.ttf"
+#define FONT_ARIAL "fonts/Arial.ttf"
+#endif
+
 #endif  /* __COMMHEADER_H__ */
 

@@ -1234,7 +1234,7 @@ void CStunBuff::onUnitAddAbility()
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, "fonts/Comic Book.ttf", 18, ccc3(250, 104, 16));
+        ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(250, 104, 16));
 
         M_DEF_GC(gc);
 

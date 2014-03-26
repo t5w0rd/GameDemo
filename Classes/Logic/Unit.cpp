@@ -428,6 +428,10 @@ void CDefaultAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
                 t = NULL;
             }
         }
+        else
+        {
+            return;
+        }
     }
 
     // 当前目标存在！   如果能打到之前的目标且  (目标非建筑  或(是建筑，且源也是建筑))
