@@ -280,32 +280,35 @@
 		8B03C5FB18D8D66F0026BB15 /* libcocos2dx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B03C4E618D8D2720026BB15 /* libcocos2dx.a */; };
 		8B03C5FD18D8D9960026BB15 /* Icon-57.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B03C5FC18D8D9960026BB15 /* Icon-57.png */; };
 		8B03C5FF18D8D99C0026BB15 /* Icon-114.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B03C5FE18D8D99C0026BB15 /* Icon-114.png */; };
-		8B5B116D18D8E5FB00357FEB /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115318D8E5FB00357FEB /* Background.png */; };
-		8B5B116E18D8E5FB00357FEB /* Background2HD.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115418D8E5FB00357FEB /* Background2HD.png */; };
-		8B5B116F18D8E5FB00357FEB /* BackgroundHD.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115518D8E5FB00357FEB /* BackgroundHD.png */; };
-		8B5B117018D8E5FB00357FEB /* BackgroundHD.pth in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115618D8E5FB00357FEB /* BackgroundHD.pth */; };
-		8B5B117118D8E5FB00357FEB /* Battle0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115718D8E5FB00357FEB /* Battle0.plist */; };
-		8B5B117218D8E5FB00357FEB /* Battle0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115818D8E5FB00357FEB /* Battle0.png */; };
-		8B5B117318D8E5FB00357FEB /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115918D8E5FB00357FEB /* fonts */; };
-		8B5B117418D8E5FB00357FEB /* Global0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115A18D8E5FB00357FEB /* Global0.plist */; };
-		8B5B117518D8E5FB00357FEB /* Global0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115B18D8E5FB00357FEB /* Global0.png */; };
-		8B5B117618D8E5FB00357FEB /* Heroes0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115C18D8E5FB00357FEB /* Heroes0.plist */; };
-		8B5B117718D8E5FB00357FEB /* Heroes0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115D18D8E5FB00357FEB /* Heroes0.png */; };
-		8B5B117818D8E5FB00357FEB /* Heroes1.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115E18D8E5FB00357FEB /* Heroes1.plist */; };
-		8B5B117918D8E5FB00357FEB /* Heroes1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B115F18D8E5FB00357FEB /* Heroes1.png */; };
-		8B5B117A18D8E5FB00357FEB /* Heroes2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116018D8E5FB00357FEB /* Heroes2.plist */; };
-		8B5B117B18D8E5FB00357FEB /* Heroes2.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116118D8E5FB00357FEB /* Heroes2.png */; };
-		8B5B117C18D8E5FB00357FEB /* Heroes3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116218D8E5FB00357FEB /* Heroes3.plist */; };
-		8B5B117D18D8E5FB00357FEB /* Heroes3.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116318D8E5FB00357FEB /* Heroes3.png */; };
-		8B5B117E18D8E5FB00357FEB /* Heroes4.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116418D8E5FB00357FEB /* Heroes4.plist */; };
-		8B5B117F18D8E5FB00357FEB /* Heroes4.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116518D8E5FB00357FEB /* Heroes4.png */; };
-		8B5B118018D8E5FB00357FEB /* Heroes5.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116618D8E5FB00357FEB /* Heroes5.plist */; };
-		8B5B118118D8E5FB00357FEB /* Heroes5.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116718D8E5FB00357FEB /* Heroes5.png */; };
-		8B5B118218D8E5FB00357FEB /* Projectiles0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116818D8E5FB00357FEB /* Projectiles0.plist */; };
-		8B5B118318D8E5FB00357FEB /* Projectiles0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116918D8E5FB00357FEB /* Projectiles0.png */; };
-		8B5B118418D8E5FB00357FEB /* scripts in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116A18D8E5FB00357FEB /* scripts */; };
-		8B5B118518D8E5FB00357FEB /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116B18D8E5FB00357FEB /* sounds */; };
-		8B5B118618D8E5FB00357FEB /* UI in Resources */ = {isa = PBXBuildFile; fileRef = 8B5B116C18D8E5FB00357FEB /* UI */; };
+		8B7BB5B318E08DF10009D101 /* LogoScene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8B7BB5B118E08DF10009D101 /* LogoScene.cpp */; };
+		8B7BB5D118E08E510009D101 /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5B518E08E510009D101 /* Background.png */; };
+		8B7BB5D218E08E510009D101 /* Background2HD.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5B618E08E510009D101 /* Background2HD.png */; };
+		8B7BB5D318E08E510009D101 /* BackgroundHD.pth in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5B718E08E510009D101 /* BackgroundHD.pth */; };
+		8B7BB5D418E08E510009D101 /* backgrounds in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5B818E08E510009D101 /* backgrounds */; };
+		8B7BB5D518E08E510009D101 /* Battle0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5B918E08E510009D101 /* Battle0.plist */; };
+		8B7BB5D618E08E510009D101 /* Battle0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5BA18E08E510009D101 /* Battle0.png */; };
+		8B7BB5D718E08E510009D101 /* fonts in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5BB18E08E510009D101 /* fonts */; };
+		8B7BB5D818E08E510009D101 /* Global0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5BC18E08E510009D101 /* Global0.plist */; };
+		8B7BB5D918E08E510009D101 /* Global0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5BD18E08E510009D101 /* Global0.png */; };
+		8B7BB5DA18E08E510009D101 /* Heroes0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5BE18E08E510009D101 /* Heroes0.plist */; };
+		8B7BB5DB18E08E510009D101 /* Heroes0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5BF18E08E510009D101 /* Heroes0.png */; };
+		8B7BB5DC18E08E510009D101 /* Heroes1.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C018E08E510009D101 /* Heroes1.plist */; };
+		8B7BB5DD18E08E510009D101 /* Heroes1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C118E08E510009D101 /* Heroes1.png */; };
+		8B7BB5DE18E08E510009D101 /* Heroes2.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C218E08E510009D101 /* Heroes2.plist */; };
+		8B7BB5DF18E08E510009D101 /* Heroes2.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C318E08E510009D101 /* Heroes2.png */; };
+		8B7BB5E018E08E510009D101 /* Heroes3.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C418E08E510009D101 /* Heroes3.plist */; };
+		8B7BB5E118E08E510009D101 /* Heroes3.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C518E08E510009D101 /* Heroes3.png */; };
+		8B7BB5E218E08E510009D101 /* Heroes4.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C618E08E510009D101 /* Heroes4.plist */; };
+		8B7BB5E318E08E510009D101 /* Heroes4.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C718E08E510009D101 /* Heroes4.png */; };
+		8B7BB5E418E08E510009D101 /* Heroes5.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C818E08E510009D101 /* Heroes5.plist */; };
+		8B7BB5E518E08E510009D101 /* Heroes5.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5C918E08E510009D101 /* Heroes5.png */; };
+		8B7BB5E618E08E510009D101 /* Heroes6.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5CA18E08E510009D101 /* Heroes6.plist */; };
+		8B7BB5E718E08E510009D101 /* Heroes6.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5CB18E08E510009D101 /* Heroes6.png */; };
+		8B7BB5E818E08E510009D101 /* Projectiles0.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5CC18E08E510009D101 /* Projectiles0.plist */; };
+		8B7BB5E918E08E510009D101 /* Projectiles0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5CD18E08E510009D101 /* Projectiles0.png */; };
+		8B7BB5EA18E08E510009D101 /* scripts in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5CE18E08E510009D101 /* scripts */; };
+		8B7BB5EB18E08E510009D101 /* sounds in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5CF18E08E510009D101 /* sounds */; };
+		8B7BB5EC18E08E510009D101 /* UI in Resources */ = {isa = PBXBuildFile; fileRef = 8B7BB5D018E08E510009D101 /* UI */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712461292920000B8313A /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB212928DE900B8313A /* libxml2.dylib */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
@@ -879,32 +882,36 @@
 		8B03C54D18D8D2B20026BB15 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lzio.h; sourceTree = "<group>"; };
 		8B03C5FC18D8D9960026BB15 /* Icon-57.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-57.png"; sourceTree = "<group>"; };
 		8B03C5FE18D8D99C0026BB15 /* Icon-114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-114.png"; sourceTree = "<group>"; };
-		8B5B115318D8E5FB00357FEB /* Background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Background.png; path = ../Resources/Background.png; sourceTree = "<group>"; };
-		8B5B115418D8E5FB00357FEB /* Background2HD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Background2HD.png; path = ../Resources/Background2HD.png; sourceTree = "<group>"; };
-		8B5B115518D8E5FB00357FEB /* BackgroundHD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = BackgroundHD.png; path = ../Resources/BackgroundHD.png; sourceTree = "<group>"; };
-		8B5B115618D8E5FB00357FEB /* BackgroundHD.pth */ = {isa = PBXFileReference; lastKnownFileType = file; name = BackgroundHD.pth; path = ../Resources/BackgroundHD.pth; sourceTree = "<group>"; };
-		8B5B115718D8E5FB00357FEB /* Battle0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Battle0.plist; path = ../Resources/Battle0.plist; sourceTree = "<group>"; };
-		8B5B115818D8E5FB00357FEB /* Battle0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Battle0.png; path = ../Resources/Battle0.png; sourceTree = "<group>"; };
-		8B5B115918D8E5FB00357FEB /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../Resources/fonts; sourceTree = "<group>"; };
-		8B5B115A18D8E5FB00357FEB /* Global0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Global0.plist; path = ../Resources/Global0.plist; sourceTree = "<group>"; };
-		8B5B115B18D8E5FB00357FEB /* Global0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Global0.png; path = ../Resources/Global0.png; sourceTree = "<group>"; };
-		8B5B115C18D8E5FB00357FEB /* Heroes0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes0.plist; path = ../Resources/Heroes0.plist; sourceTree = "<group>"; };
-		8B5B115D18D8E5FB00357FEB /* Heroes0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes0.png; path = ../Resources/Heroes0.png; sourceTree = "<group>"; };
-		8B5B115E18D8E5FB00357FEB /* Heroes1.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes1.plist; path = ../Resources/Heroes1.plist; sourceTree = "<group>"; };
-		8B5B115F18D8E5FB00357FEB /* Heroes1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes1.png; path = ../Resources/Heroes1.png; sourceTree = "<group>"; };
-		8B5B116018D8E5FB00357FEB /* Heroes2.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes2.plist; path = ../Resources/Heroes2.plist; sourceTree = "<group>"; };
-		8B5B116118D8E5FB00357FEB /* Heroes2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes2.png; path = ../Resources/Heroes2.png; sourceTree = "<group>"; };
-		8B5B116218D8E5FB00357FEB /* Heroes3.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes3.plist; path = ../Resources/Heroes3.plist; sourceTree = "<group>"; };
-		8B5B116318D8E5FB00357FEB /* Heroes3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes3.png; path = ../Resources/Heroes3.png; sourceTree = "<group>"; };
-		8B5B116418D8E5FB00357FEB /* Heroes4.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes4.plist; path = ../Resources/Heroes4.plist; sourceTree = "<group>"; };
-		8B5B116518D8E5FB00357FEB /* Heroes4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes4.png; path = ../Resources/Heroes4.png; sourceTree = "<group>"; };
-		8B5B116618D8E5FB00357FEB /* Heroes5.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes5.plist; path = ../Resources/Heroes5.plist; sourceTree = "<group>"; };
-		8B5B116718D8E5FB00357FEB /* Heroes5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes5.png; path = ../Resources/Heroes5.png; sourceTree = "<group>"; };
-		8B5B116818D8E5FB00357FEB /* Projectiles0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Projectiles0.plist; path = ../Resources/Projectiles0.plist; sourceTree = "<group>"; };
-		8B5B116918D8E5FB00357FEB /* Projectiles0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Projectiles0.png; path = ../Resources/Projectiles0.png; sourceTree = "<group>"; };
-		8B5B116A18D8E5FB00357FEB /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../Resources/scripts; sourceTree = "<group>"; };
-		8B5B116B18D8E5FB00357FEB /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../Resources/sounds; sourceTree = "<group>"; };
-		8B5B116C18D8E5FB00357FEB /* UI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = UI; path = ../Resources/UI; sourceTree = "<group>"; };
+		8B7BB5B118E08DF10009D101 /* LogoScene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LogoScene.cpp; sourceTree = "<group>"; };
+		8B7BB5B218E08DF10009D101 /* LogoScene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogoScene.h; sourceTree = "<group>"; };
+		8B7BB5B518E08E510009D101 /* Background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Background.png; path = ../Resources/Background.png; sourceTree = "<group>"; };
+		8B7BB5B618E08E510009D101 /* Background2HD.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Background2HD.png; path = ../Resources/Background2HD.png; sourceTree = "<group>"; };
+		8B7BB5B718E08E510009D101 /* BackgroundHD.pth */ = {isa = PBXFileReference; lastKnownFileType = file; name = BackgroundHD.pth; path = ../Resources/BackgroundHD.pth; sourceTree = "<group>"; };
+		8B7BB5B818E08E510009D101 /* backgrounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = backgrounds; path = ../Resources/backgrounds; sourceTree = "<group>"; };
+		8B7BB5B918E08E510009D101 /* Battle0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Battle0.plist; path = ../Resources/Battle0.plist; sourceTree = "<group>"; };
+		8B7BB5BA18E08E510009D101 /* Battle0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Battle0.png; path = ../Resources/Battle0.png; sourceTree = "<group>"; };
+		8B7BB5BB18E08E510009D101 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../Resources/fonts; sourceTree = "<group>"; };
+		8B7BB5BC18E08E510009D101 /* Global0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Global0.plist; path = ../Resources/Global0.plist; sourceTree = "<group>"; };
+		8B7BB5BD18E08E510009D101 /* Global0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Global0.png; path = ../Resources/Global0.png; sourceTree = "<group>"; };
+		8B7BB5BE18E08E510009D101 /* Heroes0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes0.plist; path = ../Resources/Heroes0.plist; sourceTree = "<group>"; };
+		8B7BB5BF18E08E510009D101 /* Heroes0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes0.png; path = ../Resources/Heroes0.png; sourceTree = "<group>"; };
+		8B7BB5C018E08E510009D101 /* Heroes1.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes1.plist; path = ../Resources/Heroes1.plist; sourceTree = "<group>"; };
+		8B7BB5C118E08E510009D101 /* Heroes1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes1.png; path = ../Resources/Heroes1.png; sourceTree = "<group>"; };
+		8B7BB5C218E08E510009D101 /* Heroes2.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes2.plist; path = ../Resources/Heroes2.plist; sourceTree = "<group>"; };
+		8B7BB5C318E08E510009D101 /* Heroes2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes2.png; path = ../Resources/Heroes2.png; sourceTree = "<group>"; };
+		8B7BB5C418E08E510009D101 /* Heroes3.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes3.plist; path = ../Resources/Heroes3.plist; sourceTree = "<group>"; };
+		8B7BB5C518E08E510009D101 /* Heroes3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes3.png; path = ../Resources/Heroes3.png; sourceTree = "<group>"; };
+		8B7BB5C618E08E510009D101 /* Heroes4.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes4.plist; path = ../Resources/Heroes4.plist; sourceTree = "<group>"; };
+		8B7BB5C718E08E510009D101 /* Heroes4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes4.png; path = ../Resources/Heroes4.png; sourceTree = "<group>"; };
+		8B7BB5C818E08E510009D101 /* Heroes5.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes5.plist; path = ../Resources/Heroes5.plist; sourceTree = "<group>"; };
+		8B7BB5C918E08E510009D101 /* Heroes5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes5.png; path = ../Resources/Heroes5.png; sourceTree = "<group>"; };
+		8B7BB5CA18E08E510009D101 /* Heroes6.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Heroes6.plist; path = ../Resources/Heroes6.plist; sourceTree = "<group>"; };
+		8B7BB5CB18E08E510009D101 /* Heroes6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Heroes6.png; path = ../Resources/Heroes6.png; sourceTree = "<group>"; };
+		8B7BB5CC18E08E510009D101 /* Projectiles0.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Projectiles0.plist; path = ../Resources/Projectiles0.plist; sourceTree = "<group>"; };
+		8B7BB5CD18E08E510009D101 /* Projectiles0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Projectiles0.png; path = ../Resources/Projectiles0.png; sourceTree = "<group>"; };
+		8B7BB5CE18E08E510009D101 /* scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = scripts; path = ../Resources/scripts; sourceTree = "<group>"; };
+		8B7BB5CF18E08E510009D101 /* sounds */ = {isa = PBXFileReference; lastKnownFileType = folder; name = sounds; path = ../Resources/sounds; sourceTree = "<group>"; };
+		8B7BB5D018E08E510009D101 /* UI */ = {isa = PBXFileReference; lastKnownFileType = folder; name = UI; path = ../Resources/UI; sourceTree = "<group>"; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB212928DE900B8313A /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -1526,11 +1533,11 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				8B5B115218D8E5D800357FEB /* Resources */,
 				8B03C5FE18D8D99C0026BB15 /* Icon-114.png */,
 				8B03C5FC18D8D9960026BB15 /* Icon-57.png */,
 				15A3D87E1682F7B3002FB0C5 /* cocos2dx.xcodeproj */,
 				8B03C4E718D8D2B20026BB15 /* Classes */,
+				8B7BB5B418E08E000009D101 /* Resources */,
 				15A3D8871682F7D5002FB0C5 /* Box2D */,
 				15A3D93A1682F7F9002FB0C5 /* chipmunk */,
 				15A3DA6B1682F8A6002FB0C5 /* CocosDenshion */,
@@ -1871,6 +1878,8 @@
 		8B03C4E718D8D2B20026BB15 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				8B7BB5B118E08DF10009D101 /* LogoScene.cpp */,
+				8B7BB5B218E08DF10009D101 /* LogoScene.h */,
 				8B03C4E818D8D2B20026BB15 /* AbilityForCC.cpp */,
 				8B03C4E918D8D2B20026BB15 /* AbilityForCC.h */,
 				8B03C4EA18D8D2B20026BB15 /* ActionForCC.cpp */,
@@ -1990,35 +1999,37 @@
 			path = lua;
 			sourceTree = "<group>";
 		};
-		8B5B115218D8E5D800357FEB /* Resources */ = {
+		8B7BB5B418E08E000009D101 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				8B5B115318D8E5FB00357FEB /* Background.png */,
-				8B5B115418D8E5FB00357FEB /* Background2HD.png */,
-				8B5B115518D8E5FB00357FEB /* BackgroundHD.png */,
-				8B5B115618D8E5FB00357FEB /* BackgroundHD.pth */,
-				8B5B115718D8E5FB00357FEB /* Battle0.plist */,
-				8B5B115818D8E5FB00357FEB /* Battle0.png */,
-				8B5B115918D8E5FB00357FEB /* fonts */,
-				8B5B115A18D8E5FB00357FEB /* Global0.plist */,
-				8B5B115B18D8E5FB00357FEB /* Global0.png */,
-				8B5B115C18D8E5FB00357FEB /* Heroes0.plist */,
-				8B5B115D18D8E5FB00357FEB /* Heroes0.png */,
-				8B5B115E18D8E5FB00357FEB /* Heroes1.plist */,
-				8B5B115F18D8E5FB00357FEB /* Heroes1.png */,
-				8B5B116018D8E5FB00357FEB /* Heroes2.plist */,
-				8B5B116118D8E5FB00357FEB /* Heroes2.png */,
-				8B5B116218D8E5FB00357FEB /* Heroes3.plist */,
-				8B5B116318D8E5FB00357FEB /* Heroes3.png */,
-				8B5B116418D8E5FB00357FEB /* Heroes4.plist */,
-				8B5B116518D8E5FB00357FEB /* Heroes4.png */,
-				8B5B116618D8E5FB00357FEB /* Heroes5.plist */,
-				8B5B116718D8E5FB00357FEB /* Heroes5.png */,
-				8B5B116818D8E5FB00357FEB /* Projectiles0.plist */,
-				8B5B116918D8E5FB00357FEB /* Projectiles0.png */,
-				8B5B116A18D8E5FB00357FEB /* scripts */,
-				8B5B116B18D8E5FB00357FEB /* sounds */,
-				8B5B116C18D8E5FB00357FEB /* UI */,
+				8B7BB5B518E08E510009D101 /* Background.png */,
+				8B7BB5B618E08E510009D101 /* Background2HD.png */,
+				8B7BB5B718E08E510009D101 /* BackgroundHD.pth */,
+				8B7BB5B818E08E510009D101 /* backgrounds */,
+				8B7BB5B918E08E510009D101 /* Battle0.plist */,
+				8B7BB5BA18E08E510009D101 /* Battle0.png */,
+				8B7BB5BB18E08E510009D101 /* fonts */,
+				8B7BB5BC18E08E510009D101 /* Global0.plist */,
+				8B7BB5BD18E08E510009D101 /* Global0.png */,
+				8B7BB5BE18E08E510009D101 /* Heroes0.plist */,
+				8B7BB5BF18E08E510009D101 /* Heroes0.png */,
+				8B7BB5C018E08E510009D101 /* Heroes1.plist */,
+				8B7BB5C118E08E510009D101 /* Heroes1.png */,
+				8B7BB5C218E08E510009D101 /* Heroes2.plist */,
+				8B7BB5C318E08E510009D101 /* Heroes2.png */,
+				8B7BB5C418E08E510009D101 /* Heroes3.plist */,
+				8B7BB5C518E08E510009D101 /* Heroes3.png */,
+				8B7BB5C618E08E510009D101 /* Heroes4.plist */,
+				8B7BB5C718E08E510009D101 /* Heroes4.png */,
+				8B7BB5C818E08E510009D101 /* Heroes5.plist */,
+				8B7BB5C918E08E510009D101 /* Heroes5.png */,
+				8B7BB5CA18E08E510009D101 /* Heroes6.plist */,
+				8B7BB5CB18E08E510009D101 /* Heroes6.png */,
+				8B7BB5CC18E08E510009D101 /* Projectiles0.plist */,
+				8B7BB5CD18E08E510009D101 /* Projectiles0.png */,
+				8B7BB5CE18E08E510009D101 /* scripts */,
+				8B7BB5CF18E08E510009D101 /* sounds */,
+				8B7BB5D018E08E510009D101 /* UI */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -2098,32 +2109,34 @@
 				379BB9D217F03F3700829B88 /* sconscript in Resources */,
 				8B03C5FD18D8D9960026BB15 /* Icon-57.png in Resources */,
 				8B03C5FF18D8D99C0026BB15 /* Icon-114.png in Resources */,
-				8B5B116D18D8E5FB00357FEB /* Background.png in Resources */,
-				8B5B116E18D8E5FB00357FEB /* Background2HD.png in Resources */,
-				8B5B116F18D8E5FB00357FEB /* BackgroundHD.png in Resources */,
-				8B5B117018D8E5FB00357FEB /* BackgroundHD.pth in Resources */,
-				8B5B117118D8E5FB00357FEB /* Battle0.plist in Resources */,
-				8B5B117218D8E5FB00357FEB /* Battle0.png in Resources */,
-				8B5B117318D8E5FB00357FEB /* fonts in Resources */,
-				8B5B117418D8E5FB00357FEB /* Global0.plist in Resources */,
-				8B5B117518D8E5FB00357FEB /* Global0.png in Resources */,
-				8B5B117618D8E5FB00357FEB /* Heroes0.plist in Resources */,
-				8B5B117718D8E5FB00357FEB /* Heroes0.png in Resources */,
-				8B5B117818D8E5FB00357FEB /* Heroes1.plist in Resources */,
-				8B5B117918D8E5FB00357FEB /* Heroes1.png in Resources */,
-				8B5B117A18D8E5FB00357FEB /* Heroes2.plist in Resources */,
-				8B5B117B18D8E5FB00357FEB /* Heroes2.png in Resources */,
-				8B5B117C18D8E5FB00357FEB /* Heroes3.plist in Resources */,
-				8B5B117D18D8E5FB00357FEB /* Heroes3.png in Resources */,
-				8B5B117E18D8E5FB00357FEB /* Heroes4.plist in Resources */,
-				8B5B117F18D8E5FB00357FEB /* Heroes4.png in Resources */,
-				8B5B118018D8E5FB00357FEB /* Heroes5.plist in Resources */,
-				8B5B118118D8E5FB00357FEB /* Heroes5.png in Resources */,
-				8B5B118218D8E5FB00357FEB /* Projectiles0.plist in Resources */,
-				8B5B118318D8E5FB00357FEB /* Projectiles0.png in Resources */,
-				8B5B118418D8E5FB00357FEB /* scripts in Resources */,
-				8B5B118518D8E5FB00357FEB /* sounds in Resources */,
-				8B5B118618D8E5FB00357FEB /* UI in Resources */,
+				8B7BB5D118E08E510009D101 /* Background.png in Resources */,
+				8B7BB5D218E08E510009D101 /* Background2HD.png in Resources */,
+				8B7BB5D318E08E510009D101 /* BackgroundHD.pth in Resources */,
+				8B7BB5D418E08E510009D101 /* backgrounds in Resources */,
+				8B7BB5D518E08E510009D101 /* Battle0.plist in Resources */,
+				8B7BB5D618E08E510009D101 /* Battle0.png in Resources */,
+				8B7BB5D718E08E510009D101 /* fonts in Resources */,
+				8B7BB5D818E08E510009D101 /* Global0.plist in Resources */,
+				8B7BB5D918E08E510009D101 /* Global0.png in Resources */,
+				8B7BB5DA18E08E510009D101 /* Heroes0.plist in Resources */,
+				8B7BB5DB18E08E510009D101 /* Heroes0.png in Resources */,
+				8B7BB5DC18E08E510009D101 /* Heroes1.plist in Resources */,
+				8B7BB5DD18E08E510009D101 /* Heroes1.png in Resources */,
+				8B7BB5DE18E08E510009D101 /* Heroes2.plist in Resources */,
+				8B7BB5DF18E08E510009D101 /* Heroes2.png in Resources */,
+				8B7BB5E018E08E510009D101 /* Heroes3.plist in Resources */,
+				8B7BB5E118E08E510009D101 /* Heroes3.png in Resources */,
+				8B7BB5E218E08E510009D101 /* Heroes4.plist in Resources */,
+				8B7BB5E318E08E510009D101 /* Heroes4.png in Resources */,
+				8B7BB5E418E08E510009D101 /* Heroes5.plist in Resources */,
+				8B7BB5E518E08E510009D101 /* Heroes5.png in Resources */,
+				8B7BB5E618E08E510009D101 /* Heroes6.plist in Resources */,
+				8B7BB5E718E08E510009D101 /* Heroes6.png in Resources */,
+				8B7BB5E818E08E510009D101 /* Projectiles0.plist in Resources */,
+				8B7BB5E918E08E510009D101 /* Projectiles0.png in Resources */,
+				8B7BB5EA18E08E510009D101 /* scripts in Resources */,
+				8B7BB5EB18E08E510009D101 /* sounds in Resources */,
+				8B7BB5EC18E08E510009D101 /* UI in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2395,6 +2408,7 @@
 				8B03C57F18D8D2B20026BB15 /* lundump.c in Sources */,
 				8B03C58018D8D2B20026BB15 /* lvm.c in Sources */,
 				8B03C58118D8D2B20026BB15 /* lzio.c in Sources */,
+				8B7BB5B318E08DF10009D101 /* LogoScene.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
