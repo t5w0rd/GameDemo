@@ -212,6 +212,9 @@ bool CBattleWorld::onInit()
     l->initHeroPortrait();
     l->updateHeroPortrait();
 
+    //runAction(CCSequence::createWithTwoActions(CCDelayTime::create(5.0f), CCSpawn::createWithTwoActions(CCMoveBy::create(2.0f, ccp(500, 500)), CCScaleTo::create(2.0f, 4.0f))));
+    //l->setPosition(ccp());
+
     // DemoTemp
     static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
     ae->preloadEffect("sounds/Units/Thor/move/00.mp3");
@@ -621,7 +624,6 @@ bool CCBattleSceneLayer::init()
 
     m_pCtrlLayer->addChild(bp);
     bp->setPosition(ccp(wsz.width - btn->getContentSize().width * 0.5 - 50, btn->getContentSize().height * 0.5 + 50));
-
 
     return true;
 }

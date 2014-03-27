@@ -230,30 +230,30 @@ void CCWinLayer::setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag)
 void CCWinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK)
 {
     setScale(fScale);
-    m_fMoveK = MIN(1, MAX(0, fMoveK));
+    m_fMoveK = min(1, max(0, fMoveK));
     CCSize oSz = getContentSize() * getScale();
     static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
-    oSz.width = MAX(0, oSz.width - oWinSz.width);
-    oSz.height = MAX(0, oSz.height - oWinSz.height);
+    oSz.width = max(0, oSz.width - oWinSz.width);
+    oSz.height = max(0, oSz.height - oWinSz.height);
     m_fBuffRange = fBuffRange;
 
-    m_fEdgeK = MIN(1, MAX(0, fEdgeK));
+    m_fEdgeK = min(1, max(0, fEdgeK));
 }
 
 void CCWinLayer::setScale(float fScale)
 {
-    static CCSize sz = CCDirector::sharedDirector()->getVisibleSize();
+    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     CCSize oSz = getContentSize();
-    CCLayer::setScale(MIN(MAX(MAX(sz.width / oSz.width, sz.height / oSz.height), fScale), 4.0f));
+    CCLayer::setScale(min(max(max(wsz.width / oSz.width, wsz.height / oSz.height), fScale), 4.0f));
 }
 
 void CCWinLayer::setPosition( const CCPoint& newPosition )
 {
-    static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
+    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     CCSize oSz = getContentSize() * getScale();
     float fX = (1 - 1 / getScale()) *  0.5 * oSz.width;
     float fY = (1 - 1 / getScale()) *  0.5 * oSz.height;
-    CCLayer::setPosition(ccp(min(max(newPosition.x, (oWinSz.width - oSz.width) + fX), fX), min(max(newPosition.y, (oWinSz.height - oSz.height) + fY), fY)));
+    CCLayer::setPosition(ccp(min(max(newPosition.x, (wsz.width - oSz.width) + fX), fX), min(max(newPosition.y, (wsz.height - oSz.height) + fY), fY)));
 }
 
 float CCWinLayer::getTouchMovedDuration() const
