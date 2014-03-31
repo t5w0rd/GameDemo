@@ -386,10 +386,14 @@ void CAbility::onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
     lua_pop(L, 1);  // pop 'a'
 }
 
+bool CAbility::onUnitProjectileArrive(CProjectile* pProjectile)
+{
+    return true;
+}
+
 void CAbility::onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
 }
-
 
 void CAbility::onAddToUnit(CUnit* pOwner)
 {
@@ -1858,3 +1862,47 @@ void CKnockBackBuff::onUnitDelAbility()
     d->stopAction(CONST_ACT_TAG);
 }
 
+// CReflectBuff
+CReflectBuff::CReflectBuff( const char* pRootId, const char* pName, float fDuration )
+    : CBuffAbility(pRootId, pName, fDuration, false)
+{
+    setTriggerFlags(CUnit::kOnProjectileArriveTrigger);
+    setDbgClassName("CReflectBuff");
+}
+
+CMultiRefObject* CReflectBuff::copy() const
+{
+    CReflectBuff* ret = new CReflectBuff(getRootId(), getName(), m_fDuration);
+    return ret;
+}
+
+void CReflectBuff::onUnitAddAbility()
+{
+
+}
+
+void CReflectBuff::onUnitDelAbility()
+{
+
+}
+
+bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
+{
+    CUnit* o = getOwner();
+    //pProjectile->setSrcUnit(o->getId());
+    //pProjectile->setSrcAbility(this);
+
+    if (pProjectile->getFromToType() == CProjectile::kPointToUnit || pProjectile->getFromToType() == CProjectile::kUnitToUnit)
+    {
+        int swp = pProjectile->getToUnit();
+        pProjectile->setToUnit(pProjectile->getSrcUnit());
+        //pProjectile->setSrcUnit(swp);
+
+
+        pProjectile->setMoveSpeed(pProjectile->getMoveSpeed() * 5.0f);
+        pProjectile->setMaxHeightDelta(0.0f);
+        pProjectile->redirect();
+    }
+
+    return false;
+}

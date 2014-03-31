@@ -6,6 +6,7 @@
 #include "LuaBindingForCC.h"
 #include "TestScene.h"
 #include "LogoScene.h"
+#include "HeroRoomScene.h"
 
 
 // AppDelegate
@@ -36,8 +37,9 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #if GD_UNPACK
     CCScene* pScene = CCTestSceneLayer::scene();
 #else
-    CCScene* pScene = CCBattleSceneLayer::scene();
+    //CCScene* pScene = CCBattleSceneLayer::scene();
     //CCScene* pScene = CCLogoSceneLayer::scene();
+    CCScene* pScene = CCHeroRoomSceneLayer::scene();
     
 #endif
     if (pScene == NULL)

@@ -114,5 +114,5 @@ void CCGameControler::preloadMusic( const char* music )
 
 void CCGameControler::playMusic( const char* music )
 {
-    m_ae->playBackgroundMusic(music);
+    m_ae->playBackgroundMusic(music, true);
 }

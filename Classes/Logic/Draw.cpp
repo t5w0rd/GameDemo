@@ -1098,6 +1098,22 @@ void CProjectile::onTick(float dt)
 
 void CProjectile::onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
 {
+    if (getFromToType() == kPointToUnit || getFromToType() == kUnitToUnit)
+    {
+        CWorld* w = getWorld();
+        assert(w != NULL);
+        CUnit* t = w->getUnit(getToUnit());
+        if (t == NULL)
+        {
+            return;
+        }
+
+        if (t->onProjectileArrive(this) == false)
+        {
+            return;
+        }
+    }
+
     die();
 }
 
@@ -1169,7 +1185,7 @@ bool CProjectile::hasPenaltyType(PENALTY_FLAG_BIT ePenaltyType) const
 
 void CProjectile::fireFollow(const CPoint& rFromPoint, int iToUnit, float fDuration, float fMaxHeightDelta)
 {
-    setFromToType(kPointToUnit);
+    //setFromToType(kPointToUnit);
 
     CWorld* w = getWorld();
     assert(w != NULL);
@@ -1321,6 +1337,52 @@ void CProjectile::fire()
                 assert(false);
             }
             
+        }
+        break;
+
+    case kFireStraight:
+        break;
+    }
+}
+
+void CProjectile::redirect()
+{
+    stopAllActions();
+    playFireSound();
+    CWorld* w = getWorld();
+
+    switch (getFireType())
+    {
+    case kFireFollow:
+        {
+            assert(getFromToType() == kUnitToUnit || getFromToType() == kPointToUnit);
+
+            if (getFromToType() == kUnitToUnit)
+            {
+                setFromPoint(getPosition());
+            }
+
+            CUnit* t = w->getUnit(getToUnit());
+            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+
+            float fDis = getFromPoint().getDistance(td->getPosition() + CPoint(0.0f, td->getHalfOfHeight()));
+            fireFollow(getFromPoint(), getToUnit(), fDis / max(FLT_EPSILON, getMoveSpeed()), getMaxHeightDelta());
+        }
+
+        break;
+
+    case kFireLink:
+        {
+            switch (getFromToType())
+            {
+            case kUnitToUnit:
+                fireLink(getFromUnit(), getToUnit());
+                break;
+
+            default:
+                assert(false);
+            }
+
         }
         break;
 

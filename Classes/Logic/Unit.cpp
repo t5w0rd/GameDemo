@@ -827,6 +827,26 @@ void CUnit::onProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
     }
 }
 
+bool CUnit::onProjectileArrive(CProjectile* pProjectile)
+{
+    if (triggerOnProjectileArrive(pProjectile) == false)
+    {
+        return false;
+    }
+
+    if (m_pAI != NULL)
+    {
+        m_pAI->onUnitProjectileArrive(this, pProjectile);
+    }
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitProjectileArrive(this, pProjectile);
+    }
+
+    return true;
+}
+
 void CUnit::onAddActiveAbility(CActiveAbility* pAbility)
 {
     if (m_pAI != NULL)
@@ -1301,6 +1321,11 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
     {
         m_mapOnProjectileEffectTriggerAbilitys.addObject(pAbility);
     }
+
+    if (dwTriggerFlags & kOnProjectileArriveTrigger)
+    {
+        m_mapOnProjectileArriveTriggerAbilitys.addObject(pAbility);
+    }
 }
 
 void CUnit::delAbilityFromTriggers(CAbility* pAbility)
@@ -1378,6 +1403,11 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
         m_mapOnProjectileEffectTriggerAbilitys.delObject(id);
+    }
+
+    if (dwTriggerFlags & kOnProjectileArriveTrigger)
+    {
+        m_mapOnProjectileArriveTriggerAbilitys.delObject(id);
     }
 }
 
@@ -1581,6 +1611,24 @@ void CUnit::triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
         M_MAP_NEXT;
     }
     endTrigger();
+}
+
+bool CUnit::triggerOnProjectileArrive(CProjectile* pProjectile)
+{
+    beginTrigger();
+    bool res = true;
+    M_MAP_FOREACH(m_mapOnProjectileArriveTriggerAbilitys)
+    {
+        CAbility* pAbility = M_MAP_EACH;
+        if (pAbility->onUnitProjectileArrive(pProjectile) == false)
+        {
+            res = false;
+            break;
+        }
+        M_MAP_NEXT;
+    }
+    endTrigger();
+    return res;
 }
 
 bool CUnit::isSuspended() const

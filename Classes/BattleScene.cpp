@@ -42,6 +42,7 @@ public:
         d->setCastTarget(CCommandTarget());
         d->cmdCastSpell(w->getWarCryAct()->getId());
         u->addBuffAbility(new CChangeHpBuff("LevelUpHeal", "LevelUpHeal", 5.0f, false, 0.2f, CExtraCoeff(0.02f, 0.0f)));
+        u->addBuffAbility(new CReflectBuff("Reflect", "Reflect", 150.0f));
         CAttackAct* atk = DCAST(u->getActiveAbility(u->getAttackAbilityId()), CAttackAct*);
         atk->getBaseAttack().setValue(atk->getBaseAttack().getValue() + 27.8);
         d->setBaseMoveSpeed(d->getBaseMoveSpeed() + 1);
@@ -243,7 +244,7 @@ bool CBattleWorld::onInit()
     ae->preloadEffect("sounds/Effect/GUITransitionOpen.mp3");    
     
     char sz[1024];
-    sprintf(sz, "sounds/Background/Background%02d.mp3", rand() % 6);
+    sprintf(sz, "sounds/Background/Background%02d.mp3", rand() % 5);
     ae->playBackgroundMusic(sz, true);
     ae->playEffect("sounds/Effect/WaveIncoming.mp3");
 
@@ -619,7 +620,7 @@ bool CCBattleSceneLayer::init()
     setWorldInterval(0.02f);
 
     CCButtonPanel* bp = CCButtonPanel::create(1, 1, 132, 0, 0, NULL);
-    CCSkillButtonBase* btn = CCSkillButtonNormal::create("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickFist), NULL);
+    CCButtonBase* btn = CCButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickFist), NULL);
     bp->addButton(btn, 0, 0);
 
     m_pCtrlLayer->addChild(bp);
@@ -1050,7 +1051,7 @@ void CCBattleSceneLayer::initHeroPortrait()
     const CCPoint& pos = m_pCtrlLayer->getChildByTag(1000)->getPosition();
     CCButtonPanel* bp = CCButtonPanel::create(1, 1, 124, 0, 0, NULL);
     m_pCtrlLayer->addChild(bp);
-    CCSkillButtonNormal* btn = CCSkillButtonNormal::create(sz, sz, NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickHeroPortrait), NULL);
+    CCButtonNormal* btn = CCButtonNormal::createWithFrameName(sz, sz, NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickHeroPortrait), NULL);
     bp->setPosition(ccp(oSz.width * 0.07, pos.y - btn->getContentSize().height * 0.5 - 100));
     bp->addButton(btn, 0, 0);
     
@@ -1330,7 +1331,7 @@ void CCBattleSceneLayer::onClickFist( CCNode* pNode )
     M_DEF_GC(gc);
     gc->playSound("sounds/Effect/Sound_GUIButtonCommon.mp3");
     // DragonStrike
-    DCAST(pNode, CCSkillButtonNormal*)->coolDown();
+    DCAST(pNode, CCButtonNormal*)->coolDown();
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* u = w->getHero();
     CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
