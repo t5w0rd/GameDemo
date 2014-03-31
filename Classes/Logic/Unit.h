@@ -11,11 +11,21 @@
 #include "MultiRefObject.h"
 #include "Level.h"
 #include "Base.h"
+#include "CommDef.h"
 // 禁止在此处包含Unit.h文件
 
 
-// 攻击数值，由多种类型的攻击组合而成
-class CAttackValue
+class CTypeValue
+{
+public:
+    CTypeValue(int type, float value);
+    M_SYNTHESIZE(int, m_iType, Type);
+    M_SYNTHESIZE(float, m_fValue, Value);
+    
+    void set(int type, float value);
+};
+
+class CAttackValue : public CTypeValue
 {
 public:
     static const int CONST_MAX_ATTACK_TYPE = 4;
@@ -34,27 +44,10 @@ public:
         kCnName = CONST_MAX_NAME_INDEX - 1
     };
     
-    static const char* CONST_ARR_NAME[CONST_MAX_ATTACK_TYPE][CONST_MAX_NAME_INDEX];
-    typedef float ARR_ATTACK_VALUES[CONST_MAX_ATTACK_TYPE];
-    
-public:
-    CAttackValue();
-    CAttackValue(int iCount, ATTACK_TYPE eType1, float fValue1, ...);
-    
-    float getValue(ATTACK_TYPE eType) const;
-    void setValue(ATTACK_TYPE eType, float fValue);
-    void setAttackValue(const CAttackValue& roAttackValue);
-    void setValueZero();
-    
-    static const char* getName(ATTACK_TYPE eType, int iIndex = 0);
-    
-    const CAttackValue& operator=(const CAttackValue& roAttackValue);
-    
-    ARR_ATTACK_VALUES m_afValues;
+    CAttackValue(int type = kPhysical, float value = 0.0f);
 };
 
-// 护甲数值，由多种类型的护甲组合而成
-class CArmorValue
+class CArmorValue : public CTypeValue
 {
 public:
     static const int CONST_MAX_ARMOR_TYPE = 6;
@@ -75,21 +68,52 @@ public:
         kCnName = CONST_MAX_NAME_INDEX - 1
     };
     
-    static const char* CONST_ARR_NAME[CONST_MAX_ARMOR_TYPE][CONST_MAX_NAME_INDEX];
-    typedef float ARR_ARMOR_VALUES[CONST_MAX_ARMOR_TYPE];
+    CArmorValue(int type = kNormal, float value = 0.0f);
+};
+
+
+// 攻击数值，由多种类型的攻击组合而成
+class CMultiAttackValue
+{
+public:
+    static const char* CONST_ARR_NAME[CAttackValue::CONST_MAX_ATTACK_TYPE][CAttackValue::CONST_MAX_NAME_INDEX];
+    typedef float ARR_ATTACK_VALUES[CAttackValue::CONST_MAX_ATTACK_TYPE];
     
 public:
-    CArmorValue();
-    CArmorValue(int iCount, ARMOR_TYPE eType1, float fValue1, ...);
+    CMultiAttackValue();
+    CMultiAttackValue(int iCount, CAttackValue::ATTACK_TYPE eType1, float fValue1, ...);
     
-    float getValue(ARMOR_TYPE eType) const;
-    void setValue(ARMOR_TYPE eType, float fValue);
-    void setArmorValue(const CArmorValue& roArmorValue);
+    float getValue(CAttackValue::ATTACK_TYPE eType) const;
+    void setValue(CAttackValue::ATTACK_TYPE eType, float fValue);
+    void setAttackValue(const CMultiAttackValue& roAttackValue);
     void setValueZero();
     
-    static const char* getName(ARMOR_TYPE eType, int iIndex = 0);
+    static const char* getName(CAttackValue::ATTACK_TYPE eType, int iIndex = 0);
     
-    const CArmorValue& operator=(const CArmorValue& roArmorValue);
+    const CMultiAttackValue& operator=(const CMultiAttackValue& roAttackValue);
+    
+    ARR_ATTACK_VALUES m_afValues;
+};
+
+// 护甲数值，由多种类型的护甲组合而成
+class CMultiArmorValue
+{
+public:
+    static const char* CONST_ARR_NAME[CArmorValue::CONST_MAX_ARMOR_TYPE][CArmorValue::CONST_MAX_NAME_INDEX];
+    typedef float ARR_ARMOR_VALUES[CArmorValue::CONST_MAX_ARMOR_TYPE];
+    
+public:
+    CMultiArmorValue();
+    CMultiArmorValue(int iCount, CArmorValue::ARMOR_TYPE eType1, float fValue1, ...);
+    
+    float getValue(CArmorValue::ARMOR_TYPE eType) const;
+    void setValue(CArmorValue::ARMOR_TYPE eType, float fValue);
+    void setArmorValue(const CMultiArmorValue& roArmorValue);
+    void setValueZero();
+    
+    static const char* getName(CArmorValue::ARMOR_TYPE eType, int iIndex = 0);
+    
+    const CMultiArmorValue& operator=(const CMultiArmorValue& roArmorValue);
     
     ARR_ARMOR_VALUES m_afValues;
 };
@@ -117,7 +141,7 @@ public:
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAtkVal, AttackValue);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ATTACK_BUFF, m_vecAtkBuffs, AttackBuffs);
     
-    void setAttackValue(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue);
+    void setAttackValue(int eAttackType, float fAttackValue);
     void addAttackBuff(const CAttackBuff& rAttackBuff);
 };
 
@@ -214,41 +238,39 @@ public:
     CUnitEventAdapter();
     virtual ~CUnitEventAdapter();
     
-    inline virtual void onUnitChangeLevel(int iChanged) {}
-    inline virtual void onUnitRevive() {}
-    inline virtual void onUnitDying() {}
-    inline virtual void onUnitDead() {}
-    inline virtual void onUnitChangeHp(float fChanged) {}
-    inline virtual void onUnitTick(float dt) {}
-    inline virtual CAttackData* onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget) { return pAttack; }
-    inline virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource) { return pAttack; }
-    inline virtual void onUnitDamaged(CAttackData* pAttack, CUnit* pSource) {}
-    inline virtual void onUnitDamagedDone(float fDamage, CUnit* pSource) {}
-    inline virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget) {}
-    inline virtual void onUnitDestroyProjectile(CProjectile* pProjectile) {}
-    inline virtual void onUnitAddActiveAbility(CActiveAbility* pAbility) {}
-    inline virtual void onUnitDelActiveAbility(CActiveAbility* pAbility) {}
-    inline virtual void onUnitAddPassiveAbility(CPassiveAbility* pAbility) {}
-    inline virtual void onUnitDelPassiveAbility(CPassiveAbility* pAbility) {}
-    inline virtual void onUnitAddBuffAbility(CBuffAbility* pAbility) {}
-    inline virtual void onUnitDelBuffAbility(CBuffAbility* pAbility) {}
-    inline virtual void onUnitAbilityReady(CAbility* pAbility) {}
-    inline virtual void onUnitAddItem(int iIndex) {}
-    inline virtual void onUnitDelItem(int iIndex) {}
-    //inline virtual void onUnitChangeItemStackCount(CItem* pItem, int iChange) {}
-    
-    M_SYNTHESIZE(CUnit*, m_pNotifyUnit, NotifyUnit);
+    inline virtual void onUnitChangeLevel(CUnit* pUnit, int iChanged) {}
+    inline virtual void onUnitRevive(CUnit* pUnit) {}
+    inline virtual void onUnitDying(CUnit* pUnit) {}
+    inline virtual void onUnitDead(CUnit* pUnit) {}
+    inline virtual void onUnitChangeHp(CUnit* pUnit, float fChanged) {}
+    inline virtual void onUnitTick(CUnit* pUnit, float dt) {}
+    inline virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget) {}
+    inline virtual bool onUnitAttacked(CUnit* pUnit, CAttackData* pAttack, CUnit* pSource) { return true; }
+    inline virtual void onUnitDamaged(CUnit* pUnit, CAttackData* pAttack, CUnit* pSource) {}
+    inline virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource) {}
+    inline virtual void onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget) {}
+    inline virtual void onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget) {}
+    inline virtual void onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) {}
+    inline virtual void onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) {}
+    inline virtual void onUnitAddPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility) {}
+    inline virtual void onUnitDelPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility) {}
+    inline virtual void onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility) {}
+    inline virtual void onUnitDelBuffAbility(CUnit* pUnit, CBuffAbility* pAbility) {}
+    inline virtual void onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility) {}
+    inline virtual void onUnitAddItem(CUnit* pUnit, int iIndex) {}
+    inline virtual void onUnitDelItem(CUnit* pUnit, int iIndex) {}
+    //inline virtual void onUnitChangeItemStackCount(CUnit* pUnit, CItem* pItem, int iChange) {}
 };
 
 class CDefaultAI : public CUnitEventAdapter
 {
 public:
-    virtual void onUnitTick(float dt);
-    virtual CAttackData* onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+    virtual void onUnitTick(CUnit* pUnit, float dt);
+    virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource);
 };
 
 class CUnitDraw;
-
+class CForceResource;
 class CUnit : public CMultiRefObject, public CUnitForce, public CLevelExp
 {
 protected:
@@ -257,6 +279,8 @@ protected:
 public:
     CUnit(const char* pRootId);
     virtual ~CUnit();
+    virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CUnit* from);
 
     virtual const char* getDbgTag() const;
 
@@ -275,7 +299,10 @@ public:
     
     M_SYNTHESIZE_READONLY(float, m_fHp, Hp);
     M_SYNTHESIZE_READONLY(float, m_fMaxHp, MaxHp);
-    M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExMaxHp, ExMaxHp);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(CExtraCoeff, m_oExMaxHp, ExMaxHp);
+    void setExMaxHp(const CExtraCoeff& var);
+    float getRealMaxHp() const;
+    
     
     // @override
     
@@ -293,9 +320,9 @@ public:
     virtual void step(float dt);
     virtual void onTick(float dt);
     // 攻击发出时，攻击者被通知
-    virtual CAttackData* onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask);
+    virtual void onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask);
     // 攻击抵达时，受害者被通知
-    virtual CAttackData* onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask);
+    virtual bool onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask);
     // 攻击命中时，受害者被通知
     virtual void onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask);
     // 攻击命中时，受害者被通知
@@ -303,7 +330,7 @@ public:
     // 攻击命中时，攻击者被通知
     virtual void onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTriggerMask);
     // 攻击数据消除时被通知，通常由投射物携带攻击数据，二者生存期一致
-    virtual void onDestroyProjectile(CProjectile* pProjectile);
+    virtual void onProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     
     virtual void onAddActiveAbility(CActiveAbility* pAbility);
     virtual void onDelActiveAbility(CActiveAbility* pAbility);
@@ -325,30 +352,32 @@ public:
     template <typename ADAPTER>
     void setAI(const ADAPTER&);
     void delAI();
-    
+
+    M_SYNTHESIZE_READONLY(CUnitEventAdapter*, m_pEventAdapter, EventAdapter);
+    void setEventAdapter(CUnitEventAdapter* var);
 
     ////////////////////////  trigger /////////////////    
     enum TRIGGER_FLAG_BIT
     {
-        kReviveTrigger = 1 << 0,
-        kDyingTrigger = 1 << 1,
-        kDeadTrigger = 1 << 2,
-        kChangeHpTrigger = 1 << 3,
-        kTickTrigger = 1 << 4,
-        kAttackTargetTrigger = 1 << 5,
-        kAttackedTrigger = 1 << 6,
-        kDamagedSurfaceTrigger = 1 << 7,
-        kDamagedInnerTrigger = 1 << 8,
-        kDamagedDoneTrigger = 1 << 9,
-        kDamageTargetDoneTrigger = 1 << 10,
-        kDestroyProjectileTrigger = 1 << 11
+        kOnReviveTrigger = 1 << 0,
+        kOnDyingTrigger = 1 << 1,
+        kOnDeadTrigger = 1 << 2,
+        kOnChangeHpTrigger = 1 << 3,
+        kOnTickTrigger = 1 << 4,
+        kOnAttackTargetTrigger = 1 << 5,
+        kOnAttackedTrigger = 1 << 6,
+        kOnDamagedSurfaceTrigger = 1 << 7,
+        kOnDamagedInnerTrigger = 1 << 8,
+        kOnDamagedDoneTrigger = 1 << 9,
+        kOnDamageTargetDoneTrigger = 1 << 10,
+        kOnProjectileEffectTrigger = 1 << 11
     };
     
     enum TRIGGER_MASK
     {
         kNoMasked = 0,
         kMaskAll = 0xFFFFFFFF,
-        kMaskActiveTrigger = kAttackTargetTrigger | kDamageTargetDoneTrigger
+        kMaskActiveTrigger = kOnAttackTargetTrigger | kOnDamageTargetDoneTrigger
     };
     
     
@@ -359,31 +388,25 @@ public:
     // 攻击数据，描述这次攻击的数据体，详见 CAttackData 定义
     // 内部会自行调用中层、底层攻击函数，对攻击数据进行传递并处理，通常返回处理后的攻击数据，也可以返回 NULL
     // 内部会根据人物属性对攻击数据进行一次变换，如力量加成等
-    CAttackData* attackAdv(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
-    
-    // 中层攻击函数
     // 触发 onAttackTarget，
-    CAttackData* attackMid(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
+    void attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
     
     // 底层攻击函数，目前无逻辑，只是将传递过来的攻击数据返回给上层
-    CAttackData* attackBot(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
+    void attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
     
     // 高层伤害函数，攻击者生成的攻击到达目标后，目标将调用该函数，计算自身伤害
     // 内部会对攻击数据进行向下传递
     // 触发 onAttacked，如果onAttacked返回 NULL，伤害将不会继续向下层函数传递，函数返回false。比如说，闪避成功，伤害无需继续计算
-    bool damagedAdv(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
-    
-    // 中层伤害函数，攻击数据已经不可消除，但可以改变伤害数据，如一次全额伤害的抵挡，虽然结果上看HP没有受损，但仍然会进行一次0伤害判定
     // 触发 onDamaged
     // 遍历攻击数据携带的BUFF链，根据附着概率对单位自身进行BUFF附加
     // 根据单位属性，进行攻击数据变换，如抗性对攻击数据的影响
     // 根据单位护甲，进行攻击数据中的攻击数值变换
-    void damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
+    bool damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     // 底层伤害函数，直接扣除指定量的HP值
     // 触发伤害源的 onDamaeTarget
     // 调用 setHp，从而会触发 onChangeHp，可能会触发onDying
-    void damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
+    void damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
     
@@ -391,10 +414,12 @@ public:
     typedef CMultiRefMap<CActiveAbility*> MAP_ACTIVE_ABILITYS;
     typedef CMultiRefMap<CPassiveAbility*> MAP_PASSIVE_ABILITYS;
     typedef CMultiRefMap<CBuffAbility*> MAP_BUFF_ABILITYS;
+    typedef CMultiRefMap<CPassiveAbility*> MAP_SYSTEM_ABILITYS;
     
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ACTIVE_ABILITYS, m_mapActAbilitys, ActiveAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PASSIVE_ABILITYS, m_mapPasAbilitys, PassiveAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_BUFF_ABILITYS, m_mapBuffAbilitys, BuffAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_SYSTEM_ABILITYS, m_mapSysAbilitys, SystemAbilitys);
 
 
     M_SYNTHESIZE(int, m_iAttackAbilityId, AttackAbilityId);
@@ -414,6 +439,8 @@ public:
     void addBuffAbility(int id, int iSrcUnit, int iLevel = 1);
     void delBuffAbility(int id, bool bNotify = true);
     CBuffAbility* getBuffAbility(int id);
+
+    void addSystemAbility(CPassiveAbility* pAbility);
     
 protected:
     void updateBuffAbilityElapsed(float dt);
@@ -431,7 +458,7 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDyingTriggerAbilitys, OnDyingTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDeadTriggerAbilitys, OnDeadTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnTickTriggerAbilitys, OnTickTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDestroyProjectileTriggerAbilitys, OnDestroyProjectileTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnProjectileEffectTriggerAbilitys, OnProjectileEffectTriggerAbilitys);
     
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToAdd, TriggerAbilitysToAdd);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToDel, TriggerAbilitysToDel);
@@ -460,13 +487,13 @@ protected:
     void triggerOnDead();
     void triggerOnChangeHp(float fChanged);
     void triggerOnTick(float dt);
-    CAttackData* triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget);
-    CAttackData* triggerOnAttacked(CAttackData* pAttack, CUnit* pSource);
+    void triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget);
+    bool triggerOnAttacked(CAttackData* pAttack, CUnit* pSource);
     void triggerOnDamagedSurface(CAttackData* pAttack, CUnit* pSource);
     void triggerOnDamagedInner(CAttackData* pAttack, CUnit* pSource);
     void triggerOnDamagedDone(float fDamage, CUnit* pSource);
     void triggerOnDamageTargetDone(float fDamage, CUnit* pTarget);
-    void triggerOnDestroyProjectile(CProjectile* pProjectile);
+    void triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     
     // 为单位添加/删除技能
     //void addAbility(CAbility* pAbility);
@@ -483,12 +510,16 @@ public:
     virtual void suspend();
     virtual void resume();
     
-     M_SYNTHESIZE(CArmorValue::ARMOR_TYPE, m_eArmorType, ArmorType);
-    M_SYNTHESIZE(float, m_fBaseArmorValue, BaseArmorValue);
+    M_SYNTHESIZE_PASS_BY_REF(CArmorValue, m_oBaseArmor, BaseArmor);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExArmorValue, ExArmorValue)
     float getRealArmorValue() const;
     
     M_SYNTHESIZE_BOOL(Revivable);
+
+    M_SYNTHESIZE_READONLY(CForceResource*, m_pResource, Resource);
+    void setResource(CForceResource* var);
+    M_SYNTHESIZE(int, m_iRewardGold, RewardGold);
+    M_SYNTHESIZE(int, m_iRewardExp, RewardExp);
     
     ///////////////////////// item //////////////////////
     typedef CMultiRefVec<CItem*> VEC_ITEMS;
@@ -511,11 +542,13 @@ public:
     };
     
     M_SYNTHESIZE_READONLY(uint32_t, m_dwDoingFlags, DoingFlags);
-    virtual void startDoing(uint32_t dwFlags);
-    virtual void endDoing(uint32_t dwFlags);
-    virtual bool isDoingOr(uint32_t dwFlags) const;
-    virtual bool isDoingAnd(uint32_t dwFlags) const;
-    virtual bool isDoingNothing() const;
+    void startDoing(uint32_t dwFlags);
+    void endDoing(uint32_t dwFlags);
+    bool isDoingOr(uint32_t dwFlags) const;
+    bool isDoingAnd(uint32_t dwFlags) const;
+    bool isDoingNothing() const;
+    M_SYNTHESIZE(int, m_iPriority, Priority);
+    bool tryDoing(int priority);
     
     // --------------- Action ----------------
 
@@ -555,20 +588,25 @@ public:
     
 };
 
-class CWorld : public CMultiRefObject
+class CWorld : public CMultiRefObject, public CUnitEventAdapter
 {
 public:
     CWorld();
     virtual ~CWorld();
-
-    virtual void onInit();
+    
+    M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
+    static lua_State* getLuaHandle();
+    
+    virtual bool onInit();
     virtual void onTick(float dt);
     virtual void onAddUnit(CUnit* pUnit);
     virtual void onDelUnit(CUnit* pUnit);
     virtual void onAddProjectile(CProjectile* pProjectile);
     virtual void onDelProjectile(CProjectile* pProjectile);
 
-    void init();
+    bool init();
+
+    M_SYNTHESIZE(int, m_iControlUnit, ControlUnit);
     
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnits, Units);
@@ -598,18 +636,32 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapTemplateAbilitys, TemplateAbilitys);
     int addTemplateAbility(CAbility* pAbility);
     void loadTemplateAbilitys();
-    CAbility* copyAbility(int id) const;
+    virtual CAbility* copyAbility(int id) const;
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapTemplateProjectiles, TemplateProjectiles);
     int addTemplateProjectile(CProjectile* pProjectile);
-    CProjectile* copyProjectile(int id) const;
+    virtual CProjectile* copyProjectile(int id) const;
 
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapProjectiles, Projectiles);
     void addProjectile(CProjectile* pProjectile);
     void delProjectile(int id);
 
 };
+
+class CForceResource : public CMultiRefObject, public CUnitForce
+{
+public:
+    CForceResource(CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc);
+
+    M_SYNTHESIZE(int, m_iGold, Gold);
+    void changeGold(int iChange);
+    virtual void onGoldChange(int iChange);
+
+    M_SYNTHESIZE(CMultiRefObject*, m_pSender, Sender);
+    M_SYNTHESIZE(FUNC_CALLFUNC_N, m_pCallback, Callback);
+};
+
 
 
 
@@ -633,8 +685,7 @@ inline void CUnit::setAI(const ADAPTER&)
     }
     
     m_pAI = pAI;
-    m_pAI->setNotifyUnit(this);
 }
 
-#endif	/* __UNIT_H__ */
+#endif  /* __UNIT_H__ */
 

@@ -2,7 +2,8 @@
 #include "GameControl.h"
 
 
-CCGameControler::CCGameControler( void )
+// CCameControler
+CCGameControler::CCGameControler(void)
 {
 
 }
@@ -15,16 +16,15 @@ bool CCGameControler::init()
     return true;
 }
 
-void CCGameControler::loadTexture( const char* pPath )
+void CCGameControler::loadTexture(const char* pPath)
 {
     char szName[256];
     sprintf(szName, "%s.plist", pPath);
     m_fc->addSpriteFramesWithFile(szName);
 }
 
-CCAnimation* CCGameControler::loadAnimation( const char* pPath, const char* pName, float fDelay )
+CCAnimation* CCGameControler::loadAnimation(const char* pPath, const char* pName, float fDelay)
 {
-    // loadAnimation("Units/Malik/move", "/Malik/move")
     CCSpriteFrame* pSf;
     CCAnimation* pAni = NULL;
     char sz[256];
@@ -52,14 +52,67 @@ CCAnimation* CCGameControler::loadAnimation( const char* pPath, const char* pNam
     return pAni;
 }
 
-CCSpriteFrame* CCGameControler::getFrame( const char* pName )
+CCSpriteFrame* CCGameControler::getFrame(const char* pName)
 {
     char szName[256];
     sprintf(szName, "%s.png", pName);
     return m_fc->spriteFrameByName(szName);
 }
 
-CCAnimation* CCGameControler::getAnimation( const char* pName )
+CCAnimation* CCGameControler::getAnimation(const char* pName)
 {
     return m_ac->animationByName(pName);
+}
+
+void CCGameControler::step( float dt )
+{
+    M_MAP_FOREACH(m_mapSoundDur)
+    {
+        if (it->second - dt <= 0.0f)
+        {
+            M_MAP_DEL_CUR_NEXT(m_mapSoundDur);
+        }
+        else
+        {
+            it->second -= dt;
+            M_MAP_NEXT;
+        }
+    }
+}
+
+void CCGameControler::preloadSound(const char* sound)
+{
+    m_ae->preloadEffect(sound);
+}
+
+int CCGameControler::playSound(const char* sound, float duration)
+{
+    int id = m_ae->playEffect(sound);
+    if (duration > 0.0f)
+    {
+        m_mapSoundDur[id] = duration;
+    }
+
+    return id;
+}
+
+bool CCGameControler::isSoundPlaying( int id ) const
+{
+    return m_mapSoundDur.find(id) != m_mapSoundDur.end();
+}
+
+void CCGameControler::stopSound( int id )
+{
+    m_ae->stopEffect(id);
+    m_mapSoundDur.erase(id);
+}
+
+void CCGameControler::preloadMusic( const char* music )
+{
+    m_ae->preloadBackgroundMusic(music);
+}
+
+void CCGameControler::playMusic( const char* music )
+{
+    m_ae->playBackgroundMusic(music);
 }

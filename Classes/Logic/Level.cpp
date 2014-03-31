@@ -12,10 +12,11 @@
 
 // CLevelExp
 CLevelExp::CLevelExp()
-: m_iLvl(0)
-, m_iMaxLvl(0)
+: m_iLvl(1)
+, m_iMaxLvl(1)
 , m_iExp(0)
-, m_iMaxExp(0)
+, m_iBaseExp(0)
+, m_iMaxExp(1)
 , m_pUpdate(NULL)
 {
 }
@@ -24,15 +25,16 @@ CLevelExp::~CLevelExp()
 {
 }
 
-void CLevelExp::updateMaxExp()
+void CLevelExp::updateExpRange()
 {
     if (m_pUpdate)
     {
-        m_pUpdate->updateMaxExp(this);
+        m_pUpdate->updateExpRange(this);
     }
     else
     {
-        m_iMaxExp = m_iExp + 1;
+        m_iBaseExp = m_iExp;
+        m_iMaxExp = m_iExp * 1.5;
     }
 }
 
@@ -47,19 +49,26 @@ void CLevelExp::addLevel(int iLvl)
 
 void CLevelExp::addExp(int iExp)
 {
-    int iOldMaxExp;
+    if (m_iLvl == m_iMaxLvl)
+    {
+        return;
+    }
+
     m_iExp += iExp;
-    while (m_iExp >= m_iMaxExp)
+    while (m_iExp >= m_iMaxExp && m_iLvl < m_iMaxLvl)
     {
         ++m_iLvl;
-        iOldMaxExp = m_iMaxExp;
-        updateMaxExp();
-        m_iExp -= iOldMaxExp;
+        updateExpRange();
         if (m_pUpdate)
         {
             m_pUpdate->onLevelChange(this, 1);
         }
         onChangeLevel(1);
+    }
+
+    if (m_iLvl == m_iMaxLvl)
+    {
+        m_iExp = m_iBaseExp;
     }
 }
 
@@ -93,7 +102,7 @@ void CLevelExp::setLevel(int iLvl)
             m_pUpdate->onLevelChange(this, iChanged);
         }
         onChangeLevel(iChanged);
-        updateMaxExp();
+        updateExpRange();
     }
 }
 
@@ -104,27 +113,24 @@ void CLevelExp::setMaxLevel(int iMaxLvl)
     setLevel(m_iLvl);
 }
 
-int CLevelExp::getLevel() const
+void CLevelExp::setLevelUpdate(CLevelUpdate* pUpdate)
 {
-    return m_iLvl;
-}
+    if (pUpdate == m_pUpdate)
+    {
+        return;
+    }
 
-int CLevelExp::getMaxLevel() const
-{
-    return m_iMaxLvl;
-}
-
-int CLevelExp::getExp() const
-{
-    return m_iExp;
-}
-
-int CLevelExp::getMaxExp() const
-{
-    return m_iMaxExp;
-}
-
-void CLevelExp::setLevelUpdate( CLevelUpdate* pUpdate )
-{
+    if (pUpdate == NULL)
+    {
+        delete m_pUpdate;
+    }
+    else
+    {
+    }
     m_pUpdate = pUpdate;
+}
+
+bool CLevelExp::canIncreaseExp() const
+{
+    return m_iLvl < m_iMaxLvl;
 }

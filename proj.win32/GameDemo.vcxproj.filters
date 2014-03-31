@@ -10,6 +10,9 @@
     <Filter Include="Classes\Logic">
       <UniqueIdentifier>{4913f8c7-f3a0-44f3-81dd-531a146dd3c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\lua">
+      <UniqueIdentifier>{3cdfe9fa-f4f9-4e03-a013-fe4a3a68e464}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -61,6 +64,120 @@
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\AbilityForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lapi.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lauxlib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lbaselib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lbitlib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lcode.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lcorolib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lctype.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\ldblib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\ldebug.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\ldo.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\ldump.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lfunc.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lgc.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\linit.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\liolib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\llex.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lmathlib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lmem.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\loadlib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lobject.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lopcodes.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\loslib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lparser.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lstate.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lstring.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lstrlib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\ltable.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\ltablib.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\ltm.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lundump.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lvm.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\lua\lzio.c">
+      <Filter>Classes\lua</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\LuaBinding.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\TestScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LuaBindingForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\UnitLibraryForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LogoScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\MainMenuScene.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -125,5 +242,101 @@
     <ClInclude Include="..\Classes\AbilityForCC.h">
       <Filter>Classes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\lua\lapi.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lauxlib.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lcode.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lctype.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\ldebug.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\ldo.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lfunc.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lgc.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\llex.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\llimits.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lmem.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lobject.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lopcodes.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lparser.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lstate.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lstring.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\ltable.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\ltm.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lua.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lua.hpp">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\luaconf.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lualib.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lundump.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lvm.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lzio.h">
+      <Filter>Classes\lua</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\LuaBinding.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\TestScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\LuaBindingForCC.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\UnitLibraryForCC.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\LogoScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\MainMenuScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Resources\scripts\world.lua" />
   </ItemGroup>
 </Project>

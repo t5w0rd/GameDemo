@@ -2,11 +2,16 @@
 
 #include "AppDelegate.h"
 #include "BattleScene.h"
+#include "LuaBinding.h"
+#include "LuaBindingForCC.h"
+#include "TestScene.h"
+#include "LogoScene.h"
+#include "MainMenuScene.h"
 
 
 // AppDelegate
-AppDelegate::AppDelegate() {
-
+AppDelegate::AppDelegate()
+{
 }
 
 AppDelegate::~AppDelegate() 
@@ -21,7 +26,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setOpenGLView(pEGLView);
 	
     // turn on display FPS
-    pDirector->setDisplayStats(true);
+    pDirector->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     pDirector->setAnimationInterval(1.0 / 60);
@@ -29,7 +34,19 @@ bool AppDelegate::applicationDidFinishLaunching() {
     pDirector->setContentScaleFactor(1.0);
 
     // create a scene. it's an autorelease object
-    CCScene *pScene = CCBattleSceneLayer::scene();
+#if GD_UNPACK
+    CCScene* pScene = CCTestSceneLayer::scene();
+#else
+    CCScene* pScene = CCMainMenuSceneLayer::scene();
+    //CCScene* pScene = CCBattleSceneLayer::scene();
+    //CCScene* pScene = CCLogoSceneLayer::scene();
+    
+#endif
+    if (pScene == NULL)
+    {
+        exit(1);
+        return false;
+    }
 
     // run
     pDirector->runWithScene(pScene);
@@ -42,7 +59,8 @@ void AppDelegate::applicationDidEnterBackground() {
     CCDirector::sharedDirector()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    // SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->pauseAllEffects();
 }
 
 // this function will be called when the app is active again
@@ -50,5 +68,6 @@ void AppDelegate::applicationWillEnterForeground() {
     CCDirector::sharedDirector()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-    // SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+    SimpleAudioEngine::sharedEngine()->resumeAllEffects();
 }

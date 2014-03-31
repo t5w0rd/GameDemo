@@ -36,7 +36,7 @@
         <key>dataFormat</key>
         <string>cocos2d</string>
         <key>textureFileName</key>
-        <filename>../Resources/Global.png</filename>
+        <filename>../Resources/Global{n}.png</filename>
         <key>flipPVR</key>
         <false/>
         <key>ditherType</key>
@@ -127,11 +127,11 @@
             <key>data</key>
             <struct type="DataFile">
                 <key>name</key>
-                <filename>../Resources/Global.plist</filename>
+                <filename>../Resources/Global{n}.plist</filename>
             </struct>
         </map>
         <key>multiPack</key>
-        <false/>
+        <true/>
         <key>forceIdenticalLayout</key>
         <false/>
         <key>outputFormat</key>

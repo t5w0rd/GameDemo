@@ -71,7 +71,7 @@ void CFiniteTimeAction::step(float fDt)
     if (m_bFirstTick)
     {
         m_bFirstTick = false;
-        m_fElapsed = 0;
+        m_fElapsed = fDt;
     }
     else
     {

@@ -1,4 +1,5 @@
 APPNAME="GameDemo"
+NDK_ROOT=F:/adt-bundle-windows-x86_64-20131030/ndk
 
 # options
 

@@ -1,6 +1,8 @@
-#pragma once
+#ifndef __DRAWFORCC_H__
+#define __DRAWFORCC_H__
 
-#include "Logic/Draw.h"
+#include "Draw.h"
+#include "ComponentForCC.h"
 
 
 class CUnitDrawForCC;
@@ -36,15 +38,20 @@ class CUnitDrawForCC : public CUnitDraw2D
 public:
     CUnitDrawForCC(const char* pName);
     virtual ~CUnitDrawForCC();
+    virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CUnitDraw* from);
 
     // ·µ»ØactionTag
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
+    virtual void updateMoveTo(const CPoint& rPos);
     virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone, float fSpeed = 1.0f);
     virtual void stopAction(int tag);
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
     virtual CCAction* getAction(int id);
+
+    virtual void setVisible(bool bVisible = true);
 
     virtual void setFrame(FRM_ID id);
 
@@ -55,14 +62,16 @@ public:
     {
         int iNotifyFrameIndex;
         CCAnimation* pAni;
+        vector<string> vecSounds;
     };
 
     typedef map<ANI_ID, ANI_INFO> MAP_ANI_INFOS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ANI_INFOS, m_mapAniInfos, AnimationInfos);
     
-    void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex);
+    void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex, const char* pSound = NULL);
 
     ANI_INFO* getAnimationInfo(ANI_ID id);
+    void addAnimationSound(ANI_ID id, const char* sound);
 
     struct FRM_INFO
     {
@@ -93,16 +102,16 @@ public:
 
 };
 
-class CUnitWorldForCC;
+class CWorldForCC;
 
-class CCUnitLayer : public CCLayer
+class CCUnitLayer : public CCWinLayer
 {
 public:
     CCUnitLayer();
-    virtual bool initWithWorld(CUnitWorldForCC* pWorld);
-    M_CREATEWITH_FUNC_PARAM(World, CCUnitLayer, (CUnitWorldForCC* pWorld), pWorld);
+    virtual bool initWithWorld(CWorldForCC* pWorld);
+    M_CREATEWITH_FUNC_PARAM(World, CCUnitLayer, (CWorldForCC* pWorld), pWorld);
 
-    M_SYNTHESIZE(CUnitWorldForCC*, m_pWorld, World);
+    M_SYNTHESIZE(CWorldForCC*, m_pWorld, World);
 
     virtual void onEnter();
     virtual void onExit();
@@ -113,11 +122,11 @@ public:
     virtual void onWorldInterval(float dt);
 };
 
-class CUnitWorldForCC : public CWorld
+class CWorldForCC : public CWorld
 {
 public:
-    CUnitWorldForCC();
-    virtual ~CUnitWorldForCC();
+    CWorldForCC();
+    virtual ~CWorldForCC();
 
     virtual void onAddUnit(CUnit* pUnit);
     virtual void onDelUnit(CUnit* pUnit);
@@ -129,61 +138,13 @@ public:
     CCLayer* createLayer();
 };
 
-
-class CCWinUnitLayer : public CCUnitLayer
+class CUnitPathForCC : public CUnitPath
 {
 public:
-    enum TOUCH_ACTION_INDEX
-    {
-        kNormalTouch = 0, // move, attack, select
-        kUnitCastTarget = 1,
-        kClickPoint = 2,
-        kSlideWindow = 3
-    };
+    CUnitPathForCC(const char* pFileName);
 
-public:
-    static const float CONST_MIN_MOVE_DELTA;
-    static const float CONST_MAX_CAN_MOVE_DURATION;
-
-public:
-    CCWinUnitLayer();
-    virtual bool init();
-    CREATE_FUNC(CCWinUnitLayer);
-
-    // default implements are used to call script callback if exist
-    virtual void setBackGroundSprite(CCSprite* pSprite);
-    virtual void setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag);
-    virtual void setBufferEffectParam(float fMoveK, float fBuffRange, float fEdgeK);
-    virtual float getTouchMovedDuration() const;
-    virtual float getTouchMovedDistance() const;
-    virtual float getTouchMovedRadian() const;
-    virtual bool isSlideAction() const;
-    virtual bool isClickAction() const;
-    virtual int touchActionIndex() const;
-    
-    virtual void onEnter();
-    virtual void onExit();
-    virtual bool ccTouchBegan(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchMoved(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchEnded(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void ccTouchCancelled(CCTouch *pTouch, CCEvent *pEvent);
-    virtual void touchDelegateRetain();
-    virtual void touchDelegateRelease();
-    virtual void bufferWindowEffect(float fDt);
-
-    void adjustWinPos(CCPoint& roPos);
-
-protected:
-    int m_iPendingAbilityOwner;
-    bool m_bIsTouching;
-    float m_fMoveK;
-    float m_fBuffRange;
-    float m_fEdgeK;
-    float m_fMoveDelta;
-    CCPoint m_oMoveStart;
-    float m_fTouchMovedDuration;
-    float m_fMoveR;
-    bool m_bCanMove;
+    void addPoints(const char* pFileName);
+    void saveAsFile(const char* pFileName);
 };
 
 class CProjectileForCC;
@@ -207,17 +168,21 @@ public:
     CProjectileForCC(const char* pName);
     virtual ~CProjectileForCC();
     virtual CMultiRefObject* copy() const;
+    virtual void copyData(const CProjectile* from);
 
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();
     virtual void setHeight(float fHeight);
 
+    virtual int doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
     virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone);
     virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone);
     virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
     virtual void stopAction(int tag);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
+
+    virtual void setVisible(bool bVisible = true);
 
     struct ANI_INFO
     {
@@ -246,6 +211,11 @@ public:
     M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
     M_SYNTHESIZE_READONLY(CCProjectileSprite*, m_pSprite, Sprite);
     CCProjectileSprite* createSprite();
+
+    virtual void playFireSound();
+    virtual void playEffectSound();
     
 };
 
+
+#endif  /* __DRAWFORCC_H__ */

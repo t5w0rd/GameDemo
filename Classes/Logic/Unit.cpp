@@ -12,14 +12,36 @@
 #include "Application.h"
 #include "Item.h"
 #include "Draw.h"
+#include "LuaBinding.h"
 
-// for cocos2d
-#include "../CommHeader.h"
-#include "../DrawForCC.h"
 
+// CTypeValue
+CTypeValue::CTypeValue(int type, float value)
+: m_iType(type)
+, m_fValue(value)
+{
+}
+
+void CTypeValue::set(int type, float value)
+{
+    m_iType = type;
+    m_fValue = value;
+}
 
 // CAttackValue
-const char* CAttackValue::CONST_ARR_NAME[CONST_MAX_ATTACK_TYPE][CONST_MAX_NAME_INDEX] = {
+CAttackValue::CAttackValue(int type, float value)
+: CTypeValue(type, value)
+{
+}
+
+// CArmorValue
+CArmorValue::CArmorValue(int type, float value)
+: CTypeValue(type, value)
+{
+}
+
+// CMultiAttackValue
+const char* CMultiAttackValue::CONST_ARR_NAME[CAttackValue::CONST_MAX_ATTACK_TYPE][CAttackValue::CONST_MAX_NAME_INDEX] = {
 #if 1
     { "kPhysical",  "物理" },
     { "kMagical",   "魔法" },
@@ -33,12 +55,12 @@ const char* CAttackValue::CONST_ARR_NAME[CONST_MAX_ATTACK_TYPE][CONST_MAX_NAME_I
 #endif
 };
 
-CAttackValue::CAttackValue()
+CMultiAttackValue::CMultiAttackValue()
 {
     setValueZero();
 }
 
-CAttackValue::CAttackValue(int iCount, ATTACK_TYPE eType1, float fValue1, ...)
+CMultiAttackValue::CMultiAttackValue(int iCount, CAttackValue::ATTACK_TYPE eType1, float fValue1, ...)
 {
     setValueZero();
     setValue(eType1, fValue1);
@@ -46,53 +68,53 @@ CAttackValue::CAttackValue(int iCount, ATTACK_TYPE eType1, float fValue1, ...)
     va_start(argv, fValue1);
     for (int i = 1; i < iCount; ++i)
     {
-        eType1 = (ATTACK_TYPE)va_arg(argv, int);
+        eType1 = (CAttackValue::ATTACK_TYPE)va_arg(argv, int);
         fValue1 = (float)va_arg(argv, double);
         setValue(eType1, fValue1);
     }
     va_end(argv);
 }
 
-float CAttackValue::getValue(ATTACK_TYPE eType) const
+float CMultiAttackValue::getValue(CAttackValue::ATTACK_TYPE eType) const
 {
-    if (eType > CONST_MAX_ATTACK_TYPE)
+    if (eType > CAttackValue::CONST_MAX_ATTACK_TYPE)
     {
         return 0;
     }
     return m_afValues[eType];
 }
 
-void CAttackValue::setValue(ATTACK_TYPE eType, float fValue)
+void CMultiAttackValue::setValue(CAttackValue::ATTACK_TYPE eType, float fValue)
 {
-    if (eType > CONST_MAX_ATTACK_TYPE)
+    if (eType > CAttackValue::CONST_MAX_ATTACK_TYPE)
     {
         return;
     }
     m_afValues[eType] = fValue;
 }
 
-void CAttackValue::setAttackValue(const CAttackValue& roAttackValue)
+void CMultiAttackValue::setAttackValue(const CMultiAttackValue& roAttackValue)
 {
     memmove(m_afValues, roAttackValue.m_afValues, sizeof(m_afValues));
 }
 
-void CAttackValue::setValueZero()
+void CMultiAttackValue::setValueZero()
 {
     memset(m_afValues, 0, sizeof(m_afValues));
 }
 
-const char* CAttackValue::getName(ATTACK_TYPE eType, int iIndex)
+const char* CMultiAttackValue::getName(CAttackValue::ATTACK_TYPE eType, int iIndex)
 {
     return CONST_ARR_NAME[eType][iIndex];
 }
 
-const CAttackValue& CAttackValue::operator=(const CAttackValue& roAttackValue)
+const CMultiAttackValue& CMultiAttackValue::operator=(const CMultiAttackValue& roAttackValue)
 {
     setAttackValue(roAttackValue);
     return *this;
 }
 
-const char* CArmorValue::CONST_ARR_NAME[CONST_MAX_ARMOR_TYPE][CONST_MAX_NAME_INDEX] = {
+const char* CMultiArmorValue::CONST_ARR_NAME[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_NAME_INDEX] = {
 #if 1
     { "Normal",     "普通" },
     { "Heavy",      "重装" },
@@ -110,13 +132,13 @@ const char* CArmorValue::CONST_ARR_NAME[CONST_MAX_ARMOR_TYPE][CONST_MAX_NAME_IND
 #endif
 };
 
-// CArmorValue
-CArmorValue::CArmorValue()
+// CMultiArmorValue
+CMultiArmorValue::CMultiArmorValue()
 {
     setValueZero();
 }
 
-CArmorValue::CArmorValue(int iCount, ARMOR_TYPE eType1, float fValue1, ...)
+CMultiArmorValue::CMultiArmorValue(int iCount, CArmorValue::ARMOR_TYPE eType1, float fValue1, ...)
 {
     setValueZero();
     setValue(eType1, fValue1);
@@ -124,47 +146,47 @@ CArmorValue::CArmorValue(int iCount, ARMOR_TYPE eType1, float fValue1, ...)
     va_start(argv, fValue1);
     for (int i = 1; i < iCount; ++i)
     {
-        eType1 = (ARMOR_TYPE)va_arg(argv, int);
+        eType1 = (CArmorValue::ARMOR_TYPE)va_arg(argv, int);
         fValue1 = (float)va_arg(argv, double);
         setValue(eType1, fValue1);
     }
     va_end(argv);
 }
 
-float CArmorValue::getValue(ARMOR_TYPE eType) const
+float CMultiArmorValue::getValue(CArmorValue::ARMOR_TYPE eType) const
 {
-    if (eType > CONST_MAX_ARMOR_TYPE)
+    if (eType > CArmorValue::CONST_MAX_ARMOR_TYPE)
     {
         return 0;
     }
     return m_afValues[eType];
 }
 
-void CArmorValue::setValue(ARMOR_TYPE eType, float fValue)
+void CMultiArmorValue::setValue(CArmorValue::ARMOR_TYPE eType, float fValue)
 {
-    if (eType > CONST_MAX_ARMOR_TYPE)
+    if (eType > CArmorValue::CONST_MAX_ARMOR_TYPE)
     {
         return;
     }
     m_afValues[eType] = fValue;
 }
 
-void CArmorValue::setArmorValue(const CArmorValue& roArmorValue)
+void CMultiArmorValue::setArmorValue(const CMultiArmorValue& roArmorValue)
 {
     memmove(m_afValues, roArmorValue.m_afValues, sizeof(m_afValues));
 }
 
-void CArmorValue::setValueZero()
+void CMultiArmorValue::setValueZero()
 {
     memset(m_afValues, 0, sizeof(m_afValues));
 }
 
-const char* CArmorValue::getName(ARMOR_TYPE eType, int iIndex)
+const char* CMultiArmorValue::getName(CArmorValue::ARMOR_TYPE eType, int iIndex)
 {
     return CONST_ARR_NAME[eType][iIndex];
 }
 
-const CArmorValue& CArmorValue::operator=(const CArmorValue& roArmorValue)
+const CMultiArmorValue& CMultiArmorValue::operator=(const CMultiArmorValue& roArmorValue)
 {
     setArmorValue(roArmorValue);
     return *this;
@@ -205,9 +227,9 @@ CAttackData::CAttackData()
     setDbgClassName("CAttackData");
 }
 
-void CAttackData::setAttackValue(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue)
+void CAttackData::setAttackValue(int eAttackType, float fAttackValue)
 {
-    m_oAtkVal.setValue(eAttackType, fAttackValue);
+    m_oAtkVal.set(eAttackType, fAttackValue);
 }
 
 void CAttackData::addAttackBuff(const CAttackBuff& rAttackBuff)
@@ -324,7 +346,6 @@ CCommandTarget::CCommandTarget(int iTargetUnit)
 
 // CUnitEventAdapter
 CUnitEventAdapter::CUnitEventAdapter()
-: m_pNotifyUnit(NULL)
 {
 }
 
@@ -333,67 +354,108 @@ CUnitEventAdapter::~CUnitEventAdapter()
 }
 
 // CDefaultAI
-void CDefaultAI::onUnitTick( float dt )
+void CDefaultAI::onUnitTick(CUnit* pUnit, float dt)
 {
-    CUnit* u = getNotifyUnit();
-    if (u->isDoingNothing() == false)
+    if (pUnit->isSuspended() || pUnit->isDoingOr(CUnit::kObstinate | CUnit::kCasting))
     {
+        // 如果正在固执做事或正在施法
         return;
     }
 
-    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
     if (d == NULL)
     {
         return;
     }
 
-    int atk = u->getAttackAbilityId();
+    int atk = pUnit->getAttackAbilityId();
     if (atk == 0)
     {
         return;
     }
 
-    CUnit* t = CUnitGroup::getNearestUnitInRange(u->getWorld(), d->getPosition(), 200.0, (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
+    CUnit* t = CUnitGroup::getNearestUnitInRange(pUnit->getWorld(), d->getPosition(), d->getHostilityRange(), (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(pUnit, CUnitForce*));
     if (t == NULL || t->isDead())
     {
-        d->stop();
+        //d->stop();
         return;
     }
 
     d->setCastTarget(CCommandTarget(t->getId()));
-    d->cmdCastSpell(atk);
+    d->cmdCastSpell(atk, false);
 }
 
-CAttackData* CDefaultAI::onUnitAttacked( CAttackData* pAttack, CUnit* pSource )
+void CDefaultAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
 {
-    if (pSource->isDead())
+    if (pUnit->isSuspended() || pUnit->isDoingOr(CUnit::kObstinate))
     {
-        return pAttack;
+        return;
+    }
+    //CCLOG("%s", u->isDoingAnd(CUnit::kObstinate) ? "Obs" : "NOT");
+    if (pSource == NULL || pSource->isDead() || pSource->isAllyOf(pUnit))
+    {
+        return;
     }
 
-    CUnit* u = getNotifyUnit();
-    if (u->isDoingOr(CUnit::kCasting | CUnit::kObstinate))
-    {
-        // 正在施法，或者处于固执状态
-        return pAttack;
-    }
-
-    int atk = u->getAttackAbilityId();
-    if (atk == 0)
-    {
-        return pAttack;
-    }
-
-    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
     if (d == NULL)
     {
-        return pAttack;
+        return;
+    }
+
+    int atk = pUnit->getAttackAbilityId();
+    if (atk == 0)
+    {
+        return;
+    }
+
+    CActiveAbility* atking = ((atk == d->getCastActiveAbilityId()) ? pUnit->getActiveAbility(atk) : NULL);
+    CUnitDraw2D* td = NULL;
+    if (atking != NULL && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+    {
+        // 正在试图释放一个目标为单位的攻击技能
+        if (d->getCastTarget().getTargetUnit() != pSource->getId())
+        {
+            // 伤害源不是当前的攻击目标
+            CUnit* t = pUnit->getUnit(d->getCastTarget().getTargetUnit());
+            if (t != NULL)
+            {
+                td = DCAST(t->getDraw(), CUnitDraw2D*);
+            }
+            else
+            {
+                d->setCastTarget(CCommandTarget());
+                t = NULL;
+            }
+        }
+        else
+        {
+            return;
+        }
+    }
+
+    // 当前目标存在！   如果能打到之前的目标且  (目标非建筑  或(是建筑，且源也是建筑))
+    // 果伤害源
+    if (td != NULL && d->checkCastTargetDistance(atking, d->getPosition(), td))
+    {
+        // 如果能打到之前的目标，不改变攻击目标
+        return;
+    }
+
+    if (pUnit->isDoingOr(CUnit::kSpinning))
+    {
+        return;
+    }
+
+    if (atk == 0)
+    {
+        return;
     }
 
     d->setCastTarget(CCommandTarget(pSource->getId()));
     d->cmdCastSpell(atk, false);
 
-    return pAttack;
+    return;
 }
 
 // CUnit
@@ -403,13 +465,16 @@ CUnit::CUnit(const char* pRootId)
 , m_fHp(1.001f)
 , m_fMaxHp(1.001f)
 , m_pAI(NULL)
+, m_pEventAdapter(NULL)
 , m_iAttackAbilityId(0)
 , m_iTriggerRefCount(0)
 , m_iSuspendRef(0)
-, m_eArmorType(CArmorValue::kNormal)
-, m_fBaseArmorValue(0.0f)
 , m_bRevivable(false)
+, m_pResource(NULL)
+, m_iRewardGold(0)
+, m_iRewardExp(0)
 , m_dwDoingFlags(0)
+, m_iPriority(0)
 , m_pDraw(NULL)
 , m_eSpecies(kUnknown)
 {
@@ -419,8 +484,55 @@ CUnit::CUnit(const char* pRootId)
 CUnit::~CUnit()
 {
     delAI();
+    //setEventAdapter(NULL);
     setDraw(NULL);
+    setResource(NULL);
 }
+
+CMultiRefObject* CUnit::copy() const
+{
+    CUnit* ret = new CUnit(CONST_ROOT_ID.c_str());
+    ret->copyData(this);
+    return ret;
+}
+
+void CUnit::copyData( const CUnit* from )
+{
+    setDraw(DCAST(from->m_pDraw->copy(), CUnitDraw*));
+
+    m_sName = from->m_sName;
+    m_dwForceFlag = from->m_dwForceFlag;
+    m_dwAllyMaskFlag = from->m_dwAllyMaskFlag;
+    m_iMaxLvl = from->m_iMaxLvl;
+    m_iLvl = from->m_iLvl;
+    m_iMaxExp = from->m_iMaxExp;
+    m_iExp = from->m_iExp;
+    //m_pUpdate
+    m_fMaxHp = from->m_fMaxHp;
+    m_oExMaxHp = from->m_oExMaxHp;
+    m_fHp = from->m_fHp;
+    //m_pAI
+    M_MAP_FOREACH(from->m_mapActAbilitys)
+    {
+        CActiveAbility* a = M_MAP_EACH;
+        addActiveAbility(DCAST(a->copy(), CActiveAbility*));
+        M_MAP_NEXT;
+    }
+
+    M_MAP_FOREACH(from->m_mapPasAbilitys)
+    {
+        CPassiveAbility* a = M_MAP_EACH;
+        addPassiveAbility(DCAST(a->copy(), CPassiveAbility*));
+        M_MAP_NEXT;
+    }
+
+    m_oBaseArmor = from->m_oBaseArmor;
+    m_oExArmorValue = from->m_oExArmorValue;
+    m_bRevivable = from->m_bRevivable;
+    m_iRewardGold = from->m_iRewardGold;
+    m_iRewardExp = from->m_iRewardExp;
+}
+
 
 const char* CUnit::getDbgTag() const
 {
@@ -450,13 +562,18 @@ bool CUnit::revive(float fHp)
 {
     if (isDead())
     {
-        m_fHp = min(max(fHp, 1.0f), m_fMaxHp);
+        m_fHp = min(max(fHp, 1.0f), getRealMaxHp());
         onChangeHp(m_fHp);
         onRevive();
         return true;
     }
 
     return false;
+}
+
+bool CUnit::isDead() const
+{
+    return m_fHp <= 0;
 }
 
 bool CUnit::setHp(float fHp)
@@ -466,8 +583,9 @@ bool CUnit::setHp(float fHp)
         return false;
     }
 
+    float fMaxHp = getRealMaxHp();
     float fOldHp = m_fHp;
-    m_fHp = min(fHp, m_fMaxHp);
+    m_fHp = min(fHp, fMaxHp);
     if (m_fHp != fOldHp)
     {
         onChangeHp(m_fHp - fOldHp);
@@ -483,9 +601,9 @@ bool CUnit::setHp(float fHp)
 
 void CUnit::setMaxHp(float fMaxHp)
 {
-    float fOldMaxHp = m_fMaxHp;
+    float fOldMaxHp = getRealMaxHp();
     m_fMaxHp = max(fMaxHp, 1.0f);
-    float fNewHp = m_fHp * m_fMaxHp / fOldMaxHp;
+    float fNewHp = m_fHp * getRealMaxHp() / fOldMaxHp;
     if (fNewHp < 1)
     {
         fNewHp = 1;
@@ -493,26 +611,44 @@ void CUnit::setMaxHp(float fMaxHp)
     setHp(fNewHp);
 }
 
-bool CUnit::isDead() const
+void CUnit::setExMaxHp(const CExtraCoeff& var)
 {
-    return m_fHp <= 0;
+    float fOldMaxHp = getRealMaxHp();
+    m_oExMaxHp = var;
+    float fNewHp = m_fHp * getRealMaxHp() / fOldMaxHp;
+    if (fNewHp < 1)
+    {
+        fNewHp = 1;
+    }
+    setHp(fNewHp);
+}
+
+float CUnit::getRealMaxHp() const
+{
+    return m_oExMaxHp.getValue(m_fMaxHp);
 }
 
 void CUnit::onChangeLevel(int iChanged)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitChangeLevel(iChanged);
+        m_pAI->onUnitChangeLevel(this, iChanged);
     }
 }
 
 void CUnit::onRevive()
 {
+    CUnitDraw* d = getDraw();
+    if (d != NULL)
+    {
+        d->onUnitRevive();
+    }
+
     triggerOnRevive();
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitRevive();
+        m_pAI->onUnitRevive(this);
     }
 }
 
@@ -526,21 +662,24 @@ void CUnit::onDying()
 
     triggerOnDying();
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDying();
+        m_pAI->onUnitDying(this);
+    }
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitDying(this);
     }
 }
 
 void CUnit::onDead()
 {
-    CUnitDraw* d = getDraw();
-
     triggerOnDead();
 
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDead();
+        m_pAI->onUnitDead(this);
     }
 }
 
@@ -548,9 +687,9 @@ void CUnit::onChangeHp(float fChanged)
 {
     triggerOnChangeHp(fChanged);
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitChangeHp(fChanged);
+        m_pAI->onUnitChangeHp(this, fChanged);
     }
 }
 
@@ -566,82 +705,87 @@ void CUnit::step(float dt)
 void CUnit::onTick(float dt)
 {
     CUnitDraw* d = getDraw();
-    if (d != NULL)
+    if (d != NULL && !isDead())
     {
         d->onUnitTick(dt);
     }
 
     triggerOnTick(dt);
     
-    if (m_pAI)
+    if (m_pAI && !isDead())
     {
-        m_pAI->onUnitTick(dt);
+        m_pAI->onUnitTick(this, dt);
     }
 }
 
-CAttackData* CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+void CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kAttackTargetTrigger))
+    if (!(dwTriggerMask & kOnAttackTargetTrigger))
     {
-        pAttack = triggerOnAttackTarget(pAttack, pTarget);
+        triggerOnAttackTarget(pAttack, pTarget);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAttackTarget(pAttack, pTarget);
+        m_pAI->onUnitAttackTarget(this, pAttack, pTarget);
     }
-    
-    return pAttack;
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitAttackTarget(this, pAttack, pTarget);
+    }
 }
 
-CAttackData* CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
+bool CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kAttackedTrigger))
+    bool res = true;
+    if (!(dwTriggerMask & kOnAttackedTrigger))
     {
-        pAttack = triggerOnAttacked(pAttack, pSource);;
+        res = triggerOnAttacked(pAttack, pSource);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAttacked(pAttack, pSource);
+        m_pAI->onUnitAttacked(this, pAttack, pSource);
     }
     
-    return pAttack;
+    return res;
 }
 
 void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kDamagedSurfaceTrigger))
+    if (!(dwTriggerMask & kOnDamagedSurfaceTrigger))
     {
         triggerOnDamagedSurface(pAttack, pSource);
     }
 
-    if (!(dwTriggerMask & kDamagedInnerTrigger))
+    if (!(dwTriggerMask & kOnDamagedInnerTrigger))
     {
         triggerOnDamagedInner(pAttack, pSource);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDamaged(pAttack, pSource);
+        m_pAI->onUnitDamaged(this, pAttack, pSource);
     }
 }
 
 void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kDamagedDoneTrigger))
+    if (!(dwTriggerMask & kOnDamagedDoneTrigger))
     {
         triggerOnDamagedDone(fDamage, pSource);
     }
     
     LOG("%s受到%d点伤害", getName(), toInt(fDamage));
-    LOG("%s HP: %d/%d\n", getName(), toInt(getHp()), toInt(getMaxHp()));
+    LOG("%s HP: %d/%d\n", getName(), toInt(getHp()), toInt(getRealMaxHp()));
 
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDamagedDone(fDamage, pSource);
+        m_pAI->onUnitDamagedDone(this, fDamage, pSource);
     }
 
+#ifdef DEBUG_FOR_CC
     // for cocos2dx
     CUnitDrawForCC* ccd = NULL;
     getDraw()->dcast(ccd);
@@ -652,76 +796,82 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
         sprintf(sz, "-%d", toInt(fDamage));
         ccd->addBattleTip(sz, "Comic Book", 18, ccc3(255, 0, 0));
     }
+#endif
 }
 
 void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    if (!(dwTriggerMask & kDamageTargetDoneTrigger))
+    if (!(dwTriggerMask & kOnDamageTargetDoneTrigger))
     {
         triggerOnDamageTargetDone(fDamage, pTarget);
     }
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDamageTargetDone(fDamage, pTarget);
+        m_pAI->onUnitDamageTargetDone(this, fDamage, pTarget);
     }
 }
 
-void CUnit::onDestroyProjectile(CProjectile* pProjectile)
+void CUnit::onProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
-    triggerOnDestroyProjectile(pProjectile);
+    triggerOnProjectileEffect(pProjectile, pTarget);
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDestroyProjectile(pProjectile);
+        m_pAI->onUnitProjectileEffect(this, pProjectile, pTarget);
+    }
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitProjectileEffect(this, pProjectile, pTarget);
     }
 }
 
 void CUnit::onAddActiveAbility(CActiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddActiveAbility(pAbility);
+        m_pAI->onUnitAddActiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onDelActiveAbility(CActiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelActiveAbility(pAbility);
+        m_pAI->onUnitDelActiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onAddPassiveAbility(CPassiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddPassiveAbility(pAbility);
+        m_pAI->onUnitAddPassiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onDelPassiveAbility(CPassiveAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelPassiveAbility(pAbility);
+        m_pAI->onUnitDelPassiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onAddBuffAbility(CBuffAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddBuffAbility(pAbility);
+        m_pAI->onUnitAddBuffAbility(this, pAbility);
     }
 }
 
 void CUnit::onDelBuffAbility(CBuffAbility* pAbility)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelBuffAbility(pAbility);
+        m_pAI->onUnitDelBuffAbility(this, pAbility);
     }
 }
 
@@ -729,25 +879,25 @@ void CUnit::onAbilityReady(CAbility* pAbility)
 {
     pAbility->onUnitAbilityReady();
     
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAbilityReady(pAbility);
+        m_pAI->onUnitAbilityReady(this, pAbility);
     }
 }
 
 void CUnit::onAddItem(int iIndex)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitAddItem(iIndex);
+        m_pAI->onUnitAddItem(this, iIndex);
     }
 }
 
 void CUnit::onDelItem(int iIndex)
 {
-    if (m_pAI)
+    if (m_pAI != NULL)
     {
-        m_pAI->onUnitDelItem(iIndex);
+        m_pAI->onUnitDelItem(this, iIndex);
     }
 }
 
@@ -760,45 +910,42 @@ void CUnit::delAI()
     }
 }
 
-CAttackData* CUnit::attackAdv(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+void CUnit::setEventAdapter( CUnitEventAdapter* pEventAdapter )
 {
-    return attackMid(pAttack, pTarget, dwTriggerMask);
+    if (pEventAdapter == m_pEventAdapter)
+    {
+        return;
+    }
+
+    m_pEventAdapter = pEventAdapter;
 }
 
-CAttackData* CUnit::attackMid(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+void CUnit::attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    pAttack = onAttackTarget(pAttack, pTarget, dwTriggerMask);
-    return attackBot(pAttack, pTarget, dwTriggerMask);
+    onAttackTarget(pAttack, pTarget, dwTriggerMask);
+    attackLow(pAttack, pTarget, dwTriggerMask);
 }
 
-CAttackData* CUnit::attackBot(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+void CUnit::attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
-    return pAttack;
 }
 
-bool CUnit::damagedAdv(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
+bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
-    pAttack = onAttacked(pAttack, pSource, dwTriggerMask);
-    if (!pAttack)
+    if (onAttacked(pAttack, pSource, dwTriggerMask) == false)
     {
         return false;
     }
-    damagedMid(pAttack, pSource, dwTriggerMask);
-    return true;
-}
-
-void CUnit::damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
-{
+    
     onDamaged(pAttack, pSource, dwTriggerMask);
 
     //transformDamageByAttribute(pAttack);
-    float fDamage = 0;
-    for (int i = 0; i < CAttackValue::CONST_MAX_ATTACK_TYPE; i++)
-    {
-        fDamage += calcDamage((CAttackValue::ATTACK_TYPE)i, pAttack->getAttackValue().getValue((CAttackValue::ATTACK_TYPE)i), m_eArmorType, getRealArmorValue());
-    }
-
-    damagedBot(fDamage, pSource, dwTriggerMask);
+    float fDamage = calcDamage((CAttackValue::ATTACK_TYPE)pAttack->getAttackValue().getType(),
+                               pAttack->getAttackValue().getValue(),
+                               (CArmorValue::ARMOR_TYPE)getBaseArmor().getType(),
+                               getRealArmorValue());
+    
+    damagedLow(fDamage, pSource, dwTriggerMask);
     
     M_VEC_FOREACH(pAttack->getAttackBuffs())
     {
@@ -807,9 +954,11 @@ void CUnit::damagedMid(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerM
         addBuffAbility(pAb->getTemplateBuff(), pSource->getId(), pAb->getBuffLevel());
         M_MAP_NEXT;
     }
+    
+    return true;
 }
 
-void CUnit::damagedBot(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
+void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
     if (fDamage > m_fHp)
     {
@@ -1001,6 +1150,11 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
     {
         onAddBuffAbility(pAbility);
     }
+
+    if (pAbility->getAppendBuff() != 0)
+    {
+        addBuffAbility(pAbility->getAppendBuff(), pAbility->getSrcUnit(), pAbility->getLevel());
+    }
 }
 
 void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel)
@@ -1045,6 +1199,13 @@ CBuffAbility* CUnit::getBuffAbility(int id)
     return id != 0 ? m_mapBuffAbilitys.getObject(id) : NULL;
 }
 
+void CUnit::addSystemAbility( CPassiveAbility* pAbility )
+{
+    m_mapSysAbilitys.addObject(pAbility);
+    pAbility->onAddToUnit(this);  // 消息传递
+    addAbilityToTriggers(pAbility);
+}
+
 void CUnit::updateBuffAbilityElapsed(float dt)
 {
     M_MAP_FOREACH(m_mapBuffAbilitys)
@@ -1081,64 +1242,64 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
         return;
     }
     
-    if (dwTriggerFlags & kReviveTrigger)
+    if (dwTriggerFlags & kOnReviveTrigger)
     {
         m_mapOnReviveTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDyingTrigger)
+    if (dwTriggerFlags & kOnDyingTrigger)
     {
         m_mapOnDyingTriggerAbilitys.addObject(pAbility);
     }
 
-    if (dwTriggerFlags & kDeadTrigger)
+    if (dwTriggerFlags & kOnDeadTrigger)
     {
         m_mapOnDeadTriggerAbilitys.addObject(pAbility);
     }
 
-    if (dwTriggerFlags & kChangeHpTrigger)
+    if (dwTriggerFlags & kOnChangeHpTrigger)
     {
         m_mapOnChangeHpTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kTickTrigger)
+    if (dwTriggerFlags & kOnTickTrigger)
     {
         m_mapOnTickTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kAttackTargetTrigger)
+    if (dwTriggerFlags & kOnAttackTargetTrigger)
     {
         m_mapOnAttackTargetTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kAttackedTrigger)
+    if (dwTriggerFlags & kOnAttackedTrigger)
     {
         m_mapOnAttackedTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamagedSurfaceTrigger)
+    if (dwTriggerFlags & kOnDamagedSurfaceTrigger)
     {
         m_mapOnDamagedSurfaceTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamagedInnerTrigger)
+    if (dwTriggerFlags & kOnDamagedInnerTrigger)
     {
         m_mapOnDamagedInnerTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamagedDoneTrigger)
+    if (dwTriggerFlags & kOnDamagedDoneTrigger)
     {
         m_mapOnDamagedDoneTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamageTargetDoneTrigger)
+    if (dwTriggerFlags & kOnDamageTargetDoneTrigger)
     {
         m_mapOnDamageTargetDoneTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDestroyProjectileTrigger)
+    if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
-        m_mapOnDestroyProjectileTriggerAbilitys.addObject(pAbility);
+        m_mapOnProjectileEffectTriggerAbilitys.addObject(pAbility);
     }
 }
 
@@ -1159,64 +1320,64 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     
     int id = pAbility->getId();
     
-    if (dwTriggerFlags & kReviveTrigger)
+    if (dwTriggerFlags & kOnReviveTrigger)
     {
         m_mapOnReviveTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDyingTrigger)
+    if (dwTriggerFlags & kOnDyingTrigger)
     {
         m_mapOnDyingTriggerAbilitys.delObject(id);
     }
 
-    if (dwTriggerFlags & kDeadTrigger)
+    if (dwTriggerFlags & kOnDeadTrigger)
     {
         m_mapOnDeadTriggerAbilitys.delObject(id);
     }
 
-    if (dwTriggerFlags & kChangeHpTrigger)
+    if (dwTriggerFlags & kOnChangeHpTrigger)
     {
         m_mapOnChangeHpTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kTickTrigger)
+    if (dwTriggerFlags & kOnTickTrigger)
     {
         m_mapOnTickTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kAttackTargetTrigger)
+    if (dwTriggerFlags & kOnAttackTargetTrigger)
     {
         m_mapOnAttackTargetTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kAttackedTrigger)
+    if (dwTriggerFlags & kOnAttackedTrigger)
     {
         m_mapOnAttackedTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDamagedSurfaceTrigger)
+    if (dwTriggerFlags & kOnDamagedSurfaceTrigger)
     {
         m_mapOnDamagedSurfaceTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDamagedInnerTrigger)
+    if (dwTriggerFlags & kOnDamagedInnerTrigger)
     {
         m_mapOnDamagedInnerTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDamagedDoneTrigger)
+    if (dwTriggerFlags & kOnDamagedDoneTrigger)
     {
         m_mapOnDamagedDoneTriggerAbilitys.addObject(pAbility);
     }
     
-    if (dwTriggerFlags & kDamageTargetDoneTrigger)
+    if (dwTriggerFlags & kOnDamageTargetDoneTrigger)
     {
         m_mapOnDamageTargetDoneTriggerAbilitys.delObject(id);
     }
     
-    if (dwTriggerFlags & kDestroyProjectileTrigger)
+    if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
-        m_mapOnDestroyProjectileTriggerAbilitys.delObject(id);
+        m_mapOnProjectileEffectTriggerAbilitys.delObject(id);
     }
 }
 
@@ -1332,38 +1493,34 @@ void CUnit::triggerOnTick(float dt)
     endTrigger();
 }
 
-CAttackData* CUnit::triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget)
+void CUnit::triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     beginTrigger();
     M_MAP_FOREACH(m_mapOnAttackTargetTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAttack = pAbility->onUnitAttackTarget(pAttack, pTarget);
-        if (pAttack == NULL)
-        {
-            break;
-        }
+        pAbility->onUnitAttackTarget(pAttack, pTarget);
         M_MAP_NEXT;
     }
     endTrigger();
-    return pAttack;
 }
 
-CAttackData* CUnit::triggerOnAttacked(CAttackData* pAttack, CUnit* pSource)
+bool CUnit::triggerOnAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     beginTrigger();
+    bool res = true;
     M_MAP_FOREACH(m_mapOnAttackedTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAttack = pAbility->onUnitAttacked(pAttack, pSource);
-        if (pAttack == NULL)
+        if (pAbility->onUnitAttacked(pAttack, pSource) == false)
         {
+            res = false;
             break;
         }
         M_MAP_NEXT;
     }
     endTrigger();
-    return pAttack;
+    return res;
 }
 
 void CUnit::triggerOnDamagedSurface(CAttackData* pAttack, CUnit* pSource)
@@ -1414,13 +1571,13 @@ void CUnit::triggerOnDamageTargetDone(float fDamage, CUnit* pTarget)
     endTrigger();
 }
 
-void CUnit::triggerOnDestroyProjectile(CProjectile* pProjectile)
+void CUnit::triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDestroyProjectileTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnProjectileEffectTriggerAbilitys)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAbility->onUnitDestroyProjectile(pProjectile);
+        pAbility->onUnitProjectileEffect(pProjectile, pTarget);
         M_MAP_NEXT;
     }
     endTrigger();
@@ -1459,7 +1616,14 @@ void CUnit::resume()
 
 float CUnit::getRealArmorValue() const
 {
-    return m_oExArmorValue.getValue(m_fBaseArmorValue);
+    return m_oExArmorValue.getValue(m_oBaseArmor.getValue());
+}
+
+void CUnit::setResource( CForceResource* var )
+{
+    M_SAFE_RETAIN(var);
+    M_SAFE_RELEASE(m_pResource);
+    m_pResource = var;
 }
 
 void CUnit::setPackageSize(int iSize)
@@ -1608,22 +1772,31 @@ bool CUnit::isDoingNothing() const
     return m_dwDoingFlags == 0;
 }
 
-void CUnit::setDraw( CUnitDraw* pDraw )
+bool CUnit::tryDoing( int priority )
 {
-    if (pDraw != m_pDraw)
+    if (priority > m_iPriority)
     {
-        if (m_pDraw != NULL)
-        {
-            m_pDraw->release();
-        }
-        else
-        {
-            pDraw->retain();
-            pDraw->setUnit(this);
-        }
-
-        m_pDraw = pDraw;
+        m_iPriority = priority;
+        return true;
     }
+
+    return false;
+}
+
+void CUnit::setDraw(CUnitDraw* pDraw)
+{
+    if (pDraw == m_pDraw)
+    {
+        return;
+    }
+    
+    if (pDraw != NULL)
+    {
+        pDraw->retain();
+        pDraw->setUnit(this);
+    }
+    M_SAFE_RELEASE(m_pDraw);
+    m_pDraw = pDraw;
 }
 
 void CUnit::runAction(CAction* pAction)
@@ -1638,6 +1811,8 @@ CAction* CUnit::getActionByTag(int iTag)
 
 // CWorld
 CWorld::CWorld()
+: m_iScriptHandler(0)
+, m_iControlUnit(0)
 {
     setDbgClassName("CWorld");
 }
@@ -1646,19 +1821,32 @@ CWorld::~CWorld()
 {
 }
 
-void CWorld::onInit()
+lua_State* CWorld::getLuaHandle()
 {
+    static lua_State* L = NULL;
+    if (L == NULL)
+    {
+        L = luaL_newstate();
+        luaL_openlibs(L);
+    }
+
+    return L;
+}
+
+bool CWorld::onInit()
+{
+    return true;
 }
 
 void CWorld::onTick(float dt)
 {
 }
 
-void CWorld::onAddUnit( CUnit* pUnit )
+void CWorld::onAddUnit(CUnit* pUnit)
 {
 }
 
-void CWorld::onDelUnit( CUnit* pUnit )
+void CWorld::onDelUnit(CUnit* pUnit)
 {
 }
 
@@ -1670,9 +1858,9 @@ void CWorld::onDelProjectile(CProjectile* pProjectile)
 {
 }
 
-void CWorld::init()
+bool CWorld::init()
 {
-    onInit();
+    return onInit();
 }
 
 void CWorld::addUnit(CUnit* pUnit)
@@ -1680,10 +1868,11 @@ void CWorld::addUnit(CUnit* pUnit)
     onAddUnit(pUnit);
 
     pUnit->setWorld(this);
+    pUnit->setEventAdapter(this);
     m_mapUnits.addObject(pUnit);
 }
 
-void CWorld::delUnit( int id, bool bRevivable /*= false*/ )
+void CWorld::delUnit(int id, bool bRevivable /*= false*/)
 {
     auto it = m_mapUnits.find(id);
     if (it == m_mapUnits.end())
@@ -1704,6 +1893,10 @@ void CWorld::delUnit( int id, bool bRevivable /*= false*/ )
     {
         // 如果不可以复活，该单位将不再拥有世界，清除该单位的所有CD中的技能
         pUnit->setWorld(NULL);
+        if (pUnit->getEventAdapter() == this)
+        {
+            pUnit->setEventAdapter(NULL);
+        }
         cleanAbilitysCD(pUnit);
     }
 
@@ -1871,12 +2064,6 @@ void CWorld::step(float dt)
         CProjectile* pProjectiles = M_MAP_EACH;
         pProjectiles->step(dt);
 
-        if (pProjectiles->isDead() && !pProjectiles->isEffecting())  // terrible code
-        {
-            // 刚死，计划最后移除该抛射物
-            pProjectiles->die();
-        }
-
         M_MAP_NEXT;
     }
     
@@ -1904,7 +2091,7 @@ CAbility* CWorld::copyAbility(int id) const
     return pAbility->copy()->dcast(pAbility);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
 }
 
-int CWorld::addTemplateProjectile( CProjectile* pProjectile )
+int CWorld::addTemplateProjectile(CProjectile* pProjectile)
 {
     m_mapTemplateProjectiles.addObject(pProjectile);
     return pProjectile->getId();
@@ -1921,7 +2108,7 @@ CProjectile* CWorld::copyProjectile(int id) const
     return pProjectile->copy()->dcast(pProjectile);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
 }
 
-void CWorld::addProjectile( CProjectile* pProjectile )
+void CWorld::addProjectile(CProjectile* pProjectile)
 {
     onAddProjectile(pProjectile);
 
@@ -1930,7 +2117,7 @@ void CWorld::addProjectile( CProjectile* pProjectile )
 }
 
 
-void CWorld::delProjectile( int id )
+void CWorld::delProjectile(int id)
 {
     auto it = m_mapProjectiles.find(id);
     if (it == m_mapProjectiles.end())
@@ -1944,4 +2131,28 @@ void CWorld::delProjectile( int id )
     pProjectile->setWorld(NULL);
     pProjectile->release();
     m_mapProjectiles.erase(it);
+}
+
+CForceResource::CForceResource( CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc )
+{
+    setGold(0);
+    m_pSender = pSender;
+    m_pCallback = pFunc;
+}
+
+void CForceResource::changeGold( int iChange )
+{
+    m_iGold += iChange;
+    if (iChange)
+    {
+        onGoldChange(iChange);
+    }
+}
+
+void CForceResource::onGoldChange( int iChange )
+{
+    if (m_pSender && m_pCallback)
+    {
+        (m_pSender->*m_pCallback)(DCAST(this, CMultiRefObject*));
+    }
 }

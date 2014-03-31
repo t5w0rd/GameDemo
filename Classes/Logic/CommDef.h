@@ -11,13 +11,16 @@
 
 #define DCAST(var, type) dynamic_cast<type>(var)
 
+#define M_RADIANS_TO_DEGREES(__ANGLE__) ((__ANGLE__) * 57.29577951f) // PI * 180
+
 #define M_SYNTHESIZE_READONLY(varType, varName, funName)\
 protected: varType varName;\
 public: inline virtual varType get##funName(void) const { return varName; }
 
 #define M_SYNTHESIZE_READONLY_PASS_BY_REF(varType, varName, funName)\
 protected: varType varName;\
-public: inline virtual varType& get##funName(void) { return varName; }
+public: inline virtual varType& get##funName(void) { return varName; }\
+public: inline virtual const varType& get##funName(void) const { return varName; }
 
 #define M_SYNTHESIZE(varType, varName, funName)\
 protected: varType varName;\
@@ -37,6 +40,7 @@ public: inline virtual void set##funName(const char* p##funName){ m_s##funName =
 #define M_SYNTHESIZE_PASS_BY_REF(varType, varName, funName)\
 protected: varType varName;\
 public: inline virtual varType& get##funName(void) { return varName; }\
+public: inline virtual const varType& get##funName(void) const { return varName; }\
 public: inline virtual void set##funName(const varType& var){ varName = var; }
 
 #define M_LOGIC_CONSTRUCTOR(sub, super) \
@@ -151,7 +155,7 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
 #define M_CREATE_ABILITY(name, unit, ability, layer)                CCAbilityButtonAdvance::create(M_ABILITY_PATH(name), M_ABILITY_DOWN_PATH(name), M_ABILITY_DIS_PATH(name), M_ABILITY_PATH("white"), "mask/mask.png", (unit), (ability), (layer))
 #define M_CREATE_ABILITY_PAS(name, unit, ability, layer)            CCAbilityButtonAdvance::create(M_ABILITY_PAS_PATH(name), M_ABILITY_PAS_PATH(name), M_ABILITY_DIS_PATH(name), NULL, NULL, (unit), (ability), (layer))
 
-#define M_RAND_HIT(probability) (rand() % 100 < (int)((probability) * 100))
+#define M_RAND_HIT(probability) (rand() % 1000 < (int)((probability) * 1000))
 
 #define M_GET_TYPE_KEY \
     public: inline virtual int getTypeKey() const\
@@ -238,7 +242,7 @@ const char* GBKToUTF8(const char* pGBKStr);
 #define M_BIT_32U(index) ((uint32_t)(1 << index))
 #define M_IS_BIT_SET_32U(u32, index) ((uint32_t)(u32) & (uint32_t)(1 << (uint32_t)(index)))
 
-#define M_MAP_FOREACH(mapVar) for (auto it = (mapVar).begin(); it != (mapVar).end(); )
+#define M_MAP_FOREACH(mapVar) for (auto it = (mapVar).begin(); it != (mapVar).end();)
 #define M_MAP_EACH (it->second)
 #define M_MAP_IT it
 
@@ -247,7 +251,7 @@ const char* GBKToUTF8(const char* pGBKStr);
 // ÐèÁ¢¼´continue
 #define M_MAP_NEXT ++it
 
-#define M_VEC_FOREACH(vecVar) for (auto it = (vecVar).begin(); it != (vecVar).end(); )
+#define M_VEC_FOREACH(vecVar) for (auto it = (vecVar).begin(); it != (vecVar).end();)
 #define M_VEC_EACH (*it)
 #define M_VEC_IT it
 
@@ -274,6 +278,16 @@ const char* GBKToUTF8(const char* pGBKStr);
         return pInst; \
     }
 
+inline double randf()
+{
+    return rand() / (double)(RAND_MAX);
+}
+
+inline float randValue(float base, float randRange)
+{
+    return ((randf() - 0.5) * randRange + 1) * base;
+}
+
 inline int toInt(double fValue)
 {
     return (int)((fValue > 0.0 ? 0.5 : -0.5) + fValue);
@@ -289,6 +303,8 @@ inline void cirDec(int& i, int min, int num)
     --i < min && (i = min + num - 1);
 }
 
+#define M_SAFE_RETAIN(p) do { if (p) { (p)->retain(); } } while(0)
+#define M_SAFE_RELEASE(p) do { if (p) { (p)->release(); } } while(0)
 
 #endif	/* __COMDEF_H__ */
 

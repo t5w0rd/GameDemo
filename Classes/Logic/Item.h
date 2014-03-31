@@ -17,7 +17,6 @@
 
 class CPackage;
 class CAbility;
-class CPassAbility;
 class CActiveAbility;
 
 class CItem : public CMultiRefObject
