@@ -177,6 +177,9 @@
     <ClCompile Include="..\Classes\LogoScene.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\HeroRoomScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -327,6 +330,9 @@
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\LogoScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\HeroRoomScene.h">
       <Filter>Classes</Filter>
     </ClInclude>
   </ItemGroup>

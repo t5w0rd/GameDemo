@@ -187,6 +187,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\BattleScene.cpp" />
     <ClCompile Include="..\Classes\ComponentForCC.cpp" />
     <ClCompile Include="..\Classes\GameControl.cpp" />
+    <ClCompile Include="..\Classes\HeroRoomScene.cpp" />
     <ClCompile Include="..\Classes\Logic\Action.cpp" />
     <ClCompile Include="..\Classes\Logic\Application.cpp" />
     <ClCompile Include="..\Classes\Logic\Base.cpp" />
@@ -244,6 +245,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\CommHeader.h" />
     <ClInclude Include="..\Classes\ComponentForCC.h" />
     <ClInclude Include="..\Classes\GameControl.h" />
+    <ClInclude Include="..\Classes\HeroRoomScene.h" />
     <ClInclude Include="..\Classes\Logic\Action.h" />
     <ClInclude Include="..\Classes\Logic\Application.h" />
     <ClInclude Include="..\Classes\Logic\Base.h" />

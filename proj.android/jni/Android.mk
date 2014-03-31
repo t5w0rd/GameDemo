@@ -14,6 +14,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/ComponentForCC.cpp \
 ../../Classes/DrawForCC.cpp \
 ../../Classes/GameControl.cpp \
+../../Classes/HeroRoomScene.cpp \
 ../../Classes/Logic/Ability.cpp \
 ../../Classes/Logic/Action.cpp \
 ../../Classes/Logic/Application.cpp \

@@ -36,7 +36,7 @@ CCScene* CCLogoSceneLayer::scene()
         layer->setOpacity(0);
         pScene->addChild(layer);
         layer->runAction(CCSequence::createWithTwoActions(CCFadeIn::create(0.5f), CCCallFuncN::create(layer, callfuncN_selector(CCLogoSceneLayer::onEffectUpdate))));
-        gc->playMusic("sounds/Background/Logo.mp3");
+        gc->playMusic("sounds/Background/Logo.mp3", false);
     }
 
     // return the scene
