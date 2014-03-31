@@ -114,13 +114,13 @@ bool CBattleWorld::onInit()
 
     M_DEF_GC(gc);
     gc->loadTexture("Global0");
+    gc->loadTexture("Global1");
     gc->loadTexture("Heroes0");
     gc->loadTexture("Heroes1");
     gc->loadTexture("Heroes2");
     gc->loadTexture("Heroes3");
     gc->loadTexture("Heroes4");
     gc->loadTexture("Heroes5");
-    gc->loadTexture("Heroes6");
     gc->loadTexture("Projectiles0");
     gc->loadTexture("Battle0");
 
@@ -610,7 +610,7 @@ bool CCBattleSceneLayer::init()
 
     char sz[1024];
     sprintf(sz, "backgrounds/BackgroundHD%02d.png", rand() % 2);
-    setBackGroundSprite(CCSprite::create(sz));
+    setBackgroundSprite(CCSprite::create(sz));
     setBufferEffectParam(1.5f, 0.9f, 20.0f, 0.1f);
     setPosition(ccp(0, 0));
 
@@ -619,12 +619,12 @@ bool CCBattleSceneLayer::init()
 
     setWorldInterval(0.02f);
 
-    CCButtonPanel* bp = CCButtonPanel::create(1, 1, 132, 0, 0, NULL);
+    CCButtonPanel* bp = CCButtonPanel::create(1, 1, 132, 132, 0, 0, NULL);
     CCButtonBase* btn = CCButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickFist), NULL);
     bp->addButton(btn, 0, 0);
 
     m_pCtrlLayer->addChild(bp);
-    bp->setPosition(ccp(wsz.width - btn->getContentSize().width * 0.5 - 50, btn->getContentSize().height * 0.5 + 50));
+    bp->setPosition(ccp(wsz.width - btn->getContentSize().width * 0.5 - 50, btn->getContentSize().height * 0.5 + 150));
 
     return true;
 }
@@ -1049,7 +1049,7 @@ void CCBattleSceneLayer::initHeroPortrait()
     //m_pCtrlLayer->addChild(m_pHeroPortrait);
     
     const CCPoint& pos = m_pCtrlLayer->getChildByTag(1000)->getPosition();
-    CCButtonPanel* bp = CCButtonPanel::create(1, 1, 124, 0, 0, NULL);
+    CCButtonPanel* bp = CCButtonPanel::create(1, 1, 112, 124, 0, 0, NULL);
     m_pCtrlLayer->addChild(bp);
     CCButtonNormal* btn = CCButtonNormal::createWithFrameName(sz, sz, NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickHeroPortrait), NULL);
     bp->setPosition(ccp(oSz.width * 0.07, pos.y - btn->getContentSize().height * 0.5 - 100));

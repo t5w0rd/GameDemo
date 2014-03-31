@@ -77,7 +77,7 @@ void CCProgressBar::setPercentage(float fPercent, float fDuration, CCFiniteTimeA
 
 }
 
-CCFiniteTimeAction* CCProgressBar::setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/)
+CCActionInterval* CCProgressBar::setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/)
 {
     m_pPt->stopAllActions();
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
@@ -201,7 +201,7 @@ bool CCWinLayer::init()
     return CCLayer::init();
 }
 
-void CCWinLayer::setBackGroundSprite(CCSprite* pSprite)
+void CCWinLayer::setBackgroundSprite(CCSprite* pSprite)
 {
     CCSize oSz = pSprite->getContentSize();
     oSz.width *= pSprite->getScaleX();
@@ -214,7 +214,7 @@ void CCWinLayer::setBackGroundSprite(CCSprite* pSprite)
     m_pBackground = pSprite;
 }
 
-void CCWinLayer::setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag)
+void CCWinLayer::setBackgroundSprite(CCSprite* pSprite, int zOrder, int tag)
 {
     CCSize oSz = pSprite->getContentSize();
     oSz.width *= pSprite->getScaleX();
@@ -230,14 +230,14 @@ void CCWinLayer::setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag)
 void CCWinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK)
 {
     setScale(fScale);
-    m_fMoveK = min(1, max(0, fMoveK));
+    m_fMoveK = min(1.0f, max(0.0f, fMoveK));
     CCSize oSz = getContentSize() * getScale();
     static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
-    oSz.width = max(0, oSz.width - oWinSz.width);
-    oSz.height = max(0, oSz.height - oWinSz.height);
+    oSz.width = max(0.0f, oSz.width - oWinSz.width);
+    oSz.height = max(0.0f, oSz.height - oWinSz.height);
     m_fBuffRange = fBuffRange;
 
-    m_fEdgeK = min(1, max(0, fEdgeK));
+    m_fEdgeK = min(1.0f, max(0.0f, fEdgeK));
 }
 
 void CCWinLayer::setScale(float fScale)
@@ -677,7 +677,6 @@ CCButtonBase::CCButtonBase()
 
 CCButtonBase::~CCButtonBase()
 {
-
 }
 
 void CCButtonBase::onCDBlickDone(CCNode* pNode)
@@ -887,49 +886,6 @@ CCButtonPanel::~CCButtonPanel()
 }
 
 const float CCButtonPanel::CONST_ACTION_DURATION = 0.25;
-
-bool CCButtonPanel::init( int iRow, int iColumn, float fButtonWidth, float fBorderWidth, float fInnerBorderWidth, const char* pBackgroundFrameName )
-{
-    m_iRow = iRow;
-    m_iColumn = iColumn;
-    m_fButtonWidth = fButtonWidth;
-    m_fBorderWidth = fBorderWidth;
-    m_fInnerBorderWidth = fInnerBorderWidth;
-    if (pBackgroundFrameName)
-    {
-        m_pBackground = CCSprite::createWithSpriteFrameName(pBackgroundFrameName);
-        addChild(m_pBackground);
-        m_pBackground->setPosition(getAnchorPointInPoints());
-    }
-    else
-    {
-        m_pBackground = NULL;
-    }
-
-    CCSize oSz = CCSizeMake(m_fBorderWidth * 2 + m_fInnerBorderWidth * (m_iColumn - 1) + m_fButtonWidth * m_iColumn, m_fBorderWidth * 2 + m_fInnerBorderWidth * (m_iRow - 1) + m_fButtonWidth * m_iRow);
-    setContentSize(oSz);
-
-    m_iOwnerKey = 0;
-
-    m_pInnerMenu = CCMenu::create();
-    addChild(m_pInnerMenu);
-    m_pInnerMenu->setContentSize(getContentSize());
-    m_pInnerMenu->setPosition(CCPointZero);
-
-    if (m_ppBtnPos)
-    {
-        delete[] m_ppBtnPos;
-    }
-    CC_SAFE_RELEASE(m_pRetain);
-
-    size_t uCount = iRow * iColumn;
-    m_ppBtnPos = new CCButtonBase*[uCount];
-    memset(m_ppBtnPos, 0, sizeof(CCButtonBase*) * uCount);
-
-    m_iCount = 0;
-
-    return true;
-}
 
 bool CCButtonPanel::init( int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fBorderWidth, float fInnerBorderWidth, CCSprite* pBackground, float fOffsetX, float fOffsetY )
 {

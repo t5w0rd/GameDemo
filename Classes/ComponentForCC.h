@@ -16,7 +16,7 @@ public:
 
     virtual void setPercentage(float fPercent);
     virtual void setPercentage(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction = NULL);
-    virtual CCFiniteTimeAction* setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction = NULL);
+    virtual CCActionInterval* setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction = NULL);
     virtual void setFillColor(const ccColor3B& roColor);
 
 public:
@@ -81,8 +81,8 @@ public:
     CREATE_FUNC(CCWinLayer);
 
     // default implements are used to call script callback if exist
-    void setBackGroundSprite(CCSprite* pSprite);
-    void setBackGroundSprite(CCSprite* pSprite, int zOrder, int tag);
+    void setBackgroundSprite(CCSprite* pSprite);
+    void setBackgroundSprite(CCSprite* pSprite, int zOrder, int tag);
     void setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK);
     virtual void setScale(float fScale);
     virtual void setPosition(const CCPoint& newPosition);
@@ -322,9 +322,6 @@ public:
 public:
     CCButtonPanel();
     virtual ~CCButtonPanel();
-
-    virtual bool init(int iRow, int iColumn, float fButtonWidth, float fBorderWidth, float fInnerBorderWidth, const char* pBackgroundFrameName);
-    M_CREATE_FUNC_PARAM(CCButtonPanel, (int iRow, int iColumn, float fButtonWidth, float fBorderWidth, float fInnerBorderWidth, const char* pBackgroundFrameName), iRow, iColumn, fButtonWidth, fBorderWidth, fInnerBorderWidth, pBackgroundFrameName);
 
     virtual bool init(int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fBorderWidth, float fInnerBorderWidth, CCSprite* pBackground, float fOffsetX = 0.0f, float fOffsetY = 0.0f);
     M_CREATE_FUNC_PARAM(CCButtonPanel, (int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fBorderWidth, float fInnerBorderWidth, CCSprite* pBackground, float fOffsetX = 0.0f, float fOffsetY = 0.0f), iRow, iColumn, fButtonWidth, fButtonHeight, fBorderWidth, fInnerBorderWidth, pBackground, fOffsetX, fOffsetY);

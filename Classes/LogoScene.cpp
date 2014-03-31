@@ -5,6 +5,7 @@
 #include "ComponentForCC.h"
 #include "ActionForCC.h"
 #include "BattleScene.h"
+#include "HeroRoomScene.h"
 
 
 // CCLogoSceneLayer
@@ -161,13 +162,13 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
 
     case 6:
         gc->loadTexture("Global0");
+        gc->loadTexture("Global1");
         gc->loadTexture("Heroes0");
         gc->loadTexture("Heroes1");
         gc->loadTexture("Heroes2");
         gc->loadTexture("Heroes3");
         gc->loadTexture("Heroes4");
         gc->loadTexture("Heroes5");
-        gc->loadTexture("Heroes6");
         gc->loadTexture("Projectiles0");
         gc->preloadSound("sounds/Effect/Sound_Sheep.mp3");
         gc->preloadSound("sounds/Effect/inapp_atfreezeend.mp3");
@@ -607,7 +608,7 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
         break;
 
     case 15:
-        CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCBattleSceneLayer::scene(), ccWHITE));
+        CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCHeroRoomSceneLayer::scene(), ccWHITE));
         break;
     }
 
