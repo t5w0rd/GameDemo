@@ -182,7 +182,7 @@ function onWorldInit()
 
     local x, y = me:getPosition()
     me:setPosition(x + 500, y - 200)
-    me:setMaxHp(687)
+    --me:setMaxHp(687)
     
     game01()
     

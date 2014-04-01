@@ -31,10 +31,10 @@ public:
     static const int CONST_MAX_ATTACK_TYPE = 4;
     enum ATTACK_TYPE
     {
-        kPhysical = 0,
-        kMagical = 1,
-        kSiege = 2,
-        kHoly = CONST_MAX_ATTACK_TYPE - 1
+        kPhysical,
+        kMagical,
+        kSiege,
+        kHoly
     };
     
     static const int CONST_MAX_NAME_INDEX = 2;
@@ -50,15 +50,14 @@ public:
 class CArmorValue : public CTypeValue
 {
 public:
-    static const int CONST_MAX_ARMOR_TYPE = 6;
+    static const int CONST_MAX_ARMOR_TYPE = 5;
     enum ARMOR_TYPE
     {
-        kNormal = 0,
-        kHeavy = 1,
-        kCrystal = 2,
-        kWall = 3,
-        kHero = 4,
-        kHoly = CONST_MAX_ARMOR_TYPE - 1
+        kHeavy,
+        kCrystal,
+        kWall,
+        kHero,
+        kHoly
     };
     
     static const int CONST_MAX_NAME_INDEX = 2;
@@ -68,7 +67,7 @@ public:
         kCnName = CONST_MAX_NAME_INDEX - 1
     };
     
-    CArmorValue(int type = kNormal, float value = 0.0f);
+    CArmorValue(int type = kHeavy, float value = 0.0f);
 };
 
 

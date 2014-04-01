@@ -18,6 +18,7 @@ public:
     virtual void setPercentage(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction = NULL);
     virtual CCActionInterval* setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction = NULL);
     virtual void setFillColor(const ccColor3B& roColor);
+    void runActionForTimer(CCAction* pAction);
 
 public:
     CCProgressTimer* m_pPt;

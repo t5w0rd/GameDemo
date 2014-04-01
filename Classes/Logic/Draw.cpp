@@ -1103,12 +1103,7 @@ void CProjectile::onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
         CWorld* w = getWorld();
         assert(w != NULL);
         CUnit* t = w->getUnit(getToUnit());
-        if (t == NULL)
-        {
-            return;
-        }
-
-        if (t->onProjectileArrive(this) == false)
+        if (t != NULL && t->onProjectileArrive(this) == false)
         {
             return;
         }

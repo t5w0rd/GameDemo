@@ -10,6 +10,7 @@
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
 #include "ComponentForCC.h"
+#include "HeroRoomScene.h"
 
 
 class CHeroLevelUp : public CLevelUpdate
@@ -133,7 +134,9 @@ bool CBattleWorld::onInit()
     m_oULib.init();
 
     // init hero
-    u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
+    //u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
+    CCHeroRoomSceneLayer::HERO_INFO& heroInfo = getHeroLayer()->m_heroVals[getHeroLayer()->getSelectIndex()];
+    u = m_oULib.copyUnit(heroInfo.id);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
@@ -200,6 +203,13 @@ bool CBattleWorld::onInit()
 
     d = DCAST(u->getDraw(), CUnitDrawForCC*);
     d->setPosition(CPoint(800, 600));
+    
+    u->setName(heroInfo.name);
+    u->setMaxHp(heroInfo.hp);
+    atk->setBaseAttack(CAttackValue(heroInfo.atkVal));
+    atk->setBaseAttackInterval(1 / heroInfo.attackSpeed);
+    u->setBaseArmor(heroInfo.armVal);
+    d->setBaseMoveSpeed(heroInfo.moveSpeed);
 
     onLuaWorldInit();
     
@@ -247,6 +257,8 @@ bool CBattleWorld::onInit()
     sprintf(sz, "sounds/Background/Background%02d.mp3", rand() % 5);
     ae->playBackgroundMusic(sz, true);
     ae->playEffect("sounds/Effect/WaveIncoming.mp3");
+
+    getHeroLayer()->release();
 
     return true;
 }
@@ -567,12 +579,12 @@ CCBattleSceneLayer::~CCBattleSceneLayer()
     }
 }
 
-CCScene* CCBattleSceneLayer::scene()
+CCScene* CCBattleSceneLayer::scene(CCHeroRoomSceneLayer* heroLayer)
 {
     // 'scene' is an autorelease object
     CCBattleScene* pScene = CCBattleScene::create();
 
-    CWorldForCC* pWorld = pScene->getWorld();
+    CBattleWorld* pWorld = DCAST(pScene->getWorld(), CBattleWorld*);
     // 'layer' is an autorelease object
     CCBattleSceneLayer* layer = CCBattleSceneLayer::create();
     pWorld->setLayer(layer);
@@ -581,6 +593,8 @@ CCScene* CCBattleSceneLayer::scene()
     pScene->addChild(layer);
     pScene->addChild(layer->getCtrlLayer(), 1);
 
+    pWorld->setHeroLayer(heroLayer);
+    heroLayer->retain();
     if (pWorld->init() == false)
     {
         return NULL;
@@ -980,7 +994,6 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
     // »¤¼×
     switch (pUnit->getBaseArmor().getType())
     {
-    case CArmorValue::kNormal:
     case CArmorValue::kHeavy:
         m_pTargetDefIcon->setDisplayFrame(fc->spriteFrameByName("UI/status/HeavyArmor.png"));
         break;

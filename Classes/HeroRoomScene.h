@@ -42,6 +42,7 @@ public:
 
     struct HERO_INFO
     {
+        int id;
         const char* name;
         const char* desc;
         float hp;
@@ -59,6 +60,8 @@ public:
 
     CCSprite* m_blinkSmall;
     CCSprite* m_blinkBig;
+
+    M_SYNTHESIZE(int, m_selIndex, SelectIndex);
 };
 
 

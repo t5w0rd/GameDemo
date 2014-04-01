@@ -4,11 +4,13 @@
 #include "GameControl.h"
 #include "ComponentForCC.h"
 #include "BattleScene.h"
+#include "UnitLibraryForCC.h"
 
 
 // CCHeroRoomSceneLayer
 CCHeroRoomSceneLayer::CCHeroRoomSceneLayer()
 {
+    m_heroVals[0].id = CUnitLibraryForCC::kBarracks;
     m_heroVals[0].name = "Warrior";
     m_heroVals[0].desc = "Sir.\nGerald\nLightSeeker";
     m_heroVals[0].hp = 300.0f;
@@ -17,6 +19,7 @@ CCHeroRoomSceneLayer::CCHeroRoomSceneLayer()
     m_heroVals[0].attackSpeed = 1 / 1.5f;
     m_heroVals[0].moveSpeed = 80.0f;
 
+    m_heroVals[1].id = CUnitLibraryForCC::kArcher;
     m_heroVals[1].name = "Archer";
     m_heroVals[1].desc = "Alleria\nSwiftWind";
     m_heroVals[1].hp = 240.0f;
@@ -25,6 +28,7 @@ CCHeroRoomSceneLayer::CCHeroRoomSceneLayer()
     m_heroVals[1].attackSpeed = 1 / 1.2f;
     m_heroVals[1].moveSpeed = 85.0f;
 
+    m_heroVals[2].id = CUnitLibraryForCC::kWizard;
     m_heroVals[2].name = "Wizard";
     m_heroVals[2].desc = "Nivus";
     m_heroVals[2].hp = 230.0f;
@@ -79,6 +83,7 @@ bool CCHeroRoomSceneLayer::init()
     M_DEF_GC(gc);
     CCSprite* sp = NULL;
     CCSprite* sp2 = NULL;
+    CCLabelTTF* lbl = NULL;
     char szVal[64];
 
     gc->loadTexture("Global0");
@@ -92,6 +97,15 @@ bool CCHeroRoomSceneLayer::init()
     addChild(m_panel);
     CCSize sz = m_panel->getContentSize();
     m_panel->setPosition(ccp(wsz.width * 0.5, wsz.height + sz.height * m_panel->getScaleY() * 0.5));
+
+    // ±êÌâ
+    sp = CCSprite::create("UI/Title.png");
+    lbl = CCLabelTTF::create("Hero Room", "fonts/Yikes!.ttf", 72);
+    lbl->setColor(ccc3(80, 60, 50));
+    sp->addChild(lbl);
+    lbl->setPosition(ccpAdd(sp->getAnchorPointInPoints(), ccp(0.0f, 20)));
+    m_panel->addChild(sp);
+    sp->setPosition(ccp(sz.width * 0.5, sz.height - lbl->getContentSize().height - 100));
     
     // Í·Ïñ¿ò
     CCButtonPanel* bp = CCButtonPanel::create(1, 3, 156, 164, 18, 11, CCSprite::create("UI/HeroInfo/HeroesBorder.png"), 0.0f, 38.0f);
@@ -101,6 +115,8 @@ bool CCHeroRoomSceneLayer::init()
 
     CCButtonNormal* btn = CCButtonNormal::createWithFrameName("UI/Portrait/WarriorSmall.png", "UI/Portrait/WarriorSmall.png", NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCHeroRoomSceneLayer::onClickHeroPortrait), NULL);
     bp->addButton(btn, 0, 0);
+
+    setSelectIndex(0);
 
     m_selSmall = CCSprite::createWithSpriteFrameName("UI/Portrait/SelectSmall.png");
     bp->addChild(m_selSmall);
@@ -144,7 +160,7 @@ bool CCHeroRoomSceneLayer::init()
     m_hpBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_hpBar);
     m_hpBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_hpBar->getContentSize().width * 0.5 + 50, -7)));
-    m_hpBar->m_pPt->runAction(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroVals[0].hp * 100 / m_maxVal.hp, 0.2f)));
+    m_hpBar->runActionForTimer(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroVals[0].hp * 100 / m_maxVal.hp, 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].hp));
     m_hpLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
@@ -165,7 +181,7 @@ bool CCHeroRoomSceneLayer::init()
     m_attackBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_attackBar);
     m_attackBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_attackBar->getContentSize().width * 0.5 + 50, -7)));
-    m_attackBar->m_pPt->runAction(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroVals[0].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.2f)));
+    m_attackBar->runActionForTimer(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroVals[0].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].atkVal.getValue()));
     m_attackLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
@@ -186,7 +202,7 @@ bool CCHeroRoomSceneLayer::init()
     m_armorBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_armorBar);
     m_armorBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_armorBar->getContentSize().width * 0.5 + 50, -7)));
-    m_armorBar->m_pPt->runAction(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroVals[0].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.2f)));
+    m_armorBar->runActionForTimer(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroVals[0].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].armVal.getValue()));
     m_armorLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
@@ -206,7 +222,7 @@ bool CCHeroRoomSceneLayer::init()
     m_attackSpeedBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_attackSpeedBar);
     m_attackSpeedBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_attackSpeedBar->getContentSize().width * 0.5 + 50, -7)));
-    m_attackSpeedBar->m_pPt->runAction(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroVals[0].attackSpeed * 100 / m_maxVal.attackSpeed, 0.2f)));
+    m_attackSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroVals[0].attackSpeed * 100 / m_maxVal.attackSpeed, 0.2f)));
 
     sprintf(szVal, "%.2f", m_heroVals[0].attackSpeed);
     m_attackSpeedLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
@@ -226,7 +242,7 @@ bool CCHeroRoomSceneLayer::init()
     m_moveSpeedBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_moveSpeedBar);
     m_moveSpeedBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_moveSpeedBar->getContentSize().width * 0.5 + 50, -7)));
-    m_moveSpeedBar->m_pPt->runAction(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroVals[0].moveSpeed * 100 / m_maxVal.moveSpeed, 0.2f)));
+    m_moveSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroVals[0].moveSpeed * 100 / m_maxVal.moveSpeed, 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].moveSpeed));
     m_moveSpeedLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
@@ -278,15 +294,16 @@ void CCHeroRoomSceneLayer::onClickHeroPortrait( CCNode* pNode )
     gc->playSound("sounds/Effect/UIMove.mp3");
     CCButtonNormal* btn = DCAST(pNode, CCButtonNormal*);
     int index = btn->getButtonIndex();
+    setSelectIndex(index);
 
     m_selSmall->setPosition(pNode->getPosition());
     m_blinkSmall->stopAllActions();
-    m_blinkSmall->runAction(CCSequence::createWithTwoActions(CCFadeIn::create(0.3f), CCFadeOut::create(0.3f)));
+    m_blinkSmall->runAction(CCFadeOut::create(0.3f));
 
     static const char* bigPortraits[] = {"UI/Portrait/WarriorBig.png", "UI/Portrait/ArcherBig.png", "UI/Portrait/WizardBig.png"};
     m_selBig->setDisplayFrame(gc->getfc()->spriteFrameByName(bigPortraits[index]));
     m_blinkBig->stopAllActions();
-    m_blinkBig->runAction(CCSequence::createWithTwoActions(CCFadeIn::create(0.3f), CCFadeOut::create(0.3f)));
+    m_blinkBig->runAction(CCFadeOut::create(0.3f));
 
     static const char* def[] = {"Units/Barracks/default", "Units/Archer/default", "Units/Wizard/default"};
     static const char* move[] = {"Units/Barracks/move", "Units/Archer/move", "Units/Wizard/move"};
@@ -309,11 +326,11 @@ void CCHeroRoomSceneLayer::onClickHeroPortrait( CCNode* pNode )
 
     m_attackIcon->setDisplayFrame(gc->getfc()->spriteFrameByName(attackIcon[m_heroVals[index].atkVal.getType()]));
     m_armorIcon->setDisplayFrame(gc->getfc()->spriteFrameByName(armorIcon[m_heroVals[index].armVal.getType()]));
-    m_hpBar->m_pPt->runAction(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroVals[index].hp * 100 / m_maxVal.hp, 0.3f)));
-    m_attackBar->m_pPt->runAction(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroVals[index].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.3f)));
-    m_armorBar->m_pPt->runAction(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroVals[index].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.3f)));
-    m_attackSpeedBar->m_pPt->runAction(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroVals[index].attackSpeed * 100 / m_maxVal.attackSpeed, 0.3f)));
-    m_moveSpeedBar->m_pPt->runAction(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroVals[index].moveSpeed * 100 / m_maxVal.moveSpeed, 0.3f)));
+    m_hpBar->runActionForTimer(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroVals[index].hp * 100 / m_maxVal.hp, 0.3f)));
+    m_attackBar->runActionForTimer(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroVals[index].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.3f)));
+    m_armorBar->runActionForTimer(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroVals[index].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.3f)));
+    m_attackSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroVals[index].attackSpeed * 100 / m_maxVal.attackSpeed, 0.3f)));
+    m_moveSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroVals[index].moveSpeed * 100 / m_maxVal.moveSpeed, 0.3f)));
 
     char szVal[64];
     sprintf(szVal, "%d", toInt(m_heroVals[index].hp));
@@ -341,7 +358,7 @@ void CCHeroRoomSceneLayer::onClickButtonDone( CCNode* pNode )
 
 void CCHeroRoomSceneLayer::onHideDone( CCNode* pNode )
 {
-    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCBattleSceneLayer::scene()));
+    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCBattleSceneLayer::scene(this)));
 }
 
 void CCHeroRoomSceneLayer::onScaleDone( CCNode* pNode )

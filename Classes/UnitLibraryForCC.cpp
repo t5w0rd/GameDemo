@@ -128,6 +128,20 @@ bool CUnitLibraryForCC::init()
     p->addFireSound("sounds/Effect/TeslaRay01.mp3");
     addProjectile(kTeslaRay, p);
 
+    // WizardBolt
+    gc->loadAnimation("Units/WizardBolt/move", "Units/WizardBolt/move", 0.1f);
+    gc->loadAnimation("Units/WizardBolt/die", "Units/WizardBolt/die", 0.1f);
+    p = new CProjectileForCC("WizardBolt");
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setMoveSpeed(300.0f);
+    p->setMaxHeightDelta(50.0f);
+    p->setPenaltyFlags(CProjectile::kOnDying);
+    p->setFireType(CProjectile::kFireFollow);
+    p->addFireSound("sounds/Effect/MageShot.mp3");
+    addProjectile(kWizardBolt, p);
+
 
     // Malik
     gc->loadAnimation("Units/Malik/move", "Units/Malik/move", 0.08f);
@@ -151,7 +165,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -189,7 +203,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(500.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kCrystal, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -228,7 +242,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -266,7 +280,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(500.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -304,7 +318,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(500.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kCrystal, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -342,7 +356,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -376,7 +390,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -412,7 +426,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -450,7 +464,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 6.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 6.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -486,7 +500,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -522,7 +536,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -561,7 +575,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1000.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 0.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -600,7 +614,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(550.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 2.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 2.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -636,7 +650,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(550.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 2.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 2.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -665,7 +679,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1300.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 18.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 18.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -693,7 +707,7 @@ bool CUnitLibraryForCC::init()
     u->setDraw(d);
     u->setName(d->getName());
     u->setMaxHp(1300.0f);
-    u->setBaseArmor(CArmorValue(CArmorValue::kNormal, 18.0f));
+    u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 18.0f));
     atk = new CAttackAct(
         "Attack",
         "¹¥»÷",
@@ -708,6 +722,44 @@ bool CUnitLibraryForCC::init()
     d->setFixed();
     d->setHostilityRange(800.0f);
     addUnit(kTesla, u);
+
+    // Wizard
+    gc->loadAnimation("Units/Wizard/move", "Units/Wizard/move", 0.08f);
+    gc->loadAnimation("Units/Wizard/die", "Units/Wizard/die", 0.1f);
+    gc->loadAnimation("Units/Wizard/act1", "Units/Wizard/act1", 0.1f);
+    gc->loadAnimation("Units/Wizard/act2", "Units/Wizard/act2", 0.1f);
+    gc->loadAnimation("Units/Wizard/act3", "Units/Wizard/act3", 0.1f);
+    //gc->loadAnimation("Units/Wizard/act4", "Units/Wizard/act4", 0.1f);
+    gc->loadAnimation("Units/Wizard/act5", "Units/Wizard/act5", 0.1f);
+    d = new CUnitDrawForCC("Wizard");
+    d->prepareFrame(CUnitDraw::kFrmDefault, "default");
+    d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
+    d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 10);
+    d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 3);
+    d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 10);
+    //d->prepareAnimation(CUnitDraw::kAniAct4, "act4", 6);
+    d->prepareAnimation(CUnitDraw::kAniAct5, "act5", 6);
+    d->setGeometry(31.0f, 25.0f, ccp(72.0 / 144, 37.0 / 156), CPoint(33.0f, 67.0f));
+    u = new CUnit(d->getName());
+    u->setDraw(d);
+    u->setName(d->getName());
+    u->setMaxHp(500.0f);
+    u->setBaseArmor(CArmorValue(CArmorValue::kCrystal, 0.0f));
+    atk = new CAttackAct(
+        "Attack",
+        "¹¥»÷",
+        1.75,
+        CAttackValue(CAttackValue::kMagical, 60.0),
+        0.5);
+    atk->setCastMinRange(0.0f);
+    atk->setCastRange(200.0f);
+    atk->addCastAnimation(CUnitDraw::kAniAct1);
+    atk->setTemplateProjectile(kWizardBolt);
+    u->addActiveAbility(atk);
+    d->setBaseMoveSpeed(50.0f);
+    d->setHostilityRange(300.0f);
+    addUnit(kWizard, u);
 
     return true;
 }

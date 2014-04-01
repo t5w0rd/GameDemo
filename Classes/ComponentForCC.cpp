@@ -98,6 +98,11 @@ void CCProgressBar::setFillColor(const ccColor3B& roColor)
     m_pPt->setColor(roColor);
 }
 
+void CCProgressBar::runActionForTimer( CCAction* pAction )
+{
+    m_pPt->runAction(pAction);
+}
+
 // CCSpriteFrameCacheEx
 CCDictionary* CCSpriteFrameCacheEx::getSpriteFrames()
 {
