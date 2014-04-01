@@ -2,6 +2,7 @@
 
 #include "MainMenuScene.h"
 #include "GameControl.h"
+#include "platform/CCFileUtils.h"
 
 CCMainMenuScene::CCMainMenuScene()
 {
@@ -188,5 +189,8 @@ void CCSelectArchiveLayer::CCMenuItemCloseCallback(CCObject* sender)
 void CCSelectArchiveLayer::onEnter()
 {
     CCLayer::onEnter();
-
+    if(CCFileUtils::sharedFileUtils()->isFileExist("config.txt"))
+    {
+        CCLog("----","++++");
+    }
 }
