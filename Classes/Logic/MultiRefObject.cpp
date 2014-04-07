@@ -16,9 +16,9 @@ CMultiRefObject::CMultiRefObject()
 , CONST_ID(CKeyGen::nextKey())
 {
     setDbgClassName("CMutiRefObject");
-    CDbgMultiRefObjectManager::sharedDbgMultiRefObjectManager()->addObject(this);
+    CDbgMultiRefObjectManager::instance()->addObject(this);
     
-    CAutoReleasePool::sharedAutoReleasePool()->addObject(this);
+    CAutoReleasePool::instance()->addObject(this);
     //printf("DBG | %s(), Global(%d)\n", getDbgClassName(), m_iGlobal);
 }
 
@@ -26,13 +26,13 @@ CMultiRefObject::~CMultiRefObject()
 {
     assert(!m_iRefCount);
     
-    CDbgMultiRefObjectManager::sharedDbgMultiRefObjectManager()->delObject(this);
+    CDbgMultiRefObjectManager::instance()->delObject(this);
     //printf("DBG | ~%s(), Global(%d)\n", getDbgClassName(), m_iGlobal);
 }
 
 void CMultiRefObject::retain()
 {
-    CAutoReleasePool::sharedAutoReleasePool()->delObject(this);
+    CAutoReleasePool::instance()->delObject(this);
     ++m_iRefCount;
 }
 
@@ -54,7 +54,7 @@ void CMultiRefObject::tryRelease()
     }
 }
 
-CMultiRefObject* CMultiRefObject::copy() const
+CMultiRefObject* CMultiRefObject::copy()
 {
     return new CMultiRefObject;
 }

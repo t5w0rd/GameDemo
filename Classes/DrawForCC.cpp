@@ -138,17 +138,17 @@ CUnitDrawForCC::~CUnitDrawForCC()
     CC_SAFE_RELEASE(m_pSprite);
 }
 
-CMultiRefObject* CUnitDrawForCC::copy() const
+CMultiRefObject* CUnitDrawForCC::copy()
 {
     CUnitDrawForCC* ret = new CUnitDrawForCC(getName());
     ret->copyData(this);
     return ret;
 }
 
-void CUnitDrawForCC::copyData( const CUnitDraw* from )
+void CUnitDrawForCC::copyData( CUnitDraw* from )
 {
     CUnitDraw2D::copyData(from);
-    const CUnitDrawForCC* d = DCAST(from, const CUnitDrawForCC*);
+    CUnitDrawForCC* d = DCAST(from, CUnitDrawForCC*);
     m_mapAniInfos = d->m_mapAniInfos;
     m_mapFrmInfos = d->m_mapFrmInfos;
     m_oAnchorPoint = d->m_oAnchorPoint;
@@ -541,7 +541,7 @@ void CWorldForCC::onAddUnit(CUnit* pUnit)
     {
         pSprite = pDraw->createSprite();
         pUnit->addSystemAbility(new CStatusShowPas);
-        pUnit->setAI(CDefaultAI());
+        pUnit->setAI(CBaseAI::instance());
         //pDraw->updateMoveSpeedDelta();
     }
 
@@ -697,7 +697,7 @@ CProjectileForCC::~CProjectileForCC()
     CC_SAFE_RELEASE(m_pSprite);
 }
 
-CMultiRefObject* CProjectileForCC::copy() const
+CMultiRefObject* CProjectileForCC::copy()
 {
     CProjectileForCC* ret = new CProjectileForCC(getName());
     ret->copyData(this);

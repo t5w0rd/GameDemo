@@ -47,7 +47,7 @@ int CLogicApplication::run()
             float dt = (lCurTime - m_lLastTimeMS) * 0.001;
             m_fElapsedTimeMS += dt;
             applicationTick(dt);
-            CAutoReleasePool::sharedAutoReleasePool()->releaseObjects();
+            CAutoReleasePool::instance()->releaseObjects();
         }
         m_lLastTimeMS = lCurTime;
 		

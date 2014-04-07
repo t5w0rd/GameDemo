@@ -345,20 +345,23 @@ CCommandTarget::CCommandTarget(int iTargetUnit)
 }
 
 // CUnitEventAdapter
-CUnitEventAdapter::CUnitEventAdapter()
+
+// CBaseAI
+CBaseAI::CBaseAI()
 {
+    setDbgClassName("CBaseAI");
 }
 
-CUnitEventAdapter::~CUnitEventAdapter()
+void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
 {
-}
-
-// CDefaultAI
-void CDefaultAI::onUnitTick(CUnit* pUnit, float dt)
-{
-    if (pUnit->isSuspended() || pUnit->isDoingOr(CUnit::kObstinate | CUnit::kCasting))
+    if (pUnit->isSuspended() || pUnit->isDoingOr(CUnit::kObstinate))
     {
         // 如果正在固执做事或正在施法
+        return;
+    }
+
+    if (pUnit->isDoingOr(CUnit::kCasting) && !pUnit->isDoingOr(CUnit::kMoving))
+    {
         return;
     }
 
@@ -366,6 +369,20 @@ void CDefaultAI::onUnitTick(CUnit* pUnit, float dt)
     if (d == NULL)
     {
         return;
+    }
+
+    // 追击目标仍在仇恨区内就继续追击
+    if (d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+    {
+        CUnit* tt = pUnit->getUnit(d->getCastTarget().getTargetUnit());
+        if (tt != NULL)
+        {
+            CUnitDraw2D* ttd = DCAST(tt->getDraw(), CUnitDraw2D*);
+            if (ttd != NULL && pUnit->isDoingAnd(CUnit::kCasting | CUnit::kMoving) && d->getPosition().getDistance(ttd->getPosition()) < d->getHostilityRange())
+            {
+                return;
+            }
+        }
     }
 
     int atk = pUnit->getAttackAbilityId();
@@ -385,7 +402,7 @@ void CDefaultAI::onUnitTick(CUnit* pUnit, float dt)
     d->cmdCastSpell(atk, false);
 }
 
-void CDefaultAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
+void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
 {
     if (pUnit->isSuspended() || pUnit->isDoingOr(CUnit::kObstinate))
     {
@@ -458,6 +475,151 @@ void CDefaultAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
     return;
 }
 
+// CUnitAI
+CUnitAI::CUnitAI()
+    : m_iScriptHandler(0)
+{
+}
+
+void CUnitAI::onUnitChangeHp( CUnit* pUnit, float fChanged )
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitChangeHp");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    lua_pushnumber(L, fChanged);
+    lua_call(L, 3, 0);
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitTick( CUnit* pUnit, float dt )
+{
+    CBaseAI::onUnitTick(pUnit, dt);
+
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitTick");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    lua_pushnumber(L, dt);
+    lua_call(L, 3, 0);
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitDamagedDone( CUnit* pUnit, float fDamage, CUnit* pSource )
+{
+    CBaseAI::onUnitDamagedDone(pUnit, fDamage, pSource);
+
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitDamagedDone");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    lua_pushnumber(L, fDamage);
+    luaL_pushobjptr(L, "Unit", pSource);
+    lua_call(L, 4, 0);
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitDamageTargetDone( CUnit* pUnit, float fDamage, CUnit* pTarget )
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitDamageTargetDone");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    lua_pushnumber(L, fDamage);
+    luaL_pushobjptr(L, "Unit", pTarget);
+    lua_call(L, 4, 0);
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitAddBuffAbility( CUnit* pUnit, CBuffAbility* pAbility )
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitAddBuffAbility");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    luaL_pushobjptr(L, "BuffAbility", pAbility);
+    lua_call(L, 3, 0);
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitDelBuffAbility( CUnit* pUnit, CBuffAbility* pAbility )
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitDelBuffAbility");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    luaL_pushobjptr(L, "BuffAbility", pAbility);
+    lua_call(L, 3, 0);
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitAbilityReady( CUnit* pUnit, CAbility* pAbility )
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitAbilityReady");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    luaL_pushobjptr(L, "Ability", pAbility);
+    lua_call(L, 3, 0);
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
 // CUnit
 CUnit::CUnit(const char* pRootId)
 : CONST_ROOT_ID(pRootId)
@@ -483,13 +645,13 @@ CUnit::CUnit(const char* pRootId)
 
 CUnit::~CUnit()
 {
-    delAI();
-    //setEventAdapter(NULL);
+    setAI(NULL);
+    setEventAdapter(NULL);
     setDraw(NULL);
     setResource(NULL);
 }
 
-CMultiRefObject* CUnit::copy() const
+CMultiRefObject* CUnit::copy()
 {
     CUnit* ret = new CUnit(CONST_ROOT_ID.c_str());
     ret->copyData(this);
@@ -921,13 +1083,17 @@ void CUnit::onDelItem(int iIndex)
     }
 }
 
-void CUnit::delAI()
+void CUnit::setAI( CBaseAI* pAI )
 {
-    if (m_pAI != NULL)
+    if (pAI == m_pAI)
     {
-        delete m_pAI;
-        m_pAI = NULL;
+        return;
     }
+
+    M_SAFE_RELEASE(m_pAI);
+    M_SAFE_RETAIN(pAI);
+
+    m_pAI = pAI;
 }
 
 void CUnit::setEventAdapter( CUnitEventAdapter* pEventAdapter )
@@ -936,6 +1102,9 @@ void CUnit::setEventAdapter( CUnitEventAdapter* pEventAdapter )
     {
         return;
     }
+
+    M_SAFE_RELEASE(m_pEventAdapter);
+    M_SAFE_RETAIN(pEventAdapter);
 
     m_pEventAdapter = pEventAdapter;
 }
@@ -1064,6 +1233,22 @@ void CUnit::delActiveAbility(int id, bool bNotify)
 CActiveAbility* CUnit::getActiveAbility(int id)
 {
     return id != 0 ? m_mapActAbilitys.getObject(id) : NULL;
+}
+
+CActiveAbility* CUnit::getActiveAbility( const char* name )
+{
+    M_MAP_FOREACH(m_mapActAbilitys)
+    {
+        CActiveAbility* a = M_MAP_EACH;
+        if (strcmp(a->getName(), name) == 0)
+        {
+            return a;
+        }
+
+        M_MAP_NEXT;
+    }
+
+    return NULL;
 }
 
 void CUnit::addPassiveAbility(CPassiveAbility* pAbility, bool bNotify)
@@ -1217,6 +1402,22 @@ void CUnit::delBuffAbility(int id, bool bNotify)
 CBuffAbility* CUnit::getBuffAbility(int id)
 {
     return id != 0 ? m_mapBuffAbilitys.getObject(id) : NULL;
+}
+
+CBuffAbility* CUnit::getBuffAbility( const char* name )
+{
+    M_MAP_FOREACH(m_mapBuffAbilitys)
+    {
+        CBuffAbility* a = M_MAP_EACH;
+        if (strcmp(a->getName(), name) == 0)
+        {
+            return a;
+        }
+
+        M_MAP_NEXT;
+    }
+
+    return NULL;
 }
 
 void CUnit::addSystemAbility( CPassiveAbility* pAbility )

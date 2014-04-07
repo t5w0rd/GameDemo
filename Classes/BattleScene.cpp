@@ -50,7 +50,7 @@ public:
     }
 };
 
-class CMyAI : public CDefaultAI
+class CMyAI : public CBaseAI
 {
 public:
     CMyAI()
@@ -62,7 +62,7 @@ public:
 
     virtual void onUnitTick(CUnit* pUnit, float dt)
     {
-        CDefaultAI::onUnitTick(pUnit, dt);
+        CBaseAI::onUnitTick(pUnit, dt);
         return;
 
         CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
@@ -136,7 +136,7 @@ bool CBattleWorld::onInit()
     // init hero
     //u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
     CCHeroRoomSceneLayer::HERO_INFO& heroInfo = getHeroLayer()->m_heroVals[getHeroLayer()->getSelectIndex()];
-    u = m_oULib.copyUnit(heroInfo.id);
+    u = m_oULib.copyUnit(heroInfo.id == CUnitLibraryForCC::kBarracks ? CUnitLibraryForCC::kThor : heroInfo.id);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
@@ -306,15 +306,28 @@ bool CBattleWorld::onLuaWorldInit()
     luaRegWorldFuncsForCC(L, this);
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+    string comm = "/sdcard/ts/gamedemo/common.lua";
     string name = "/sdcard/ts/gamedemo/world.lua";
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+    string comm = "/var/mobile/Documents/common.lua";
     string name = "/var/mobile/Documents/world.lua";
 #else
+    string comm = "scripts/common.lua";
     string name = "scripts/world.lua";
 #endif
+    CCLOG("MSG | loadScript: %s", comm.c_str());
     CCLOG("MSG | loadScript: %s", name.c_str());
 
     string err;
+
+    if (luaL_loadscript4cc(L, comm.c_str(), err) == false)
+    {
+        CCLOG("ERR | LuaErr: %s", err.c_str());
+        layer->log("%s", err.c_str());
+
+        return false;
+    }
+
     if (luaL_loadscript4cc(L, name.c_str(), err) == false)
     {
         CCLOG("ERR | LuaErr: %s", err.c_str());

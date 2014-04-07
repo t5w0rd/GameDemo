@@ -231,11 +231,12 @@ public:
     M_SYNTHESIZE(int, m_iTargetUnit, TargetUnit);
 };
 
-class CUnitEventAdapter
+class CUnitEventAdapter : public CMultiRefObject
 {
 public:
-    CUnitEventAdapter();
-    virtual ~CUnitEventAdapter();
+    inline CUnitEventAdapter() { setDbgClassName("CUnitEventAdapter"); }
+    inline virtual ~CUnitEventAdapter() {}
+    inline virtual CMultiRefObject* copy() { retain(); return this; }
     
     inline virtual void onUnitChangeLevel(CUnit* pUnit, int iChanged) {}
     inline virtual void onUnitRevive(CUnit* pUnit) {}
@@ -262,11 +263,28 @@ public:
     //inline virtual void onUnitChangeItemStackCount(CUnit* pUnit, CItem* pItem, int iChange) {}
 };
 
-class CDefaultAI : public CUnitEventAdapter
+class CBaseAI : public CUnitEventAdapter
 {
 public:
+    CBaseAI();
     virtual void onUnitTick(CUnit* pUnit, float dt);
     virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource);
+    M_SINGLETON(CBaseAI);
+};
+
+class CUnitAI : public CBaseAI
+{
+public:
+    CUnitAI();
+    M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
+
+    virtual void onUnitChangeHp(CUnit* pUnit, float fChanged);
+    virtual void onUnitTick(CUnit* pUnit, float dt);
+    virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource);
+    virtual void onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget);
+    virtual void onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility);
+    virtual void onUnitDelBuffAbility(CUnit* pUnit, CBuffAbility* pAbility);
+    virtual void onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility);
 };
 
 class CUnitDraw;
@@ -279,7 +297,7 @@ protected:
 public:
     CUnit(const char* pRootId);
     virtual ~CUnit();
-    virtual CMultiRefObject* copy() const;
+    virtual CMultiRefObject* copy();
     virtual void copyData(const CUnit* from);
 
     virtual const char* getDbgTag() const;
@@ -347,16 +365,12 @@ public:
     virtual void onAddItem(int iIndex);
     virtual void onDelItem(int iIndex);
     //virtual void onChangeItemStackCount(CItem* pItem, int iChange);
-protected:
-    CUnitEventAdapter* m_pAI;
     
-public:
-    template <typename ADAPTER>
-    void setAI(const ADAPTER&);
-    void delAI();
+    M_SYNTHESIZE_READONLY(CBaseAI*, m_pAI, AI);
+    void setAI(CBaseAI* pAI);
 
     M_SYNTHESIZE_READONLY(CUnitEventAdapter*, m_pEventAdapter, EventAdapter);
-    void setEventAdapter(CUnitEventAdapter* var);
+    void setEventAdapter(CUnitEventAdapter* pEventAdapter);
 
     ////////////////////////  trigger /////////////////    
     enum TRIGGER_FLAG_BIT
@@ -432,6 +446,7 @@ public:
     void addActiveAbility(int id, int iLevel = 1);
     void delActiveAbility(int id, bool bNotify = true);
     CActiveAbility* getActiveAbility(int id);
+    CActiveAbility* getActiveAbility(const char* name);
     
     void addPassiveAbility(CPassiveAbility* pAbility, bool bNotify = true);
     void addPassiveAbility(int id, int iLevel = 1);
@@ -442,6 +457,7 @@ public:
     void addBuffAbility(int id, int iSrcUnit, int iLevel = 1);
     void delBuffAbility(int id, bool bNotify = true);
     CBuffAbility* getBuffAbility(int id);
+    CBuffAbility* getBuffAbility(const char* name);
 
     void addSystemAbility(CPassiveAbility* pAbility);
     
@@ -593,7 +609,7 @@ public:
     
 };
 
-class CWorld : public CMultiRefObject, public CUnitEventAdapter
+class CWorld : public CUnitEventAdapter
 {
 public:
     CWorld();
@@ -672,25 +688,6 @@ public:
 
 // ----------- Inline Implementation--------------
 
-// CUnit
-template <typename ADAPTER>
-inline void CUnit::setAI(const ADAPTER&)
-{
-    ADAPTER* pAdapter = new ADAPTER;
-    CUnitEventAdapter* pAI = DCAST(pAdapter, CUnitEventAdapter*);
-    if (pAI == NULL)
-    {
-        delete pAdapter;
-        return;
-    }
-    
-    if (m_pAI != NULL)
-    {
-        delete m_pAI;
-    }
-    
-    m_pAI = pAI;
-}
 
 #endif  /* __UNIT_H__ */
 

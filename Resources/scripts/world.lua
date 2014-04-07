@@ -1,18 +1,3 @@
---require "/sdcard/ts/gamedemo/common.lua"
-function table.copy(st)
-    local tab = {}
-    st = st or {}
-    for k, v in pairs(st) do
-        if type(v) ~= "table" then
-            tab[k] = v
-        else
-            tab[k] = copyTab(v)
-        end
-    end
-    setmetatable(tab, getmetatable(st))
-    return tab
-end
-
 hero = nil
 me = nil
 
@@ -174,11 +159,35 @@ function OnDyingPas:onUnitDying()
 
 end
 
+LuaAI = class(UnitAI)
+function LuaAI:ctor()
+    self:sctor()
+end
+
+function LuaAI:onUnitTick(unit, dt)
+    a = unit:getActiveAbility("ThunderCap")
+    if not a then
+        return
+    end
+    
+    if not unit:isDoingOr(Unit.kMoving) and not unit:isDoingCastingAction() and not a:isCoolingDown() then
+        unit:setCastTarget()
+        unit:castSpell(a)
+    end
+end
+
+function LuaAI:onUnitAbilityReady(unit, ability)
+    if ability:getId() ~= unit:getAttackAbility():getId() then
+        unit:addBattleTip(ability:getName(), "", 32, 0, 0, 0)
+    end
+end
+
 function onWorldInit()
     showDebug(false)
     math.randomseed(os.time())
 
     me = getControlUnit()
+    me:setAI(LuaAI:new())
 
     local x, y = me:getPosition()
     me:setPosition(x + 500, y - 200)
@@ -227,9 +236,27 @@ function spawnHero()
     for i = 1, (3 + kill) do
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
+
+    a = SpeedBuff:new("SlowDownBuff", "SlowDown", 8.0, false, -0.8, 0.0, -0.8, 0.0)
+    id = addTemplateAbility(a)
+    a = KnockBackBuff:new("KnockBackBuff", "KnockBackBuff", 0.5, true, 40)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 250.0, 1.0, false, 0.0, 0.0)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("ThunderCap", 5.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastTargetRadius(150.0)
+    a:addCastAnimation(Unit.kAniAct2)
+    hero:addActiveAbility(a)
+    
+    hero:setAI(LuaAI:new())
 end
 
 function initAAA()
+    a = DamageBackPas:new(0.5)
+    c = c + 1
+    aaa[c] = addTemplateAbility(a)
 
     a = DoubleAttackPas:new("DA", 0.2, 0.5, 0.0)
     c = c + 1

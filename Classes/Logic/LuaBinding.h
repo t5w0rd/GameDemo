@@ -91,11 +91,20 @@ int unit_setRewardGold(lua_State* L);
 int unit_getRewardGold(lua_State* L);
 int unit_setRewardExp(lua_State* L);
 int unit_getRewardExp(lua_State* L);
+int unit_setAI(lua_State* L);
+
+int unit_startDoing(lua_State* L);
+int unit_endDoing(lua_State* L);
+int unit_isDoingOr(lua_State* L);
+int unit_isDoingAnd(lua_State* L);
+int unit_isDoingNothing(lua_State* L);
 
 int unit_addActiveAbility(lua_State* L);
 int unit_addPassiveAbility(lua_State* L);
 int unit_addBuffAbility(lua_State* L);
 int unit_getAttackAbility(lua_State* L);
+int unit_getActiveAbility(lua_State* L);
+int unit_getBuffAbility(lua_State* L);
 
 int unit2d_setBaseMoveSpeed(lua_State* L);
 int unit2d_getRealMoveSpeed(lua_State* L);
@@ -106,16 +115,28 @@ int unit2d_getPosition(lua_State* L);
 int unit2d_getNearestEnemyInRange(lua_State* L);
 int unit2d_move(lua_State* L);
 int unit2d_moveAlongPath(lua_State* L);
+int unit2d_setCastTarget(lua_State* L);
+int unit2d_getCastTarget(lua_State* L);
 int unit2d_castSpell(lua_State* L);
 int unit2d_stop(lua_State* L);
 int unit2d_setHostilityRange(lua_State* L);
 int unit2d_getHostilityRange(lua_State* L);
 int unit2d_setFixed(lua_State* L);
 int unit2d_isFixed(lua_State* L);
+int unit2d_isDoingCastingAction(lua_State* L);
 
 int UnitPath_ctor(lua_State* L);
 int UnitPath_addPoint(lua_State* L);
 int UnitPath_getFirstPoint(lua_State* L);
+
+int UnitAI_ctor(lua_State* L);
+int UnitAI_onUnitChangeHp(lua_State* L);
+int UnitAI_onUnitTick(lua_State* L);
+int UnitAI_onUnitDamagedDone(lua_State* L);
+int UnitAI_onUnitDamageTargetDone(lua_State* L);
+int UnitAI_onUnitAddBuffAbility(lua_State* L);
+int UnitAI_onUnitDelBuffAbility(lua_State* L);
+int UnitAI_onUnitAbilityReady(lua_State* L);
 
 int ability_ctor(lua_State* L);
 int ability_onUnitAddAbility(lua_State* L);
@@ -136,6 +157,7 @@ int ability_onUnitProjectileEffect(lua_State* L);
 int ability_onUnitAbilityProjectileEffect(lua_State* L);
 int ability_copy(lua_State* L);
 int ability_setTriggerFlags(lua_State* L);
+int ability_getName(lua_State* L);
 int ability_getOwner(lua_State* L);
 int ability_setInterval(lua_State* L);
 int ability_getInterval(lua_State* L);
@@ -146,10 +168,24 @@ int ability_resetCD(lua_State* L);
 int ability_coolDown(lua_State* L);
 int ability_setLevel(lua_State* L);
 int ability_getLevel(lua_State* L);
+int ability_addEffectSound(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
 int ActiveAbility_onUnitCastAbility(lua_State* L);
+int ActiveAbility_setEffectiveTypeFlags(lua_State* L);
+int ActiveAbility_getEffectiveTypeFlags(lua_State* L);
+int ActiveAbility_setCastRange(lua_State* L);
+int ActiveAbility_getCastRange(lua_State* L);
+int ActiveAbility_setCastMinRange(lua_State* L);
+int ActiveAbility_getCastMinRange(lua_State* L);
+int ActiveAbility_setCastTargetRadius(lua_State* L);
+int ActiveAbility_getCastTargetRadius(lua_State* L);
+int ActiveAbility_setTemplateProjectile(lua_State* L);
+int ActiveAbility_setCastHorizontal(lua_State* L);
+int ActiveAbility_isCastHorizontal(lua_State* L);
+int ActiveAbility_addCastAnimation(lua_State* L);
+
 int PassiveAbility_ctor(lua_State* L);
 
 int BuffAbility_ctor(lua_State* L);
@@ -200,6 +236,7 @@ int g_onWorldTick(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
 int g_setControlUnit(lua_State* L);
 int g_getControlUnit(lua_State* L);
+int g_getUnit(lua_State* L);
 
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 

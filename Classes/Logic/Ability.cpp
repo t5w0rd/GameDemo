@@ -44,11 +44,37 @@ const char* CAbility::getDbgTag() const
     return getName();
 }
 
-void CAbility::copyData( const CAbility* from )
+void CAbility::copyData( CAbility* from )
 {
     // TODO: copy some members which are not in the constuctor params
+    setMaxLevel(from->getMaxLevel());
     setLevel(from->getLevel());
+    copyScriptHandler(from->getScriptHandler());
+    m_dwTriggerFlags = from->m_dwTriggerFlags;
+    setInterval(from->getInterval());
     m_vecEffectSounds = from->m_vecEffectSounds;
+}
+
+void CAbility::copyScriptHandler(int iScriptHandler)
+{
+    if (iScriptHandler == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+
+    // copy source lua obj
+    lua_getglobal(L, "table");
+    lua_getfield(L, -1, "copy");
+    luaL_getregistery(L, iScriptHandler);
+    lua_call(L, 1, 1);
+
+    lua_pushlightuserdata(L, this);
+    lua_setfield(L, -2, "_p");
+    setScriptHandler(luaL_ref(L, LUA_REGISTRYINDEX));
+
+    lua_pop(L, 1);  // pop "table"
 }
 
 const char* CAbility::getRootId() const
@@ -407,28 +433,6 @@ void CAbility::onDelFromUnit()
     setOwner(NULL);
 }
 
-void CAbility::copyScriptHandler(int iScriptHandler)
-{
-    if (iScriptHandler == 0)
-    {
-        return;
-    }
-
-    lua_State* L = CWorld::getLuaHandle();
-
-    // copy source lua obj
-    lua_getglobal(L, "table");
-    lua_getfield(L, -1, "copy");
-    luaL_getregistery(L, iScriptHandler);
-    lua_call(L, 1, 1);
-
-    lua_pushlightuserdata(L, this);
-    lua_setfield(L, -2, "_p");
-    setScriptHandler(luaL_ref(L, LUA_REGISTRYINDEX));
-
-    lua_pop(L, 1);  // pop "table"
-}
-
 void CAbility::setTriggerFlags(uint32_t dwTriggerFlags)
 {
     m_dwTriggerFlags |= dwTriggerFlags;
@@ -473,10 +477,18 @@ CActiveAbility::~CActiveAbility()
 {
 }
 
-void CActiveAbility::copyData( const CAbility* from )
+CMultiRefObject* CActiveAbility::copy()
+{
+    CActiveAbility* ret = new CActiveAbility(getRootId(), getName(), m_fCoolDown, m_eCastTargetType, m_dwEffectiveTypeFlags);
+    ret->copyData(this);
+
+    return ret;
+}
+
+void CActiveAbility::copyData( CAbility* from )
 {
     CAbility::copyData(from);
-    const CActiveAbility* a = DCAST(from, const CActiveAbility*);
+    CActiveAbility* a = DCAST(from, CActiveAbility*);
     setCastTargetType(a->getCastTargetType());
     setEffectiveTypeFlags(a->getEffectiveTypeFlags());
     setCastMinRange(a->getCastMinRange());
@@ -626,6 +638,14 @@ CPassiveAbility::~CPassiveAbility()
 {
 }
 
+CMultiRefObject* CPassiveAbility::copy()
+{
+    CPassiveAbility* ret = new CPassiveAbility(getRootId(), getName(), m_fCoolDown);
+    ret->copyData(this);
+
+    return ret;
+}
+
 // CBuffAbility
 CBuffAbility::CBuffAbility(const char* pRootId, const char* pName, float fDuration, bool bStackable)
 : CAbility(pRootId, pName, 0.0f)
@@ -638,17 +658,20 @@ CBuffAbility::CBuffAbility(const char* pRootId, const char* pName, float fDurati
     setDbgClassName("CBuffAbility");
 }
 
-CMultiRefObject* CBuffAbility::copy() const
+CMultiRefObject* CBuffAbility::copy()
 {
     CBuffAbility* ret = new CBuffAbility(getRootId(), getName(), m_fDuration, m_bStackable);
-    ret->setSrcUnit(getSrcUnit());
-    ret->setAppendBuff(getAppendBuff());
-    ret->setLevel(getLevel());
-    ret->setInterval(getInterval());
-    ret->setTriggerFlags(getTriggerFlags());
-    ret->copyScriptHandler(getScriptHandler());
+    ret->copyData(this);
     
     return ret;
+}
+
+void CBuffAbility::copyData( CAbility* from )
+{
+    CAbility::copyData(from);
+    CBuffAbility* a = DCAST(from, CBuffAbility*);
+    a->setSrcUnit(getSrcUnit());
+    a->setAppendBuff(getAppendBuff());
 }
 
 bool CBuffAbility::isDone() const
@@ -669,7 +692,7 @@ CAttackAct::CAttackAct(const char* pRootId, const char* pName, float fCoolDown, 
     setDbgClassName("CAttackAct");
 }
 
-CMultiRefObject* CAttackAct::copy() const
+CMultiRefObject* CAttackAct::copy()
 {
     CAttackAct* pRet = new CAttackAct(getRootId(), getName(), m_fCoolDown, m_oAttackValue, m_fAttackValueRandomRange);
     pRet->copyData(this);
@@ -833,7 +856,7 @@ CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCool
     setDbgClassName("CBuffMakerAct");
 }
 
-CMultiRefObject* CBuffMakerAct::copy() const
+CMultiRefObject* CBuffMakerAct::copy()
 {
     CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getCastTargetType(), getEffectiveTypeFlags(), getChance(), getTemplateBuff());
     pRet->setCastRange(getCastRange());
@@ -982,7 +1005,7 @@ CAuraPas::~CAuraPas()
 {
 }
 
-CMultiRefObject* CAuraPas::copy() const
+CMultiRefObject* CAuraPas::copy()
 {
     return new CAuraPas(getRootId(), getName(), m_fInterval, m_iTemplateBuff, m_fRange, m_dwEffectiveTypeFlags);
 }
@@ -1063,7 +1086,7 @@ CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName,
     setTriggerFlags(CUnit::kOnAttackTargetTrigger);
 }
 
-CMultiRefObject* CAttackBuffMakerPas::copy() const
+CMultiRefObject* CAttackBuffMakerPas::copy()
 {
     CAttackBuffMakerPas* ret = new CAttackBuffMakerPas(getRootId(), getName(), m_fChance, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
     ret->setCoolDown(getCoolDown());
@@ -1110,7 +1133,7 @@ CDamageBuff::CDamageBuff( const char* pName, const CAttackValue& rDamage, float 
 {
 }
 
-CMultiRefObject* CDamageBuff::copy() const
+CMultiRefObject* CDamageBuff::copy()
 {
     CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getChance(), isToSelf(), getExAttackValue());
     ret->setAppendBuff(getAppendBuff());
@@ -1168,7 +1191,7 @@ CVampirePas::CVampirePas(const char* pRootId, const char* pName, float fPercentC
     setTriggerFlags(CUnit::kOnDamageTargetDoneTrigger);
 }
 
-CMultiRefObject* CVampirePas::copy() const
+CMultiRefObject* CVampirePas::copy()
 {
     return new CVampirePas(getRootId(), getName(), getPercentConversion());
 }
@@ -1209,7 +1232,7 @@ CStunBuff::CStunBuff(const char* pRootId, const char* pName, float fDuration, bo
     setDbgClassName("CStunBuff");
 }
 
-CMultiRefObject* CStunBuff::copy() const
+CMultiRefObject* CStunBuff::copy()
 {
     return new CStunBuff(getRootId(), getName(), m_fDuration, m_bStackable);
 }
@@ -1296,7 +1319,7 @@ CDoubleAttackPas::CDoubleAttackPas(const char* pRootId, const char* pName, float
     setDbgClassName("CDoubleAttackPas");
 }
 
-CMultiRefObject* CDoubleAttackPas::copy() const
+CMultiRefObject* CDoubleAttackPas::copy()
 {
     return new CDoubleAttackPas(getRootId(), getName(), m_fChance, m_oExAttackValue);
 }
@@ -1340,7 +1363,7 @@ CSpeedBuff::CSpeedBuff(const char* pRootId, const char* pName, float fDuration, 
     setDbgClassName("CSpeedBuff");
 }
 
-CMultiRefObject* CSpeedBuff::copy() const
+CMultiRefObject* CSpeedBuff::copy()
 {
     return new CSpeedBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_oExMoveSpeedDelta, m_oExAttackSpeedDelta);
 }
@@ -1413,7 +1436,7 @@ CChangeHpPas::CChangeHpPas(const char* pRootId, const char* pName, float fInterv
     setInterval(fInterval);
 }
 
-CMultiRefObject* CChangeHpPas::copy() const
+CMultiRefObject* CChangeHpPas::copy()
 {
     return new CChangeHpPas(getRootId(), getName(), m_fInterval, m_oChangeHp, m_oMinHp);
 }
@@ -1456,7 +1479,7 @@ CChangeHpBuff::CChangeHpBuff(const char* pRootId, const char* pName, float fDura
     setInterval(fInterval);
 }
 
-CMultiRefObject* CChangeHpBuff::copy() const
+CMultiRefObject* CChangeHpBuff::copy()
 {
     CChangeHpBuff* ret = new CChangeHpBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_fInterval, m_oChangeHp, m_oMinHp);
     ret->setAppendBuff(getAppendBuff());
@@ -1503,7 +1526,7 @@ CRebirthPas::CRebirthPas(const char* pRootId, const char* pName, float fCoolDown
     setTriggerFlags(CUnit::kOnDeadTrigger);
 }
 
-CMultiRefObject* CRebirthPas::copy() const
+CMultiRefObject* CRebirthPas::copy()
 {
     return new CRebirthPas(getRootId(), getName(), getCoolDown(), m_oExMaxHp);
 }
@@ -1570,7 +1593,7 @@ CEvadePas::CEvadePas(const char* pRootId, const char* pName, float fChance, int 
     setTriggerFlags(CUnit::kOnAttackedTrigger);
 }
 
-CMultiRefObject* CEvadePas::copy() const
+CMultiRefObject* CEvadePas::copy()
 {
     return new CEvadePas(getRootId(), getName(), m_fChance, m_iTemplateBuff);
 }
@@ -1614,7 +1637,7 @@ CEvadeBuff::CEvadeBuff(const char* pRootId, const char* pName, float fDuration, 
     setTriggerFlags(CUnit::kOnAttackedTrigger);
 }
 
-CMultiRefObject* CEvadeBuff::copy() const
+CMultiRefObject* CEvadeBuff::copy()
 {
     return new CEvadeBuff(getRootId(), getName(), getDuration(), isStackable(), m_fChance);
 }
@@ -1660,7 +1683,7 @@ CTransitiveLinkBuff::CTransitiveLinkBuff( const char* pName, float fDuration, fl
     setDbgClassName("CTransitiveLinkBuff");
 }
 
-CMultiRefObject* CTransitiveLinkBuff::copy() const
+CMultiRefObject* CTransitiveLinkBuff::copy()
 {
     CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_oDamage);
     ret->setAppendBuff(getAppendBuff());
@@ -1764,7 +1787,7 @@ CSplashPas::CSplashPas( const char* pName, float fNearRange, const CExtraCoeff& 
     setDbgClassName("CSplashPas");
 }
 
-CMultiRefObject* CSplashPas::copy() const
+CMultiRefObject* CSplashPas::copy()
 {
     CSplashPas* ret = new CSplashPas(getName(), getNearRange(), getExNearDamage(), getFarRange(), getExFarDamage());
 
@@ -1820,7 +1843,7 @@ CKnockBackBuff::CKnockBackBuff( const char* pRootId, const char* pName, float fD
     setDbgClassName("CKnockBackBuff");
 }
 
-CMultiRefObject* CKnockBackBuff::copy() const
+CMultiRefObject* CKnockBackBuff::copy()
 {
     CKnockBackBuff* ret = new CKnockBackBuff(getRootId(), getName(), getDuration(), isStackable(), getDistance());
     ret->setAppendBuff(getAppendBuff());
@@ -1870,7 +1893,7 @@ CReflectBuff::CReflectBuff( const char* pRootId, const char* pName, float fDurat
     setDbgClassName("CReflectBuff");
 }
 
-CMultiRefObject* CReflectBuff::copy() const
+CMultiRefObject* CReflectBuff::copy()
 {
     CReflectBuff* ret = new CReflectBuff(getRootId(), getName(), m_fDuration);
     return ret;

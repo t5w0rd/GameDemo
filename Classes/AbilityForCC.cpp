@@ -16,7 +16,7 @@ CStatusShowPas::CStatusShowPas()
     setTriggerFlags(CUnit::kOnChangeHpTrigger | CUnit::kOnReviveTrigger | CUnit::kOnDyingTrigger);
 }
 
-CMultiRefObject* CStatusShowPas::copy() const
+CMultiRefObject* CStatusShowPas::copy()
 {
     return new CStatusShowPas();
 }

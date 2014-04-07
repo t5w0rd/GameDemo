@@ -18,7 +18,7 @@ public:
     void retain();
     void release();
     
-    virtual CMultiRefObject* copy() const;
+    virtual CMultiRefObject* copy();
     
     M_SYNTHESIZE_READONLY(int, m_iRefCount, RefCount);
     M_SYNTHESIZE_STR(DbgClassName);
@@ -51,7 +51,7 @@ public:
     void delObject(CMultiRefObject* pObject);
     void releaseObjects();
     
-    M_SINGLETON(AutoReleasePool);
+    M_SINGLETON(CAutoReleasePool);
 };
 
 class CDbgMultiRefObjectManager
@@ -65,7 +65,7 @@ public:
     void delObject(CMultiRefObject* pObject);
     void printDbgInfo(const char* pFile, int iLine);
 #define OBJS_INFO CDbgMultiRefObjectManager::sharedDbgMultiRefObjectManager()->printDbgInfo(__FILE__, __LINE__)
-    M_SINGLETON(DbgMultiRefObjectManager);
+    M_SINGLETON(CDbgMultiRefObjectManager);
 };
 
 template <typename MULTIREF_ID_TYPE_PTR>
