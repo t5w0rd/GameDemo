@@ -3,6 +3,7 @@
 
 #include "UnitLibraryForCC.h"
 #include "ComponentForCC.h"
+#include "HeroRoomScene.h"
 
 
 class CStunBuff;
@@ -41,8 +42,7 @@ public:
 
     CUnitLibraryForCC m_oULib;
 
-    M_SYNTHESIZE(CCHeroRoomSceneLayer*, m_heroLayer, HeroLayer);
-
+    CCHeroRoomSceneLayer::HERO_INFO m_heroInfo;
 };
 
 class CCBattleScene : public CCScene
@@ -68,7 +68,7 @@ public:
     virtual bool init();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene(CCHeroRoomSceneLayer* heroLayer);
+    static cocos2d::CCScene* scene(CCHeroRoomSceneLayer::HERO_INFO& heroInfo);
     
     // implement the "static node()" method manually
     CREATE_FUNC(CCBattleSceneLayer);
@@ -136,6 +136,7 @@ public:
     void onClickFist(CCNode* pNode);
     void onClickHeroPortrait(CCNode* pNode);
 
+    void onClickRestart(CCObject* obj);
 };
 
 #endif // __BATTLE_SCENE_H__

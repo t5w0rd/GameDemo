@@ -124,6 +124,9 @@ int unit2d_getHostilityRange(lua_State* L);
 int unit2d_setFixed(lua_State* L);
 int unit2d_isFixed(lua_State* L);
 int unit2d_isDoingCastingAction(lua_State* L);
+int unit2d_getDistance(lua_State* L);
+int unit2d_getTouchDistance(lua_State* L);
+int unit2d_getAttackingTarget(lua_State* L);
 
 int UnitPath_ctor(lua_State* L);
 int UnitPath_addPoint(lua_State* L);

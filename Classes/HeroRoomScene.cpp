@@ -358,7 +358,7 @@ void CCHeroRoomSceneLayer::onClickButtonDone( CCNode* pNode )
 
 void CCHeroRoomSceneLayer::onHideDone( CCNode* pNode )
 {
-    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCBattleSceneLayer::scene(this)));
+    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCBattleSceneLayer::scene(m_heroVals[getSelectIndex()])));
 }
 
 void CCHeroRoomSceneLayer::onScaleDone( CCNode* pNode )

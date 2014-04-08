@@ -481,6 +481,15 @@ CUnitAI::CUnitAI()
 {
 }
 
+CUnitAI::~CUnitAI()
+{
+    if (getScriptHandler() != 0)
+    {
+        lua_State* L = CWorld::getLuaHandle();
+        luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
+    }
+}
+
 void CUnitAI::onUnitChangeHp( CUnit* pUnit, float fChanged )
 {
     if (getScriptHandler() == 0)

@@ -276,6 +276,7 @@ class CUnitAI : public CBaseAI
 {
 public:
     CUnitAI();
+    virtual ~CUnitAI();
     M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
 
     virtual void onUnitChangeHp(CUnit* pUnit, float fChanged);

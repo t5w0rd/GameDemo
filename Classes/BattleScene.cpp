@@ -135,8 +135,7 @@ bool CBattleWorld::onInit()
 
     // init hero
     //u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
-    CCHeroRoomSceneLayer::HERO_INFO& heroInfo = getHeroLayer()->m_heroVals[getHeroLayer()->getSelectIndex()];
-    u = m_oULib.copyUnit(heroInfo.id == CUnitLibraryForCC::kBarracks ? CUnitLibraryForCC::kThor : heroInfo.id);
+    u = m_oULib.copyUnit(m_heroInfo.id == CUnitLibraryForCC::kBarracks ? CUnitLibraryForCC::kThor : m_heroInfo.id);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
@@ -204,12 +203,12 @@ bool CBattleWorld::onInit()
     d = DCAST(u->getDraw(), CUnitDrawForCC*);
     d->setPosition(CPoint(800, 600));
     
-    u->setName(heroInfo.name);
-    u->setMaxHp(heroInfo.hp);
-    atk->setBaseAttack(CAttackValue(heroInfo.atkVal));
-    atk->setBaseAttackInterval(1 / heroInfo.attackSpeed);
-    u->setBaseArmor(heroInfo.armVal);
-    d->setBaseMoveSpeed(heroInfo.moveSpeed);
+    u->setName(m_heroInfo.name);
+    u->setMaxHp(m_heroInfo.hp);
+    atk->setBaseAttack(CAttackValue(m_heroInfo.atkVal));
+    atk->setBaseAttackInterval(1 / m_heroInfo.attackSpeed);
+    u->setBaseArmor(m_heroInfo.armVal);
+    d->setBaseMoveSpeed(m_heroInfo.moveSpeed);
 
     onLuaWorldInit();
     
@@ -257,8 +256,6 @@ bool CBattleWorld::onInit()
     sprintf(sz, "sounds/Background/Background%02d.mp3", rand() % 5);
     ae->playBackgroundMusic(sz, true);
     ae->playEffect("sounds/Effect/WaveIncoming.mp3");
-
-    getHeroLayer()->release();
 
     return true;
 }
@@ -592,7 +589,7 @@ CCBattleSceneLayer::~CCBattleSceneLayer()
     }
 }
 
-CCScene* CCBattleSceneLayer::scene(CCHeroRoomSceneLayer* heroLayer)
+CCScene* CCBattleSceneLayer::scene(CCHeroRoomSceneLayer::HERO_INFO& heroInfo)
 {
     // 'scene' is an autorelease object
     CCBattleScene* pScene = CCBattleScene::create();
@@ -606,8 +603,7 @@ CCScene* CCBattleSceneLayer::scene(CCHeroRoomSceneLayer* heroLayer)
     pScene->addChild(layer);
     pScene->addChild(layer->getCtrlLayer(), 1);
 
-    pWorld->setHeroLayer(heroLayer);
-    heroLayer->retain();
+    pWorld->m_heroInfo = heroInfo;
     if (pWorld->init() == false)
     {
         return NULL;
@@ -645,6 +641,10 @@ bool CCBattleSceneLayer::init()
     // 3. add your codes below...
 
     setWorldInterval(0.02f);
+    
+    CCMenu* mn = CCMenu::create();
+    m_pCtrlLayer->addChild(mn);
+    mn->setPosition(CCPointZero);
 
     CCButtonPanel* bp = CCButtonPanel::create(1, 1, 132, 132, 0, 0, NULL);
     CCButtonBase* btn = CCButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickFist), NULL);
@@ -652,6 +652,13 @@ bool CCBattleSceneLayer::init()
 
     m_pCtrlLayer->addChild(bp);
     bp->setPosition(ccp(wsz.width - btn->getContentSize().width * 0.5 - 50, btn->getContentSize().height * 0.5 + 150));
+
+    
+    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("RESTART", "fonts/Comic Book.ttf", 64), this, menu_selector(CCBattleSceneLayer::onClickRestart));
+    mn->addChild(lbl);
+
+    lbl->setPosition(ccp(wsz.width - lbl->getContentSize().width * 0.5 - 50, wsz.height - lbl->getContentSize().height * 0.5 - 50));
+
 
     return true;
 }
@@ -1388,4 +1395,9 @@ void CCBattleSceneLayer::onClickHeroPortrait( CCNode* pNode )
         showTargetInfo();
         updateTargetInfo(w->getHero()->getId());
     }
+}
+
+void CCBattleSceneLayer::onClickRestart( CCObject* obj )
+{
+    CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene(DCAST(getWorld(), CBattleWorld*)->m_heroInfo));
 }

@@ -173,16 +173,25 @@ int luaRegCommFunc(lua_State* L)
 
 CUnit* luaL_tounitptr(lua_State* L, int idx)
 {
-    if (lua_istable(L, idx) == false)
+    if (lua_istable(L, idx))
     {
-        return NULL;
+        lua_getfield(L, idx, "_p");
+        CUnit* ret = (CUnit*)lua_touserdata(L, lua_gettop(L));
+        lua_pop(L, 1);
+
+        return ret;
     }
 
-    lua_getfield(L, idx, "_p");
-    CUnit* ret = (CUnit*)lua_touserdata(L, lua_gettop(L));
-    lua_pop(L, 1);
-    
-    return ret;
+    if (lua_isnumber(L, idx))
+    {
+        lua_getglobal(L, "_world");
+        CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+        lua_pop(L, 1);
+        
+        return w->getUnit(lua_tointeger(L, idx));
+    }
+
+    return NULL;
 }
 
 CAbility* luaL_toabilityptr(lua_State* L, int idx)
@@ -278,6 +287,9 @@ luaL_Reg unit_funcs[] = {
     {"setFixed", unit2d_setFixed},
     {"isFixed", unit2d_isFixed},
     {"isDoingCastingAction", unit2d_isDoingCastingAction},
+    {"getDistance", unit2d_getDistance},
+    {"getTouchDistance", unit2d_getTouchDistance},
+    {"getAttackingTarget", unit2d_getAttackingTarget},
     
     {NULL, NULL}
 };
@@ -1019,6 +1031,53 @@ int unit2d_isDoingCastingAction(lua_State* L)
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
     lua_pushboolean(L, d->getCastActionId());
+
+    return 1;
+}
+
+int unit2d_getDistance(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CUnit* t = luaL_tounitptr(L, 2);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+
+    lua_pushnumber(L, d->getPosition().getDistance(td->getPosition()));
+
+    return 1;
+}
+
+int unit2d_getTouchDistance(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CUnit* t = luaL_tounitptr(L, 2);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+
+    lua_pushnumber(L, d->getPosition().getDistance(td->getPosition()) - d->getHalfOfWidth() - td->getHalfOfWidth());
+
+    return 1;
+}
+
+int unit2d_getAttackingTarget(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    if (_p->getAttackAbilityId() != 0 && _p->getAttackAbilityId() == d->getCastActiveAbilityId() && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+    {
+        CUnit* t = _p->getUnit(d->getCastTarget().getTargetUnit());
+        if (t != NULL)
+        {
+            luaL_pushobjptr(L, "Unit", t);
+
+            return 1;
+        }
+    }
+
+    lua_pushnil(L);
 
     return 1;
 }
