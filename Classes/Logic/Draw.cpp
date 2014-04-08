@@ -192,9 +192,18 @@ void CUnitDraw2D::onUnitTick(float dt)
     {
         return;
     }
+
+    if (m_pMovePath && !u->isDoingOr(CUnit::kMoving | CUnit::kCasting))
+    {
+        u->startDoing(CUnit::kAlongPath);
+        if (m_bPathObstinate)
+        {
+            u->startDoing(CUnit::kObstinate);
+        }
+    }
     
     // 路径逻辑
-    if (m_pMovePath != NULL)
+    if (m_pMovePath != NULL && u->isDoingOr(CUnit::kAlongPath))
     {
         // 正在运行路径
         const CPoint* pTarget = m_pMovePath->getCurTargetPoint(m_dwPathCurPos);
@@ -212,6 +221,7 @@ void CUnitDraw2D::onUnitTick(float dt)
         {
             m_pMovePath->release();
             m_pMovePath = NULL;
+            u->endDoing(CUnit::kAlongPath);
         }
         else if ((*pTarget != getLastMoveToTarget() || u->isDoingOr(CUnit::kMoving) == false) && u->isDoingOr(CUnit::kCasting) == false)
         {
@@ -370,6 +380,11 @@ void CUnitDraw2D::cmdMove(const CPoint& roPos, bool bObstinate)
         setCastActiveAbilityId(0);
     }
 
+    if (u->isDoingOr(CUnit::kAlongPath))
+    {
+        u->endDoing(CUnit::kAlongPath);
+    }
+
     if (bObstinate)
     {
         u->startDoing(CUnit::kObstinate);
@@ -459,6 +474,11 @@ void CUnitDraw2D::cmdMoveAlongPath(CUnitPath* pPath, bool bObstinate /*= true*/,
         m_pMovePath = pPath;
     }
 
+    if (u->isDoingOr(CUnit::kAlongPath) == false)
+    {
+        u->startDoing(CUnit::kAlongPath);
+    }
+
     m_bPathObstinate = bObstinate;
 
     if (!m_pMovePath)
@@ -504,7 +524,7 @@ void CUnitDraw2D::stopMove()
     setMoveActionId(0);
 
     CUnit* u = getUnit();
-    u->endDoing(CUnit::kMoving);
+    u->endDoing(CUnit::kMoving | CUnit::kAlongPath);
 
     setFrame(kFrmDefault);
 }

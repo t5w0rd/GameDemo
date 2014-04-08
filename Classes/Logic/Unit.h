@@ -558,7 +558,7 @@ public:
         kDying = 1 << 16,
         kMoving = 1 << 17,
         kObstinate = 1 << 18,
-        kAttacking = 1 << 19,
+        kAlongPath = 1 << 19,
         kCasting = 1 << 20,
         kSpinning = 1 << 21
     };

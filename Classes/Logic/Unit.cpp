@@ -380,6 +380,7 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
             CUnitDraw2D* ttd = DCAST(tt->getDraw(), CUnitDraw2D*);
             if (ttd != NULL && pUnit->isDoingAnd(CUnit::kCasting | CUnit::kMoving) && d->getPosition().getDistance(ttd->getPosition()) < d->getHostilityRange())
             {
+                // 正在追击施法，距离在仇恨范围内
                 return;
             }
         }
@@ -395,6 +396,7 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
     if (t == NULL || t->isDead())
     {
         //d->stop();
+        // 搜不到仇恨区内的目标，有没有必要设置为doNothing？
         return;
     }
 

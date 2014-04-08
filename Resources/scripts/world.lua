@@ -170,13 +170,19 @@ function LuaAI:onUnitTick(unit, dt)
         return
     end
     
+    if unit:isDoingOr(Unit.kObstinate) then
+        return
+    end
+    
     t = unit:getAttackingTarget()
     if t then
-        log(unit:getDistance(t))
+        --log(unit:getDistance(t))
     end
     if t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-        unit:setCastTarget()
-        unit:castSpell(a)
+        --unit:setCastTarget()
+        --unit:castSpell(a)
+        unit:move(0, 0)
+        log(string.format("%s", unit:isDoingOr(Unit.kObstinate)))
     end
 end
 
