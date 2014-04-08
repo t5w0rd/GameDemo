@@ -170,7 +170,11 @@ function LuaAI:onUnitTick(unit, dt)
         return
     end
     
-    if not unit:isDoingOr(Unit.kMoving) and not unit:isDoingCastingAction() and not a:isCoolingDown() then
+    t = unit:getAttackingTarget()
+    if t then
+	log(unit:getDistance(t))
+    end
+    if t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
         unit:setCastTarget()
         unit:castSpell(a)
     end
