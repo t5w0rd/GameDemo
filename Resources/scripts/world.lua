@@ -172,7 +172,7 @@ function LuaAI:onUnitTick(unit, dt)
     
     t = unit:getAttackingTarget()
     if t then
-	log(unit:getDistance(t))
+        log(unit:getDistance(t))
     end
     if t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
         unit:setCastTarget()
