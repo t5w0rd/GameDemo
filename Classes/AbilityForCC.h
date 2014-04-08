@@ -11,7 +11,7 @@ class CStatusShowPas : public CPassiveAbility
 {
 public:
     CStatusShowPas();
-    virtual CMultiRefObject* copy() const;
+    virtual CMultiRefObject* copy();
 
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();

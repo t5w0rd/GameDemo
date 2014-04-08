@@ -38,8 +38,8 @@ public:
         kBarrack,
         kTemplars,
         kArcane,
-        kTesla
-
+        kTesla,
+        kWizard
     };
 
     typedef CMultiRefMap<CUnit*> MAP_UNITS;

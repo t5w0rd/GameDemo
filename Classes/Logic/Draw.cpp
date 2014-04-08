@@ -30,14 +30,14 @@ CUnitDraw::~CUnitDraw()
 {
 }
 
-CMultiRefObject* CUnitDraw::copy() const
+CMultiRefObject* CUnitDraw::copy()
 {
     CUnitDraw* d = new CUnitDraw(getName());
     d->copyData(this);
     return d;
 }
 
-void CUnitDraw::copyData( const CUnitDraw* from )
+void CUnitDraw::copyData( CUnitDraw* from )
 {
 }
 
@@ -121,17 +121,17 @@ CUnitDraw2D::~CUnitDraw2D()
     M_SAFE_RELEASE(m_pMovePath);
 }
 
-CMultiRefObject* CUnitDraw2D::copy() const
+CMultiRefObject* CUnitDraw2D::copy()
 {
     CUnitDraw2D* ret = new CUnitDraw2D(getName());
     ret->copyData(this);
     return ret;
 }
 
-void CUnitDraw2D::copyData( const CUnitDraw* from )
+void CUnitDraw2D::copyData( CUnitDraw* from )
 {
     CUnitDraw::copyData(from);
-    const CUnitDraw2D* d = DCAST(from, const CUnitDraw2D*);
+    CUnitDraw2D* d = DCAST(from, CUnitDraw2D*);
     m_fHalfOfWidth = d->m_fHalfOfWidth;
     m_fHalfOfHeight = d->m_fHalfOfHeight;
     m_oFirePoint = d->m_oFirePoint;
@@ -1020,7 +1020,7 @@ CProjectile::~CProjectile()
     setSrcAbility(NULL);
 }
 
-CMultiRefObject* CProjectile::copy() const
+CMultiRefObject* CProjectile::copy()
 {
     CProjectile* ret = new CProjectile(getName());
     ret->copyData(ret);
@@ -1103,13 +1103,7 @@ void CProjectile::onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
         CWorld* w = getWorld();
         assert(w != NULL);
         CUnit* t = w->getUnit(getToUnit());
-        if (t == NULL)
-        {
-            die();
-            return;
-        }
-
-        if (t->onProjectileArrive(this) == false)
+        if (t != NULL && t->onProjectileArrive(this) == false)
         {
             return;
         }
@@ -1364,10 +1358,13 @@ void CProjectile::redirect()
             }
 
             CUnit* t = w->getUnit(getToUnit());
-            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+            if (t != NULL)
+            {
+                CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
 
-            float fDis = getFromPoint().getDistance(td->getPosition() + CPoint(0.0f, td->getHalfOfHeight()));
-            fireFollow(getFromPoint(), getToUnit(), fDis / max(FLT_EPSILON, getMoveSpeed()), getMaxHeightDelta());
+                float fDis = getFromPoint().getDistance(td->getPosition() + CPoint(0.0f, td->getHalfOfHeight()));
+                fireFollow(getFromPoint(), getToUnit(), fDis / max(FLT_EPSILON, getMoveSpeed()), getMaxHeightDelta());
+            }
         }
 
         break;

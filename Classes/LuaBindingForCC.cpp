@@ -91,7 +91,7 @@ int unit4cc_ctor(lua_State* L)
     lua_pop(L, 1);
 
     w->addUnit(u);
-    u->setAI(CDefaultAI());
+    //u->setAI(CBaseAI::instance());
 
     return 0;
 }

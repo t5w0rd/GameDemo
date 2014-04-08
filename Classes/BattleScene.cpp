@@ -10,6 +10,7 @@
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
 #include "ComponentForCC.h"
+#include "HeroRoomScene.h"
 
 
 class CHeroLevelUp : public CLevelUpdate
@@ -49,7 +50,7 @@ public:
     }
 };
 
-class CMyAI : public CDefaultAI
+class CMyAI : public CBaseAI
 {
 public:
     CMyAI()
@@ -61,7 +62,7 @@ public:
 
     virtual void onUnitTick(CUnit* pUnit, float dt)
     {
-        CDefaultAI::onUnitTick(pUnit, dt);
+        CBaseAI::onUnitTick(pUnit, dt);
         return;
 
         CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
@@ -133,7 +134,9 @@ bool CBattleWorld::onInit()
     m_oULib.init();
 
     // init hero
-    u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
+    //u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
+    CCHeroRoomSceneLayer::HERO_INFO& heroInfo = getHeroLayer()->m_heroVals[getHeroLayer()->getSelectIndex()];
+    u = m_oULib.copyUnit(heroInfo.id == CUnitLibraryForCC::kBarracks ? CUnitLibraryForCC::kThor : heroInfo.id);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
@@ -200,6 +203,13 @@ bool CBattleWorld::onInit()
 
     d = DCAST(u->getDraw(), CUnitDrawForCC*);
     d->setPosition(CPoint(800, 600));
+    
+    u->setName(heroInfo.name);
+    u->setMaxHp(heroInfo.hp);
+    atk->setBaseAttack(CAttackValue(heroInfo.atkVal));
+    atk->setBaseAttackInterval(1 / heroInfo.attackSpeed);
+    u->setBaseArmor(heroInfo.armVal);
+    d->setBaseMoveSpeed(heroInfo.moveSpeed);
 
     onLuaWorldInit();
     
@@ -248,6 +258,8 @@ bool CBattleWorld::onInit()
     ae->playBackgroundMusic(sz, true);
     ae->playEffect("sounds/Effect/WaveIncoming.mp3");
 
+    getHeroLayer()->release();
+
     return true;
 }
 
@@ -294,15 +306,28 @@ bool CBattleWorld::onLuaWorldInit()
     luaRegWorldFuncsForCC(L, this);
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+    string comm = "/sdcard/ts/gamedemo/common.lua";
     string name = "/sdcard/ts/gamedemo/world.lua";
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+    string comm = "/var/mobile/Documents/common.lua";
     string name = "/var/mobile/Documents/world.lua";
 #else
+    string comm = "scripts/common.lua";
     string name = "scripts/world.lua";
 #endif
+    CCLOG("MSG | loadScript: %s", comm.c_str());
     CCLOG("MSG | loadScript: %s", name.c_str());
 
     string err;
+
+    if (luaL_loadscript4cc(L, comm.c_str(), err) == false)
+    {
+        CCLOG("ERR | LuaErr: %s", err.c_str());
+        layer->log("%s", err.c_str());
+
+        return false;
+    }
+
     if (luaL_loadscript4cc(L, name.c_str(), err) == false)
     {
         CCLOG("ERR | LuaErr: %s", err.c_str());
@@ -567,12 +592,12 @@ CCBattleSceneLayer::~CCBattleSceneLayer()
     }
 }
 
-CCScene* CCBattleSceneLayer::scene()
+CCScene* CCBattleSceneLayer::scene(CCHeroRoomSceneLayer* heroLayer)
 {
     // 'scene' is an autorelease object
     CCBattleScene* pScene = CCBattleScene::create();
 
-    CWorldForCC* pWorld = pScene->getWorld();
+    CBattleWorld* pWorld = DCAST(pScene->getWorld(), CBattleWorld*);
     // 'layer' is an autorelease object
     CCBattleSceneLayer* layer = CCBattleSceneLayer::create();
     pWorld->setLayer(layer);
@@ -581,6 +606,8 @@ CCScene* CCBattleSceneLayer::scene()
     pScene->addChild(layer);
     pScene->addChild(layer->getCtrlLayer(), 1);
 
+    pWorld->setHeroLayer(heroLayer);
+    heroLayer->retain();
     if (pWorld->init() == false)
     {
         return NULL;
@@ -980,7 +1007,6 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
     // »¤¼×
     switch (pUnit->getBaseArmor().getType())
     {
-    case CArmorValue::kNormal:
     case CArmorValue::kHeavy:
         m_pTargetDefIcon->setDisplayFrame(fc->spriteFrameByName("UI/status/HeavyArmor.png"));
         break;

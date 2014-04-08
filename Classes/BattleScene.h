@@ -6,6 +6,7 @@
 
 
 class CStunBuff;
+class CCHeroRoomSceneLayer;
 
 class CBattleWorld : public CWorldForCC
 {
@@ -40,6 +41,8 @@ public:
 
     CUnitLibraryForCC m_oULib;
 
+    M_SYNTHESIZE(CCHeroRoomSceneLayer*, m_heroLayer, HeroLayer);
+
 };
 
 class CCBattleScene : public CCScene
@@ -65,7 +68,7 @@ public:
     virtual bool init();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene();
+    static cocos2d::CCScene* scene(CCHeroRoomSceneLayer* heroLayer);
     
     // implement the "static node()" method manually
     CREATE_FUNC(CCBattleSceneLayer);

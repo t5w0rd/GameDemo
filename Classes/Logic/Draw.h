@@ -27,8 +27,8 @@ class CUnitDraw : public CMultiRefObject
 public:
     CUnitDraw(const char* pName);
     virtual ~CUnitDraw();
-    virtual CMultiRefObject* copy() const;
-    virtual void copyData(const CUnitDraw* from);
+    virtual CMultiRefObject* copy();
+    virtual void copyData(CUnitDraw* from);
 
     M_SYNTHESIZE_STR(Name);
 
@@ -82,8 +82,8 @@ class CUnitDraw2D : public CUnitDraw
 public:
     CUnitDraw2D(const char* pName);
     virtual ~CUnitDraw2D();
-    virtual CMultiRefObject* copy() const;
-    virtual void copyData(const CUnitDraw* from);
+    virtual CMultiRefObject* copy();
+    virtual void copyData(CUnitDraw* from);
 
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oPosition, Position);
 
@@ -245,7 +245,7 @@ class CProjectile : public CMultiRefObject
 public:
     CProjectile(const char* pName);
     virtual ~CProjectile();
-    virtual CMultiRefObject* copy() const;
+    virtual CMultiRefObject* copy();
     virtual void copyData(const CProjectile* from);
 
     M_SYNTHESIZE_STR(Name);

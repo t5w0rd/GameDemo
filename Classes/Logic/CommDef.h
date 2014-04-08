@@ -261,13 +261,13 @@ const char* GBKToUTF8(const char* pGBKStr);
 // –Ë¡¢º¥continue
 #define M_VEC_NEXT ++it
 
-#define M_SINGLETON(name) \
-    inline static C##name* shared##name() \
+#define M_SINGLETON(type) \
+    inline static type* instance() \
     { \
-        static C##name* pInst = NULL; \
+        static type* pInst = NULL; \
         if (!pInst) \
         { \
-            pInst = new C##name; \
+            pInst = new type; \
             CMultiRefObject* pObj = DCAST(pInst, CMultiRefObject*); \
             if (pObj) \
             { \

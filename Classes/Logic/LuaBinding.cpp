@@ -245,10 +245,21 @@ luaL_Reg unit_funcs[] = {
     {"getRewardGold", unit_getRewardGold},
     {"setRewardExp", unit_setRewardExp},
     {"getRewardExp", unit_getRewardExp},
+    {"setAI", unit_setAI},
+
+    {"startDoing", unit_startDoing},
+    {"endDoing", unit_endDoing},
+    {"isDoingOr", unit_isDoingOr},
+    {"isDoingAnd", unit_isDoingAnd},
+    {"isDoingNothing", unit_isDoingNothing},
+
     {"addActiveAbility", unit_addActiveAbility},
     {"addPassiveAbility", unit_addPassiveAbility},
     {"addBuffAbility", unit_addBuffAbility},
     {"getAttackAbility", unit_getAttackAbility},
+    {"getActiveAbility", unit_getActiveAbility},
+    {"getBuffAbility", unit_getBuffAbility},
+
     {"setBaseMoveSpeed", unit2d_setBaseMoveSpeed},
     {"getRealMoveSpeed", unit2d_getRealMoveSpeed},
     {"setExMoveSpeed", unit2d_setExMoveSpeed},
@@ -258,12 +269,16 @@ luaL_Reg unit_funcs[] = {
     {"getNearestEnemyInRange", unit2d_getNearestEnemyInRange},
     {"move", unit2d_move},
     {"moveAlongPath", unit2d_moveAlongPath},
+    {"setCastTarget", unit2d_setCastTarget},
+    {"getCastTarget", unit2d_getCastTarget},
     {"castSpell", unit2d_castSpell},
     {"stop", unit2d_stop},
     {"setHostilityRange", unit2d_setHostilityRange},
     {"getHostilityRange", unit2d_getHostilityRange},
     {"setFixed", unit2d_setFixed},
     {"isFixed", unit2d_isFixed},
+    {"isDoingCastingAction", unit2d_isDoingCastingAction},
+    
     {NULL, NULL}
 };
 
@@ -595,6 +610,66 @@ int unit_getRewardExp(lua_State* L)
     return 1;
 }
 
+int unit_setAI(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CUnitAI* ai = NULL;
+    luaL_toobjptr(L, 2, ai);
+    
+    u->setAI(ai);
+
+    return 0;
+}
+
+int unit_startDoing(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    unsigned int doing = lua_tounsigned(L, 2);
+
+    u->startDoing(doing);
+
+    return 0;
+}
+
+int unit_endDoing(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    unsigned int doing = lua_tounsigned(L, 2);
+
+    u->endDoing(doing);
+
+    return 0;
+}
+
+int unit_isDoingOr(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    unsigned int doing = lua_tounsigned(L, 2);
+
+    lua_pushboolean(L, u->isDoingOr(doing));
+
+    return 1;
+}
+
+int unit_isDoingAnd(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    unsigned int doing = lua_tounsigned(L, 2);
+
+    lua_pushboolean(L, u->isDoingAnd(doing));
+
+    return 1;
+}
+
+int unit_isDoingNothing(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushboolean(L, u->isDoingNothing());
+
+    return 1;
+}
+
 int unit_addActiveAbility(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
@@ -669,6 +744,42 @@ int unit_getAttackAbility(lua_State* L)
         luaL_pushobjptr(L, "AttackAct", _p);
     }
     
+    return 1;
+}
+
+int unit_getActiveAbility(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    const char* name = lua_tostring(L, 2);
+
+    CActiveAbility* _p = u->getActiveAbility(name);
+    if (_p == NULL)
+    {
+        lua_pushnil(L);
+    }
+    else
+    {
+        luaL_pushobjptr(L, "ActiveAbility", _p);
+    }
+
+    return 1;
+}
+
+int unit_getBuffAbility(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    const char* name = lua_tostring(L, 2);
+
+    CBuffAbility* _p = u->getBuffAbility(name);
+    if (_p == NULL)
+    {
+        lua_pushnil(L);
+    }
+    else
+    {
+        luaL_pushobjptr(L, "BuffAbility", _p);
+    }
+
     return 1;
 }
 
@@ -782,10 +893,61 @@ int unit2d_moveAlongPath(lua_State* L)
     return 0;
 }
 
+int unit2d_setCastTarget(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    int n = lua_gettop(L);
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    switch (n)
+    {
+    case 1:
+        d->setCastTarget(CCommandTarget());
+        break;
+
+    case 2:
+        d->setCastTarget(CCommandTarget(lua_tointeger(L, 2)));
+        break;
+
+    case 3:
+        d->setCastTarget(CCommandTarget(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3))));
+        break;
+    }
+
+    return 0;
+}
+
+int unit2d_getCastTarget(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    lua_pushinteger(L, d->getCastTarget().getTargetType());
+    lua_pushinteger(L, d->getCastTarget().getTargetUnit());
+    lua_pushnumber(L, d->getCastTarget().getTargetPoint().x);
+    lua_pushnumber(L, d->getCastTarget().getTargetPoint().y);
+
+    return 4;
+}
+
 int unit2d_castSpell(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    int id = lua_tointeger(L, 2);
+    int id = 0;
+
+    if (lua_istable(L, 2))
+    {
+        CActiveAbility* a = NULL;
+        luaL_toobjptr(L, 2, a);
+        if (a != NULL)
+        {
+            id = a->getId();
+        }
+    }
+    else
+    {
+        id = lua_tointeger(L, 2);
+    }
     bool ob = lua_gettop(L) < 3 ? true : (lua_toboolean(L, 3) != 0);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
@@ -850,6 +1012,17 @@ int unit2d_isFixed(lua_State* L)
     return 1;
 }
 
+int unit2d_isDoingCastingAction(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+
+    lua_pushboolean(L, d->getCastActionId());
+
+    return 1;
+}
+
 luaL_Reg UnitPath_funcs[] = {
     {"ctor", UnitPath_ctor},
     {"addPoint", UnitPath_addPoint},
@@ -901,6 +1074,63 @@ int UnitPath_getFirstPoint(lua_State* L)
     return 2;
 }
 
+luaL_Reg UnitAI_funcs[] = {
+    {"ctor", UnitAI_ctor},
+    {"onUnitChangeHp", UnitAI_onUnitChangeHp},
+    {"onUnitTick", UnitAI_onUnitTick},
+    {"onUnitDamagedDone", UnitAI_onUnitDamagedDone},
+    {"onUnitDamageTargetDone", UnitAI_onUnitDamageTargetDone},
+    {"onUnitAddBuffAbility", UnitAI_onUnitAddBuffAbility},
+    {"onUnitDelBuffAbility", UnitAI_onUnitDelBuffAbility},
+    {"onUnitAbilityReady", UnitAI_onUnitAbilityReady},
+    {NULL, NULL}
+};
+
+int UnitAI_ctor( lua_State* L )
+{
+    CUnitAI* _p = new CUnitAI;
+    _p->setScriptHandler(luaL_setregistry(L, 1));
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int UnitAI_onUnitChangeHp(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitTick(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitDamagedDone(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitDamageTargetDone(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitAddBuffAbility(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitDelBuffAbility(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitAbilityReady(lua_State* L)
+{
+    return 0;
+}
+
 luaL_Reg ability_funcs[] = {
     {"ctor", ability_ctor},
     {"onUnitAddAbility", ability_onUnitAddAbility},
@@ -920,6 +1150,7 @@ luaL_Reg ability_funcs[] = {
     {"onUnitProjectileEffect", ability_onUnitProjectileEffect},
     {"copy", ability_copy},
     {"setTriggerFlags", ability_setTriggerFlags},
+    {"getName", ability_getName},
     {"getOwner", ability_getOwner},
     {"setInterval", ability_setInterval},
     {"getInterval", ability_getInterval},
@@ -930,6 +1161,7 @@ luaL_Reg ability_funcs[] = {
     {"coolDown", ability_coolDown},
     {"setLevel", ability_setLevel},
     {"getLevel", ability_getLevel},
+    {"addEffectSound", ability_addEffectSound},
     {NULL, NULL}
 };
 
@@ -1043,6 +1275,15 @@ int ability_setTriggerFlags(lua_State* L)
     return 0;
 }
 
+int ability_getName(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+
+    lua_pushstring(L, _p->getName());
+
+    return 1;
+}
+
 int ability_getOwner(lua_State* L)
 {
     CAbility* _p = luaL_toabilityptr(L, 1);
@@ -1137,10 +1378,32 @@ int ability_getLevel(lua_State* L)
     return 1;
 }
 
+int ability_addEffectSound(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    const char* sound = lua_tostring(L, 2);
+
+    _p->addEffectSound(sound);
+
+    return 0;
+}
+
 luaL_Reg ActiveAbility_funcs[] = {
     {"ctor", ActiveAbility_ctor},
     {"checkConditions", ActiveAbility_checkConditions},
     {"onUnitCastAbility", ActiveAbility_onUnitCastAbility},
+    {"setEffectiveTypeFlags", ActiveAbility_setEffectiveTypeFlags},
+    {"getEffectiveTypeFlags", ActiveAbility_getEffectiveTypeFlags},
+    {"setCastRange", ActiveAbility_setCastRange},
+    {"getCastRange", ActiveAbility_getCastRange},
+    {"setCastMinRange", ActiveAbility_setCastMinRange},
+    {"getCastMinRange", ActiveAbility_getCastMinRange},
+    {"setCastTargetRadius", ActiveAbility_setCastTargetRadius},
+    {"getCastTargetRadius", ActiveAbility_getCastTargetRadius},
+    {"setTemplateProjectile", ActiveAbility_setTemplateProjectile},
+    {"setCastHorizontal", ActiveAbility_setCastHorizontal},
+    {"isCastHorizontal", ActiveAbility_isCastHorizontal},
+    {"addCastAnimation", ActiveAbility_addCastAnimation},
     {NULL, NULL}
 };
 
@@ -1171,6 +1434,133 @@ int ActiveAbility_checkConditions(lua_State* L)
 
 int ActiveAbility_onUnitCastAbility(lua_State* L)
 {
+    return 0;
+}
+
+int ActiveAbility_setEffectiveTypeFlags(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    unsigned int eff = lua_tounsigned(L, 2);
+
+    _p->setEffectiveTypeFlags(eff);
+
+    return 0;
+}
+
+int ActiveAbility_getEffectiveTypeFlags(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushunsigned(L, _p->getEffectiveTypeFlags());
+
+    return 1;
+}
+
+int ActiveAbility_setCastRange(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    float range = lua_tonumber(L, 2);
+
+    _p->setCastRange(range);
+
+    return 0;
+}
+
+int ActiveAbility_getCastRange(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getCastRange());
+
+    return 1;
+}
+
+int ActiveAbility_setCastMinRange(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    float range = lua_tonumber(L, 2);
+
+    _p->setCastMinRange(range);
+
+    return 0;
+}
+
+int ActiveAbility_getCastMinRange(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getCastMinRange());
+
+    return 1;
+}
+
+int ActiveAbility_setCastTargetRadius(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    float radius = lua_tonumber(L, 2);
+
+    _p->setCastTargetRadius(radius);
+
+    return 0;
+}
+
+int ActiveAbility_getCastTargetRadius(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getCastTargetRadius());
+
+    return 1;
+}
+
+int ActiveAbility_setTemplateProjectile(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    int proj = lua_tointeger(L, 2);
+
+    _p->setTemplateProjectile(proj);
+
+    return 0;
+}
+
+int ActiveAbility_setCastHorizontal(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    bool hor = lua_toboolean(L, 2) != 0;
+
+    _p->setCastHorizontal(hor);
+
+    return 0;
+}
+
+int ActiveAbility_isCastHorizontal(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushboolean(L, _p->isCastHorizontal());
+
+    return 1;
+}
+
+int ActiveAbility_addCastAnimation(lua_State* L)
+{
+    CActiveAbility* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    int id = lua_tointeger(L, 2);
+
+    _p->addCastAnimation(id);
+
     return 0;
 }
 
@@ -1817,6 +2207,27 @@ int g_getControlUnit(lua_State* L)
     return 1;
 }
 
+int g_getUnit(lua_State* L)
+{
+    int id = lua_tointeger(L, 1);
+
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    CUnit* _p = w->getUnit(id);
+    lua_pop(L, 1);
+
+    if (_p != NULL)
+    {
+        luaL_pushobjptr(L, "Unit", _p);
+    }
+    else
+    {
+        lua_pushnil(L);
+    }
+
+    return 1;
+}
+
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -1829,6 +2240,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_register(L, "addTemplateAbility", g_addTemplateAbility);
     lua_register(L, "setControlUnit", g_setControlUnit);
     lua_register(L, "getControlUnit", g_getControlUnit);
+    lua_register(L, "getUnit", g_getUnit);
     
     // TODO: reg global classes
     lua_getglobal(L, "class");
@@ -1851,36 +2263,14 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_getglobal(L, "class");
     lua_getglobal(L, "MRObj");
     lua_call(L, 1, 1);  // ret a class
+    luaL_setfuncs(L, UnitAI_funcs, 0);
+    lua_setglobal(L, "UnitAI");
+
+    lua_getglobal(L, "class");
+    lua_getglobal(L, "MRObj");
+    lua_call(L, 1, 1);  // ret a class
     int ability = lua_gettop(L);
     luaL_setfuncs(L, ability_funcs, 0);
-    lua_pushunsigned(L, CUnit::kOnReviveTrigger);
-    lua_setfield(L, ability, "kOnReviveTrigger");
-    lua_pushunsigned(L, CUnit::kOnDyingTrigger);
-    lua_setfield(L, ability, "kOnDyingTrigger");
-    lua_pushunsigned(L, CUnit::kOnDeadTrigger);
-    lua_setfield(L, ability, "kOnDeadTrigger");
-    lua_pushunsigned(L, CUnit::kOnChangeHpTrigger);
-    lua_setfield(L, ability, "kOnChangeHpTrigger");
-    lua_pushunsigned(L, CUnit::kOnTickTrigger);
-    lua_setfield(L, ability, "kOnTickTrigger");
-    lua_pushunsigned(L, CUnit::kOnAttackTargetTrigger);
-    lua_setfield(L, ability, "kOnAttackTargetTrigger");
-    lua_pushunsigned(L, CUnit::kOnAttackedTrigger);
-    lua_setfield(L, ability, "kOnAttackedTrigger");
-    lua_pushunsigned(L, CUnit::kOnDamagedSurfaceTrigger);
-    lua_setfield(L, ability, "kOnDamagedSurfaceTrigger");
-    lua_pushunsigned(L, CUnit::kOnDamagedInnerTrigger);
-    lua_setfield(L, ability, "kOnDamagedInnerTrigger");
-    lua_pushunsigned(L, CUnit::kOnDamagedDoneTrigger);
-    lua_setfield(L, ability, "kOnDamagedDoneTrigger");
-    lua_pushunsigned(L, CUnit::kOnDamageTargetDoneTrigger);
-    lua_setfield(L, ability, "kOnDamageTargetDoneTrigger");
-    lua_pushunsigned(L, CUnit::kOnProjectileEffectTrigger);
-    lua_setfield(L, ability, "kOnProjectileEffectTrigger");
-    lua_pushunsigned(L, CUnit::kMaskActiveTrigger);
-    lua_setfield(L, ability, "kMaskActiveTrigger");
-    lua_pushunsigned(L, CUnit::kMaskAll);
-    lua_setfield(L, ability, "kMaskAll");
     lua_setglobal(L, "Ability");
     
     lua_getglobal(L, "class");
@@ -1914,6 +2304,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     M_LUA_BIND_CLASS_EX(L, RebirthPas, PassiveAbility);
     M_LUA_BIND_CLASS_EX(L, EvadePas, PassiveAbility);
     M_LUA_BIND_CLASS_EX(L, EvadeBuff, BuffAbility);
+    M_LUA_BIND_CLASS_EX(L, BuffMakerAct, ActiveAbility);
     M_LUA_BIND_CLASS_EX(L, DamageBuff, BuffAbility);
     M_LUA_BIND_CLASS_EX(L, TransitiveLinkBuff, BuffAbility);
     M_LUA_BIND_CLASS_EX(L, SplashPas, PassiveAbility);
