@@ -28,7 +28,6 @@ AttackValue.kPhysical = 0
 AttackValue.kMagical = 1
 AttackValue.kSiege = 2
 AttackValue.kHoly = 3
-
 ArmorValue = {}
 ArmorValue.kHeavy = 0
 ArmorValue.kCrystal = 1

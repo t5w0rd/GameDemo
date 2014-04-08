@@ -614,6 +614,12 @@ CCLayer* CWorldForCC::createLayer()
     return m_pLayer;
 }
 
+void CWorldForCC::shutdown()
+{
+    m_pLayer->removeAllChildrenWithCleanup(true);
+    CWorld::shutdown();
+}
+
 // CUnitPathForCC
 CUnitPathForCC::CUnitPathForCC( const char* pFileName )
 {

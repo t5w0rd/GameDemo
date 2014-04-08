@@ -302,6 +302,25 @@ bool CBattleWorld::onLuaWorldInit()
     luaRegWorldFuncs(L, this);
     luaRegWorldFuncsForCC(L, this);
 
+    lua_getglobal(L, "setSearchPath");
+    lua_call(L, 0, 0);
+
+    int res = 0;
+
+    lua_getglobal(L, "include");
+    lua_pushstring(L, "world.lua");
+    res = lua_pcall(L, 1, 0, NULL);
+    if (res != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        CCLOG("ERR | LuaErr: %s", err);
+        lua_pop(L, 1);
+        layer->log("%s", err);
+
+        return false;
+    }
+/*
+
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
     string comm = "/sdcard/ts/gamedemo/common.lua";
     string name = "/sdcard/ts/gamedemo/world.lua";
@@ -331,10 +350,10 @@ bool CBattleWorld::onLuaWorldInit()
         layer->log("%s", err.c_str());
 
         return false;
-    }
+    }*/
 
     lua_getglobal(L, "onWorldInit");
-    int res = lua_pcall(L, 0, 0, 0);
+    res = lua_pcall(L, 0, 0, 0);
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
@@ -1399,5 +1418,6 @@ void CCBattleSceneLayer::onClickHeroPortrait( CCNode* pNode )
 
 void CCBattleSceneLayer::onClickRestart( CCObject* obj )
 {
+    getWorld()->shutdown();
     CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene(DCAST(getWorld(), CBattleWorld*)->m_heroInfo));
 }

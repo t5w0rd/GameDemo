@@ -136,6 +136,8 @@ public:
     M_SYNTHESIZE_READONLY(CCUnitLayer*, m_pLayer, Layer);
     virtual void setLayer(CCUnitLayer* pLayer);
     CCLayer* createLayer();
+
+    virtual void shutdown();
 };
 
 class CUnitPathForCC : public CUnitPath
