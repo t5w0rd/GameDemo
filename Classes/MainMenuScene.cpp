@@ -3,6 +3,8 @@
 #include "MainMenuScene.h"
 #include "GameControl.h"
 #include "platform/CCFileUtils.h"
+#include "ComponentForCC.h"
+#include "HeroRoomScene.h"
 
 CCMainMenuScene::CCMainMenuScene()
 {
@@ -57,20 +59,33 @@ bool CCMainMenuSceneLayer::init()
     pSprite->setZOrder(1);
 
     CCMenu* pMenu = CCMenu::create();
+    CCMenu* pMenu2 = CCMenu::create();
     m_pItemStart = CCMenuItemImage::create("mainmenu/menu_startchain_0001.png"
         , "mainmenu/menu_startchain_0002.png"
         , this
         , menu_selector(CCMainMenuSceneLayer::CCMenuItemStartCallback));
     addChild(pMenu);
+    addChild(pMenu2);
     pMenu->setPosition(0,0);
+    pMenu2->setPosition(0,0);
     pMenu->setZOrder(2);
+    pMenu2->setZOrder(3);
     m_pItemStart->setPosition(winSize.width/2,winSize.height * 3/4);
-    pMenu->addChild(m_pItemStart);
     
+    
+    CCMenuItemImage* pItemLogo = CCMenuItemImage::create("mainmenu/logo.png", NULL, this, menu_selector(CCMainMenuSceneLayer::CCMenuItemLogoCallback));
+    pItemLogo->setPosition(winSize.width/2, winSize.height * 3/4);
+    
+    pMenu2->addChild(pItemLogo);
+    pMenu->addChild(m_pItemStart);
 
     return true;
 }
 
+void CCMainMenuSceneLayer::CCMenuItemLogoCallback(CCObject* sender)
+{
+    CCLog("Touch Logo");
+}
 void CCMainMenuSceneLayer::onEnter()
 {
     CCLayer::onEnter();
@@ -80,18 +95,16 @@ void CCMainMenuSceneLayer::onEnter()
 void CCMainMenuSceneLayer::CCRunStartAction()
 {
     CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-    m_pItemStart->runAction(CCMoveTo::create(1, ccp(winSize.width/2, winSize.height/2)));
+    m_pItemStart->runAction(CCMoveTo::create(0.5, ccp(winSize.width/2, winSize.height/2)));
+    m_pItemStart->setEnabled(true);
 }
 
 void CCMainMenuSceneLayer::CCMenuItemStartCallback(CCObject* sender)
 {
-    //CCActionInterval* effect = CCRotateTo::create(3, 30, 40);
-    //runAction(effect);
     CCSize winSize = CCDirector::sharedDirector()->getWinSize();
     CCSprite* pSprite = (CCSprite*)sender;
-    pSprite->runAction(CCSequence::createWithTwoActions(CCMoveTo::create(1, ccp(winSize.width/2 , winSize.height *3/4))
+    pSprite->runAction(CCSequence::createWithTwoActions(CCEaseElasticIn::create(CCMoveTo::create(2, ccp(winSize.width/2 , winSize.height *3/4)))
         , CCCallFunc::create(this, callfunc_selector(CCMainMenuSceneLayer::CCCallSelectArchiveLayer))));
-    
 }
 
 void CCMainMenuSceneLayer::CCCallSelectArchiveLayer()
@@ -100,6 +113,7 @@ void CCMainMenuSceneLayer::CCCallSelectArchiveLayer()
     addChild(pSelectLayer);
     pSelectLayer->setPosition(0,0);
     pSelectLayer->setZOrder(3);
+    m_pItemStart->setEnabled(false);
 }
 
 
@@ -168,7 +182,8 @@ bool CCSelectArchiveLayer::init()
 
 void CCSelectArchiveLayer::CCMenuItemCallback1(CCObject* sender)
 {
-    CCLog("~~~~~","~~~~~~~~");
+    CCLog("~~~~~");
+    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCHeroRoomSceneLayer::scene(), ccWHITE));
 }
 
 void CCSelectArchiveLayer::CCMenuItemCallback2(CCObject* sender)
@@ -189,8 +204,43 @@ void CCSelectArchiveLayer::CCMenuItemCloseCallback(CCObject* sender)
 void CCSelectArchiveLayer::onEnter()
 {
     CCLayer::onEnter();
-    if(CCFileUtils::sharedFileUtils()->isFileExist("config.txt"))
-    {
-        CCLog("----","++++");
-    }
+   string path = CCFileUtils::sharedFileUtils()->getWritablePath() + "save00";
+   CCLog("path = %s", path.c_str());
+   if(CCFileUtils::sharedFileUtils()->isFileExist(path))
+   {
+       unsigned long len = 0;
+       unsigned char* data = CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &len);
+       CCLog("%d",len);
+       m_pLabel1->setString((const char*)data);
+   }
+   else
+   {
+       CCLog("File not Exist");
+       FILE* file = fopen(path.c_str(), "wb"); 
+
+       if (file) { 
+           fwrite("input sth", sizeof(unsigned char), 10, file);
+           fclose(file);  
+       }
+       
+   }
+}
+
+
+CCSaveFile::CCSaveFile()
+{
+
+}
+
+CCSaveFile::~CCSaveFile()
+{
+
+}
+
+bool CCSaveFile::init(const char* pFileName, const char* pMode)
+{
+    string path = CCFileUtils::sharedFileUtils()->getWritablePath() + pFileName;
+    unsigned long len = 0;
+    unsigned char* data = CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &len);
+
 }

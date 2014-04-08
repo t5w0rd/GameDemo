@@ -68,7 +68,8 @@ public:
     virtual void onUnitDamagedDone(float fDamage, CUnit* pSource);
     virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
     virtual void onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
-    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
+    virtual bool onUnitProjectileArrive(CProjectile* pProjectile);
+    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);  // no need to regist
     
 public:
     // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生
@@ -448,6 +449,19 @@ public:
     void onKnockBackEnd(CCNode* pNode);
 
     M_SYNTHESIZE(float, m_fDistance, Distance);
+
+};
+
+class CReflectBuff : public CBuffAbility
+{
+public:
+    CReflectBuff(const char* pRootId, const char* pName, float fDuration);
+    virtual CMultiRefObject* copy() const;
+
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
+
+    virtual bool onUnitProjectileArrive(CProjectile* pProjectile);
 
 };
 

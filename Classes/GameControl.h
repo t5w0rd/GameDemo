@@ -37,7 +37,7 @@ public:
     void stopSound(int id);
 
     void preloadMusic(const char* music);
-    void playMusic(const char* music);
+    void playMusic(const char* music, bool loop = true);
     
 };
 

@@ -5,6 +5,8 @@
 #include "ComponentForCC.h"
 #include "ActionForCC.h"
 #include "BattleScene.h"
+#include "HeroRoomScene.h"
+#include "MainMenuScene.h"
 
 
 // CCLogoSceneLayer
@@ -35,7 +37,7 @@ CCScene* CCLogoSceneLayer::scene()
         layer->setOpacity(0);
         pScene->addChild(layer);
         layer->runAction(CCSequence::createWithTwoActions(CCFadeIn::create(0.5f), CCCallFuncN::create(layer, callfuncN_selector(CCLogoSceneLayer::onEffectUpdate))));
-        gc->playMusic("sounds/Background/Logo.mp3");
+        gc->playMusic("sounds/Background/Logo.mp3", false);
     }
 
     // return the scene
@@ -161,13 +163,13 @@ void CCLogoSceneLayer::onEffectUpdate(CCNode* pNode)
 
     case 6:
         gc->loadTexture("Global0");
+        gc->loadTexture("Global1");
         gc->loadTexture("Heroes0");
         gc->loadTexture("Heroes1");
         gc->loadTexture("Heroes2");
         gc->loadTexture("Heroes3");
         gc->loadTexture("Heroes4");
         gc->loadTexture("Heroes5");
-        gc->loadTexture("Heroes6");
         gc->loadTexture("Projectiles0");
         gc->preloadSound("sounds/Effect/Sound_Sheep.mp3");
         gc->preloadSound("sounds/Effect/inapp_atfreezeend.mp3");
@@ -607,7 +609,8 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
         break;
 
     case 15:
-        CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCBattleSceneLayer::scene(), ccWHITE));
+        //CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCHeroRoomSceneLayer::scene(), ccWHITE));
+        CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCMainMenuSceneLayer::scene(), ccWHITE));
         break;
     }
 

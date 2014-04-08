@@ -26,6 +26,7 @@ public:
     CREATE_FUNC(CCMainMenuSceneLayer);
 
     void CCMenuItemStartCallback(CCObject* sender);
+    void CCMenuItemLogoCallback(CCObject* sender);
     void CCCallSelectArchiveLayer();
     void CCRunStartAction();
 private:
@@ -57,6 +58,22 @@ private:
     CCLabelTTF* m_pLabel3;
 };
 
+class CCSaveFile : public CCObject
+{
+public:
+    CCSaveFile();
+    virtual ~CCSaveFile();
+
+    CREATE_FUNC(CCSaveFile);
+    virtual bool init(const char* pFileName, const char* pMode);
+    M_CREATE_FUNC_PARAM(CCSaveFile, (const char* pFileName, const char* pMode), pFileName, pMode);
+    void readSaveFile();
+    void updateSaveFile(const char* name, const char* value);
+    //void addSaveData(const char* name, const char* value);
+    //int getValue(const char* name, string& value);
+//protected:
+    map<string,string> m_DataMap;
+};
 
 
 #endif

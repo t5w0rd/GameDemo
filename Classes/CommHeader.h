@@ -29,7 +29,7 @@ using namespace CocosDenshion;
         return pInst; \
     }
 
-#define M_DEF_GC(var) CCGameControler* var = CCGameControler::sharedGameControler()
+#define M_DEF_GC(var) static CCGameControler* var = CCGameControler::sharedGameControler()
 #define M_BASE_Z 10000
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_IOS

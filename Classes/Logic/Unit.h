@@ -250,6 +250,7 @@ public:
     inline virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource) {}
     inline virtual void onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget) {}
     inline virtual void onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget) {}
+    inline virtual bool onUnitProjectileArrive(CUnit* pUnit, CProjectile* pProjectile) { return true; }
     inline virtual void onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) {}
     inline virtual void onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) {}
     inline virtual void onUnitAddPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility) {}
@@ -332,6 +333,8 @@ public:
     // 攻击数据消除时被通知，通常由投射物携带攻击数据，二者生存期一致
     virtual void onProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     
+    virtual bool onProjectileArrive(CProjectile* pProjectile);
+    
     virtual void onAddActiveAbility(CActiveAbility* pAbility);
     virtual void onDelActiveAbility(CActiveAbility* pAbility);
     virtual void onAddPassiveAbility(CPassiveAbility* pAbility);
@@ -370,7 +373,8 @@ public:
         kOnDamagedInnerTrigger = 1 << 8,
         kOnDamagedDoneTrigger = 1 << 9,
         kOnDamageTargetDoneTrigger = 1 << 10,
-        kOnProjectileEffectTrigger = 1 << 11
+        kOnProjectileEffectTrigger = 1 << 11,
+        kOnProjectileArriveTrigger = 1 << 12
     };
     
     enum TRIGGER_MASK
@@ -459,6 +463,7 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDeadTriggerAbilitys, OnDeadTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnTickTriggerAbilitys, OnTickTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnProjectileEffectTriggerAbilitys, OnProjectileEffectTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnProjectileArriveTriggerAbilitys, OnProjectileArriveTriggerAbilitys);
     
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToAdd, TriggerAbilitysToAdd);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToDel, TriggerAbilitysToDel);
@@ -494,6 +499,7 @@ protected:
     void triggerOnDamagedDone(float fDamage, CUnit* pSource);
     void triggerOnDamageTargetDone(float fDamage, CUnit* pTarget);
     void triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
+    bool triggerOnProjectileArrive(CProjectile* pProjectile);
     
     // 为单位添加/删除技能
     //void addAbility(CAbility* pAbility);

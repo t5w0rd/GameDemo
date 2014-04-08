@@ -339,6 +339,7 @@ public:
     void fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint, float fDuration, float fMaxHeightDelta);
 
     void fire();
+    void redirect();
 
     typedef vector<string> VEC_SOUNDS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_SOUNDS, m_vecFireSounds, FireSounds);

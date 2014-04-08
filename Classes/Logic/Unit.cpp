@@ -116,14 +116,14 @@ const CMultiAttackValue& CMultiAttackValue::operator=(const CMultiAttackValue& r
 
 const char* CMultiArmorValue::CONST_ARR_NAME[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_NAME_INDEX] = {
 #if 1
-    { "Normal",     "普通" },
+    //{ "Normal",     "普通" },
     { "Heavy",      "重装" },
     { "Crystal",    "水晶" },
     { "Wall",       "城墙" },
     { "Hero",       "英雄" },
     { "Holy",       "神圣" }
 #else
-    { "Normal",     "Normal" },
+    //{ "Normal",     "Normal" },
     { "Heavy",      "Heavy" },
     { "Crystal",    "Crystal" },
     { "Wall",       "Wall" },
@@ -206,9 +206,9 @@ const CMultiArmorValue& CMultiArmorValue::operator=(const CMultiArmorValue& roAr
 
 float g_afAttackArmorTable[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_ATTACK_TYPE] = {
     //           物理攻击 魔法攻击 攻城攻击 神圣攻击
-    /*普通护甲*/ { 1.00,   1.00,   1.00,   1.00 },
-    /*重装护甲*/ { 0.50,   1.50,   0.75,   1.00 },
-    /*水晶护甲*/ { 1.25,   0.50,   1.50,   1.00 },
+//    /*普通护甲*/ { 1.00,   1.00,   1.00,   1.00 },
+    /*重装护甲*/ { 0.75,   1.25,   0.75,   1.00 },
+    /*水晶护甲*/ { 1.25,   0.75,   1.50,   1.00 },
     /*城墙护甲*/ { 0.50,   0.50,   1.50,   1.00 },
     /*英雄护甲*/ { 0.75,   0.75,   0.75,   1.00 },
     /*神圣护甲*/ { 0.25,   0.25,   0.25,   1.00 }
@@ -827,6 +827,26 @@ void CUnit::onProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
     }
 }
 
+bool CUnit::onProjectileArrive(CProjectile* pProjectile)
+{
+    if (triggerOnProjectileArrive(pProjectile) == false)
+    {
+        return false;
+    }
+
+    if (m_pAI != NULL)
+    {
+        m_pAI->onUnitProjectileArrive(this, pProjectile);
+    }
+
+    if (m_pEventAdapter != NULL)
+    {
+        m_pEventAdapter->onUnitProjectileArrive(this, pProjectile);
+    }
+
+    return true;
+}
+
 void CUnit::onAddActiveAbility(CActiveAbility* pAbility)
 {
     if (m_pAI != NULL)
@@ -1301,6 +1321,11 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
     {
         m_mapOnProjectileEffectTriggerAbilitys.addObject(pAbility);
     }
+
+    if (dwTriggerFlags & kOnProjectileArriveTrigger)
+    {
+        m_mapOnProjectileArriveTriggerAbilitys.addObject(pAbility);
+    }
 }
 
 void CUnit::delAbilityFromTriggers(CAbility* pAbility)
@@ -1378,6 +1403,11 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
         m_mapOnProjectileEffectTriggerAbilitys.delObject(id);
+    }
+
+    if (dwTriggerFlags & kOnProjectileArriveTrigger)
+    {
+        m_mapOnProjectileArriveTriggerAbilitys.delObject(id);
     }
 }
 
@@ -1581,6 +1611,24 @@ void CUnit::triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
         M_MAP_NEXT;
     }
     endTrigger();
+}
+
+bool CUnit::triggerOnProjectileArrive(CProjectile* pProjectile)
+{
+    beginTrigger();
+    bool res = true;
+    M_MAP_FOREACH(m_mapOnProjectileArriveTriggerAbilitys)
+    {
+        CAbility* pAbility = M_MAP_EACH;
+        if (pAbility->onUnitProjectileArrive(pProjectile) == false)
+        {
+            res = false;
+            break;
+        }
+        M_MAP_NEXT;
+    }
+    endTrigger();
+    return res;
 }
 
 bool CUnit::isSuspended() const
