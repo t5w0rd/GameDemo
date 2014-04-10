@@ -720,6 +720,11 @@ void CProjectileForCC::copyData( const CProjectile* from )
     // 如果需要复制位置、高度、AttackData等，应在这里添加代码
 }
 
+float CProjectileForCC::getRadius() const
+{
+    return (getSprite()->getContentSize().width + getSprite()->getContentSize().height) / 2;
+}
+
 void CProjectileForCC::setPosition(const CPoint& p)
 {
     CCProjectileSprite* sp = DCAST(getSprite(), CCProjectileSprite*);

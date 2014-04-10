@@ -157,7 +157,7 @@ int ability_onUnitDamaged(lua_State* L);
 int ability_onUnitDamagedDone(lua_State* L);
 int ability_onUnitDamageTargetDone(lua_State* L);
 int ability_onUnitProjectileEffect(lua_State* L);
-int ability_onUnitAbilityProjectileEffect(lua_State* L);
+int ability_onUnitAbilityEffect(lua_State* L);
 int ability_copy(lua_State* L);
 int ability_setTriggerFlags(lua_State* L);
 int ability_getName(lua_State* L);

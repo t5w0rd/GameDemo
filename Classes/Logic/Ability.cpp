@@ -111,32 +111,6 @@ void CAbility::setInterval(float fInterval)
     m_fInterval = fInterval;
 }
 
-void CAbility::fireProjectile(int iProjectile, const CCommandTarget& rTarget)
-{
-    assert(iProjectile != 0);
-
-    CUnit* o = getOwner();
-    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
-    CWorld* w = o->getWorld();
-    CProjectile* p = w->copyProjectile(iProjectile);
-    w->addProjectile(p);
-    p->setSrcUnit(o->getId());
-    p->setSrcAbility(this);
-
-    if (rTarget.getTargetType() == CCommandTarget::kUnitTarget)
-    {
-        CUnit* t = w->getUnit(rTarget.getTargetUnit());
-        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-        assert(td != NULL);
-
-        p->setFromToType(CProjectile::kUnitToUnit);
-        p->setFromUnit(o->getId());
-        p->setToUnit(t->getId());
-
-        p->fire();
-    }
-}
-
 void CAbility::onUnitAddAbility()
 {
     if (getScriptHandler() == 0)
@@ -417,7 +391,7 @@ bool CAbility::onUnitProjectileArrive(CProjectile* pProjectile)
     return true;
 }
 
-void CAbility::onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
+void CAbility::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
 }
 
@@ -577,6 +551,7 @@ void CActiveAbility::effect()
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    CWorld* w = o->getWorld();
     // Ability
     
     coolDown();
@@ -587,7 +562,7 @@ void CActiveAbility::effect()
     {
     case CCommandTarget::kNoTarget:
         playEffectSound();
-        onUnitAbilityProjectileEffect(NULL, NULL);
+        onUnitAbilityEffect(NULL, NULL);
         break;
 
     case CCommandTarget::kUnitTarget:
@@ -601,17 +576,51 @@ void CActiveAbility::effect()
 
             if (getTemplateProjectile() != 0)
             {
-                fireProjectile(getTemplateProjectile(), d->getCastTarget());
+                
+                CProjectile* p = w->copyProjectile(getTemplateProjectile());
+                w->addProjectile(p);
+                p->setSrcUnit(o->getId());
+                p->setSrcAbility(this);
+
+                CUnit* t = w->getUnit(d->getCastTarget().getTargetUnit());
+                CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+                assert(td != NULL);
+
+                p->setFromToType(CProjectile::kUnitToUnit);
+                p->setFromUnit(o->getId());
+                p->setToUnit(t->getId());
+
+                p->fire();
+                    
             }
             else
             {
                 playEffectSound();
-                onUnitAbilityProjectileEffect(NULL, t);
+                onUnitAbilityEffect(NULL, t);
             }
         }
         break;
 
     case CCommandTarget::kPointTarget:
+        if (getTemplateProjectile() != 0)
+        {
+            CProjectile* p = w->copyProjectile(getTemplateProjectile());
+            w->addProjectile(p);
+            p->setSrcUnit(o->getId());
+            p->setSrcAbility(this);
+
+            p->setFromToType(CProjectile::kUnitToPoint);
+            p->setFromUnit(o->getId());
+            p->setToPoint(d->getCastTarget().getTargetPoint());
+
+            p->fire();
+        }
+        else
+        {
+            playEffectSound();
+            onUnitAbilityEffect(NULL, NULL);
+        }
+
         break;
     }
 
@@ -729,7 +738,7 @@ void CAttackAct::onUnitCastAbility()
 {
 }
 
-void CAttackAct::onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
+void CAttackAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     CUnit* o = getOwner();
 
@@ -908,7 +917,7 @@ void CBuffMakerAct::onUnitCastAbility()
 {
 }
 
-void CBuffMakerAct::onUnitAbilityProjectileEffect( CProjectile* pProjectile, CUnit* pTarget )
+void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarget )
 {
     CUnit* o = getOwner();
     
@@ -1915,17 +1924,39 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
     //pProjectile->setSrcUnit(o->getId());
     //pProjectile->setSrcAbility(this);
 
-    if (pProjectile->getFromToType() == CProjectile::kPointToUnit || pProjectile->getFromToType() == CProjectile::kUnitToUnit)
-    {
-        int swp = pProjectile->getToUnit();
-        pProjectile->setToUnit(pProjectile->getSrcUnit());
-        //pProjectile->setSrcUnit(swp);
+    int swp = pProjectile->getSrcUnit();
 
+    if (pProjectile->getFireType() == CProjectile::kFireFollow && pProjectile->getFromToType() == CProjectile::kUnitToUnit)
+    {
+        pProjectile->setSrcUnit(o->getId());
+        pProjectile->setToUnit(swp);
 
         pProjectile->setMoveSpeed(pProjectile->getMoveSpeed() * 5.0f);
         pProjectile->setMaxHeightDelta(0.0f);
         pProjectile->redirect();
+
+        return false;
+    }
+    else if (pProjectile->getFireType() == CProjectile::kFireStraight && (pProjectile->getFromToType() == CProjectile::kUnitToPoint || pProjectile->getFromToType() == CProjectile::kPointToPoint))
+    {
+        pProjectile->setSrcUnit(o->getId());
+        if (pProjectile->getFromToType() == CProjectile::kUnitToPoint)
+        {
+            CUnit* u = o->getUnit(pProjectile->getFromUnit());
+            CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+            pProjectile->setToPoint(d->getPosition());
+        }
+        else
+        {
+            pProjectile->setToPoint(pProjectile->getFromPoint());
+        }
+
+        pProjectile->setMoveSpeed(pProjectile->getMoveSpeed() * 5.0f);
+        pProjectile->setMaxHeightDelta(0.0f);
+        pProjectile->redirect();
+
+        return false;
     }
 
-    return false;
+    return true;
 }

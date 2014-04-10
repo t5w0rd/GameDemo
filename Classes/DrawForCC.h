@@ -172,6 +172,8 @@ public:
     virtual CMultiRefObject* copy();
     virtual void copyData(const CProjectile* from);
 
+    virtual float getRadius() const;
+
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();
     virtual void setHeight(float fHeight);

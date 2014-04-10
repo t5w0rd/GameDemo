@@ -257,6 +257,7 @@ public:
 
     M_SYNTHESIZE(float, m_fMoveSpeed, MoveSpeed);
     M_SYNTHESIZE(float, m_fMaxHeightDelta, MaxHeightDelta);
+    virtual float getRadius() const;
 
     enum ANI_ID
     {
@@ -280,6 +281,7 @@ public:
     };
 
     void die();
+    void effect(CUnit* pTarget);
 
     virtual void step(float dt);
     virtual void onTick(float dt);
@@ -350,8 +352,9 @@ public:
     void addEffectSound(const char* pSounds);
     virtual void playEffectSound();
 
-protected:
-
+    typedef CMultiRefMap<CUnit*> MAP_CONTACTED;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_CONTACTED, m_mapContactedUnits, ContactedUnits);
+    M_SYNTHESIZE(int, m_iContactedLeft, ContactedLeft);
 };
 
 

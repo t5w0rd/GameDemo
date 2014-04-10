@@ -53,8 +53,6 @@ public:
     typedef vector<int> VEC_CAST_ANIS;
     M_SYNTHESIZE_PASS_BY_REF(VEC_CAST_ANIS, m_vecCastAnis, CastAnimations);
 
-    void fireProjectile(int iProjectile, const CCommandTarget& rTarget);
-    
     // 技能持有者事件响应，只覆被注册的触发器相应的事件函数即可
     // @override
     virtual void onUnitAddAbility();
@@ -73,7 +71,7 @@ public:
     virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
     virtual void onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     virtual bool onUnitProjectileArrive(CProjectile* pProjectile);
-    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);  // no need to regist
+    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);  // no need to regist
     
 public:
     // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生
@@ -175,7 +173,7 @@ public:
     virtual void onUnitDelAbility();
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
-    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
+    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);
         
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, BaseAttack);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_aoExAttackValue, ExAttackValue);
@@ -220,7 +218,7 @@ public:
     
     virtual bool checkConditions();
     virtual void onUnitCastAbility();
-    virtual void onUnitAbilityProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
+    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);
     
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
