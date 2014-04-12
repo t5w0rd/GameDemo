@@ -57,7 +57,7 @@ private:
     CCLabelTTF* m_pLabel2;
     CCLabelTTF* m_pLabel3;
 };
-
+/*
 class CCSaveFile : public CCObject
 {
 public:
@@ -74,6 +74,6 @@ public:
 //protected:
     map<string,string> m_DataMap;
 };
-
+*/
 
 #endif

@@ -225,7 +225,7 @@ void CCSelectArchiveLayer::onEnter()
        
    }
 }
-
+/*
 
 CCSaveFile::CCSaveFile()
 {
@@ -244,3 +244,4 @@ bool CCSaveFile::init(const char* pFileName, const char* pMode)
     unsigned char* data = CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &len);
 
 }
+*/

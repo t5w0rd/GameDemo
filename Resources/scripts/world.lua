@@ -172,7 +172,7 @@ function LuaAI:onUnitTick(unit, dt)
     
     t = unit:getAttackingTarget()
     if t then
-	log(unit:getDistance(t))
+        --log(unit:getDistance(t))
     end
     if t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
         unit:setCastTarget()
@@ -184,6 +184,43 @@ function LuaAI:onUnitAbilityReady(unit, ability)
     if ability:getId() ~= unit:getAttackAbility():getId() then
         unit:addBattleTip(ability:getName(), "", 32, 0, 0, 0)
     end
+end
+
+LuaAI2 = class(UnitAI)
+function LuaAI2:ctor()
+    self:sctor()
+end
+
+function LuaAI2:onUnitTick(unit, dt)
+    a = unit:getActiveAbility("ThunderCap")
+    if not a then
+        return
+    end
+    if timeCount then
+        if timeCount <= 10 then
+            timeCount = timeCount + 1
+        end
+        if timeCount > 10 and not unit:isDoingOr(Unit.kObstinate) then
+            log("~~~~~")
+            timeCount = nil
+            unit:setCastTarget()
+            unit:castSpell(a)
+        end
+    end
+    t = unit:getAttackingTarget()
+    if t and not unit:isDoingOr(Unit.kObstinate) and unit:getDistance(t) < 500 and not unit:isDoingCastingAction() then
+        log("1233123123")
+        --x, y = t:getPosition()
+        --unit:move(x - 1000, y + math.random(-500, 500), true)
+        unit:move(0, 0, true)
+    end
+end
+
+function LuaAI2:onUnitAbilityReady(unit, ability)
+end
+
+function LuaAI2:onUnitDamagedDone(unit)
+    timeCount = 0
 end
 
 function onWorldInit()
@@ -254,7 +291,7 @@ function spawnHero()
     a:addCastAnimation(Unit.kAniAct2)
     hero:addActiveAbility(a)
     
-    hero:setAI(LuaAI:new())
+    hero:setAI(LuaAI2:new())
 end
 
 function initAAA()
@@ -412,3 +449,8 @@ function game01_tick(dt)
     end
 end
 
+function game02()
+    
+end
+function game02_tick(dt)
+end
