@@ -4,6 +4,13 @@ function LuaAI:ctor()
 end
 
 function LuaAI:onUnitTick(unit, dt)
+    t = unit:getAttackingTarget()
+    a = unit:getActiveAbility("Wave")
+    if t and not unit:isDoingCastingAction() and not a:isCoolingDown() then
+        unit:setCastTarget(t:getPosition())
+        unit:castSpell(a)
+    end
+    
     a = unit:getActiveAbility("ThunderCap")
     if not a then
         return
@@ -13,7 +20,6 @@ function LuaAI:onUnitTick(unit, dt)
         return
     end
     
-    t = unit:getAttackingTarget()
     if t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
         unit:setCastTarget()
         unit:castSpell(a)

@@ -157,17 +157,18 @@ bool CBattleWorld::onInit()
     a = new CKnockBackBuff("KnockBackBuff", "KnockBackBuff", 0.5, true, 40);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
-    a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 250.0f), 1.0f);
+    a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 200.0f), 1.0f);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
     m_pThunderCapAct = new CBuffMakerAct("", "ThunderCap", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, id);
     m_pThunderCapAct->setCastTargetRadius(150.0f);
     m_pThunderCapAct->addCastAnimation(CUnitDraw::kAniAct2);
+    m_pThunderCapAct->addEffectSound("sounds/Effect/ThunderCap.mp3");
     u->addActiveAbility(m_pThunderCapAct);
 
     a = new CStunBuff("Stun", "Stun", 5.0f, false);
     id = addTemplateAbility(a);
-    a = new CTransitiveLinkBuff("Chain", 0.3f, 200.0f, 4, CAttackValue(0, 250.0f));
+    a = new CTransitiveLinkBuff("Chain", 0.3f, 150.0f, 4, CAttackValue(0, 200.0f));
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     DCAST(a, CTransitiveLinkBuff*)->setTemplateProjectile(CUnitLibraryForCC::kLightning);
     id = addTemplateAbility(a);

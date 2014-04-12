@@ -611,7 +611,7 @@ void CActiveAbility::effect()
 
             p->setFromToType(CProjectile::kUnitToPoint);
             p->setFromUnit(o->getId());
-            p->setToPoint(d->getCastTarget().getTargetPoint());
+            p->setToPoint(d->getPosition().getForwardPoint(d->getCastTarget().getTargetPoint(), getCastRange()));
 
             p->fire();
         }
@@ -741,6 +741,10 @@ void CAttackAct::onUnitCastAbility()
 void CAttackAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     CUnit* o = getOwner();
+    if (o == NULL)
+    {
+        return;
+    }
 
     CAttackData* ad = new CAttackData();
     ad->setAttackValue(getBaseAttack().getType(), getRealAttackValue());
@@ -920,15 +924,6 @@ void CBuffMakerAct::onUnitCastAbility()
 void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarget )
 {
     CUnit* o = getOwner();
-    
-    // DemoTemp
-    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
-    if (strcmp(getName(), "HammerThrow") == 0)
-    {
-    }
-    else if (strcmp(getName(), "ThunderCap") == 0)
-    {
-    }
 
     switch (getCastTargetType())
     {
@@ -945,12 +940,26 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
         ;
     }
 
+    CWorld* w = o->getWorld();
+
+    if (pProjectile != NULL && pProjectile->hasPenaltyType(CProjectile::kOnContact) && pTarget != NULL)
+    {
+        // 接触型抛射物，接触单位
+        if (M_RAND_HIT(m_fChance) && o->isEffective(DCAST(pTarget, CUnitForce*), m_dwEffectiveTypeFlags))
+        {
+            CBuffAbility* pBuff = DCAST(w->copyAbility(getTemplateBuff()), CBuffAbility*);
+            pBuff->setSrcUnit(o->getId());
+            pBuff->setLevel(getLevel());
+            pTarget->addBuffAbility(pBuff);
+        }
+        return;
+    }
+
     if (getCastTargetRadius() <= FLT_EPSILON)
     {
         return;
     }
 
-    CWorld* w = o->getWorld();
     CUnitDraw2D* od  = DCAST(o->getDraw(), CUnitDraw2D*);
     assert(od != NULL);
     CBuffAbility* pBuff = NULL;
@@ -973,7 +982,7 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
         CUnitDraw2D* ud  = DCAST(u->getDraw(), CUnitDraw2D*);
         assert(ud != NULL);
         
-        const CPoint& p = ((pProjectile != NULL) ? pProjectile->getPosition() : od->getPosition());
+        const CPoint& p = ((pProjectile != NULL) ? pProjectile->getPosition() : (getCastTargetType() == CCommandTarget::kNoTarget ? od->getPosition() : od->getCastTarget().getTargetPoint()));
         if (ud->getPosition().getDistance(p) > getCastTargetRadius())
         {
             continue;
@@ -1925,6 +1934,11 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
     //pProjectile->setSrcAbility(this);
 
     int swp = pProjectile->getSrcUnit();
+    CUnit* s = o->getUnit(swp);
+    if (s == NULL)
+    {
+        return true;
+    }
 
     if (pProjectile->getFireType() == CProjectile::kFireFollow && pProjectile->getFromToType() == CProjectile::kUnitToUnit)
     {

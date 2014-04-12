@@ -37,8 +37,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #if GD_UNPACK
     CCScene* pScene = CCTestSceneLayer::scene();
 #else
-    CCScene* pScene = CCLogoSceneLayer::scene();
-    //CCScene* pScene = CCHeroRoomSceneLayer::scene();
+    //CCScene* pScene = CCLogoSceneLayer::scene();
+    CCScene* pScene = CCHeroRoomSceneLayer::scene();
     
 #endif
     if (pScene == NULL)

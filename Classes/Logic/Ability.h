@@ -101,9 +101,9 @@ public:
     static const float CONST_MAX_CAST_BUFFER_RANGE;
     static const float CONST_MAX_HOR_CAST_Y_RANGE;
 
-    bool cast();
+    bool cast();  // 将不再被使用
     virtual bool checkConditions();
-    virtual void onUnitCastAbility();
+    virtual void onUnitCastAbility();  // 施法动作到达奏效点后触发
 
     void effect();
     

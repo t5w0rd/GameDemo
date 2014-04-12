@@ -526,7 +526,14 @@ void CUnitAI::onUnitTick( CUnit* pUnit, float dt )
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     lua_pushnumber(L, dt);
-    lua_call(L, 3, 0);
+    int res = lua_pcall(L, 3, 0, NULL);
+    if (res != LUA_OK)
+    {
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }

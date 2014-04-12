@@ -733,8 +733,9 @@ void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
     else
     {
         // 远程施法位置修正
-        float fA = -(roPos1 - roPos2).getAngle();
-        move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis));
+        //float fA = -(roPos1 - roPos2).getAngle();
+        //move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis));
+        move(roPos2.getForwardPoint(roPos1, fDis));
     }
 }
 
@@ -1155,7 +1156,7 @@ void CProjectile::onTick(float dt)
             {
                 m_mapContactedUnits.addObject(u);
                 effect(u);
-
+#if 0
                 if (m_iContactedLeft > 0)
                 {
                     --m_iContactedLeft;
@@ -1166,6 +1167,7 @@ void CProjectile::onTick(float dt)
                         return;
                     }
                 }
+#endif
             }
             M_MAP_NEXT;
         }
@@ -1355,8 +1357,8 @@ void CProjectile::fire()
                 CUnit* u = w->getUnit(getFromUnit());
                 CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
-                //setHeight(d->getHeight() + d->getFirePoint().y);
-                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y)));
+                setHeight(d->getHeight() + d->getFirePoint().y);
+                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, 0)));
             }
 
             CUnit* t = w->getUnit(getToUnit());
@@ -1392,8 +1394,8 @@ void CProjectile::fire()
                 CUnit* u = w->getUnit(getFromUnit());
                 CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
-                //setHeight(d->getHeight() + d->getFirePoint().y);
-                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y)));
+                setHeight(d->getHeight() + d->getFirePoint().y);
+                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, 0.0f)));
             }
 
             float fDis = getFromPoint().getDistance(getToPoint());

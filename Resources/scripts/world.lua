@@ -18,7 +18,7 @@ function onWorldInit()
     math.randomseed(os.time())
 
     me = getControlUnit()
-    me:setAI(LuaAI:new())
+    --me:setAI(LuaAI:new())
 
     local x, y = me:getPosition()
     me:setPosition(x + 500, y - 200)
@@ -68,17 +68,27 @@ function spawnHero()
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
 
-    a = SpeedBuff:new("SlowDownBuff", "SlowDown", 8.0, false, -0.8, 0.0, -0.8, 0.0)
+    a = SpeedBuff:new("SlowDownBuff", "SlowDown", 5.0, false, -0.8, 0.0, -0.8, 0.0)
     id = addTemplateAbility(a)
     a = KnockBackBuff:new("KnockBackBuff", "KnockBackBuff", 0.5, true, 40)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 250.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 150.0, 1.0, false, 0.0, 0.0)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
-    a = BuffMakerAct:new("ThunderCap", 5.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+    a = BuffMakerAct:new("ThunderCap", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastTargetRadius(150.0)
     a:addCastAnimation(Unit.kAniAct2)
+    a:addEffectSound("sounds/Effect/ThunderCap.mp3")
+    hero:addActiveAbility(a)
+    
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 150.0, 1.0, false, 0.0, 0.0)
+    --a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("Wave", 8.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastRange(600.0);
+    a:addCastAnimation(Unit.kAniAct3);
+    a:setTemplateProjectile(PL.kAlienProy);
     hero:addActiveAbility(a)
     
     hero:setAI(LuaAI:new())
