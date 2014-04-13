@@ -1,6 +1,7 @@
 include("common.lua")
 include("ability.lua")
 include("ai.lua")
+include("ai2.lua")
 
 hero = nil
 me = nil
@@ -93,7 +94,7 @@ function spawnHero()
     a:setTemplateProjectile(PL.kAlienProy)
     hero:addActiveAbility(a)
     
-    hero:setAI(LuaAI:new())
+    hero:setAI(LuaAIWarrior:new())
 end
 
 function initAAA()
@@ -254,12 +255,15 @@ end
 function game02()
     a = StunBuff:new("Stun", "Stun", 2.0, false)
     id = addTemplateAbility(a)
-    a = BuffMakerAct:new("HammerThrow", 18.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("ThrowHammer", 18.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastRange(300.0)
     a:addCastAnimation(Unit.kAniAct2)
     a:setTemplateProjectile(UL.kThorHammer)
     a:addEffectSound("sounds/Effect/LightningLink.mp3")
-    hammerThrow = addTemplateAbility(a)
+    throwHammer = addTemplateAbility(a)
     
     a = SpeedBuff:new("ThunderCap", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
     id = addTemplateAbility(a)
@@ -274,8 +278,7 @@ function game02()
     
     a = SpeedBuff:new("SpeedUp", "SpeedUp", 5.0, false, 0.8, 0.0, 0.8, 0.0)
     id = addTemplateAbility(a)
-    a = BuffMakerAct:new("ThunderCap", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
-    a:setCastTargetRadius(150.0)
+    a = BuffMakerAct:new("SpeedUp", 8.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
     a:addCastAnimation(Unit.kAniAct4)
     a:addEffectSound("sounds/Effect/KRF_sfx_minotauro_grito.mp3")
     speedUp = addTemplateAbility(a)
@@ -292,9 +295,10 @@ function game02()
     atk = u:getAttackAbility()
     atk:setBaseAttack(AttackValue.kPhysical, 15)
     atk:setBaseAttackInterval(1.5)
-    u:addActiveAbility(hammerThrow)
+    u:addActiveAbility(throwHammer)
     u:addActiveAbility(thunderCap)
     u:addActiveAbility(speedUp)
+    u:setAI(LuaAIWarrior:new())
     
     u:setAI(LuaAI:new())
     --u:setCastTarget()

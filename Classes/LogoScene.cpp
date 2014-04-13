@@ -6,6 +6,7 @@
 #include "ActionForCC.h"
 #include "BattleScene.h"
 #include "HeroRoomScene.h"
+#include "MainMenuScene.h"
 
 
 // CCLogoSceneLayer
@@ -608,7 +609,8 @@ void CCLogoScene2Layer::onEffectUpdate( CCNode* pNode )
         break;
 
     case 15:
-        CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCHeroRoomSceneLayer::scene(), ccWHITE));
+        //CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCHeroRoomSceneLayer::scene(), ccWHITE));
+        CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCMainMenuSceneLayer::scene(), ccWHITE));
         break;
     }
 
