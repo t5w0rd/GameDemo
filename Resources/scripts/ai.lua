@@ -6,7 +6,7 @@ end
 function LuaAI:onUnitTick(unit, dt)
     t = unit:getAttackingTarget()
     a = unit:getActiveAbility("Wave")
-    if t and not unit:isDoingCastingAction() and not a:isCoolingDown() then
+    if t and a and not unit:isDoingCastingAction() and not a:isCoolingDown() then
         unit:setCastTarget(t:getPosition())
         unit:castSpell(a)
     end

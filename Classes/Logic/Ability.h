@@ -215,6 +215,7 @@ class CBuffMakerAct : public CActiveAbility
 public:
     CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, float fChance, int iTemplateBuff);
     virtual CMultiRefObject* copy();
+    virtual void copyData(CAbility* from);
     
     virtual bool checkConditions();
     virtual void onUnitCastAbility();

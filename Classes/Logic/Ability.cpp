@@ -52,6 +52,7 @@ void CAbility::copyData( CAbility* from )
     copyScriptHandler(from->getScriptHandler());
     m_dwTriggerFlags = from->m_dwTriggerFlags;
     setInterval(from->getInterval());
+    m_vecCastAnis = from->m_vecCastAnis;
     m_vecEffectSounds = from->m_vecEffectSounds;
 }
 
@@ -705,7 +706,6 @@ CMultiRefObject* CAttackAct::copy()
 {
     CAttackAct* pRet = new CAttackAct(getRootId(), getName(), m_fCoolDown, m_oAttackValue, m_fAttackValueRandomRange);
     pRet->copyData(this);
-    pRet->m_vecCastAnis = m_vecCastAnis;
     return pRet;
 }
 
@@ -872,10 +872,22 @@ CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCool
 CMultiRefObject* CBuffMakerAct::copy()
 {
     CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getCastTargetType(), getEffectiveTypeFlags(), getChance(), getTemplateBuff());
-    pRet->setCastRange(getCastRange());
-    pRet->setCastTargetRadius(getCastTargetRadius());
-    pRet->setTemplateProjectile(getTemplateProjectile());
+    pRet->copyData(this);
+
     return pRet;
+}
+
+void CBuffMakerAct::copyData( CAbility* from )
+{
+    CActiveAbility::copyData(from);
+    CBuffMakerAct* a = DCAST(from, CBuffMakerAct*);
+    setCastTargetType(a->getCastTargetType());
+    setEffectiveTypeFlags(a->getEffectiveTypeFlags());
+    setCastMinRange(a->getCastMinRange());
+    setCastRange(a->getCastRange());
+    setCastTargetRadius(a->getCastTargetRadius());
+    setTemplateProjectile(a->getTemplateProjectile());
+    setCastHorizontal(a->isCastHorizontal());
 }
 
 bool CBuffMakerAct::checkConditions()

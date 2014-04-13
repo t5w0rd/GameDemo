@@ -673,17 +673,27 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
     }
 
     CUnitDraw::ANI_ID aniId = (CUnitDraw::ANI_ID)pAbility->getCastRandomAnimation();
-    int id = doAnimation(
-        aniId,
-        new CCallFuncData(
+    if (aniId != -1)
+    {
+        int id = doAnimation(
+            aniId,
+            new CCallFuncData(
             this,
             (FUNC_CALLFUNC_ND)&CUnitDraw2D::onCastEffect),
-        1,
-        new CCallFuncData(
+            1,
+            new CCallFuncData(
             this,
             (FUNC_CALLFUNC_ND)&CUnitDraw2D::onCastDone),
-        spd);
-    setCastActionId(id);
+            spd);
+        setCastActionId(id);
+    }
+    else
+    {
+        onCastEffect(this, NULL);
+        onCastDone(this, NULL);
+        setCastActionId(0);
+    }
+    
 
     return 0;
 }
