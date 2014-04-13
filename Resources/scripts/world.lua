@@ -25,13 +25,15 @@ function onWorldInit()
     me:setPosition(x + 500, y - 200)
     --me:setMaxHp(687)
     
-    game01()
+    me:setAlly(2 ^ 3 + 2 ^ 4 + 2 ^ 2)
+    
+    game02()
     
     return true
 end
 
 function onWorldTick(dt)
-    game01_tick(dt)
+    game02_tick(dt)
 end
 
 function spawnSoldier(id, force)
@@ -64,7 +66,7 @@ function spawnHero()
     atk = hero:getAttackAbility()
     t, v = atk:getBaseAttack()
     atk:setBaseAttack(t, v * (1 + kill / 1.5))
-    atk:setExAttackSpeed(1.0 + kill / 15, 0.0);
+    atk:setExAttackSpeed(1.0 + kill / 15, 0.0)
     for i = 1, (3 + kill) do
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
@@ -87,9 +89,9 @@ function spawnHero()
     --a:setAppendBuff(id)
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("Wave", 8.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
-    a:setCastRange(600.0);
-    a:addCastAnimation(Unit.kAniAct3);
-    a:setTemplateProjectile(PL.kAlienProy);
+    a:setCastRange(600.0)
+    a:addCastAnimation(Unit.kAniAct3)
+    a:setTemplateProjectile(PL.kAlienProy)
     hero:addActiveAbility(a)
     
     hero:setAI(LuaAIWarrior:new())
@@ -250,3 +252,65 @@ function game01_tick(dt)
     end
 end
 
+function game02()
+    a = StunBuff:new("Stun", "Stun", 2.0, false)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("HammerThrow", 18.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastRange(300.0)
+    a:addCastAnimation(UnitDrawkAniAct2)
+    a:setTemplateProjectile(UL.kThorHammer)
+    a:addEffectSound("sounds/Effect/LightningLink.mp3")
+    hammerThrow = addTemplateAbility(a)
+    
+    a = SpeedBuff:new("ThunderCap", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
+    id = addTemplateAbility(a)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("ThunderCap", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastTargetRadius(150.0)
+    a:addCastAnimation(Unit.kAniAct3)
+    a:addEffectSound("sounds/Effect/ThunderCap.mp3")
+    thunderCap = addTemplateAbility(a)
+    
+    a = SpeedBuff:new("SpeedUp", "SpeedUp", 5.0, false, 0.8, 0.0, 0.8, 0.0)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("ThunderCap", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastTargetRadius(150.0)
+    a:addCastAnimation(Unit.kAniAct4)
+    a:addEffectSound("sounds/Effect/KRF_sfx_minotauro_grito.mp3")
+    speedUp = addTemplateAbility(a)
+    
+    -- create hero3
+    u = createUnit(UL.kBarracks)
+    u:setPosition(700, 500)
+    u:setForceByIndex(3)
+    u:setAlly(2 ^ 3 + 2 ^ 2)
+    u:setHostilityRange(10000)
+    u:setMaxHp(300)
+    u:setBaseArmor(ArmorValue.kHeavy, 3.0)
+    u:setBaseMoveSpeed(80)
+    atk = u:getAttackAbility()
+    atk:setBaseAttack(AttackValue.kPhysical, 15)
+    atk:setBaseAttackInterval(1.5)
+    u:addActiveAbility(hammerThrow)
+    u:addActiveAbility(thunderCap)
+    u:addActiveAbility(speedUp)
+    
+    -- create hero4
+    u = createUnit(UL.kArcher)
+    u:setPosition(1300, 500)
+    u:setForceByIndex(4)
+    u:setAlly(2 ^ 4 + 2 ^ 2)
+    u:setHostilityRange(10000)
+    u:setMaxHp(240)
+    u:setBaseArmor(ArmorValue.kHeavy, 2.0)
+    u:setBaseMoveSpeed(85)
+    atk = u:getAttackAbility()
+    atk:setBaseAttack(AttackValue.kPhysical, 18)
+    atk:setBaseAttackInterval(1.2)
+    
+end
+
+function game02_tick(dt)
+end
