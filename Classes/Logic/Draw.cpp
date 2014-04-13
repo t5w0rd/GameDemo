@@ -192,9 +192,18 @@ void CUnitDraw2D::onUnitTick(float dt)
     {
         return;
     }
+
+    if (m_pMovePath && !u->isDoingOr(CUnit::kMoving | CUnit::kCasting))
+    {
+        u->startDoing(CUnit::kAlongPath);
+        if (m_bPathObstinate)
+        {
+            u->startDoing(CUnit::kObstinate);
+        }
+    }
     
     // 路径逻辑
-    if (m_pMovePath != NULL)
+    if (m_pMovePath != NULL && u->isDoingOr(CUnit::kAlongPath))
     {
         // 正在运行路径
         const CPoint* pTarget = m_pMovePath->getCurTargetPoint(m_dwPathCurPos);
@@ -212,6 +221,7 @@ void CUnitDraw2D::onUnitTick(float dt)
         {
             m_pMovePath->release();
             m_pMovePath = NULL;
+            u->endDoing(CUnit::kAlongPath);
         }
         else if ((*pTarget != getLastMoveToTarget() || u->isDoingOr(CUnit::kMoving) == false) && u->isDoingOr(CUnit::kCasting) == false)
         {
@@ -370,6 +380,11 @@ void CUnitDraw2D::cmdMove(const CPoint& roPos, bool bObstinate)
         setCastActiveAbilityId(0);
     }
 
+    if (u->isDoingOr(CUnit::kAlongPath))
+    {
+        u->endDoing(CUnit::kAlongPath);
+    }
+
     if (bObstinate)
     {
         u->startDoing(CUnit::kObstinate);
@@ -459,6 +474,11 @@ void CUnitDraw2D::cmdMoveAlongPath(CUnitPath* pPath, bool bObstinate /*= true*/,
         m_pMovePath = pPath;
     }
 
+    if (u->isDoingOr(CUnit::kAlongPath) == false)
+    {
+        u->startDoing(CUnit::kAlongPath);
+    }
+
     m_bPathObstinate = bObstinate;
 
     if (!m_pMovePath)
@@ -504,7 +524,7 @@ void CUnitDraw2D::stopMove()
     setMoveActionId(0);
 
     CUnit* u = getUnit();
-    u->endDoing(CUnit::kMoving);
+    u->endDoing(CUnit::kMoving | CUnit::kAlongPath);
 
     setFrame(kFrmDefault);
 }
@@ -713,8 +733,9 @@ void CUnitDraw2D::moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td)
     else
     {
         // 远程施法位置修正
-        float fA = -(roPos1 - roPos2).getAngle();
-        move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis));
+        //float fA = -(roPos1 - roPos2).getAngle();
+        //move(roPos2 + CPoint(cos(fA) * fDis, sin(-fA) * fDis));
+        move(roPos2.getForwardPoint(roPos1, fDis));
     }
 }
 
@@ -1010,6 +1031,7 @@ CProjectile::CProjectile(const char* pName)
     , m_pSrcAbility(NULL)
     , m_eFromToType(kPointToPoint)
     , m_eFireType(kFireFollow)
+    , m_iContactedLeft(0)
 {
     setDbgClassName("CProjectile");
 }
@@ -1037,6 +1059,11 @@ void CProjectile::copyData( const CProjectile* from )
     setFireType(from->getFireType());
     m_vecFireSounds = from->m_vecFireSounds;
     m_vecEffectSounds = from->m_vecEffectSounds;
+}
+
+float CProjectile::getRadius() const
+{
+    return 0.0f;
 }
 
 int CProjectile::doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone)
@@ -1087,6 +1114,30 @@ void CProjectile::die()
         new CCallFuncData(this, (FUNC_CALLFUNC_ND)&CProjectile::onDyingDone));
 }
 
+void CProjectile::effect(CUnit* pTarget)
+{
+    CWorld* w = getWorld();
+    assert(w != NULL);
+    CUnit* s = w->getUnit(getSrcUnit());
+    if (s == NULL)
+    {
+        return;
+    }
+
+    if (pTarget != NULL && getAttackData() != NULL && s->isEnemyOf(pTarget))
+    {
+        pTarget->damaged(getAttackData(), s, getTriggerMask());
+    }
+
+    if (getSrcAbility() != NULL)
+    {
+        getSrcAbility()->playEffectSound();
+        getSrcAbility()->onUnitAbilityEffect(this, pTarget);
+    }
+
+    s->onProjectileEffect(this, pTarget);
+}
+
 void CProjectile::step(float dt)
 {
     onTick(dt);
@@ -1094,6 +1145,33 @@ void CProjectile::step(float dt)
 
 void CProjectile::onTick(float dt)
 {
+    if (hasPenaltyType(kOnContact))
+    {
+        CWorld::MAP_UNITS& units = getWorld()->getUnits();
+        M_MAP_FOREACH(units)
+        {
+            CUnit* u = M_MAP_EACH;
+            CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+            if (d->getPosition().getDistance(getPosition()) - d->getHalfOfWidth() - getRadius() <= 0 && m_mapContactedUnits.getObject(u->getId()) == NULL)
+            {
+                m_mapContactedUnits.addObject(u);
+                effect(u);
+#if 0
+                if (m_iContactedLeft > 0)
+                {
+                    --m_iContactedLeft;
+                    if (m_iContactedLeft == 0)
+                    {
+                        m_dwPenaltyFlags &= (~kOnContact);
+                        die();
+                        return;
+                    }
+                }
+#endif
+            }
+            M_MAP_NEXT;
+        }
+    }
 }
 
 void CProjectile::onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
@@ -1115,28 +1193,8 @@ void CProjectile::onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
 void CProjectile::onEffect(CMultiRefObject* pProjectile, CCallFuncData* pData)
 {
     playEffectSound();
-    CWorld* w = getWorld();
-    assert(w != NULL);
-    CUnit* s = w->getUnit(getSrcUnit());
-    if (s == NULL)
-    {
-        return;
-    }
-
-    CUnit* t = (getToUnit() != 0) ? s->getUnit(getToUnit()) : NULL;
-    assert(getToUnit() == 0 || getFromToType() == kPointToUnit || getFromToType() == kUnitToUnit);
-
-    if (getAttackData() != NULL)
-    {
-        t->damaged(getAttackData(), s, getTriggerMask());
-    }
-    
-    if (getSrcAbility() != NULL)
-    {
-        getSrcAbility()->playEffectSound();
-        getSrcAbility()->onUnitAbilityProjectileEffect(this, t);
-    }
-    s->onProjectileEffect(this, t);
+    CUnit* t = (getFromToType() == kPointToUnit || getFromToType() == kUnitToUnit) ? getWorld()->getUnit(getToUnit()) : NULL;
+    effect(t);
 }
 
 void CProjectile::onDyingDone(CMultiRefObject* pProjectile, CCallFuncData* pData)
@@ -1210,7 +1268,7 @@ void CProjectile::fireFollow(const CPoint& rFromPoint, int iToUnit, float fDurat
 
 void CProjectile::fireLink(int iFromUnit, int iToUnit)
 {
-    setFromToType(kUnitToUnit);
+    //setFromToType(kUnitToUnit);
 
     CWorld* w = getWorld();
     assert(w != NULL);
@@ -1229,35 +1287,6 @@ void CProjectile::fireLink(int iFromUnit, int iToUnit)
     setFromPoint(d->getPosition());
     setToPoint(td->getPosition());
 
-#if 0
-    float fFromHeight = 0.0f;
-    float fOffsetX = 0.0f;
-    bool bFlipX = getFromPoint().x > getToPoint().x;
-
-    if (getSrcUnit() == getFromUnit())
-    {
-        // from端为发射源
-        fOffsetX = bFlipX ? -d->getFirePoint().x : d->getFirePoint().x;
-        fFromHeight = d->getHeight() + d->getFirePoint().y;
-    }
-    else
-    {
-        fFromHeight = d->getHeight() + d->getHalfOfHeight();
-    }
-
-    float fToHeight = td->getHeight() + td->getHalfOfHeight();
-
-    m_oFromPoint.x += fOffsetX;
-    setHeight((fFromHeight + fToHeight) / 2);
-    
-    CPoint oDelta = m_oToPoint - m_oFromPoint;
-    float fR = M_RADIANS_TO_DEGREES(-oDelta.getAngle());
-
-    float fScale = sqrt(oDelta.x * oDelta.x + oDelta.y * oDelta.y) / getSprite()->getContentSize().width;
-    pTarget->setPosition(ccp((m_oFromPoint.x + m_oToPoint.x) / 2, (m_oFromPoint.y + m_oToPoint.y) / 2));
-    pTarget->setRotation(fR);
-    pTarget->setScaleX(fScale);
-#endif
     stopAllActions();
 
     doLinkUnitToUnit(
@@ -1287,7 +1316,29 @@ void CProjectile::fireLink(const CPoint& rFromPoint, const CPoint& rToPoint)
 
 void CProjectile::fireStraight(const CPoint& rFromPoint, const CPoint& rToPoint, float fDuration, float fMaxHeightDelta)
 {
+    //setFromToType(kPointToPoint);
+    m_mapContactedUnits.clear();
 
+    CWorld* w = getWorld();
+    assert(w != NULL);
+
+    setFromPoint(rFromPoint);
+    setToPoint(rToPoint);
+
+    setPosition(rFromPoint);
+
+    stopAllActions();
+
+    doMoveTo(
+        rToPoint,
+        fDuration,
+        new CCallFuncData(this, (FUNC_CALLFUNC_ND)&CProjectile::onMoveDone));
+
+    doAnimation(
+        kAniMove,
+        NULL,
+        INFINITE,
+        NULL);
 }
 
 void CProjectile::fire()
@@ -1306,8 +1357,8 @@ void CProjectile::fire()
                 CUnit* u = w->getUnit(getFromUnit());
                 CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
-                //setHeight(d->getHeight() + d->getFirePoint().y);
-                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, d->getFirePoint().y)));
+                setHeight(d->getHeight() + d->getFirePoint().y);
+                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, 0)));
             }
 
             CUnit* t = w->getUnit(getToUnit());
@@ -1316,7 +1367,6 @@ void CProjectile::fire()
             float fDis = getFromPoint().getDistance(td->getPosition() + CPoint(0.0f, td->getHalfOfHeight()));
             fireFollow(getFromPoint(), getToUnit(), fDis / max(FLT_EPSILON, getMoveSpeed()), getMaxHeightDelta());
         }
-        
 
         break;
 
@@ -1336,6 +1386,22 @@ void CProjectile::fire()
         break;
 
     case kFireStraight:
+        {
+            assert(getFromToType() == kUnitToPoint || getFromToType() == kPointToPoint);
+
+            if (getFromToType() == kUnitToPoint)
+            {
+                CUnit* u = w->getUnit(getFromUnit());
+                CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+
+                setHeight(d->getHeight() + d->getFirePoint().y);
+                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlipX() ? -d->getFirePoint().x : d->getFirePoint().x, 0.0f)));
+            }
+
+            float fDis = getFromPoint().getDistance(getToPoint());
+            fireStraight(getFromPoint(), getToPoint(), fDis / max(FLT_EPSILON, getMoveSpeed()), getMaxHeightDelta());
+        }
+
         break;
     }
 }
@@ -1350,12 +1416,9 @@ void CProjectile::redirect()
     {
     case kFireFollow:
         {
-            assert(getFromToType() == kUnitToUnit || getFromToType() == kPointToUnit);
+            assert(getFromToType() == kUnitToUnit);
 
-            if (getFromToType() == kUnitToUnit)
-            {
-                setFromPoint(getPosition());
-            }
+            setFromPoint(getPosition());
 
             CUnit* t = w->getUnit(getToUnit());
             if (t != NULL)
@@ -1385,6 +1448,15 @@ void CProjectile::redirect()
         break;
 
     case kFireStraight:
+        {
+            assert(getFromToType() == kUnitToPoint || getFromToType() == kPointToPoint);
+
+            setFromPoint(getPosition());
+
+            float fDis = getFromPoint().getDistance(getToPoint());
+            fireStraight(getFromPoint(), getToPoint(), fDis / max(FLT_EPSILON, getMoveSpeed()), getMaxHeightDelta());
+        }
+
         break;
     }
 }
@@ -1406,3 +1478,4 @@ void CProjectile::playFireSound()
 void CProjectile::playEffectSound()
 {
 }
+

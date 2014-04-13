@@ -1,3 +1,8 @@
+include("common.lua")
+include("ability.lua")
+include("ai.lua")
+include("ai2.lua")
+
 hero = nil
 me = nil
 
@@ -9,226 +14,12 @@ learned = 0
 
 taid2 = 0
 
-BetrayBuff = class(BuffAbility)
-function BetrayBuff:ctor(duration)
-    self:sctor("Betray", "Betray", duration, false)
-end
-
-function BetrayBuff:onUnitAddAbility()
-    o = self:getOwner()
-    if o:getId() ~= me:getId() and o:isFixed() == false and o:getMaxHp() < 600 then
-
-        o:setForceByIndex(1)
-        o:addBuffAbility(StunBuff:new("Stun", "Stun", 2, false))
-    end
-end
-
-function BetrayBuff:onUnitDelAbility()
-    o = self:getOwner()
-    o:setForceByIndex(2)
-end
-
-CurseBuff = class(BuffAbility)
-function CurseBuff:ctor(duration, stackable, damage, interval, multiply)
-    self:sctor("CurseBuff", "Curse", duration, stackable)
-    self.damage = damage
-    self.interval = interval
-    self.pass = 0
-    self.multiply = multiply
-    self.hp = 0
-    self:setInterval(0.5)
-end
-
-function CurseBuff:onUnitAddAbility()
-    o = self:getOwner()
-    self.hp = o:getHp()
-    o:addBattleTip("Curse", "", 18, 255, 0, 255)
-end
-
-function CurseBuff:onUnitInterval()
-    o = self:getOwner()
-    local damage = 0
-    self.pass = self.pass + 0.5
-    if self.pass > self.interval then
-        self.pass = 0
-        damage = (self.hp - o:getHp()) * self.multiply
-    end
-
-    if damage < 0 then
-        damage = 0
-    end
-    damage = damage + self.damage
-    --o:addBattleTip(string.format("-%d", damage), "", 18, 255, 0, 0)
-    ad = AttackData:new()
-    ad:setAttack(2, damage)
-    s = self:getSrcUnit()
-    if s then
-        o:damaged(ad, s, Ability.kMaskAll)
-    end
-    
-end
-
-DefPas = class(PassiveAbility)
-function DefPas:ctor(buff)
-    self:sctor("root", "name", 0)
-    self.buff = buff
-    self:setTriggerFlags(Ability.kOnAttackTargetTrigger)
-end
-
-function DefPas:onUnitAddAbility()
-    print("DefPas:onUnitAddAbility()")
-end
-
-function DefPas:onUnitAttackTarget(ad, target)
-    o = self:getOwner()
-    if target:getId() ~= me:getId() and target:isFixed() == false then
-        target:setForceByIndex(1)
-    end
-    --log(string.format("%s attack %s", o:getName(), target:getName()))
-    --ad:setAttackValue(ad:getAttackValue() * 10)
-    --ad:addAttackBuff(self.buff, self:getLevel())
-    --o:addBattleTip(math.ceil(ad:getAttackValue()), "", 18, 0, 0, 0)
-end
-
-DamageBackPas = class(PassiveAbility)
-function DamageBackPas:ctor(per)
-    self:sctor("DamageBack", "DamageBack", 0)
-    self:setTriggerFlags(Ability.kOnDamagedDoneTrigger)
-    self.per = per
-end
-
-function DamageBackPas:onUnitDamagedDone(damage, src)
-    local o = self:getOwner()
-    if not o then
-        --log("o is nil")
-        return
-    else
-        src:damagedLow(self.per * damage, o, 0xFFFFFFFF)
-    end
-end
-
-ArmorBuff = class(BuffAbility)
-function ArmorBuff:ctor(root, name, dur, stackable, exA, exB)
-    self:sctor(root, name, dur, stackable)
-    self.exA = exA
-    self.exB = exB
-    self.change = 0
-end
-
-function ArmorBuff:onUnitAddAbility()
-    o = self:getOwner()
-    local exA, exB = o:getExArmorValue()
-    local av = o:getRealArmorValue()
-    --local s = string.format()
-    self.change = self.exA * av + self.exB
-    o:setExArmorValue(exA, exB + self.change)
-    o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "", 18, 0, 0, 0)
-end
-
-function ArmorBuff:onUnitDelAbility()
-    o = self:getOwner()
-    local exA, exB = o:getExArmorValue()
-    o:setExArmorValue(exA, exB - self.change)
-end
-
-OnDyingPas = class(PassiveAbility)
-function OnDyingPas:ctor()
-    self:sctor("OnDying", "OnDying", 0)
-    self:setTriggerFlags(Ability.kOnDyingTrigger)
-end
-
-function OnDyingPas:onUnitDying()
-    hero = nil
-    if me:isDead() then
-        return
-    end
-    
-    kill = kill + 1
-    atk = me:getAttackAbility()
-    atk:setExAttackValue(1.0 + kill / 40.0, kill * 3.9 + 17)
-    a, b = atk:getExAttackSpeed()
-    atk:setExAttackSpeed(a + kill / 10, b)
-    local level = math.ceil(kill / 2)
-    if level >= 1 and level <= c then
-        if level > learned then
-            me:addPassiveAbility(aaa[level])
-            learned = level
-            me:addBattleTip(string.format("Learn New Ability (%d/%d)", learned, c), "", 32, 235, 170, 68)
-        end
-    end
-
-end
-
-LuaAI = class(UnitAI)
-function LuaAI:ctor()
-    self:sctor()
-end
-
-function LuaAI:onUnitTick(unit, dt)
-    a = unit:getActiveAbility("ThunderCap")
-    if not a then
-        return
-    end
-    
-    t = unit:getAttackingTarget()
-    if t then
-        --log(unit:getDistance(t))
-    end
-    if t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-        unit:setCastTarget()
-        unit:castSpell(a)
-    end
-end
-
-function LuaAI:onUnitAbilityReady(unit, ability)
-    if ability:getId() ~= unit:getAttackAbility():getId() then
-        unit:addBattleTip(ability:getName(), "", 32, 0, 0, 0)
-    end
-end
-
-LuaAI2 = class(UnitAI)
-function LuaAI2:ctor()
-    self:sctor()
-end
-
-function LuaAI2:onUnitTick(unit, dt)
-    a = unit:getActiveAbility("ThunderCap")
-    if not a then
-        return
-    end
-    if timeCount then
-        if timeCount <= 10 then
-            timeCount = timeCount + 1
-        end
-        if timeCount > 10 and not unit:isDoingOr(Unit.kObstinate) then
-            log("~~~~~")
-            timeCount = nil
-            unit:setCastTarget()
-            unit:castSpell(a)
-        end
-    end
-    t = unit:getAttackingTarget()
-    if t and not unit:isDoingOr(Unit.kObstinate) and unit:getDistance(t) < 500 and not unit:isDoingCastingAction() then
-        log("1233123123")
-        --x, y = t:getPosition()
-        --unit:move(x - 1000, y + math.random(-500, 500), true)
-        unit:move(0, 0, true)
-    end
-end
-
-function LuaAI2:onUnitAbilityReady(unit, ability)
-end
-
-function LuaAI2:onUnitDamagedDone(unit)
-    timeCount = 0
-end
-
 function onWorldInit()
     showDebug(false)
     math.randomseed(os.time())
 
     me = getControlUnit()
-    me:setAI(LuaAI:new())
+    --me:setAI(LuaAI:new())
 
     local x, y = me:getPosition()
     me:setPosition(x + 500, y - 200)
@@ -278,20 +69,30 @@ function spawnHero()
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
 
-    a = SpeedBuff:new("SlowDownBuff", "SlowDown", 8.0, false, -0.8, 0.0, -0.8, 0.0)
+    a = SpeedBuff:new("SlowDownBuff", "SlowDown", 5.0, false, -0.8, 0.0, -0.8, 0.0)
     id = addTemplateAbility(a)
     a = KnockBackBuff:new("KnockBackBuff", "KnockBackBuff", 0.5, true, 40)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 250.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 150.0, 1.0, false, 0.0, 0.0)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
-    a = BuffMakerAct:new("ThunderCap", 5.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+    a = BuffMakerAct:new("ThunderCap", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastTargetRadius(150.0)
     a:addCastAnimation(Unit.kAniAct2)
+    a:addEffectSound("sounds/Effect/ThunderCap.mp3")
     hero:addActiveAbility(a)
     
-    hero:setAI(LuaAI2:new())
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 150.0, 1.0, false, 0.0, 0.0)
+    --a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("Wave", 8.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastRange(600.0);
+    a:addCastAnimation(Unit.kAniAct3);
+    a:setTemplateProjectile(PL.kAlienProy);
+    hero:addActiveAbility(a)
+    
+    hero:setAI(LuaAIWarrior:new())
 end
 
 function initAAA()
@@ -421,7 +222,7 @@ function game01_tick(dt)
         if el > 2 then
             uc = uc + 1
             el = el - 2
-            playEffect("sounds/Effect/OpenDoor.mp3")
+            playSound("sounds/Effect/OpenDoor.mp3")
             if uc == 4 then
                 u = spawnSoldier(2, 1)
                 u:addPassiveAbility(arid)
@@ -442,15 +243,10 @@ function game01_tick(dt)
     else
         if el > WAVE then
             -- wave in coming
-            playEffect("sounds/Effect/WaveIncoming.mp3")
+            playSound("sounds/Effect/WaveIncoming.mp3")
             uc = 0
             el = el - WAVE
         end
     end
 end
 
-function game02()
-    
-end
-function game02_tick(dt)
-end

@@ -204,14 +204,13 @@ const CMultiArmorValue& CMultiArmorValue::operator=(const CMultiArmorValue& roAr
  2.00    瓦解
  */
 
-float g_afAttackArmorTable[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_ATTACK_TYPE] = {
+float g_afArmorAttackTable[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_ATTACK_TYPE] = {
     //           物理攻击 魔法攻击 攻城攻击 神圣攻击
-//    /*普通护甲*/ { 1.00,   1.00,   1.00,   1.00 },
-    /*重装护甲*/ { 0.75,   1.25,   0.75,   1.00 },
-    /*水晶护甲*/ { 1.25,   0.75,   1.50,   1.00 },
-    /*城墙护甲*/ { 0.50,   0.50,   1.50,   1.00 },
-    /*英雄护甲*/ { 0.75,   0.75,   0.75,   1.00 },
-    /*神圣护甲*/ { 0.25,   0.25,   0.25,   1.00 }
+    /*重装护甲*/ { 1.50,   0.25,   1.00,   0.00 },
+    /*水晶护甲*/ { 0.25,   1.50,   0.75,   0.00 },
+    /*城墙护甲*/ { 2.00,   2.00,   0.25,   0.00 },
+    /*英雄护甲*/ { 1.00,   1.00,   1.00,   0.00 },
+    /*神圣护甲*/ { 5.00,   5.00,   5.00,   1.00 }
 };
 
 // CAttackBuff
@@ -380,6 +379,7 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
             CUnitDraw2D* ttd = DCAST(tt->getDraw(), CUnitDraw2D*);
             if (ttd != NULL && pUnit->isDoingAnd(CUnit::kCasting | CUnit::kMoving) && d->getPosition().getDistance(ttd->getPosition()) < d->getHostilityRange())
             {
+                // 正在追击施法，距离在仇恨范围内
                 return;
             }
         }
@@ -395,6 +395,7 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
     if (t == NULL || t->isDead())
     {
         //d->stop();
+        // 搜不到仇恨区内的目标，有没有必要设置为doNothing？
         return;
     }
 
@@ -525,7 +526,14 @@ void CUnitAI::onUnitTick( CUnit* pUnit, float dt )
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     lua_pushnumber(L, dt);
-    lua_call(L, 3, 0);
+    int res = lua_pcall(L, 3, 0, NULL);
+    if (res != LUA_OK)
+    {
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }
@@ -1177,17 +1185,19 @@ void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 
 float CUnit::calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue)
 {
+    float aa = g_afArmorAttackTable[eArmorType][eAttackType];
     float fRet;
     if (fArmorValue > 0)
     {
-        fRet = fArmorValue * 0.06;
+        fRet = fArmorValue * aa * 0.06;
         fRet = 1 - fRet / (fRet + 1);
     }
     else
     {
-        fRet = 2 - pow(0.94f, -fArmorValue);
+        fRet = 2 - pow(0.94f, -fArmorValue * (aa < 1 ? (2 - aa) : (1 / aa)));
     }
-    fRet *= fAttackValue * g_afAttackArmorTable[eArmorType][eAttackType];
+    fRet *= fAttackValue;
+    
     return fRet;
 }
 
@@ -2071,6 +2081,7 @@ CAction* CUnit::getActionByTag(int iTag)
 CWorld::CWorld()
 : m_iScriptHandler(0)
 , m_iControlUnit(0)
+, m_bShutdown(false)
 {
     setDbgClassName("CWorld");
 }
@@ -2284,6 +2295,11 @@ void CWorld::abilityReady(CAbility* pAbility)
 
 void CWorld::step(float dt)
 {
+    if (m_bShutdown)
+    {
+        return;
+    }
+
     // 单位死亡后技能CD独立计算，所以放在此处独立计算，不整合到单位onTick中
     M_MAP_FOREACH(m_mapAbilitysCD)
     {
@@ -2391,6 +2407,12 @@ void CWorld::delProjectile(int id)
     m_mapProjectiles.erase(it);
 }
 
+void CWorld::shutdown()
+{
+    m_bShutdown = true;
+}
+
+// CForceResource
 CForceResource::CForceResource( CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc )
 {
     setGold(0);

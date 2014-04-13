@@ -118,7 +118,7 @@ public:
 };
 
 // 攻击-护甲计算系数
-extern float g_afAttackArmorTable[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_ATTACK_TYPE];
+extern float g_afArmorAttackTable[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_ATTACK_TYPE];
 
 class CAttackBuff
 {
@@ -558,7 +558,7 @@ public:
         kDying = 1 << 16,
         kMoving = 1 << 17,
         kObstinate = 1 << 18,
-        kAttacking = 1 << 19,
+        kAlongPath = 1 << 19,
         kCasting = 1 << 20,
         kSpinning = 1 << 21
     };
@@ -669,6 +669,10 @@ public:
     void addProjectile(CProjectile* pProjectile);
     void delProjectile(int id);
 
+    virtual void shutdown();
+
+protected:
+    bool m_bShutdown;
 };
 
 class CForceResource : public CMultiRefObject, public CUnitForce

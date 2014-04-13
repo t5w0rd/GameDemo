@@ -157,17 +157,18 @@ bool CBattleWorld::onInit()
     a = new CKnockBackBuff("KnockBackBuff", "KnockBackBuff", 0.5, true, 40);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
-    a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 250.0f), 1.0f);
+    a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 200.0f), 1.0f);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
     m_pThunderCapAct = new CBuffMakerAct("", "ThunderCap", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, id);
     m_pThunderCapAct->setCastTargetRadius(150.0f);
     m_pThunderCapAct->addCastAnimation(CUnitDraw::kAniAct2);
+    m_pThunderCapAct->addEffectSound("sounds/Effect/ThunderCap.mp3");
     u->addActiveAbility(m_pThunderCapAct);
 
     a = new CStunBuff("Stun", "Stun", 5.0f, false);
     id = addTemplateAbility(a);
-    a = new CTransitiveLinkBuff("Chain", 0.3f, 200.0f, 4, CAttackValue(0, 250.0f));
+    a = new CTransitiveLinkBuff("Chain", 0.3f, 150.0f, 4, CAttackValue(0, 200.0f));
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     DCAST(a, CTransitiveLinkBuff*)->setTemplateProjectile(CUnitLibraryForCC::kLightning);
     id = addTemplateAbility(a);
@@ -302,6 +303,25 @@ bool CBattleWorld::onLuaWorldInit()
     luaRegWorldFuncs(L, this);
     luaRegWorldFuncsForCC(L, this);
 
+    lua_getglobal(L, "setSearchPath");
+    lua_call(L, 0, 0);
+
+    int res = 0;
+
+    lua_getglobal(L, "include");
+    lua_pushstring(L, "world.lua");
+    res = lua_pcall(L, 1, 0, NULL);
+    if (res != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        CCLOG("ERR | LuaErr: %s", err);
+        lua_pop(L, 1);
+        layer->log("%s", err);
+
+        return false;
+    }
+/*
+
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
     string comm = "/sdcard/ts/gamedemo/common.lua";
     string name = "/sdcard/ts/gamedemo/world.lua";
@@ -331,10 +351,10 @@ bool CBattleWorld::onLuaWorldInit()
         layer->log("%s", err.c_str());
 
         return false;
-    }
+    }*/
 
     lua_getglobal(L, "onWorldInit");
-    int res = lua_pcall(L, 0, 0, 0);
+    res = lua_pcall(L, 0, 0, 0);
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
@@ -1399,5 +1419,6 @@ void CCBattleSceneLayer::onClickHeroPortrait( CCNode* pNode )
 
 void CCBattleSceneLayer::onClickRestart( CCObject* obj )
 {
+    getWorld()->shutdown();
     CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene(DCAST(getWorld(), CBattleWorld*)->m_heroInfo));
 }

@@ -136,6 +136,8 @@ public:
     M_SYNTHESIZE_READONLY(CCUnitLayer*, m_pLayer, Layer);
     virtual void setLayer(CCUnitLayer* pLayer);
     CCLayer* createLayer();
+
+    virtual void shutdown();
 };
 
 class CUnitPathForCC : public CUnitPath
@@ -169,6 +171,8 @@ public:
     virtual ~CProjectileForCC();
     virtual CMultiRefObject* copy();
     virtual void copyData(const CProjectile* from);
+
+    virtual float getRadius() const;
 
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();

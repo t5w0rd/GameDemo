@@ -315,6 +315,8 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Resources\scripts\ability.lua" />
+    <None Include="..\Resources\scripts\ai.lua" />
     <None Include="..\Resources\scripts\common.lua" />
     <None Include="..\Resources\scripts\world.lua" />
   </ItemGroup>

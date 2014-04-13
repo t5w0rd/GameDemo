@@ -260,11 +260,54 @@ int g_showDebug( lua_State* L )
     return 0;
 }
 
-int g_playEffect(lua_State* L)
+int g_playSound(lua_State* L)
 {
     const char* eff = lua_tostring(L, 1);
 
     SimpleAudioEngine::sharedEngine()->playEffect(eff);
+
+    return 0;
+}
+
+string g_sLuaSearchPath;
+
+int g_setSearchPath(lua_State* L)
+{
+    if (lua_gettop(L) == 0)
+    {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+        g_sLuaSearchPath = "/sdcard/ts/gamedemo";
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        g_sLuaSearchPath = "/var/mobile/Documents";
+#else
+        g_sLuaSearchPath = "scripts";
+#endif
+    }
+    else
+    {
+        const char* path = lua_tostring(L, 1);
+        if (path != NULL)
+        {
+            g_sLuaSearchPath = path;
+        }
+    }
+
+    return 0;
+}
+
+int g_include(lua_State* L)
+{
+    const char* inc = lua_tostring(L, 1);
+
+    char sz[256];
+
+    sprintf(sz, "%s/%s", g_sLuaSearchPath.c_str(), inc);
+
+    string err;
+    if (luaL_loadscript4cc(L, sz, err) == false)
+    {
+        return luaL_error(L, "%s", err.c_str());
+    }
 
     return 0;
 }
@@ -279,7 +322,9 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "loadAnimation", g_loadAnimation);
     lua_register(L, "createUnit", g_createUnit);
     lua_register(L, "showDebug", g_showDebug);
-    lua_register(L, "playEffect", g_playEffect);
+    lua_register(L, "playSound", g_playSound);
+    lua_register(L, "setSearchPath", g_setSearchPath);
+    lua_register(L, "include", g_include);
     
     // TODO: reg global class members
     lua_getglobal(L, "Unit");
@@ -294,28 +339,6 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_call(L, 0, 1);  // ret a class
     int sprite4cc = lua_gettop(L);
     luaL_setfuncs(L, sprite4cc_funcs, 0);
-    lua_pushinteger(L, CUnitDraw::kAniMove);
-    lua_setfield(L, sprite4cc, "kAniMove");
-    lua_pushinteger(L, CUnitDraw::kAniDie);
-    lua_setfield(L, sprite4cc, "kAniDie");
-    lua_pushinteger(L, CUnitDraw::kAniAct1);
-    lua_setfield(L, sprite4cc, "kAniAct1");
-    lua_pushinteger(L, CUnitDraw::kAniAct2);
-    lua_setfield(L, sprite4cc, "kAniAct2");
-    lua_pushinteger(L, CUnitDraw::kAniAct3);
-    lua_setfield(L, sprite4cc, "kAniAct3");
-    lua_pushinteger(L, CUnitDraw::kAniAct4);
-    lua_setfield(L, sprite4cc, "kAniAct4");
-    lua_pushinteger(L, CUnitDraw::kAniAct5);
-    lua_setfield(L, sprite4cc, "kAniAct5");
-    lua_pushinteger(L, CUnitDraw::kAniAct6);
-    lua_setfield(L, sprite4cc, "kAniAct6");
-    lua_pushinteger(L, CUnitDraw::kAniAct7);
-    lua_setfield(L, sprite4cc, "kAniAct7");
-    lua_pushinteger(L, CUnitDraw::kAniAct8);
-    lua_setfield(L, sprite4cc, "kAniAct8");
-    lua_pushinteger(L, CUnitDraw::kFrmDefault);
-    lua_setfield(L, sprite4cc, "kFrmDefault");
     lua_setglobal(L, "Sprite");
 
     int t = 0;

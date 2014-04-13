@@ -128,6 +128,20 @@ bool CUnitLibraryForCC::init()
     p->addFireSound("sounds/Effect/TeslaRay01.mp3");
     addProjectile(kTeslaRay, p);
 
+    // AlienProy
+    gc->loadAnimation("Units/AlienProy/move", "Units/AlienProy/move", 0.1f);
+    gc->loadAnimation("Units/AlienProy/die", "Units/AlienProy/die", 0.1f);
+    p = new CProjectileForCC("AlienProy");
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setMoveSpeed(500.0f);
+    p->setMaxHeightDelta(0.0f);
+    p->setPenaltyFlags(CProjectile::kOnContact);
+    p->setFireType(CProjectile::kFireStraight);
+    p->addFireSound("sounds/Effect/MageShot.mp3");
+    addProjectile(kAlienProy, p);
+
     // WizardBolt
     gc->loadAnimation("Units/WizardBolt/move", "Units/WizardBolt/move", 0.1f);
     gc->loadAnimation("Units/WizardBolt/die", "Units/WizardBolt/die", 0.1f);
@@ -456,7 +470,7 @@ bool CUnitLibraryForCC::init()
     d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 6, "sounds/Effect/MetalHeavyBashFlesh00.mp3");
     d->addAnimationSound(CUnitDraw::kAniAct1, "sounds/Effect/MetalHeavyBashFlesh01.mp3");
     d->addAnimationSound(CUnitDraw::kAniAct1, "sounds/Effect/MetalHeavyBashFlesh02.mp3");
-    d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 5, "sounds/Effect/ThunderCap.mp3");
+    d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 5);
     d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 4);
     d->prepareAnimation(CUnitDraw::kAniAct5, "act5", 3, "sounds/Effect/LevelUp.mp3");
     d->setGeometry(40.0f, 29.0f, ccp(124.0 / 240, 52.0 / 192), CPoint(59.0f, 30.0f));

@@ -614,6 +614,12 @@ CCLayer* CWorldForCC::createLayer()
     return m_pLayer;
 }
 
+void CWorldForCC::shutdown()
+{
+    m_pLayer->removeAllChildrenWithCleanup(true);
+    CWorld::shutdown();
+}
+
 // CUnitPathForCC
 CUnitPathForCC::CUnitPathForCC( const char* pFileName )
 {
@@ -712,6 +718,11 @@ void CProjectileForCC::copyData( const CProjectile* from )
     m_mapAniInfos = p->m_mapAniInfos;
     m_stFrmInfo = p->m_stFrmInfo;
     // 如果需要复制位置、高度、AttackData等，应在这里添加代码
+}
+
+float CProjectileForCC::getRadius() const
+{
+    return (getSprite()->getContentSize().width + getSprite()->getContentSize().height) / 2;
 }
 
 void CProjectileForCC::setPosition(const CPoint& p)

@@ -28,7 +28,6 @@ AttackValue.kPhysical = 0
 AttackValue.kMagical = 1
 AttackValue.kSiege = 2
 AttackValue.kHoly = 3
-
 ArmorValue = {}
 ArmorValue.kHeavy = 0
 ArmorValue.kCrystal = 1
@@ -47,10 +46,12 @@ Unit.kAniAct6 = 7
 Unit.kAniAct7 = 8
 Unit.kAniAct8 = 9
 
+Unit.kFrmDefault = 0
+
 Unit.kDying = 2 ^ 16
 Unit.kMoving = 2 ^ 17
 Unit.kObstinate = 2 ^ 18
-Unit.kAttacking = 2 ^ 19
+Unit.kAlongPath = 2 ^ 19
 Unit.kCasting = 2 ^ 20
 Unit.kSpinning = 2 ^ 21
 

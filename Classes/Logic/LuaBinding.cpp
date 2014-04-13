@@ -1306,7 +1306,7 @@ int ability_onUnitProjectileEffect(lua_State* L)
     return 0;
 }
 
-int ability_onUnitAbilityProjectileEffect(lua_State* L)
+int ability_onUnitAbilityEffect(lua_State* L)
 {
     return 0;
 }
