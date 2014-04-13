@@ -210,7 +210,7 @@ void CCSelectArchiveLayer::onEnter()
    {
        unsigned long len = 0;
        unsigned char* data = CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &len);
-       CCLog("%d",len);
+       CCLog("%ld",len);
        m_pLabel1->setString((const char*)data);
    }
    else

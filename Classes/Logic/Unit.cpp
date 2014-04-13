@@ -526,7 +526,7 @@ void CUnitAI::onUnitTick( CUnit* pUnit, float dt )
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     lua_pushnumber(L, dt);
-    int res = lua_pcall(L, 3, 0, NULL);
+    int res = lua_pcall(L, 3, 0, 0);
     if (res != LUA_OK)
     {
         lua_getglobal(L, "log");

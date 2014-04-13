@@ -25,7 +25,7 @@ function onWorldInit()
 
     local x, y = me:getPosition()
     me:setPosition(x + 500, y - 200)
-    --me:setMaxHp(687)
+    me:setExMaxHp(1.75, 0.0)
     
     me:setAlly(2 ^ 3 + 2 ^ 4 + 2 ^ 2)
     
@@ -250,7 +250,9 @@ function game01_tick(dt)
                 local u = spawnHero()
                 a = u:getAttackAbility()
                 if a:getCastRange() < 150 and math.random(0, 100) < 50 then
-                    spawnHero(4):addActiveAbility(cutter)
+                    spawnHero(4)
+                    hero:addActiveAbility(cutter)
+                    hero:setBaseMoveSpeed(85)
                     hero = u
                 end
             end

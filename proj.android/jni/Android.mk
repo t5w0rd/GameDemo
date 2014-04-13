@@ -59,6 +59,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/lua/lzio.c \
 ../../Classes/LogoScene.cpp \
 ../../Classes/LuaBindingForCC.cpp \
+../../Classes/MainMenuScene.cpp \
 ../../Classes/UnitLibraryForCC.cpp
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes \

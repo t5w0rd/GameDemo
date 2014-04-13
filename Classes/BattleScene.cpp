@@ -310,7 +310,7 @@ bool CBattleWorld::onLuaWorldInit()
 
     lua_getglobal(L, "include");
     lua_pushstring(L, "world.lua");
-    res = lua_pcall(L, 1, 0, NULL);
+    res = lua_pcall(L, 1, 0, 0);
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);

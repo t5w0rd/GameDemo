@@ -76,7 +76,7 @@ function LuaAI:onUnitTick(unit, dt)
     end
     
     a = unit:getActiveAbility("SpeedUp2")
-    if a and not a:isCoolingDown() and unit:getDistance(t) < 400 and self.stunned then
+    if a and not unit:isDoingCastingAction() and not a:isCoolingDown() and unit:getDistance(t) < 400 and self.stunned then
         unit:setCastTarget()
         unit:castSpell(a)
     end
