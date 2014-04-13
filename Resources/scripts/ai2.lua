@@ -1,80 +1,82 @@
 
 LuaSimpleAI = class(UnitAI)
 function LuaSimpleAI:ctor()
-	self:sctor()
+    self:sctor()
 end
 function LuaSimpleAI:onUnitTick(unit, dt)
 end
-function LuaSimpleAI:tryCastSkill(unit, skill, target)
-	if unit:isDoingOr(Unit.kObstinate) then
-		return
-	end
-	--t = unit:getAttackingTarget()
-	a = unit:getActiveAbility(skillName)
-	if a and t and not a:isCoolingDown() and not unit:isDoingCastingAction() then
-		unit:setCastTarget(target)
-	end
+function LuaSimpleAI:tryCastSkill(unit, skillName, castTarget, ...)   --distance, timeCount
+    if unit:isDoingOr(Unit.kObstinate) then
+        return
+    end
+    a = unit:getActiveAbility(skillName)
+    if not a then
+        return
+    end
+    argvs = {...}
+    if #argvs == 0 then
+        self:trySkill(unit, a, castTarget)
+        return
+    end
+    if #argvs == 1 then
+        distance = argvs[1]
+        t = unit:getAttackingTarget()
+        if  #argvs == 1 and t and distance and unit:getDistance(t) < distance then
+            self:trySkill(unit, a, castTarget)
+            return
+        end
+    end
+end
+
+function LuaSimpleAI:trySkill(unit, skill, castTarget)
+    if skill and not skill:isCoolingDown() and not unit:isDoingCastingAction() then
+        if  castTarget then
+            unit:setCastTarget(castTarget)
+        else
+            unit:setCastTarget()
+        end
+        unit:castSpell(skill)
+        --log(string.format("%s", skill:getName()))
+    end
 end
 
 function LuaSimpleAI:setHpAI(unit, count)
-	if count > 5 then
-		count = 0
-		unit:setHp(unit:getMaxHp())
-		unit:addBattleTip("Full~~~~", "", 32, 0, 0, 0)
-	end
-	return count
+    if count > 5 then
+        count = 0
+        unit:setHp(unit:getMaxHp())
+        unit:addBattleTip("Full~~~~", "", 32, 0, 0, 0)
+    end
+    return count
 end
 
-function LuaSimpleAI:hitAndRunAI(unit)
-	t = unit:getAttackingTarget()
-	
-	if unit:getDistance(t) < 500 then
-	end
-	
+function LuaSimpleAI:hitAndRun(unit, runDistance)
+    t = unit:getAttackingTarget()
+    if t and unit:getDistance(t) < runDistance then
+        x,y = unit:getPosition()
+        unit:move(x + math.random(-100, 100), y + math.random(-100, 100))
+    end
 end
 
 
 LuaAIWarrior = class(LuaSimpleAI)
 function LuaAIWarrior:ctor()
-	self:sctor()
-	self.timeCount = 0
+    self:sctor()
+    self.timeCount = 0
 end
 
 function LuaAIWarrior:onUnitTick(unit, dt)
-	--self.timeCount = self.timeCount + dt
-	--log(string.format("%f",self.timeCount))
-	
-	--self.timeCount = self:setHpAI(unit, self.timeCount)
-	
-	t = unit:getAttackingTarget()
-	a = unit:getActiveAbility("ThrowHammer")
-	if not a then
-		unit:addBattleTip("no throwhammer", "", 32, 0, 0, 0)
-	end
-	if a and t and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-		unit:setCastTarget(t:getId())
-		unit:castSpell(a)
-		unit:addBattleTip("ThrowHammer", "", 32, 0, 0, 0)
-	end
-	
-	a = unit:getActiveAbility("ThunderCap")
-	if a and t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-		unit:setCastTarget()
-		unit:castSpell(a)
-		unit:addBattleTip("Thunder Cap", "", 32, 0, 0, 0)
-	end
-	
-	a = unit:getActiveAbility("SpeedUp")
-	if not a then
-		unit:addBattleTip("no speedup", "", 32, 0, 0, 0)
-	end
-	if a and t and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-		if unit:getDistance(t) < 100 then
-			unit:setCastTarget()
-			unit:castSpell(a)
-			unit:addBattleTip("Speed Up", "", 32, 0, 0, 0)
-		end
-	end
-	
+    t = unit:getAttackingTarget()
+    if t then
+        self:tryCastSkill(unit, "ThrowHammer", t)
+    end
+    self:tryCastSkill(unit, "ThunderCap", nil, 100)
+    self:tryCastSkill(unit, "SpeedUp", nil, 100)
+    
+    if unit:getHp() / unit:getRealMaxHp() < 0.5 and not unit:getBuffAbility("TowerHeal") then
+        unit:move(100, 500)
+    end
+    --self:hitAndRun(unit, 200)
+    --self.timeCount = self.timeCount + dt
+    --self.timeCount = self:setHpAI(unit, self.timeCount)
 end
 

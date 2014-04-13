@@ -132,9 +132,10 @@ function OnDyingPas:onUnitDying()
         return
     end
     
+    lvl = me:getLevel()
     kill = kill + 1
     atk = me:getAttackAbility()
-    atk:setExAttackValue(1.0 + kill / 40.0, kill * 3.9 + 17)
+    atk:setExAttackValue(1.0 + kill / 20.0, kill * 3.9 + 17)
     a, b = atk:getExAttackSpeed()
     atk:setExAttackSpeed(a + kill / 10, b)
     local level = math.ceil(kill / 2)

@@ -892,6 +892,7 @@ void CBuffMakerAct::copyData( CAbility* from )
 
 bool CBuffMakerAct::checkConditions()
 {
+    m_pTarget = NULL;
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
     assert(d != NULL);
@@ -935,6 +936,12 @@ void CBuffMakerAct::onUnitCastAbility()
 
 void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarget )
 {
+    if (pTarget != NULL)
+    {
+        // 抛射物被反弹后，m_pTarget需要更新
+        m_pTarget = pTarget;
+    }
+    
     CUnit* o = getOwner();
 
     switch (getCastTargetType())
@@ -942,7 +949,7 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
     case CCommandTarget::kNoTarget:
     case CCommandTarget::kUnitTarget:
 
-        if (M_RAND_HIT(m_fChance) && o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
+        if (M_RAND_HIT(m_fChance) && (pProjectile != NULL || o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags())))
         {
             m_pTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
@@ -1927,16 +1934,6 @@ CMultiRefObject* CReflectBuff::copy()
 {
     CReflectBuff* ret = new CReflectBuff(getRootId(), getName(), m_fDuration);
     return ret;
-}
-
-void CReflectBuff::onUnitAddAbility()
-{
-
-}
-
-void CReflectBuff::onUnitDelAbility()
-{
-
 }
 
 bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )

@@ -62,6 +62,21 @@ bool CUnitLibraryForCC::init()
     p->addFireSound("sounds/Effect/ArrowRelease01.mp3");
     addProjectile(kArcherArrow, p);
 
+    // ArcherArrow2
+    gc->loadAnimation("Units/ArcherArrow/move", "Units/ArcherArrow2/move", 0.1f);
+    gc->loadAnimation("Units/ArcherArrow/die", "Units/ArcherArrow2/die", 0.1f);
+    p = new CProjectileForCC("ArcherArrow2");
+    p->prepareFrame(CProjectile::kFrmDefault, "default", "ArcherArrow");
+    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setMoveSpeed(600.0f);
+    p->setMaxHeightDelta(20.0f);
+    p->setPenaltyFlags(CProjectile::kOnContact);
+    p->setFireType(CProjectile::kFireStraight);
+    p->addFireSound("sounds/Effect/ArrowRelease00.mp3");
+    p->addFireSound("sounds/Effect/ArrowRelease01.mp3");
+    addProjectile(kArcherArrow2, p);
+
     // Lightning
     gc->loadAnimation("Units/Lightning/die", "Units/Lightning/die", 0.05f);
     p = new CProjectileForCC("Lightning");
@@ -155,6 +170,21 @@ bool CUnitLibraryForCC::init()
     p->setFireType(CProjectile::kFireFollow);
     p->addFireSound("sounds/Effect/MageShot.mp3");
     addProjectile(kWizardBolt, p);
+
+    // MirageProy
+    gc->loadAnimation("Units/MirageProy/move", "Units/MirageProy/move", 0.1f);
+    gc->loadAnimation("Units/MirageProy/die", "Units/MirageProy/die", 0.1f);
+    p = new CProjectileForCC("MirageProy");
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setMoveSpeed(600.0f);
+    p->setMaxHeightDelta(0.0f);
+    p->setPenaltyFlags(CProjectile::kOnContact);
+    p->setFireType(CProjectile::kFireStraight);
+    p->addFireSound("sounds/Effect/ArrowRelease00.mp3");
+    p->addFireSound("sounds/Effect/ArrowRelease01.mp3");
+    addProjectile(kMirageProy, p);
 
 
     // Malik
@@ -301,7 +331,7 @@ bool CUnitLibraryForCC::init()
         1.75,
         CAttackValue(CAttackValue::kPhysical, 60.0),
         0.5);
-    atk->setCastMinRange(0.0f);
+    atk->setCastMinRange(-25.0f);
     atk->setCastRange(200.0f);
     atk->addCastAnimation(CUnitDraw::kAniAct1);
     atk->setTemplateProjectile(kArcherArrow);

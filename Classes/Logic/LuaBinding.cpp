@@ -918,7 +918,15 @@ int unit2d_setCastTarget(lua_State* L)
         break;
 
     case 2:
-        d->setCastTarget(CCommandTarget(lua_tointeger(L, 2)));
+        if (lua_istable(L, 2))
+        {
+            CUnit* t = luaL_tounitptr(L, 2);
+            d->setCastTarget(CCommandTarget(t->getId()));
+        }
+        else
+        {
+            d->setCastTarget(CCommandTarget(lua_tointeger(L, 2)));
+        }
         break;
 
     case 3:
@@ -2115,6 +2123,19 @@ int KnockBackBuff_ctor(lua_State* L)
     return 0;
 }
 
+int ReflectBuff_ctor( lua_State* L )
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+
+    CReflectBuff* _p = new CReflectBuff(root, name, duration);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
 luaL_Reg AttackData_funcs[] = {
     {"ctor", AttackData_ctor},
     {"setAttack", AttackData_setAttack},
@@ -2368,6 +2389,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     M_LUA_BIND_CLASS_EX(L, TransitiveLinkBuff, BuffAbility);
     M_LUA_BIND_CLASS_EX(L, SplashPas, PassiveAbility);
     M_LUA_BIND_CLASS_EX(L, KnockBackBuff, BuffAbility);
+    M_LUA_BIND_CLASS_EX(L, ReflectBuff, BuffAbility);
 
     lua_getglobal(L, "class");
     lua_call(L, 0, 1);

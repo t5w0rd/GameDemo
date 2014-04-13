@@ -825,6 +825,7 @@ int CProjectileForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncDat
     int tag = CKeyGen::nextKey();
     act->setTag(tag);
 
+    getSprite()->setRotation(-CC_RADIANS_TO_DEGREES((rPos - getPosition()).getAngle()));
     getSprite()->runAction(act);
 
     return tag;
@@ -911,12 +912,12 @@ CProjectileForCC::ANI_INFO* CProjectileForCC::getAnimationInfo(ANI_ID id)
     return &it->second;
 }
 
-void CProjectileForCC::prepareFrame(FRM_ID id, const char* pName)
+void CProjectileForCC::prepareFrame(FRM_ID id, const char* pName, const char* pFrmName)
 {
     M_DEF_GC(gc);
 
     char szName[256];
-    sprintf(szName, "Units/%s/%s", getName(), pName);
+    sprintf(szName, "Units/%s/%s", pFrmName == NULL ? getName() : pFrmName, pName);
     CCSpriteFrame* pSf = gc->getFrame(szName);
     if (pSf == NULL)
     {
@@ -934,8 +935,6 @@ CProjectileForCC::FRM_INFO* CProjectileForCC::getFrameInfo(FRM_ID id)
 CCProjectileSprite* CProjectileForCC::createSprite()
 {
     assert(m_pSprite == NULL);
-    char sz[256];
-    sprintf(sz, "Units/%s/default.png", getName());
     m_pSprite = CCProjectileSprite::createWithProjectile(this);
     assert(m_pSprite != NULL);
 

@@ -124,4 +124,9 @@ PL.kWizardProy = 0x100 + 15
 PL.kArcaneRay = 0x100 + 16
 PL.kArcaneRay2 = 0x100 + 17
 PL.kTeslaRay = 0x100 + 18
+PL.kArcherArrow2 = 0x100 + 19
 
+function getForwardPoint(x0, y0, x1, y1, dis)
+    local a = math.atan2(y1 - y0, x1 - x0)
+    return x0 + math.cos(-a) * dis, y0 + math.sin(a) * dis
+end

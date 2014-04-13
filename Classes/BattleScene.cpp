@@ -43,9 +43,9 @@ public:
         d->setCastTarget(CCommandTarget());
         d->cmdCastSpell(w->getWarCryAct()->getId());
         u->addBuffAbility(new CChangeHpBuff("LevelUpHeal", "LevelUpHeal", 5.0f, false, 0.2f, CExtraCoeff(0.02f, 0.0f)));
-        u->addBuffAbility(new CReflectBuff("Reflect", "Reflect", 150.0f));
+        u->addBuffAbility(new CReflectBuff("Reflect", "Reflect", 5.0f));
         CAttackAct* atk = DCAST(u->getActiveAbility(u->getAttackAbilityId()), CAttackAct*);
-        atk->getBaseAttack().setValue(atk->getBaseAttack().getValue() + 27.8);
+        atk->getBaseAttack().setValue(atk->getBaseAttack().getValue() + 7.8);
         d->setBaseMoveSpeed(d->getBaseMoveSpeed() + 1);
     }
 };
@@ -157,7 +157,7 @@ bool CBattleWorld::onInit()
     a = new CKnockBackBuff("KnockBackBuff", "KnockBackBuff", 0.5, true, 40);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
-    a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 200.0f), 1.0f);
+    a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
     m_pThunderCapAct = new CBuffMakerAct("", "ThunderCap", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, id);
@@ -168,11 +168,11 @@ bool CBattleWorld::onInit()
 
     a = new CStunBuff("Stun", "Stun", 5.0f, false);
     id = addTemplateAbility(a);
-    a = new CTransitiveLinkBuff("Chain", 0.3f, 150.0f, 4, CAttackValue(0, 200.0f));
+    a = new CTransitiveLinkBuff("Chain", 0.3f, 150.0f, 4, CAttackValue(CAttackValue::kMagical, 100.0f));
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     DCAST(a, CTransitiveLinkBuff*)->setTemplateProjectile(CUnitLibraryForCC::kLightning);
     id = addTemplateAbility(a);
-    a = new CDamageBuff("ChainDamage", CAttackValue(CAttackValue::kMagical, 350.0f), 1.0f);
+    a = new CDamageBuff("ChainDamage", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
     
@@ -1267,7 +1267,7 @@ void CCBattleSceneLayer::onDragonStrikeUpdate( CCNode* pNode )
             if (t != NULL && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
             {
                 CAttackData* ad = new CAttackData;
-                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (100 * w->getHero()->getLevel()));
+                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (50 * w->getHero()->getLevel()));
                 t->damaged(ad, w->getHero(), CUnit::kMaskAll);
             }
             M_MAP_NEXT;
@@ -1306,7 +1306,7 @@ void CCBattleSceneLayer::onDragonStrikeUpdate( CCNode* pNode )
             if (t != NULL && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
             {
                 CAttackData* ad = new CAttackData;
-                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (200 * w->getHero()->getLevel()));
+                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (100 * w->getHero()->getLevel()));
                 t->damaged(ad, w->getHero(), CUnit::kMaskAll);
             }
             M_MAP_NEXT;
@@ -1349,7 +1349,7 @@ void CCBattleSceneLayer::onDragonStrikeUpdate( CCNode* pNode )
             if (t != NULL && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
             {
                 CAttackData* ad = new CAttackData;
-                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (300 * w->getHero()->getLevel()));
+                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (150 * w->getHero()->getLevel()));
                 ad->addAttackBuff(CAttackBuff(w->getDragonStrikeBuff()->getId(), 1));
                 t->damaged(ad, w->getHero(), CUnit::kMaskAll);
             }

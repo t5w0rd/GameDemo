@@ -224,6 +224,7 @@ int DamageBuff_ctor(lua_State* L);
 int TransitiveLinkBuff_ctor(lua_State* L);
 int SplashPas_ctor(lua_State* L);
 int KnockBackBuff_ctor(lua_State* L);
+int ReflectBuff_ctor(lua_State* L);
 
 int AttackData_ctor(lua_State* L);
 int AttackData_setAttack(lua_State* L);

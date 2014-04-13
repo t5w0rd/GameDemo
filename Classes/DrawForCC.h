@@ -208,7 +208,7 @@ public:
 
     M_SYNTHESIZE_READONLY_PASS_BY_REF(FRM_INFO, m_stFrmInfo, FrameInfo);
 
-    void prepareFrame(FRM_ID id, const char* pName);
+    void prepareFrame(FRM_ID id, const char* pName, const char* pFrmName = NULL);
 
     FRM_INFO* getFrameInfo(FRM_ID id);
 
@@ -218,6 +218,9 @@ public:
 
     virtual void playFireSound();
     virtual void playEffectSound();
+
+protected:
+    string m_sFrmName;
     
 };
 

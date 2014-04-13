@@ -464,9 +464,6 @@ public:
     CReflectBuff(const char* pRootId, const char* pName, float fDuration);
     virtual CMultiRefObject* copy();
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-
     virtual bool onUnitProjectileArrive(CProjectile* pProjectile);
 
 };

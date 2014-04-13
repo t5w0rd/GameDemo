@@ -68,7 +68,8 @@ public:
         kWizardProy,
         kArcaneRay,
         kArcaneRay2,
-        kTeslaRay
+        kTeslaRay,
+        kArcherArrow2
     };
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;

@@ -12,6 +12,8 @@ c = 0
 kill = 0
 learned = 0
 
+lvl = 1
+
 taid2 = 0
 
 function onWorldInit()
@@ -27,13 +29,13 @@ function onWorldInit()
     
     me:setAlly(2 ^ 3 + 2 ^ 4 + 2 ^ 2)
     
-    game02()
+    game01()
     
     return true
 end
 
 function onWorldTick(dt)
-    game02_tick(dt)
+    game01_tick(dt)
 end
 
 function spawnSoldier(id, force)
@@ -51,57 +53,47 @@ function spawnSoldier(id, force)
         up:addPoint(u:getPosition())
         up:addPoint(100 + math.random(-50, 50), 500 + math.random(-50, 50))
     end
-
+    
+    u:setExArmorValue(1.0, 2)
     u:moveAlongPath(up, false)
 
     return u
 end
 
-function spawnHero()
-    hero = spawnSoldier(math.random(1, 12), 1)
+function spawnHero(id)
+    if not id then
+        id = math.random(1, 12)
+    end
+    hero = spawnSoldier(id, 1)
     hero:addPassiveAbility(OnDyingPas:new())
-    hero:setMaxHp(me:getMaxHp() * 1.0 + (kill / 1.5) * 100)
+    hero:setMaxHp(me:getMaxHp() * 1.0 + (kill / 2.5) * 100)
     hero:setRewardGold(50 + kill * 20 / 1.5)
     hero:setRewardExp(20 + kill * 10 / 1.5)
+    hero:setExArmorValue(1.0, kill * 0.7)
     atk = hero:getAttackAbility()
     t, v = atk:getBaseAttack()
-    atk:setBaseAttack(t, v * (1 + kill / 1.5))
-    atk:setExAttackSpeed(1.0 + kill / 15, 0.0)
+    atk:setBaseAttack(t, v * (1 + kill / 2.5))
+    atk:setExAttackSpeed(1.0 + kill / 20, 0.0)
     for i = 1, (3 + kill) do
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
 
-    a = SpeedBuff:new("SlowDownBuff", "SlowDown", 5.0, false, -0.8, 0.0, -0.8, 0.0)
-    id = addTemplateAbility(a)
-    a = KnockBackBuff:new("KnockBackBuff", "KnockBackBuff", 0.5, true, 40)
-    a:setAppendBuff(id)
-    id = addTemplateAbility(a)
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 150.0, 1.0, false, 0.0, 0.0)
-    a:setAppendBuff(id)
-    id = addTemplateAbility(a)
-    a = BuffMakerAct:new("ThunderCap", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
-    a:setCastTargetRadius(150.0)
-    a:addCastAnimation(Unit.kAniAct2)
-    a:addEffectSound("sounds/Effect/ThunderCap.mp3")
-    hero:addActiveAbility(a)
+    if atk:getCastRange() > 100 then
+        hero:addActiveAbility(reflect)
+        hero:addActiveAbility(speedUp2)
+        hero:addActiveAbility(knockBack)
+        hero:setAI(LuaAI:new())
+    else
+        hero:addActiveAbility(thowHammer)
+        hero:addActiveAbility(thunderCap)
+        hero:addActiveAbility(speedUp)
+        hero:setAI(LuaAIWarrior:new())
+    end
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 150.0, 1.0, false, 0.0, 0.0)
-    --a:setAppendBuff(id)
-    id = addTemplateAbility(a)
-    a = BuffMakerAct:new("Wave", 8.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
-    a:setCastRange(600.0)
-    a:addCastAnimation(Unit.kAniAct3)
-    a:setTemplateProjectile(PL.kAlienProy)
-    hero:addActiveAbility(a)
-    
-    hero:setAI(LuaAIWarrior:new())
+    return hero
 end
 
 function initAAA()
-    a = DamageBackPas:new(0.5)
-    c = c + 1
-    aaa[c] = addTemplateAbility(a)
-
     a = DoubleAttackPas:new("DA", 0.2, 0.5, 0.0)
     c = c + 1
     aaa[c] = addTemplateAbility(a)
@@ -179,14 +171,16 @@ up2:addPoint(100, 500)
 uc = 0
 
 function game01()
-    a = ChangeHpBuff:new("heal", "heal", 5, false, 0.3, 0.006, 0, 0, -1)
+    a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.006, 0, 0, -1)
     id = addTemplateAbility(a)
     a = AuraPas:new("HealAura", 1, id, 200, 5)
     taid = addTemplateAbility(a)
 
+    initAIAbility()
     initAAA()
-    u = createUnit(0xff + 26)
-    u:setMaxHp(u:getMaxHp() * 7)
+    
+    u = createUnit(UL.kArcane)
+    u:setMaxHp(u:getMaxHp() * 3)
     u:setBaseArmor(2, 52)
     u:setForceByIndex(1)
     u:setPosition(100, 500)
@@ -198,8 +192,8 @@ function game01()
     a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0)
     u:addPassiveAbility(a)
 
-    u = createUnit(0xff + 27)
-    u:setMaxHp(u:getMaxHp() * 7)
+    u = createUnit(UL.kTesla)
+    u:setMaxHp(u:getMaxHp() * 3)
     u:setBaseArmor(2, 52)
     u:setForceByIndex(2)
     u:setPosition(1900, 500)
@@ -228,18 +222,37 @@ function game01_tick(dt)
             if uc == 4 then
                 u = spawnSoldier(2, 1)
                 u:addPassiveAbility(arid)
-                u:addPassiveAbility(SplashPas:new("SplashBolt", 75, 1.0, 0.0, 150, 0.5, 0.0))
+                u:addPassiveAbility(SplashPas:new("SplashBolt", 50, 0.75, 0.0, 75, 0.25, 0.0))
                 u:setRewardGold(20)
                 u:setRewardExp(14)
+                u:setMaxHp(200 + lvl * 46)
+                atk = u:getAttackAbility()
+                atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
+                
                 u = spawnSoldier(4, 2)
                 u:setRewardGold(20)
                 u:setRewardExp(14)
+                u:setMaxHp(200 + lvl * 46)
+                atk = u:getAttackAbility()
+                atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
             else
-                spawnSoldier(22, 1)
-                spawnSoldier(23, 2)
+                u = spawnSoldier(22, 1)
+                u:setMaxHp(200 + lvl * 63)
+                atk = u:getAttackAbility()
+                atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.3)
+                
+                u = spawnSoldier(23, 2)
+                u:setMaxHp(200 + lvl * 63)
+                atk = u:getAttackAbility()
+                atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.3)
             end
             if not hero then
-                spawnHero()
+                local u = spawnHero()
+                a = u:getAttackAbility()
+                if a:getCastRange() < 150 and math.random(0, 100) < 50 then
+                    spawnHero(4):addActiveAbility(cutter)
+                    hero = u
+                end
             end
         end
     else
@@ -252,19 +265,21 @@ function game01_tick(dt)
     end
 end
 
-function game02()
+function initAIAbility()
+    --  ThrowHammer
     a = StunBuff:new("Stun", "Stun", 2.0, false)
     id = addTemplateAbility(a)
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 50.0, 1.0, false, 0.0, 0.0)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("ThrowHammer", 18.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastRange(300.0)
     a:addCastAnimation(Unit.kAniAct2)
-    a:setTemplateProjectile(UL.kThorHammer)
+    a:setTemplateProjectile(PL.kThorHammer)
     a:addEffectSound("sounds/Effect/LightningLink.mp3")
-    throwHammer = addTemplateAbility(a)
+    thowHammer = addTemplateAbility(a)
     
+    -- ThunderCap
     a = SpeedBuff:new("ThunderCap", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
     id = addTemplateAbility(a)
     a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0)
@@ -276,12 +291,62 @@ function game02()
     a:addEffectSound("sounds/Effect/ThunderCap.mp3")
     thunderCap = addTemplateAbility(a)
     
+    -- SpeedUp
     a = SpeedBuff:new("SpeedUp", "SpeedUp", 5.0, false, 0.8, 0.0, 0.8, 0.0)
     id = addTemplateAbility(a)
-    a = BuffMakerAct:new("SpeedUp", 8.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
-    a:addCastAnimation(Unit.kAniAct4)
-    a:addEffectSound("sounds/Effect/KRF_sfx_minotauro_grito.mp3")
+    a = BuffMakerAct:new("SpeedUp", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+    a:addCastAnimation(Unit.kAniAct5)
+    a:addEffectSound("sounds/Effect/LevelUp.mp3")
+    a:addEffectSound("sounds/Effect/LevelUp.mp3")
     speedUp = addTemplateAbility(a)
+    
+    -- Reflect
+    a = ReflectBuff:new("Reflect", "Reflect", 5.0)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("Reflect", 15.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+    a:addCastAnimation(Unit.kAniAct4)
+    a:addEffectSound("sounds/Effect/LevelUp2.mp3")
+    reflect = addTemplateAbility(a)
+    
+    -- Cutter
+    a = SpeedBuff:new("SlowDown", "SlowDown", 3.0, false, -0.5, 0.0, -0.5, 0.0)
+    id = addTemplateAbility(a)
+    a = ChangeHpBuff:new("Poison", "Poison", 3.0, false, 0.2, -0.01, 0.0, 0.0, -1.0)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 1.0, false, 0.0, 0.0)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("Cutter", 10.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastRange(600.0)
+    a:addCastAnimation(Unit.kAniAct2)
+    a:setTemplateProjectile(PL.kMirageProy)
+    cutter = addTemplateAbility(a)
+    
+    -- SpeedUp2
+    a = SpeedBuff:new("SpeedUp2", "SpeedUp2", 2.0, false, 3.0, 0.0, 3.0, 0.0)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("SpeedUp2", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+    a:addCastAnimation(Unit.kAniAct5)
+    a:addEffectSound("sounds/Effect/LevelUp.mp3")
+    speedUp2 = addTemplateAbility(a)
+    
+    -- KnockBack
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0)
+    id = addTemplateAbility(a)
+    a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, true, 100)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("KnockBack", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastTargetRadius(150.0)
+    a:addCastAnimation(Unit.kAniAct2)
+    a:addEffectSound("sounds/Effect/KidnapGrab.mp3")
+    knockBack = addTemplateAbility(a)
+end
+
+function game02()
+
+    initAIAbility()
     
     -- create hero3
     u = createUnit(UL.kBarracks)
@@ -295,14 +360,11 @@ function game02()
     atk = u:getAttackAbility()
     atk:setBaseAttack(AttackValue.kPhysical, 15)
     atk:setBaseAttackInterval(1.5)
-    u:addActiveAbility(throwHammer)
+    u:addActiveAbility(thowHammer)
     u:addActiveAbility(thunderCap)
     u:addActiveAbility(speedUp)
-    u:setAI(LuaAIWarrior:new())
     
-    u:setAI(LuaAI:new())
-    --u:setCastTarget()
-    --u:castSpell(thunderCap)
+    u:setAI(LuaAIWarrior:new())
     
     -- create hero4
     u = createUnit(UL.kArcher)
@@ -316,6 +378,12 @@ function game02()
     atk = u:getAttackAbility()
     atk:setBaseAttack(AttackValue.kPhysical, 18)
     atk:setBaseAttackInterval(1.2)
+    --u:addActiveAbility(reflect)
+    u:addActiveAbility(cutter)
+    u:addActiveAbility(speedUp2)
+    u:addActiveAbility(knockBack)
+    
+    u:setAI(LuaAI:new())
     
 end
 
