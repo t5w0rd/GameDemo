@@ -206,7 +206,7 @@ bool CBattleWorld::onInit()
     
     u->setName(m_heroInfo.name);
     u->setMaxHp(m_heroInfo.hp);
-    atk->setBaseAttack(CAttackValue(m_heroInfo.atkVal));
+    atk->setBaseAttack(m_heroInfo.atkVal);
     atk->setBaseAttackInterval(1 / m_heroInfo.attackSpeed);
     u->setBaseArmor(m_heroInfo.armVal);
     d->setBaseMoveSpeed(m_heroInfo.moveSpeed);
@@ -714,7 +714,7 @@ void CCBattleSceneLayer::ccTouchesEnded( CCSet *pTouches, CCEvent *pEvent )
     CPoint p(pos.x, pos.y);
     CUnit* t = CUnitGroup::getNearestUnitInRange(w, p, 50.0f);
 
-    if (d != NULL && t != NULL && t->isEnemyOf(hero))
+    if (d != NULL && t != NULL && hero->isEnemyOf(t))
     {
         if (hero != t)
         {

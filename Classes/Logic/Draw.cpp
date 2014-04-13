@@ -1013,7 +1013,7 @@ bool CUnitGroup::isLivingAllyOf(CUnit* pUnit, CUnitForce* pParam)
 
 bool CUnitGroup::isLivingEnemyOf(CUnit* pUnit, CUnitForce* pParam)
 {
-    return !pUnit->isDead() && pUnit->isEnemyOf(pParam);
+    return !pUnit->isDead() && pParam->isEnemyOf(pUnit);
 }
 
 // CProjectile
