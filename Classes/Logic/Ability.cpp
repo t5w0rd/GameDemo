@@ -1257,7 +1257,7 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     {
         char sz[64];
         sprintf(sz, "+%d", toInt(fDtHp));
-        d->addBattleTip(sz, "Comic Book", 18, ccc3(113, 205, 44));
+        d->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(113, 205, 44));
     }
 #endif
 }
@@ -1436,7 +1436,7 @@ void CSpeedBuff::onUnitAddAbility()
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(72, 130, 200));
+        ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(72, 130, 200));
     }
 #endif
 }
@@ -1613,7 +1613,7 @@ void CRebirthPas::onUnitDead()
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(217, 47, 111));
+        ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(217, 47, 111));
     }
 #endif
 
@@ -1656,7 +1656,7 @@ bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
         {
             char sz[64];
             sprintf(sz, "%s!", getName());
-            ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
+            ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(250, 104, 16));
         }
 #endif
         return false;
@@ -1695,7 +1695,7 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
         {
             char sz[64];
             sprintf(sz, "%s!", getName());
-            ccd->addBattleTip(sz, "Comic Book", 18, ccc3(250, 104, 16));
+            ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(250, 104, 16));
         }
         return false;
 #endif

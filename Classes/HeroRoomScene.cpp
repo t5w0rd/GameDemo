@@ -163,7 +163,7 @@ bool CCHeroRoomSceneLayer::init()
     m_hpBar->runActionForTimer(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroVals[0].hp * 100 / m_maxVal.hp, 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].hp));
-    m_hpLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
+    m_hpLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_hpLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_hpLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
     info->addChild(m_hpLbl);
@@ -184,7 +184,7 @@ bool CCHeroRoomSceneLayer::init()
     m_attackBar->runActionForTimer(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroVals[0].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].atkVal.getValue()));
-    m_attackLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
+    m_attackLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_attackLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_attackLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
     info->addChild(m_attackLbl);
@@ -205,7 +205,7 @@ bool CCHeroRoomSceneLayer::init()
     m_armorBar->runActionForTimer(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroVals[0].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].armVal.getValue()));
-    m_armorLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
+    m_armorLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_armorLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_armorLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
     info->addChild(m_armorLbl);
@@ -225,7 +225,7 @@ bool CCHeroRoomSceneLayer::init()
     m_attackSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroVals[0].attackSpeed * 100 / m_maxVal.attackSpeed, 0.2f)));
 
     sprintf(szVal, "%.2f", m_heroVals[0].attackSpeed);
-    m_attackSpeedLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
+    m_attackSpeedLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_attackSpeedLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_attackSpeedLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
     info->addChild(m_attackSpeedLbl);
@@ -245,18 +245,18 @@ bool CCHeroRoomSceneLayer::init()
     m_moveSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroVals[0].moveSpeed * 100 / m_maxVal.moveSpeed, 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroVals[0].moveSpeed));
-    m_moveSpeedLbl = CCLabelTTF::create(szVal, "fonts/Comic Book.ttf", 30);
+    m_moveSpeedLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_moveSpeedLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_moveSpeedLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
     info->addChild(m_moveSpeedLbl);
     m_moveSpeedLbl->setPosition(ccpAdd(m_moveSpeedBar->getPosition(), ccp(m_moveSpeedBar->getContentSize().width * 0.5 + 30, 5.0f)));
 
     // Ãû×Ö¡¢¼ò½é
-    m_name = CCLabelTTF::create(m_heroVals[0].name, "fonts/Comic Book.ttf", 52);
+    m_name = CCLabelTTF::create(m_heroVals[0].name, FONT_COMIC_BOOK, 52);
     info->addChild(m_name);
     m_name->setPosition(ccp(800, 680));
 
-    m_desc = CCLabelTTF::create(m_heroVals[0].desc, "fonts/Comic Book.ttf", 32);
+    m_desc = CCLabelTTF::create(m_heroVals[0].desc, FONT_COMIC_BOOK, 32);
     m_desc->setAnchorPoint(ccp(0.5f, 1.0f));
     info->addChild(m_desc);
     m_desc->setPosition(ccpAdd(m_name->getPosition(), ccp(0, -m_name->getContentSize().height)));

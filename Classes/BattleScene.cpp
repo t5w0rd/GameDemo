@@ -674,7 +674,7 @@ bool CCBattleSceneLayer::init()
     bp->setPosition(ccp(wsz.width - btn->getContentSize().width * 0.5 - 50, btn->getContentSize().height * 0.5 + 150));
 
     
-    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("RESTART", "fonts/Comic Book.ttf", 64), this, menu_selector(CCBattleSceneLayer::onClickRestart));
+    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("RESTART", FONT_COMIC_BOOK, 64), this, menu_selector(CCBattleSceneLayer::onClickRestart));
     mn->addChild(lbl);
 
     lbl->setPosition(ccp(wsz.width - lbl->getContentSize().width * 0.5 - 50, wsz.height - lbl->getContentSize().height * 0.5 - 50));
