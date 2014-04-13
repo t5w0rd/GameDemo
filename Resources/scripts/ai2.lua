@@ -41,30 +41,38 @@ function LuaAIWarrior:ctor()
 end
 
 function LuaAIWarrior:onUnitTick(unit, dt)
-	self.timeCount = self.timeCount + dt
-	log(string.format("%f",self.timeCount))
+	--self.timeCount = self.timeCount + dt
+	--log(string.format("%f",self.timeCount))
 	
-	self.timeCount = self:setHpAI(unit, self.timeCount)
+	--self.timeCount = self:setHpAI(unit, self.timeCount)
 	
 	t = unit:getAttackingTarget()
 	a = unit:getActiveAbility("ThrowHammer")
+	if not a then
+		unit:addBattleTip("no throwhammer", "", 32, 0, 0, 0)
+	end
 	if a and t and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-		unit:setCastTarget(t:getPosition())
+		unit:setCastTarget(t:getId())
 		unit:castSpell(a)
+		unit:addBattleTip("ThrowHammer", "", 32, 0, 0, 0)
 	end
 	
 	a = unit:getActiveAbility("ThunderCap")
 	if a and t and unit:getDistance(t) < 100 and not unit:isDoingCastingAction() and not a:isCoolingDown() then
 		unit:setCastTarget()
 		unit:castSpell(a)
+		unit:addBattleTip("Thunder Cap", "", 32, 0, 0, 0)
 	end
 	
 	a = unit:getActiveAbility("SpeedUp")
-
+	if not a then
+		unit:addBattleTip("no speedup", "", 32, 0, 0, 0)
+	end
 	if a and t and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-		if unit:getDistance(t) > 100 then
+		if unit:getDistance(t) < 100 then
 			unit:setCastTarget()
 			unit:castSpell(a)
+			unit:addBattleTip("Speed Up", "", 32, 0, 0, 0)
 		end
 	end
 	
