@@ -592,7 +592,6 @@ void CActiveAbility::effect()
                 p->setToUnit(t->getId());
 
                 p->fire();
-                    
             }
             else
             {
@@ -1962,6 +1961,7 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
     }
     else if (pProjectile->getFireType() == CProjectile::kFireStraight && (pProjectile->getFromToType() == CProjectile::kUnitToPoint || pProjectile->getFromToType() == CProjectile::kPointToPoint))
     {
+        return true;
         pProjectile->setSrcUnit(o->getId());
         if (pProjectile->getFromToType() == CProjectile::kUnitToPoint)
         {
@@ -1982,4 +1982,24 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
     }
 
     return true;
+}
+
+// CLimitedLife
+CLimitedLifeBuff::CLimitedLifeBuff( const char* pRootId, const char* pName, float fDuration )
+    : CBuffAbility(pRootId, pName, fDuration, false)
+{
+}
+
+CMultiRefObject* CLimitedLifeBuff::copy()
+{
+    CLimitedLifeBuff* ret = new CLimitedLifeBuff(getRootId(), getName(), m_fDuration);
+    ret->copyData(this);
+
+    return ret;
+}
+
+void CLimitedLifeBuff::onUnitDelAbility()
+{
+    CUnit* u = getOwner();
+    u->setHp(0.0f);
 }

@@ -19,6 +19,7 @@ taid2 = 0
 function onWorldInit()
     showDebug(false)
     math.randomseed(os.time())
+    logf("time: %d", os.time())
 
     me = getControlUnit()
     --me:setAI(LuaAI:new())
@@ -29,13 +30,15 @@ function onWorldInit()
     
     me:setAlly(2 ^ 3 + 2 ^ 4 + 2 ^ 2)
     
-    game01()
+    --game01()
+    test()
     
     return true
 end
 
 function onWorldTick(dt)
-    game01_tick(dt)
+    --game01_tick(dt)
+    test_tick(dt)
 end
 
 function spawnSoldier(id, force)
@@ -390,4 +393,18 @@ function game02()
 end
 
 function game02_tick(dt)
+end
+
+function test()
+    p = createProjectile(PL.kArcherArrow2)
+    p:setPosition(100, 500)
+    p:setFromToType(Projectile.kPointToPoint)
+    p:setFromPoint(p:getPosition())
+    p:setToPoint(1900, 500)
+    p:fire()
+    --p:setPenaltyFlags(Projectile.kOnContact)
+    --p:setFireType(Projectile.kFireStraight)
+end
+
+function test_tick(dt)
 end

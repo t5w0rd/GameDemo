@@ -251,6 +251,21 @@ int g_createUnit( lua_State* L )
     return 1;
 }
 
+int g_createProjectile( lua_State* L )
+{
+    int id = lua_tointeger(L, 1);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    CProjectile* _p = w->m_oULib.copyProjectile(id);
+    w->addProjectile(_p);
+    lua_pop(L, 1);  // pop _world
+
+    luaL_pushobjptr(L, "Projectile", _p);
+
+    return 1;
+}
+
 int g_showDebug( lua_State* L )
 {
     bool bOn = lua_toboolean(L, 1) != 0;
@@ -321,6 +336,7 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "loadTexture", g_loadTexture);
     lua_register(L, "loadAnimation", g_loadAnimation);
     lua_register(L, "createUnit", g_createUnit);
+    lua_register(L, "createProjectile", g_createProjectile);
     lua_register(L, "showDebug", g_showDebug);
     lua_register(L, "playSound", g_playSound);
     lua_register(L, "setSearchPath", g_setSearchPath);

@@ -186,6 +186,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\BattleScene.cpp" />
     <ClCompile Include="..\Classes\ComponentForCC.cpp" />
+    <ClCompile Include="..\Classes\DrawForCC.cpp" />
     <ClCompile Include="..\Classes\GameControl.cpp" />
     <ClCompile Include="..\Classes\HeroRoomScene.cpp" />
     <ClCompile Include="..\Classes\Logic\Action.cpp" />
@@ -198,7 +199,6 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp" />
     <ClCompile Include="..\Classes\Logic\Ability.cpp" />
     <ClCompile Include="..\Classes\Logic\Unit.cpp" />
-    <ClCompile Include="..\Classes\DrawForCC.cpp" />
     <ClCompile Include="..\Classes\LogoScene.cpp" />
     <ClCompile Include="..\Classes\LuaBindingForCC.cpp" />
     <ClCompile Include="..\Classes\lua\lapi.c" />
@@ -236,6 +236,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\MainMenuScene.cpp" />
     <ClCompile Include="..\Classes\TestScene.cpp" />
     <ClCompile Include="..\Classes\UnitLibraryForCC.cpp" />
+    <ClCompile Include="..\Classes\UserData.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +246,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\BattleScene.h" />
     <ClInclude Include="..\Classes\CommHeader.h" />
     <ClInclude Include="..\Classes\ComponentForCC.h" />
+    <ClInclude Include="..\Classes\DrawForCC.h" />
     <ClInclude Include="..\Classes\GameControl.h" />
     <ClInclude Include="..\Classes\HeroRoomScene.h" />
     <ClInclude Include="..\Classes\Logic\Action.h" />
@@ -259,7 +261,6 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\Logic\MultiRefObject.h" />
     <ClInclude Include="..\Classes\Logic\Ability.h" />
     <ClInclude Include="..\Classes\Logic\Unit.h" />
-    <ClInclude Include="..\Classes\DrawForCC.h" />
     <ClInclude Include="..\Classes\LogoScene.h" />
     <ClInclude Include="..\Classes\LuaBindingForCC.h" />
     <ClInclude Include="..\Classes\lua\lapi.h" />
@@ -290,6 +291,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\MainMenuScene.h" />
     <ClInclude Include="..\Classes\TestScene.h" />
     <ClInclude Include="..\Classes\UnitLibraryForCC.h" />
+    <ClInclude Include="..\Classes\UserData.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>

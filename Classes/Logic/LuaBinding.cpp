@@ -208,6 +208,28 @@ CAbility* luaL_toabilityptr(lua_State* L, int idx)
     return ret;
 }
 
+int luaL_tounitid(lua_State* L, int idx)
+{
+    if (lua_istable(L, idx))
+    {
+        CUnit* _p = luaL_tounitptr(L, idx);
+        return _p->getId();
+    }
+
+    return lua_tointeger(L, idx);
+}
+
+int luaL_toabilityid(lua_State* L, int idx)
+{
+    if (lua_istable(L, idx))
+    {
+        CAbility* _p = luaL_toabilityptr(L, idx);
+        return _p->getId();
+    }
+
+    return lua_tointeger(L, idx);
+}
+
 luaL_Reg mrobj_funcs[] = {
     {"getId", mrobj_getId},
     {NULL, NULL}
@@ -1198,6 +1220,253 @@ int UnitAI_onUnitAbilityReady(lua_State* L)
     return 0;
 }
 
+luaL_Reg projectile_funcs[] = {
+    {"setSrcUnit", projectile_setSrcUnit},
+    {"setFromUnit", projectile_setFromUnit},
+    {"setToUnit", projectile_setToUnit},
+    {"setFromPoint", projectile_setFromPoint},
+    {"setToPoint", projectile_setToPoint},
+    {"setFromToType", projectile_setFromToType},
+    {"setFireType", projectile_setFireType},
+    {"setPenalyFlags", projectile_setPenalyFlags},
+    {"fire", projectile_fire},
+    {"die", projectile_die},
+    {"setPosition", projectile_setPosition},
+    {"getPosition", projectile_getPosition},
+    {"setHeight", projectile_setHeight},
+    {"getHeight", projectile_getHeight},
+    {"setMoveSpeed", projectile_setMoveSpeed},
+    {"getMoveSpeed", projectile_getMoveSpeed},
+    {"setMaxHeightDelta", projectile_setMaxHeightDelta},
+    {"getMaxHeightDelta", projectile_getMaxHeightDelta},
+    {"setVisible", projectile_setVisible},
+    {"addFireSound", projectile_addFireSound},
+    {"addEffectSound", projectile_addEffectSound},
+    {NULL, NULL}
+};
+
+int projectile_setSrcUnit(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setSrcUnit(luaL_tounitid(L, 2));
+
+    return 0;
+}
+
+int projectile_setFromUnit(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setFromUnit(luaL_tounitid(L, 2));
+
+    return 0;
+}
+
+int projectile_setToUnit(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setToUnit(luaL_tounitid(L, 2));
+
+    return 0;
+}
+
+int projectile_setFromPoint(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setFromPoint(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3)));
+
+    return 0;
+}
+
+int projectile_setToPoint(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setToPoint(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3)));
+
+    return 0;
+}
+
+int projectile_setFromToType(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setFromToType((CProjectile::FROM_TO_TYPE)lua_tointeger(L, 2));
+
+    return 0;
+}
+
+int projectile_setFireType(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setFireType((CProjectile::FIRE_TYPE)lua_tointeger(L, 2));
+
+    return 0;
+}
+
+int projectile_setPenalyFlags(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setPenaltyFlags(lua_tounsigned(L, 2));
+
+    return 0;
+}
+
+int projectile_fire(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->fire();
+
+    return 0;
+}
+
+int projectile_die(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->die();
+
+    return 0;
+}
+
+int projectile_redirect(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->redirect();
+
+    return 0;
+}
+
+int projectile_setPosition(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setPosition(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3)));
+
+    return 0;
+}
+
+int projectile_getPosition(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    const CPoint& p = _p->getPosition();
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+
+    return 2;
+}
+
+int projectile_setHeight(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setHeight(lua_tonumber(L, 2));
+
+    return 0;
+}
+
+int projectile_getHeight(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getHeight());
+
+    return 1;
+}
+
+int projectile_setMoveSpeed(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setMoveSpeed(lua_tonumber(L, 2));
+
+    return 0;
+}
+
+int projectile_getMoveSpeed(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getMoveSpeed());
+
+    return 1;
+}
+
+int projectile_setMaxHeightDelta(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setMaxHeightDelta(lua_tonumber(L, 2));
+
+    return 0;
+}
+
+int projectile_getMaxHeightDelta(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getMaxHeightDelta());
+
+    return 1;
+}
+
+int projectile_setVisible(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setVisible(lua_toboolean(L, 2) != 0);
+
+    return 0;
+}
+
+int projectile_addFireSound(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->addFireSound(lua_tostring(L, 2));
+
+    return 0;
+}
+
+int projectile_addEffectSound(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->addEffectSound(lua_tostring(L, 2));
+
+    return 0;
+}
+
 luaL_Reg ability_funcs[] = {
     {"ctor", ability_ctor},
     {"onUnitAddAbility", ability_onUnitAddAbility},
@@ -2136,6 +2405,19 @@ int ReflectBuff_ctor( lua_State* L )
     return 0;
 }
 
+int LimitedLifeBuff_ctor(lua_State* L)
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+
+    CLimitedLifeBuff* _p = new CLimitedLifeBuff(root, name, duration);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
 luaL_Reg AttackData_funcs[] = {
     {"ctor", AttackData_ctor},
     {"setAttack", AttackData_setAttack},
@@ -2349,6 +2631,12 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_getglobal(L, "class");
     lua_getglobal(L, "MRObj");
     lua_call(L, 1, 1);  // ret a class
+    luaL_setfuncs(L, projectile_funcs, 0);
+    lua_setglobal(L, "Projectile");
+
+    lua_getglobal(L, "class");
+    lua_getglobal(L, "MRObj");
+    lua_call(L, 1, 1);  // ret a class
     int ability = lua_gettop(L);
     luaL_setfuncs(L, ability_funcs, 0);
     lua_setglobal(L, "Ability");
@@ -2390,6 +2678,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     M_LUA_BIND_CLASS_EX(L, SplashPas, PassiveAbility);
     M_LUA_BIND_CLASS_EX(L, KnockBackBuff, BuffAbility);
     M_LUA_BIND_CLASS_EX(L, ReflectBuff, BuffAbility);
+    M_LUA_BIND_CLASS_EX(L, LimitedLifeBuff, BuffAbility);
 
     lua_getglobal(L, "class");
     lua_call(L, 0, 1);

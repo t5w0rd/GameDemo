@@ -58,6 +58,8 @@ void luaL_pushobjptr(lua_State* L, const char* name, const PTYPE _p);
 
 CUnit* luaL_tounitptr(lua_State* L, int idx = 1);
 CAbility* luaL_toabilityptr(lua_State* L, int idx);
+int luaL_tounitid(lua_State* L, int idx);
+int luaL_toabilityid(lua_State* L, int idx);
 
 int mrobj_getId(lua_State* L);
 
@@ -140,6 +142,29 @@ int UnitAI_onUnitDamageTargetDone(lua_State* L);
 int UnitAI_onUnitAddBuffAbility(lua_State* L);
 int UnitAI_onUnitDelBuffAbility(lua_State* L);
 int UnitAI_onUnitAbilityReady(lua_State* L);
+
+int projectile_setSrcUnit(lua_State* L);
+int projectile_setFromUnit(lua_State* L);
+int projectile_setToUnit(lua_State* L);
+int projectile_setFromPoint(lua_State* L);
+int projectile_setToPoint(lua_State* L);
+int projectile_setFromToType(lua_State* L);
+int projectile_setFireType(lua_State* L);
+int projectile_setPenalyFlags(lua_State* L);
+int projectile_fire(lua_State* L);
+int projectile_redirect(lua_State* L);
+int projectile_die(lua_State* L);
+int projectile_setPosition(lua_State* L);
+int projectile_getPosition(lua_State* L);
+int projectile_setHeight(lua_State* L);
+int projectile_getHeight(lua_State* L);
+int projectile_setMoveSpeed(lua_State* L);
+int projectile_getMoveSpeed(lua_State* L);
+int projectile_setMaxHeightDelta(lua_State* L);
+int projectile_getMaxHeightDelta(lua_State* L);
+int projectile_setVisible(lua_State* L);
+int projectile_addFireSound(lua_State* L);
+int projectile_addEffectSound(lua_State* L);
 
 int ability_ctor(lua_State* L);
 int ability_onUnitAddAbility(lua_State* L);
@@ -225,6 +250,7 @@ int TransitiveLinkBuff_ctor(lua_State* L);
 int SplashPas_ctor(lua_State* L);
 int KnockBackBuff_ctor(lua_State* L);
 int ReflectBuff_ctor(lua_State* L);
+int LimitedLifeBuff_ctor(lua_State* L);
 
 int AttackData_ctor(lua_State* L);
 int AttackData_setAttack(lua_State* L);

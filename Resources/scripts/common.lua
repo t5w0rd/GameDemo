@@ -12,6 +12,15 @@ function table.copy(st)
     return tab
 end
 
+function getForwardPoint(x0, y0, x1, y1, dis)
+    local a = math.atan2(y1 - y0, x1 - x0)
+    return x0 + math.cos(-a) * dis, y0 + math.sin(a) * dis
+end
+
+function logf(...)
+    log(string.format(table.unpack({...})))
+end
+
 CommandTarget = {}
 CommandTarget.kNoTarget = 0
 CommandTarget.kUnitTarget = 1
@@ -55,6 +64,18 @@ Unit.kObstinate = 2 ^ 18
 Unit.kAlongPath = 2 ^ 19
 Unit.kCasting = 2 ^ 20
 Unit.kSpinning = 2 ^ 21
+
+Projectile.kOnDying = 2 ^ 0
+Projectile.kOnContact = 2 ^ 1
+
+Projectile.kPointToUnit = 0
+Projectile.kPointToPoint = 1
+Projectile.kUnitToUnit = 2
+Projectile.kUnitToPoint = 3
+
+Projectile.kFireFollow = 0
+Projectile.kFireLink = 1
+Projectile.kFireStraight = 2
 
 Ability.kOnReviveTrigger = 2 ^ 0
 Ability.kOnDyingTrigger = 2 ^ 1
@@ -126,7 +147,3 @@ PL.kArcaneRay2 = 0x100 + 17
 PL.kTeslaRay = 0x100 + 18
 PL.kArcherArrow2 = 0x100 + 19
 
-function getForwardPoint(x0, y0, x1, y1, dis)
-    local a = math.atan2(y1 - y0, x1 - x0)
-    return x0 + math.cos(-a) * dis, y0 + math.sin(a) * dis
-end

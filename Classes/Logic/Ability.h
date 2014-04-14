@@ -468,6 +468,15 @@ public:
 
 };
 
+class CLimitedLifeBuff : public CBuffAbility
+{
+public:
+    CLimitedLifeBuff(const char* pRootId, const char* pName, float fDuration);
+    virtual CMultiRefObject* copy();
+
+    virtual void onUnitDelAbility();
+};
+
 
 #endif  /* __ABILITY_H__ */
 

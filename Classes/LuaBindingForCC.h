@@ -22,6 +22,7 @@ int g_log(lua_State* L);
 int g_loadTexture(lua_State* L);
 int g_loadAnimation(lua_State* L);
 int g_createUnit(lua_State* L);
+int g_createProjectile(lua_State* L);
 int g_showDebug(lua_State* L);
 int g_playSound(lua_State* L);
 int g_setSearchPath(lua_State* L);
