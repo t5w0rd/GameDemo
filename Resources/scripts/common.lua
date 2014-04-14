@@ -12,9 +12,13 @@ function table.copy(st)
     return tab
 end
 
+function getDirectionPoint(x0, y0, a, dis)
+    return x0 + math.cos(-a) * dis, y0 + math.sin(a) * dis
+end
+
 function getForwardPoint(x0, y0, x1, y1, dis)
     local a = math.atan2(y1 - y0, x1 - x0)
-    return x0 + math.cos(-a) * dis, y0 + math.sin(a) * dis
+    return getDirectionPoint(x0, y0, a, dis)
 end
 
 function logf(...)

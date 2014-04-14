@@ -397,6 +397,11 @@ void CUnitDrawForCC::setGeometry(float fHalfOfWidth, float fHalfOfHeight, const 
 void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFontSize, ccColor3B color)
 {
     //return;
+    if (pFont == NULL || pFont[0] == 0)
+    {
+        pFont = "fonts/Comic Book.fnt";
+    }
+
     CCNode* l = getSprite()->getParent();
     const CPoint& up = getPosition();
     CCPoint p(up.x, up.y + getHalfOfHeight() * 2 + 30.0f);
@@ -404,13 +409,17 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
     cirInc(curTipId, getBaseTipId(), getMaxTips());
     setCurTipId(curTipId);
     
-    CCLabelTTF* lbl = DCAST(l->getChildByTag(getCurTipId()), CCLabelTTF*);
+    //CCLabelTTF* lbl = DCAST(l->getChildByTag(getCurTipId()), CCLabelTTF*);
+    CCLabelBMFont* lbl = DCAST(l->getChildByTag(getCurTipId()), CCLabelBMFont*);
     if (lbl != NULL)
     {
         lbl->removeFromParentAndCleanup(true);
     }
 
-    lbl = CCLabelTTF::create(pTip, pFont, fFontSize);
+    //lbl = CCLabelTTF::create(pTip, pFont, fFontSize);
+    lbl = CCLabelBMFont::create(pTip, pFont);
+    float scale = fFontSize / 32;
+    lbl->setScale(scale);
     lbl->setColor(color);
     l->addChild(lbl, 1, getCurTipId());
 
@@ -437,7 +446,7 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
         CCSpawn::create(
         //CCMoveBy::create(0.1f, ccp(0.0f, lbl->getContentSize().height)),
             CCFadeInOutScale4::create(
-                0.5f, 2.0f, 0.8f,
+                0.5f * scale, 2.0f * scale, scale, 0.8f * scale,
                 0.1f, 0.1f, 0.3f, 0.2f),
             CCSequence::create(CCDelayTime::create(0.5f), CCMoveBy::create(0.2f, ccp(0.0f, lbl->getContentSize().height * 2)), NULL),
             NULL),

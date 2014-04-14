@@ -31,7 +31,7 @@ end
 function CurseBuff:onUnitAddAbility()
     o = self:getOwner()
     self.hp = o:getHp()
-    o:addBattleTip("Curse", "", 18, 255, 0, 255)
+    o:addBattleTip("Curse", "fonts/Comic Book.fnt", 18, 255, 0, 255)
 end
 
 function CurseBuff:onUnitInterval()
@@ -47,7 +47,7 @@ function CurseBuff:onUnitInterval()
         damage = 0
     end
     damage = damage + self.damage
-    --o:addBattleTip(string.format("-%d", damage), "", 18, 255, 0, 0)
+    --o:addBattleTip(string.format("-%d", damage), "fonts/Comic Book.fnt", 18, 255, 0, 0)
     ad = AttackData:new()
     ad:setAttack(2, damage)
     s = self:getSrcUnit()
@@ -76,7 +76,7 @@ function DefPas:onUnitAttackTarget(ad, target)
     --log(string.format("%s attack %s", o:getName(), target:getName()))
     --ad:setAttackValue(ad:getAttackValue() * 10)
     --ad:addAttackBuff(self.buff, self:getLevel())
-    --o:addBattleTip(math.ceil(ad:getAttackValue()), "", 18, 0, 0, 0)
+    --o:addBattleTip(math.ceil(ad:getAttackValue()), "fonts/Comic Book.fnt", 18, 0, 0, 0)
 end
 
 DamageBackPas = class(PassiveAbility)
@@ -111,7 +111,7 @@ function ArmorBuff:onUnitAddAbility()
     --local s = string.format()
     self.change = self.exA * av + self.exB
     o:setExArmorValue(exA, exB + self.change)
-    o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "", 18, 0, 0, 0)
+    o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Comic Book.fnt", 18, 0, 0, 0)
 end
 
 function ArmorBuff:onUnitDelAbility()
@@ -143,7 +143,7 @@ function OnDyingPas:onUnitDying()
         if level > learned then
             me:addPassiveAbility(aaa[level])
             learned = level
-            me:addBattleTip(string.format("Learn New Ability (%d/%d)", learned, c), "", 32, 235, 170, 68)
+            me:addBattleTip(string.format("Learn New Ability (%d/%d)", learned, c), "fonts/Comic Book.fnt", 32, 235, 170, 68)
         end
     end
 

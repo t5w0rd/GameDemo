@@ -171,6 +171,19 @@ bool CUnitLibraryForCC::init()
     p->addFireSound("sounds/Effect/MageShot.mp3");
     addProjectile(kWizardBolt, p);
 
+    // VoodooProy
+    gc->loadAnimation("Units/VoodooProy/move", "Units/VoodooProy/move", 0.1f);
+    gc->loadAnimation("Units/VoodooProy/die", "Units/VoodooProy/die", 0.1f);
+    p = new CProjectileForCC("VoodooProy");
+    p->prepareFrame(CProjectile::kFrmDefault, "default");
+    p->prepareAnimation(CProjectile::kAniMove, "move", -1);
+    p->prepareAnimation(CProjectile::kAniDie, "die", 0);
+    p->setMoveSpeed(600.0f);
+    p->setMaxHeightDelta(0.0f);
+    p->setPenaltyFlags(CProjectile::kOnContact);
+    p->setFireType(CProjectile::kFireStraight);
+    addProjectile(kVoodooProy, p);
+    
     // MirageProy
     gc->loadAnimation("Units/MirageProy/move", "Units/MirageProy/move", 0.1f);
     gc->loadAnimation("Units/MirageProy/die", "Units/MirageProy/die", 0.1f);

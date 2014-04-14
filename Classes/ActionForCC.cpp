@@ -159,12 +159,12 @@ CCObject* CCNotifyAnimate::copyWithZone(CCZone* pZone)
 }
 
 // CCFadeInOutScale4
-bool CCFadeInOutScale4::init(float fScaleStart, float fScaleMid, float fScaleEnd, float fDurToMid, float fDurToNormal, float fDurKeep, float fDurToEnd)
+bool CCFadeInOutScale4::init(float fScaleStart, float fScaleMid, float fScaleNormal, float fScaleEnd, float fDurToMid, float fDurToNormal, float fDurKeep, float fDurToEnd)
 {
     m_fScaleStart = fScaleStart;
     CCActionInterval* pAct0 = CCSpawn::createWithTwoActions(CCFadeIn::create(fDurToMid), CCScaleTo::create(fDurToMid, fScaleMid));
-    CCActionInterval* pAct1 = CCScaleTo::create(fDurToNormal, 1.0);
-    CCActionInterval* pAct2 = CCScaleBy::create(fDurKeep, 1.0);
+    CCActionInterval* pAct1 = CCScaleTo::create(fDurToNormal, fScaleNormal);
+    CCActionInterval* pAct2 = CCDelayTime::create(fDurKeep);
     CCActionInterval* pAct3 = CCSpawn::createWithTwoActions(CCFadeOut::create(fDurToEnd), CCScaleTo::create(fDurToEnd, fScaleEnd));
 
     return CCSequence::initWithTwoActions(CCSequence::create(pAct0, pAct1, pAct2, NULL), pAct3);

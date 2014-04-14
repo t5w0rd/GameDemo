@@ -1164,6 +1164,12 @@ void CProjectile::onTick(float dt)
             CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
             if (d->getPosition().getDistance(getPosition()) - d->getHalfOfWidth() - getRadius() <= 0 && m_mapContactedUnits.getObject(u->getId()) == NULL)
             {
+                if (u->onProjectileArrive(this) == false)
+                {
+                    M_MAP_NEXT;
+                    continue;
+                }
+
                 m_mapContactedUnits.addObject(u);
                 effect(u);
 #if 0

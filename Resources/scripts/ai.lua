@@ -96,6 +96,6 @@ end
 
 function LuaAI:onUnitAbilityReady(unit, ability)
     if ability:getId() ~= unit:getAttackAbility():getId() then
-        unit:addBattleTip(ability:getName(), "", 32, 0, 0, 0)
+        unit:addBattleTip(ability:getName(), "fonts/Comic Book.fnt", 32, 0, 0, 0)
     end
 end

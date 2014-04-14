@@ -1256,7 +1256,7 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     {
         char sz[64];
         sprintf(sz, "+%d", toInt(fDtHp));
-        d->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(113, 205, 44));
+        d->addBattleTip(sz, "", 18, ccc3(113, 205, 44));
     }
 #endif
 }
@@ -1297,7 +1297,7 @@ void CStunBuff::onUnitAddAbility()
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(250, 104, 16));
+        ccd->addBattleTip(sz, "", 18, ccc3(250, 104, 16));
 
         M_DEF_GC(gc);
 
@@ -1435,7 +1435,7 @@ void CSpeedBuff::onUnitAddAbility()
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(72, 130, 200));
+        ccd->addBattleTip(sz, "", 18, ccc3(72, 130, 200));
     }
 #endif
 }
@@ -1612,7 +1612,7 @@ void CRebirthPas::onUnitDead()
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(217, 47, 111));
+        ccd->addBattleTip(sz, "", 18, ccc3(217, 47, 111));
     }
 #endif
 
@@ -1655,7 +1655,7 @@ bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
         {
             char sz[64];
             sprintf(sz, "%s!", getName());
-            ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(250, 104, 16));
+            ccd->addBattleTip(sz, "", 18, ccc3(250, 104, 16));
         }
 #endif
         return false;
@@ -1694,7 +1694,7 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
         {
             char sz[64];
             sprintf(sz, "%s!", getName());
-            ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(250, 104, 16));
+            ccd->addBattleTip(sz, "", 18, ccc3(250, 104, 16));
         }
         return false;
 #endif
@@ -1950,10 +1950,10 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
 
     if (pProjectile->getFireType() == CProjectile::kFireFollow && pProjectile->getFromToType() == CProjectile::kUnitToUnit)
     {
-        pProjectile->setSrcUnit(o->getId());
+        //pProjectile->setSrcUnit(o->getId());  如果反射后，源发射源死亡，当反射的抛射物到达目标点后，调用getSrcAbility()->onAbilityEffect()的时候，技能内部的getOwner()将指向无效指针，故不能重设源单位
         pProjectile->setToUnit(swp);
 
-        pProjectile->setMoveSpeed(pProjectile->getMoveSpeed() * 5.0f);
+        pProjectile->setMoveSpeed(pProjectile->getMoveSpeed() * 3.0f);
         pProjectile->setMaxHeightDelta(0.0f);
         pProjectile->redirect();
 
@@ -1962,7 +1962,7 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
     else if (pProjectile->getFireType() == CProjectile::kFireStraight && (pProjectile->getFromToType() == CProjectile::kUnitToPoint || pProjectile->getFromToType() == CProjectile::kPointToPoint))
     {
         return true;
-        pProjectile->setSrcUnit(o->getId());
+        //pProjectile->setSrcUnit(o->getId());
         if (pProjectile->getFromToType() == CProjectile::kUnitToPoint)
         {
             CUnit* u = o->getUnit(pProjectile->getFromUnit());

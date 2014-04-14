@@ -29,14 +29,14 @@ function onWorldInit()
     
     me:setAlly(2 ^ 3 + 2 ^ 4 + 2 ^ 2)
     
-    --game01()
+    game01()
     test()
     
     return true
 end
 
 function onWorldTick(dt)
-    --game01_tick(dt)
+    game01_tick(dt)
     test_tick(dt)
 end
 
@@ -183,12 +183,12 @@ function game01()
     
     u = createUnit(UL.kArcane)
     u:setMaxHp(u:getMaxHp() * 3)
-    u:setBaseArmor(2, 52)
+    u:setBaseArmor(ArmorValue.kWall, 52)
     u:setForceByIndex(1)
     u:setPosition(100, 500)
     u:addPassiveAbility(taid)
     u:addPassiveAbility(taid2)
-    u:addPassiveAbility(DamageBackPas:new(1.2, 0))
+    --u:addPassiveAbility(DamageBackPas:new(1.2, 0))
     a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 0, 350, 0x100 + 16)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0)
@@ -196,12 +196,12 @@ function game01()
 
     u = createUnit(UL.kTesla)
     u:setMaxHp(u:getMaxHp() * 3)
-    u:setBaseArmor(2, 52)
+    u:setBaseArmor(ArmorValue.kWall, 52)
     u:setForceByIndex(2)
     u:setPosition(1900, 500)
     u:addPassiveAbility(taid)
     u:addPassiveAbility(taid2)
-    u:addPassiveAbility(DamageBackPas:new(1.0, 0))
+    --u:addPassiveAbility(DamageBackPas:new(1.0, 0))
     a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 0, 350, 0x100 + 18)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0)
@@ -394,18 +394,96 @@ end
 function game02_tick(dt)
 end
 
+function fireStraight(x, y, x1, y1, speed)
+    local p = createProjectile(PL.kVoodooProy)
+    p:setPenaltyFlags(Projectile.kOnContact)
+    p:setFireType(Projectile.kFireStraight)
+    p:setMoveSpeed(speed)
+    p:setPosition(x, y)
+    p:setFromToType(Projectile.kPointToPoint)
+    p:setFromPoint(p:getPosition())
+    p:setToPoint(x1, y1)
+    p:setSrcUnit(me:getId())
+    local ad = AttackData:new()
+    ad:setAttack(AttackValue.kSiege, 50)
+    p:setAttackData(ad)
+    p:fire()
+    
+end
+
 pass = 0
 interval = 0
 angle = 0
-function test()
-    interval = 0.2
+
+Barrage = class()
+function Barrage:ctor(interval)
+    self.interval = interval
+end
+
+function Barrage:getInterval()
+    return self.interval
+end
+
+function Barrage:onInterval()
+end
+
+B01 = class(Barrage)
+function B01:onInterval()
+    angle = angle + interval * 20
+    local x, y = me:getPosition()
+    local dis = 1000
+    local speed = 50
+    fireStraight(x, y, x + math.cos(-angle) * dis, y + math.sin(angle) * dis, speed)
+    fireStraight(x, y, x + math.cos(-angle - math.pi) * dis, y + math.sin(angle + math.pi) * dis, speed)
+end
+
+B02 = class(Barrage)
+function B02:onInterval()
+    local x, y = me:getPosition()
+    local dis = 1000
+    local speed = 500
+    local b = math.random(0, 360)
+    for i = 0 + b, 360 + b, 5 do
+        local x1, y1 = getDirectionPoint(x, y, i, dis)
+        fireStraight(x, y, x1, y1, speed)
+    end
+end
+
+B03 = class(Barrage)
+function B03:onInterval()
+    angle = angle + interval * 20
+    local x, y = me:getPosition()
+    local dis = 1000
+    local speed = 500
+    local a = 100
+    y = y + math.sin(angle) * a
+    local x1, y1 = getForwardPoint(x, y, x - 10, y, dis)
+    fireStraight(x, y, x1, y1, speed)
+end
+
+B04 = class(Barrage)
+function B04:onInterval()
+    local tx, ty = 1000, 500
+    local x, y = me:getPosition()
+    local a = math.atan2(ty - y, tx - x)
+    local dis = 1000
+    local speed = 400
+    local dt = math.random(-300, 300)
     
-    p = createProjectile(PL.kArcherArrow2)
-    p:setPosition(100, 500)
-    p:setFromToType(Projectile.kPointToPoint)
-    p:setFromPoint(p:getPosition())
-    p:setToPoint(1900, 500)
-    p:fire()
+    x, y = getDirectionPoint(x, y, a + math.pi / 2, dt)
+    local x0, y0 = getDirectionPoint(x, y, a, -dis / 2)
+    local x1, y1 = getDirectionPoint(x0, y0, a, dis)
+    fireStraight(x0, y0, x1, y1, speed)
+end
+
+local brg = nil
+function test()
+    --brg = B01:new(0.01)
+    --brg = B02:new(0.8)
+    --brg = B03:new(0.01)
+    brg = B04:new(0.05)
+    interval = brg:getInterval()
+    --interval = 0.01
     --p:setPenaltyFlags(Projectile.kOnContact)
     --p:setFireType(Projectile.kFireStraight)
 end
@@ -418,21 +496,7 @@ function test_tick(dt)
     end
 end
 
-function fireStraight(x, y, x1, y1, speed)
-    local p = createProjectile(PL.kArcherArrow2)
-    p:setPenaltyFlags(Projectile.kOnContact)
-    p:setFireType(Projectile.kFireStraight)
-    p:setMoveSpeed(speed)
-    p:setPosition(x, y)
-    p:setFromToType(Projectile.kPointToPoint)
-    p:setFromPoint(p:getPosition())
-    p:setToPoint(x1, y1)
-    p:fire()
-    
-end
-
 function test_interval()
-    angle = angle + interval * 2
-    local x, y = me:getPosition()
-    fireStraight(x, y, 1500, 500, 500)
+    brg:onInterval()
+    --B01.onInterval()
 end

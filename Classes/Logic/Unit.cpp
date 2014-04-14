@@ -973,7 +973,7 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
     {
         char sz[64];
         sprintf(sz, "-%d", toInt(fDamage));
-        ccd->addBattleTip(sz, FONT_COMIC_BOOK, 18, ccc3(255, 0, 0));
+        ccd->addBattleTip(sz, "", 18, ccc3(255, 0, 0));
     }
 #endif
 }

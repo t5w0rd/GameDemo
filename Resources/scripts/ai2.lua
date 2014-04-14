@@ -44,7 +44,7 @@ function LuaSimpleAI:setHpAI(unit, count)
     if count > 5 then
         count = 0
         unit:setHp(unit:getMaxHp())
-        unit:addBattleTip("Full~~~~", "", 32, 0, 0, 0)
+        unit:addBattleTip("Full~~~~", "fonts/Comic Book.fnt", 32, 0, 0, 0)
     end
     return count
 end

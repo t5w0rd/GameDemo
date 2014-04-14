@@ -452,7 +452,7 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
                 CUnitDrawForCC* dd = DCAST(uu->getDraw(), CUnitDrawForCC*);
                 char szTip[64];
                 sprintf(szTip, "+%d Gold", iG);
-                dd->addBattleTip(szTip, FONT_COMIC_BOOK, 18, ccc3(255, 247, 53));
+                dd->addBattleTip(szTip, "fonts/Comic Book.fnt", 18, ccc3(255, 247, 53));
             }
             M_VEC_NEXT;
         }
