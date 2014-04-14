@@ -150,7 +150,7 @@ int projectile_setFromPoint(lua_State* L);
 int projectile_setToPoint(lua_State* L);
 int projectile_setFromToType(lua_State* L);
 int projectile_setFireType(lua_State* L);
-int projectile_setPenalyFlags(lua_State* L);
+int projectile_setPenaltyFlags(lua_State* L);
 int projectile_fire(lua_State* L);
 int projectile_redirect(lua_State* L);
 int projectile_die(lua_State* L);

@@ -1228,7 +1228,7 @@ luaL_Reg projectile_funcs[] = {
     {"setToPoint", projectile_setToPoint},
     {"setFromToType", projectile_setFromToType},
     {"setFireType", projectile_setFireType},
-    {"setPenalyFlags", projectile_setPenalyFlags},
+    {"setPenaltyFlags", projectile_setPenaltyFlags},
     {"fire", projectile_fire},
     {"die", projectile_die},
     {"setPosition", projectile_setPosition},
@@ -1318,7 +1318,7 @@ int projectile_setFireType(lua_State* L)
     return 0;
 }
 
-int projectile_setPenalyFlags(lua_State* L)
+int projectile_setPenaltyFlags(lua_State* L)
 {
     CProjectile* _p = NULL;
     luaL_toobjptr(L, 1, _p);

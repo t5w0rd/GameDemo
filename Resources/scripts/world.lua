@@ -19,7 +19,6 @@ taid2 = 0
 function onWorldInit()
     showDebug(false)
     math.randomseed(os.time())
-    logf("time: %d", os.time())
 
     me = getControlUnit()
     --me:setAI(LuaAI:new())
@@ -397,8 +396,8 @@ end
 
 pass = 0
 interval = 0
+angle = 0
 function test()
-    pass = 0
     interval = 0.2
     
     p = createProjectile(PL.kArcherArrow2)
@@ -415,9 +414,25 @@ function test_tick(dt)
     pass = pass + dt
     if pass >= interval then
         pass = 0
+        test_interval()
     end
 end
 
-function test_interval()
+function fireStraight(x, y, x1, y1, speed)
+    local p = createProjectile(PL.kArcherArrow2)
+    p:setPenaltyFlags(Projectile.kOnContact)
+    p:setFireType(Projectile.kFireStraight)
+    p:setMoveSpeed(speed)
+    p:setPosition(x, y)
+    p:setFromToType(Projectile.kPointToPoint)
+    p:setFromPoint(p:getPosition())
+    p:setToPoint(x1, y1)
+    p:fire()
     
+end
+
+function test_interval()
+    angle = angle + interval * 2
+    local x, y = me:getPosition()
+    fireStraight(x, y, 1500, 500, 500)
 end
