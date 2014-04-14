@@ -165,6 +165,9 @@ int projectile_getMaxHeightDelta(lua_State* L);
 int projectile_setVisible(lua_State* L);
 int projectile_addFireSound(lua_State* L);
 int projectile_addEffectSound(lua_State* L);
+int projectile_setAttackData(lua_State* L);
+int projectile_getAttackData(lua_State* L);
+int projectile_setSrcAbility(lua_State* L);
 
 int ability_ctor(lua_State* L);
 int ability_onUnitAddAbility(lua_State* L);

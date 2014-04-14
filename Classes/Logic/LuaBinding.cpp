@@ -1242,6 +1242,9 @@ luaL_Reg projectile_funcs[] = {
     {"setVisible", projectile_setVisible},
     {"addFireSound", projectile_addFireSound},
     {"addEffectSound", projectile_addEffectSound},
+    {"setAttackData", projectile_setAttackData},
+    {"getAttackData", projectile_getAttackData},
+    {"setSrcAbility", projectile_setSrcAbility},
     {NULL, NULL}
 };
 
@@ -1463,6 +1466,39 @@ int projectile_addEffectSound(lua_State* L)
     luaL_toobjptr(L, 1, _p);
 
     _p->addEffectSound(lua_tostring(L, 2));
+
+    return 0;
+}
+
+int projectile_setAttackData(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    CAttackData* ad = NULL;
+    luaL_toobjptr(L, 2, ad);
+
+    _p->setAttackData(ad);
+
+    return 0;
+}
+
+int projectile_getAttackData(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    luaL_pushobjptr(L, "AttackData", _p->getAttackData());
+
+    return 1;
+}
+
+int projectile_setSrcAbility(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    CAbility* a = luaL_toabilityptr(L, 2);
+
+    _p->setSrcAbility(a);
 
     return 0;
 }
