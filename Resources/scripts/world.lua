@@ -395,7 +395,12 @@ end
 function game02_tick(dt)
 end
 
+pass = 0
+interval = 0
 function test()
+    pass = 0
+    interval = 0.2
+    
     p = createProjectile(PL.kArcherArrow2)
     p:setPosition(100, 500)
     p:setFromToType(Projectile.kPointToPoint)
@@ -407,4 +412,12 @@ function test()
 end
 
 function test_tick(dt)
+    pass = pass + dt
+    if pass >= interval then
+        pass = 0
+    end
+end
+
+function test_interval()
+    
 end
