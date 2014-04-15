@@ -1,4 +1,4 @@
-/* 
+/*
 * File:   UnitDraw.cpp
 * Author: thunderliu
 * 
@@ -994,6 +994,12 @@ CUnit* CUnitGroup::getNearestUnitInRange(CWorld* pWorld, const CPoint& roPos, fl
     M_MAP_FOREACH(units)
     {
         CUnit* u = M_MAP_EACH;
+        if (u->isGhost())
+        {
+            M_MAP_NEXT;
+            continue;
+        }
+
         CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
         if ((fDis = d->getPosition().getDistance(roPos)) < fRadius && fMinDis > fDis && (!pBoolFunc || (pBoolFunc && pBoolFunc(u, pParam))))
         {
