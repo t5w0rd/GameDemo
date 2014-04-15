@@ -354,7 +354,8 @@ public:
 
     typedef CMultiRefMap<CUnit*> MAP_CONTACTED;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_CONTACTED, m_mapContactedUnits, ContactedUnits);
-    M_SYNTHESIZE(int, m_iContactedLeft, ContactedLeft);
+    M_SYNTHESIZE(int, m_iContactLeft, ContactLeft);
+    void decContactLeft(int dec = 1);
 };
 
 

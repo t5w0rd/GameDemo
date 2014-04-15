@@ -404,10 +404,26 @@ function fireStraight(x, y, x1, y1, speed)
     p:setFromPoint(p:getPosition())
     p:setToPoint(x1, y1)
     p:setSrcUnit(me:getId())
+    p:setContactLeft(1)
     local ad = AttackData:new()
-    ad:setAttack(AttackValue.kSiege, 50)
+    ad:setAttack(AttackValue.kMagical, 20)
     p:setAttackData(ad)
     p:fire()
+    
+end
+
+function game03()
+    c = 2
+    spawnHero(4)
+    hero:addActiveAbility(cutter)
+    hero:setBaseMoveSpeed(85)
+    hero:setMaxHp(800)
+    me:setMaxHp(1000)
+    atk = me:getAttackAbility()
+    atk:setExAttackValue(2.0, 0.0)
+end
+
+function game03_tick(dt)
     
 end
 
@@ -429,12 +445,15 @@ end
 
 B01 = class(Barrage)
 function B01:onInterval()
-    angle = angle + interval * 20
+    angle = angle + interval * 10
+    local a = math.pi * 0.5 * math.sin(angle)
     local x, y = me:getPosition()
     local dis = 1000
-    local speed = 50
-    fireStraight(x, y, x + math.cos(-angle) * dis, y + math.sin(angle) * dis, speed)
-    fireStraight(x, y, x + math.cos(-angle - math.pi) * dis, y + math.sin(angle + math.pi) * dis, speed)
+    local speed = 500
+    local x1, y1 = getDirectionPoint(x, y, a, dis)
+    fireStraight(x, y, x1, y1, speed)
+    local x1, y1 = getDirectionPoint(x, y, a + math.pi, dis)
+    fireStraight(x, y, x1, y1, speed)
 end
 
 B02 = class(Barrage)
@@ -476,26 +495,12 @@ function B04:onInterval()
     fireStraight(x0, y0, x1, y1, speed)
 end
 
-function match(u, p)
-    if u:getId() == p:getId() then
-        return false
-    end
-    return true
-end
-
 local brg = nil
 function test()
-    local units = getUnits(function(u, p)
-        if u:getId() == p:getId() then
-            return false
-        end
-        return true
-    end, me)
-    logf("units: %d", #units)
     --brg = B01:new(0.01)
-    --brg = B02:new(0.8)
+    brg = B02:new(2.0)
     --brg = B03:new(0.01)
-    brg = B04:new(0.05)
+    --brg = B04:new(0.05)
     interval = brg:getInterval()
     --interval = 0.01
     --p:setPenaltyFlags(Projectile.kOnContact)
@@ -512,5 +517,4 @@ end
 
 function test_interval()
     brg:onInterval()
-    --B01.onInterval()
 end

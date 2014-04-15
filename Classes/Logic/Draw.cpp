@@ -1047,7 +1047,7 @@ CProjectile::CProjectile(const char* pName)
     , m_pSrcAbility(NULL)
     , m_eFromToType(kPointToPoint)
     , m_eFireType(kFireFollow)
-    , m_iContactedLeft(0)
+    , m_iContactLeft(-1)
 {
     setDbgClassName("CProjectile");
 }
@@ -1143,6 +1143,7 @@ void CProjectile::effect(CUnit* pTarget)
     if (pTarget != NULL && getAttackData() != NULL && s->isEnemyOf(pTarget))
     {
         pTarget->damaged(getAttackData(), s, getTriggerMask());
+        decContactLeft();
     }
 
     if (getSrcAbility() != NULL)
@@ -1178,18 +1179,13 @@ void CProjectile::onTick(float dt)
 
                 m_mapContactedUnits.addObject(u);
                 effect(u);
-#if 0
-                if (m_iContactedLeft > 0)
+
+                if (m_iContactLeft == 0)
                 {
-                    --m_iContactedLeft;
-                    if (m_iContactedLeft == 0)
-                    {
-                        m_dwPenaltyFlags &= (~kOnContact);
-                        die();
-                        return;
-                    }
+                    m_dwPenaltyFlags &= (~kOnContact);
+                    die();
+                    return;
                 }
-#endif
             }
             M_MAP_NEXT;
         }
@@ -1501,3 +1497,10 @@ void CProjectile::playEffectSound()
 {
 }
 
+void CProjectile::decContactLeft(int dec)
+{
+    if (m_iContactLeft > 0)
+    {
+        m_iContactLeft -= dec;
+    }
+}

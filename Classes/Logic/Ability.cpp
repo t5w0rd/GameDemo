@@ -745,6 +745,11 @@ void CAttackAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
         return;
     }
 
+    if (pProjectile != NULL)
+    {
+        pProjectile->decContactLeft();
+    }
+
     CAttackData* ad = new CAttackData();
     ad->setAttackValue(getBaseAttack().getType(), getRealAttackValue());
 
@@ -959,7 +964,6 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
     }
 
     CWorld* w = o->getWorld();
-
     if (pProjectile != NULL && pProjectile->hasPenaltyType(CProjectile::kOnContact) && pTarget != NULL)
     {
         // 接触型抛射物，接触单位
@@ -969,6 +973,7 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
             pBuff->setSrcUnit(o->getId());
             pBuff->setLevel(getLevel());
             pTarget->addBuffAbility(pBuff);
+            pProjectile->decContactLeft();
         }
         return;
     }

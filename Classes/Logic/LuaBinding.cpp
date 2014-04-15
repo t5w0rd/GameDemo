@@ -1245,6 +1245,9 @@ luaL_Reg projectile_funcs[] = {
     {"setAttackData", projectile_setAttackData},
     {"getAttackData", projectile_getAttackData},
     {"setSrcAbility", projectile_setSrcAbility},
+    {"setContactLeft", projectile_setContactLeft},
+    {"getContactLeft", projectile_getContactLeft},
+    {"decContactLeft", projectile_decContactLeft},
     {NULL, NULL}
 };
 
@@ -1499,6 +1502,38 @@ int projectile_setSrcAbility(lua_State* L)
     CAbility* a = luaL_toabilityptr(L, 2);
 
     _p->setSrcAbility(a);
+
+    return 0;
+}
+
+int projectile_setContactLeft(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    int left = lua_tointeger(L, 2);
+
+    _p->setContactLeft(left);
+
+    return 0;
+}
+
+int projectile_getContactLeft(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushinteger(L, _p->getContactLeft());
+
+    return 1;
+}
+
+int projectile_decContactLeft(lua_State* L)
+{
+    CProjectile* _p = NULL;
+    luaL_toobjptr(L, 1, _p);
+    int dec = lua_gettop(L) > 1 ? lua_tointeger(L, 2) : 1;
+
+    _p->decContactLeft(dec);
 
     return 0;
 }
@@ -2642,9 +2677,10 @@ int g_getUnits(lua_State* L)
     M_MAP_FOREACH(units)
     {
         CUnit* u = M_MAP_EACH;
+        M_MAP_NEXT;
+
         if (u->isGhost())
         {
-            M_MAP_NEXT;
             continue;
         }
         if (lua_isfunction(L, matchfunc))
@@ -2657,7 +2693,6 @@ int g_getUnits(lua_State* L)
             lua_pop(L, 1);
             if (res == false)
             {
-                M_MAP_NEXT;
                 continue;
             }
         }
@@ -2665,7 +2700,6 @@ int g_getUnits(lua_State* L)
         luaL_pushobjptr(L, "Unit", u);
         lua_rawseti(L, t, i);
         ++i;
-        M_MAP_NEXT;
     }
 
     lua_pop(L, 1);
