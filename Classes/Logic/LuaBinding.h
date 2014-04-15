@@ -270,6 +270,7 @@ int g_addTemplateAbility(lua_State* L);
 int g_setControlUnit(lua_State* L);
 int g_getControlUnit(lua_State* L);
 int g_getUnit(lua_State* L);
+int g_getUnits(lua_State* L);
 
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 

@@ -2626,6 +2626,53 @@ int g_getUnit(lua_State* L)
     return 1;
 }
 
+int g_getUnits(lua_State* L)
+{
+    int matchfunc = 1;
+    int matchparam = 2;
+
+    lua_newtable(L);
+    int t = lua_gettop(L);
+
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    CWorld::MAP_UNITS& units = w->getUnits();
+
+    int i = 1;
+    M_MAP_FOREACH(units)
+    {
+        CUnit* u = M_MAP_EACH;
+        if (u->isGhost())
+        {
+            M_MAP_NEXT;
+            continue;
+        }
+        if (lua_isfunction(L, matchfunc))
+        {
+            lua_pushvalue(L, matchfunc);
+            luaL_pushobjptr(L, "Unit", u);
+            lua_pushvalue(L, matchparam);
+            lua_call(L, 2, 1);
+            bool res = lua_toboolean(L, -1);
+            lua_pop(L, 1);
+            if (res == false)
+            {
+                M_MAP_NEXT;
+                continue;
+            }
+        }
+
+        luaL_pushobjptr(L, "Unit", u);
+        lua_rawseti(L, t, i);
+        ++i;
+        M_MAP_NEXT;
+    }
+
+    lua_pop(L, 1);
+
+    return 1;
+}
+
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -2639,6 +2686,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_register(L, "setControlUnit", g_setControlUnit);
     lua_register(L, "getControlUnit", g_getControlUnit);
     lua_register(L, "getUnit", g_getUnit);
+    lua_register(L, "getUnits", g_getUnits);
     
     // TODO: reg global classes
     lua_getglobal(L, "class");

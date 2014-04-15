@@ -476,8 +476,22 @@ function B04:onInterval()
     fireStraight(x0, y0, x1, y1, speed)
 end
 
+function match(u, p)
+    if u:getId() == p:getId() then
+        return false
+    end
+    return true
+end
+
 local brg = nil
 function test()
+    local units = getUnits(function(u, p)
+        if u:getId() == p:getId() then
+            return false
+        end
+        return true
+    end, me)
+    logf("units: %d", #units)
     --brg = B01:new(0.01)
     --brg = B02:new(0.8)
     --brg = B03:new(0.01)

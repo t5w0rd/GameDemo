@@ -151,3 +151,10 @@ win32:CONFIG(debug, debug|release): DEFINES += QTPROJ WIN32 _DEBUG _WINDOWS COCO
 else:win32:CONFIG(release, debug|release): DEFINES += QTPROJ WIN32 NDEBUG _WINDOWS _CRT_SECURE_NO_WARNINGS _SCL_SECURE_NO_WARNINGS DEBUG_FOR_CC
 
 CONFIG += warn_off
+
+OTHER_FILES += \
+    ../../Resources/scripts/world.lua \
+    ../../Resources/scripts/common.lua \
+    ../../Resources/scripts/ai2.lua \
+    ../../Resources/scripts/ai.lua \
+    ../../Resources/scripts/ability.lua
