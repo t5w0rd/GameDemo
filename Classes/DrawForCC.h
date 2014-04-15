@@ -132,6 +132,8 @@ public:
     virtual void onDelUnit(CUnit* pUnit);
     virtual void onAddProjectile(CProjectile* pProjectile);
     virtual void onDelProjectile(CProjectile* pProjectile);
+    virtual void onAddNormalAttributes(CUnit* pUnit);
+    virtual void onDelNormalAttributes(CUnit* pUnit);
 
     M_SYNTHESIZE_READONLY(CCUnitLayer*, m_pLayer, Layer);
     virtual void setLayer(CCUnitLayer* pLayer);

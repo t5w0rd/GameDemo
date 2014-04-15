@@ -4,6 +4,7 @@
 #include "UnitLibraryForCC.h"
 #include "ComponentForCC.h"
 #include "HeroRoomScene.h"
+#include "DrawForCC.h"
 
 
 class CStunBuff;

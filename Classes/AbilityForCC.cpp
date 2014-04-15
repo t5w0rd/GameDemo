@@ -8,20 +8,20 @@
 
 
 // CStatusShowPas
-CStatusShowPas::CStatusShowPas()
-    : CPassiveAbility("StatusShowPas", "ÑªÌõ")
+CShowStatusPas::CShowStatusPas()
+    : CPassiveAbility("ShowStatusPas", "ShowStatus")
     , m_pProgressBar(NULL)
 {
     setDbgClassName("CStatusShowPas");
     setTriggerFlags(CUnit::kOnChangeHpTrigger | CUnit::kOnReviveTrigger | CUnit::kOnDyingTrigger);
 }
 
-CMultiRefObject* CStatusShowPas::copy()
+CMultiRefObject* CShowStatusPas::copy()
 {
-    return new CStatusShowPas();
+    return new CShowStatusPas();
 }
 
-void CStatusShowPas::onUnitAddAbility()
+void CShowStatusPas::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     CUnitDrawForCC* d = DCAST(o->getDraw(), CUnitDrawForCC*);
@@ -38,7 +38,7 @@ void CStatusShowPas::onUnitAddAbility()
     onUnitChangeHp(0.0f);
 }
 
-void CStatusShowPas::onUnitDelAbility()
+void CShowStatusPas::onUnitDelAbility()
 {
     assert(m_pProgressBar != NULL);
     m_pProgressBar->removeFromParentAndCleanup(true);
@@ -46,7 +46,7 @@ void CStatusShowPas::onUnitDelAbility()
     m_pProgressBar = NULL;
 }
 
-void CStatusShowPas::onUnitChangeHp(float fChanged)
+void CShowStatusPas::onUnitChangeHp(float fChanged)
 {
     CUnit* o = getOwner();
     float fPer = o->getHp() * 100 / max(FLT_EPSILON, o->getRealMaxHp());
@@ -54,12 +54,12 @@ void CStatusShowPas::onUnitChangeHp(float fChanged)
     m_pProgressBar->setFillColor(ccc3(min(255, (int)((100.0 - fPer) * 2.56 / 0.5)), min(255, (int)(2.56 / 0.5  * fPer)), 0));
 }
 
-void CStatusShowPas::onUnitRevive()
+void CShowStatusPas::onUnitRevive()
 {
     m_pProgressBar->setVisible(true);
 }
 
-void CStatusShowPas::onUnitDying()
+void CShowStatusPas::onUnitDying()
 {
     m_pProgressBar->setVisible(false);
 }

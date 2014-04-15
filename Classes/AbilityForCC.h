@@ -7,10 +7,10 @@
 
 class CCProgressBar;
 
-class CStatusShowPas : public CPassiveAbility
+class CShowStatusPas : public CPassiveAbility
 {
 public:
-    CStatusShowPas();
+    CShowStatusPas();
     virtual CMultiRefObject* copy();
 
     virtual void onUnitAddAbility();

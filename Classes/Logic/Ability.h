@@ -452,8 +452,6 @@ public:
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
 
-    void onKnockBackEnd(CCNode* pNode);
-
     M_SYNTHESIZE(float, m_fDistance, Distance);
 
 };

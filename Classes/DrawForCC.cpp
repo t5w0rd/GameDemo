@@ -549,9 +549,10 @@ void CWorldForCC::onAddUnit(CUnit* pUnit)
     if (pSprite == NULL)
     {
         pSprite = pDraw->createSprite();
-        pUnit->addSystemAbility(new CStatusShowPas);
-        pUnit->setAI(CBaseAI::instance());
-        //pDraw->updateMoveSpeedDelta();
+        if (!pUnit->isGhost())
+        {
+            onAddNormalAttributes(pUnit);
+        }
     }
 
     pLayer->addChild(pSprite);
@@ -594,6 +595,18 @@ void CWorldForCC::onDelProjectile(CProjectile* pProjectile)
     CCLayer* pLayer = getLayer();
 
     pLayer->removeChild(pSprite, true);
+}
+
+void CWorldForCC::onAddNormalAttributes(CUnit* pUnit)
+{
+    pUnit->addSystemAbility(new CShowStatusPas());
+    pUnit->setAI(CBaseAI::instance());
+}
+
+void CWorldForCC::onDelNormalAttributes(CUnit *pUnit)
+{
+    pUnit->delSystemAbility("ShowStatus");
+    pUnit->setAI(NULL);
 }
 
 void CWorldForCC::setLayer(CCUnitLayer* pLayer)

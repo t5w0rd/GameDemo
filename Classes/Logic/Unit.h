@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Unit.h
  * Author: thunderliu
  *
@@ -461,6 +461,7 @@ public:
     CBuffAbility* getBuffAbility(const char* name);
 
     void addSystemAbility(CPassiveAbility* pAbility);
+    void delSystemAbility(const char* name);
     
 protected:
     void updateBuffAbilityElapsed(float dt);
@@ -537,6 +538,13 @@ public:
     float getRealArmorValue() const;
     
     M_SYNTHESIZE_BOOL(Revivable);
+
+protected:
+    bool m_bGhost;
+
+public:
+    void setGhost(bool bGhost = true);
+    bool isGhost() const;
 
     M_SYNTHESIZE_READONLY(CForceResource*, m_pResource, Resource);
     void setResource(CForceResource* var);
@@ -647,6 +655,8 @@ public:
     bool isAbilityCD(int id) const;
     CAbility* getAbilityCD(int id) const;
     void updateAbilityCD(int id);
+    virtual void onAddNormalAttributes(CUnit* pUnit);
+    virtual void onDelNormalAttributes(CUnit* pUnit);
     
 protected:
     void cleanAbilitysCD(CUnit* pUnit);

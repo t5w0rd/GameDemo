@@ -2,6 +2,9 @@
 #define __HEROROOM_SCENE_H__
 
 
+class CCEffect;
+class CCProgressBar;
+
 class CCHeroRoomSceneLayer : public CCLayerColor
 {
 public:

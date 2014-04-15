@@ -367,7 +367,7 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 
 int StatusShowPas_ctor(lua_State* L)
 {
-    CStatusShowPas* _p = new CStatusShowPas();
+    CShowStatusPas* _p = new CShowStatusPas();
     //_p->setScriptHandler(luaL_setregistry(L, 1));
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");

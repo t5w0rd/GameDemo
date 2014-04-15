@@ -15,14 +15,14 @@
 #include "Draw.h"
 
 // for cocos2d
-#include "../CommHeader.h"
-#include "../DrawForCC.h"
+#include "CommHeader.h"
+#include "DrawForCC.h"
 
 
-CIceLanceBuff::CIceLanceBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, int iIncreaseTimes, const CAttackValue& pAttackValue)
+CIceLanceBuff::CIceLanceBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, int iIncreaseTimes, const CAttackValue& rAttackValue)
     :CBuffAbility(pRootId, pName, fDuration, bStackable),m_iIncreaseTimes(iIncreaseTimes)
 {
-    m_oAttackValue.setAttackValue(pAttackValue);
+    m_oAttackValue = rAttackValue;
 }
 
 CMultiRefObject* CIceLanceBuff::copy() const
@@ -45,10 +45,10 @@ void CIceLanceBuff::onUnitAddAbility()
             setDuration(0.0f);
             CAttackData* t = new CAttackData;
             t->setAttackValue(m_oAttackValue);
-            t->setAttackValue(CAttackValue::kMagical, t->getAttackValue().getValue(CAttackValue::kMagical) * m_iIncreaseTimes);
+            t->setAttackValue(CAttackValue::kMagical, t->getAttackValue().getValue() * m_iIncreaseTimes);
             CUnit* s = o->getUnit(getSrcUnit());
             assert(s != NULL);
-            o->damagedAdv(t, s, CUnit::kNoMasked);
+            o->damaged(t, s, CUnit::kNoMasked);
             return;
         }
         M_MAP_NEXT;
@@ -58,7 +58,7 @@ void CIceLanceBuff::onUnitAddAbility()
     t->setAttackValue(m_oAttackValue);
     CUnit* s = o->getUnit(getSrcUnit());
     assert(s != NULL);
-    o->damagedAdv(t, s, CUnit::kNoMasked);
+    o->damaged(t, s, CUnit::kNoMasked);
 }
 
 
@@ -67,7 +67,7 @@ CRelievePainBuff::CRelievePainBuff(const char* pRootId, const char* pName, float
 , m_fReduce(fReduce)
 , m_fDamageReduce(0.0f)
 {
-    setTriggerFlags(CUnit::kDamagedSurfaceTrigger);
+    setTriggerFlags(CUnit::kOnDamagedSurfaceTrigger);
 }
 
 CMultiRefObject* CRelievePainBuff::copy() const
@@ -78,8 +78,8 @@ CMultiRefObject* CRelievePainBuff::copy() const
 
 void CRelievePainBuff::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
 {
-    m_fDamageReduce = m_fDamageReduce + pAttack->getAttackValue().getValue(CAttackValue::kPhysical) * m_fReduce;
-    pAttack->setAttackValue(CAttackValue::kPhysical, pAttack->getAttackValue().getValue(CAttackValue::kPhysical) *(1 - m_fReduce) );
+    m_fDamageReduce = m_fDamageReduce + pAttack->getAttackValue().getValue() * m_fReduce;
+    pAttack->setAttackValue(CAttackValue::kPhysical, pAttack->getAttackValue().getValue() *(1 - m_fReduce));
     LOG("Í´¿àÑ¹ÖÆ£¡%d", toInt(m_fDamageReduce));
 }
 
@@ -118,7 +118,7 @@ CNotKillPas::CNotKillPas(const char* pRootId, const char* pName, float fStartPer
     :CPassiveAbility(pRootId, pName), m_fStartPercent(fStartPercent), m_oDeltaExAttackValue(roDeltaExAttackValue)
 {
     m_iTimesCount = 0;
-    setTriggerFlags(CUnit::kChangeHpTrigger);
+    setTriggerFlags(CUnit::kOnChangeHpTrigger);
 }
 
 CMultiRefObject* CNotKillPas::copy() const
@@ -141,10 +141,10 @@ void CNotKillPas::onUnitChangeHp(float fChanged)
 
         CAttackAct* atk = NULL;
         o->getActiveAbility(o->getAttackAbilityId())->dcast(atk);
-        CExtraCoeff oPrev = atk->getExAttackValue(CAttackValue::kPhysical);
+        CExtraCoeff oPrev = atk->getExAttackValue();
         CExtraCoeff oCurrent = CExtraCoeff(oPrev.getMulriple() + iTimesChange * m_oDeltaExAttackValue.getMulriple()
             , oPrev.getAddend() + iTimesChange * m_oDeltaExAttackValue.getAddend());
-        atk->setExAttackValue(CAttackValue::kPhysical, oCurrent);
+        atk->setExAttackValue(oCurrent);
         LOG("Stronger");
     }
     

@@ -21,7 +21,7 @@
 class CIceLanceBuff : public CBuffAbility
 {
 public:
-    CIceLanceBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, int iIncreaseTimes, const CAttackValue& pAttackValue);
+    CIceLanceBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, int iIncreaseTimes, const CAttackValue& rAttackValue);
     virtual CMultiRefObject* copy() const;
     M_SYNTHESIZE(int, m_iIncreaseTimes, increaseTimes);
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, AttackValue);

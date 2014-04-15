@@ -490,7 +490,7 @@ void CUnitDraw2D::cmdMoveAlongPath(CUnitPath* pPath, bool bObstinate /*= true*/,
 
     if (m_fPathBufArrive != fBufArrive)
     {
-        m_fPathBufArrive = MAX(FLT_EPSILON, fBufArrive);
+        m_fPathBufArrive = max(FLT_EPSILON, fBufArrive);
     }
 
     if (u->isDoingOr(CUnit::kCasting))

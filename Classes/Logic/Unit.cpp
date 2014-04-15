@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Unit.cpp
  * Author: thunderliu
  * 
@@ -649,6 +649,7 @@ CUnit::CUnit(const char* pRootId)
 , m_iTriggerRefCount(0)
 , m_iSuspendRef(0)
 , m_bRevivable(false)
+, m_bGhost(false)
 , m_pResource(NULL)
 , m_iRewardGold(0)
 , m_iRewardExp(0)
@@ -1446,6 +1447,30 @@ void CUnit::addSystemAbility( CPassiveAbility* pAbility )
     addAbilityToTriggers(pAbility);
 }
 
+void CUnit::delSystemAbility(const char *name)
+{
+    M_MAP_FOREACH(m_mapSysAbilitys)
+    {
+        CPassiveAbility* a = M_MAP_EACH;
+        if (strcmp(a->getName(), name) == 0)
+        {
+            if (a->isCoolingDown())
+            {
+                getWorld()->delAbilityCD(a->getId());
+            }
+
+            a->onDelFromUnit();
+            delAbilityFromTriggers(a);
+
+            m_mapSysAbilitys.erase(M_MAP_IT);
+            a->release();
+            return;
+        }
+
+        M_MAP_NEXT;
+    }
+}
+
 void CUnit::updateBuffAbilityElapsed(float dt)
 {
     M_MAP_FOREACH(m_mapBuffAbilitys)
@@ -1887,6 +1912,36 @@ float CUnit::getRealArmorValue() const
     return m_oExArmorValue.getValue(m_oBaseArmor.getValue());
 }
 
+void CUnit::setGhost(bool bGhost)
+{
+    if (m_bGhost == bGhost)
+    {
+        return;
+    }
+
+    m_bGhost = bGhost;
+
+    CWorld* w = getWorld();
+    if (w == NULL)
+    {
+        return;
+    }
+
+    if (bGhost)
+    {
+        w->onDelNormalAttributes(this);
+    }
+    else
+    {
+        w->onAddNormalAttributes(this);
+    }
+}
+
+bool CUnit::isGhost() const
+{
+    return m_bGhost;
+}
+
 void CUnit::setResource( CForceResource* var )
 {
     M_SAFE_RETAIN(var);
@@ -2245,6 +2300,14 @@ void CWorld::updateAbilityCD(int id)
     m_mapAbilitysCD.erase(it);
     abilityReady(pAbility);
     pAbility->release();
+}
+
+void CWorld::onAddNormalAttributes(CUnit* pUnit)
+{
+}
+
+void CWorld::onDelNormalAttributes(CUnit* pUnit)
+{
 }
 
 void CWorld::cleanAbilitysCD(CUnit* pUnit)
