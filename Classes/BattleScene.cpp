@@ -166,14 +166,21 @@ bool CBattleWorld::onInit()
     m_pThunderCapAct->addEffectSound("sounds/Effect/ThunderCap.mp3");
     u->addActiveAbility(m_pThunderCapAct);
 
-    a = new CStunBuff("Stun", "Stun", 5.0f, false);
+    
+#if 1
+    a = new CDamageBuff("dmg", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
     id = addTemplateAbility(a);
-    a = new CTransitiveLinkBuff("Chain", 0.3f, 150.0f, 4, CAttackValue(CAttackValue::kMagical, 100.0f));
+    
+    a = new CStunBuff("Stun", "Stun", 5.0f, false);
+    DCAST(a, CBuffAbility*)->setAppendBuff(id);
+    id = addTemplateAbility(a);
+#else
+    a = new CChangeHpBuff("ChainHealBuff", "WarCryHeal", 1.0f, false, 0.02f, CExtraCoeff(0.02f, 0.0f));
+    id = addTemplateAbility(a);
+#endif
+    a = new CTransitiveLinkBuff("Chain", 0.3f, 150.0f, 4, CUnitForce::kEnemy);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     DCAST(a, CTransitiveLinkBuff*)->setTemplateProjectile(CUnitLibraryForCC::kLightning);
-    id = addTemplateAbility(a);
-    a = new CDamageBuff("ChainDamage", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
-    DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
     
     m_pHammerThrowAct = new CBuffMakerAct("", "HammerThrow", 12.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);

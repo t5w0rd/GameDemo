@@ -456,7 +456,6 @@ CMultiRefObject* CActiveAbility::copy()
 {
     CActiveAbility* ret = new CActiveAbility(getRootId(), getName(), m_fCoolDown, m_eCastTargetType, m_dwEffectiveTypeFlags);
     ret->copyData(this);
-
     return ret;
 }
 
@@ -582,6 +581,7 @@ void CActiveAbility::effect()
                 w->addProjectile(p);
                 p->setSrcUnit(o->getId());
                 p->setSrcAbility(this);
+                p->setEffectiveTypeFlags(getEffectiveTypeFlags());
 
                 CUnit* t = w->getUnit(d->getCastTarget().getTargetUnit());
                 CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
@@ -608,6 +608,7 @@ void CActiveAbility::effect()
             w->addProjectile(p);
             p->setSrcUnit(o->getId());
             p->setSrcAbility(this);
+            p->setEffectiveTypeFlags(getEffectiveTypeFlags());
 
             p->setFromToType(CProjectile::kUnitToPoint);
             p->setFromUnit(o->getId());
@@ -651,7 +652,6 @@ CMultiRefObject* CPassiveAbility::copy()
 {
     CPassiveAbility* ret = new CPassiveAbility(getRootId(), getName(), m_fCoolDown);
     ret->copyData(this);
-
     return ret;
 }
 
@@ -671,7 +671,6 @@ CMultiRefObject* CBuffAbility::copy()
 {
     CBuffAbility* ret = new CBuffAbility(getRootId(), getName(), m_fDuration, m_bStackable);
     ret->copyData(this);
-    
     return ret;
 }
 
@@ -679,8 +678,8 @@ void CBuffAbility::copyData( CAbility* from )
 {
     CAbility::copyData(from);
     CBuffAbility* a = DCAST(from, CBuffAbility*);
-    a->setSrcUnit(getSrcUnit());
-    a->setAppendBuff(getAppendBuff());
+    setSrcUnit(a->getSrcUnit());
+    setAppendBuff(a->getAppendBuff());
 }
 
 bool CBuffAbility::isDone() const
@@ -877,7 +876,6 @@ CMultiRefObject* CBuffMakerAct::copy()
 {
     CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getCastTargetType(), getEffectiveTypeFlags(), getChance(), getTemplateBuff());
     pRet->copyData(this);
-
     return pRet;
 }
 
@@ -1177,8 +1175,7 @@ CDamageBuff::CDamageBuff( const char* pName, const CAttackValue& rDamage, float 
 CMultiRefObject* CDamageBuff::copy()
 {
     CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getChance(), isToSelf(), getExAttackValue());
-    ret->setAppendBuff(getAppendBuff());
-
+    ret->copyData(this);
     return ret;
 }
 
@@ -1275,7 +1272,9 @@ CStunBuff::CStunBuff(const char* pRootId, const char* pName, float fDuration, bo
 
 CMultiRefObject* CStunBuff::copy()
 {
-    return new CStunBuff(getRootId(), getName(), m_fDuration, m_bStackable);
+    CStunBuff* ret = new CStunBuff(getRootId(), getName(), m_fDuration, m_bStackable);
+    ret->copyData(this);
+    return ret;
 }
 
 void CStunBuff::onUnitAddAbility()
@@ -1406,7 +1405,9 @@ CSpeedBuff::CSpeedBuff(const char* pRootId, const char* pName, float fDuration, 
 
 CMultiRefObject* CSpeedBuff::copy()
 {
-    return new CSpeedBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_oExMoveSpeedDelta, m_oExAttackSpeedDelta);
+    CSpeedBuff* ret = new CSpeedBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_oExMoveSpeedDelta, m_oExAttackSpeedDelta);
+    ret->copyData(this);
+    return ret;
 }
 
 void CSpeedBuff::onUnitAddAbility()
@@ -1523,8 +1524,7 @@ CChangeHpBuff::CChangeHpBuff(const char* pRootId, const char* pName, float fDura
 CMultiRefObject* CChangeHpBuff::copy()
 {
     CChangeHpBuff* ret = new CChangeHpBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_fInterval, m_oChangeHp, m_oMinHp);
-    ret->setAppendBuff(getAppendBuff());
-
+    ret->copyData(this);
     return ret;
 }
 
@@ -1680,7 +1680,9 @@ CEvadeBuff::CEvadeBuff(const char* pRootId, const char* pName, float fDuration, 
 
 CMultiRefObject* CEvadeBuff::copy()
 {
-    return new CEvadeBuff(getRootId(), getName(), getDuration(), isStackable(), m_fChance);
+    CEvadeBuff* ret = new CEvadeBuff(getRootId(), getName(), getDuration(), isStackable(), m_fChance);
+    ret->copyData(this);
+    return ret;
 }
 
 bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
@@ -1709,10 +1711,10 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 }
 
 // CTransitiveLinkBuff
-CTransitiveLinkBuff::CTransitiveLinkBuff( const char* pName, float fDuration, float fRange, int iMaxTimes, const CAttackValue& roDamage )
+CTransitiveLinkBuff::CTransitiveLinkBuff( const char* pName, float fDuration, float fRange, int iMaxTimes, uint32_t dwEffectiveTypeFlags )
     : CBuffAbility("ChainBuff", pName, fDuration, true)
     , m_fRange(fRange)
-    , m_oDamage(roDamage)
+    , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
     , m_iMaxTimes(iMaxTimes)
     , m_iTimesLeft(m_iMaxTimes)
     , m_iFromUnit(0)
@@ -1726,13 +1728,18 @@ CTransitiveLinkBuff::CTransitiveLinkBuff( const char* pName, float fDuration, fl
 
 CMultiRefObject* CTransitiveLinkBuff::copy()
 {
-    CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_oDamage);
-    ret->setAppendBuff(getAppendBuff());
-    ret->setTimesLeft(getTimesLeft());
-    ret->setTemplateProjectile(getTemplateProjectile());
-    ret->m_setTransmited = m_setTransmited;
-
+    CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_dwEffectiveTypeFlags);
+    ret->copyData(this);
     return ret;
+}
+
+void CTransitiveLinkBuff::copyData( CAbility* from )
+{
+    CBuffAbility::copyData(from);
+    CTransitiveLinkBuff* a = DCAST(from, CTransitiveLinkBuff*);
+    setTimesLeft(a->getTimesLeft());
+    setTemplateProjectile(a->getTemplateProjectile());
+    m_setTransmited = a->m_setTransmited;
 }
 
 void CTransitiveLinkBuff::onUnitAddAbility()
@@ -1788,7 +1795,6 @@ void CTransitiveLinkBuff::TransmitNext()
     CUnit* s = w->getUnit(getSrcUnit());
 
     CAttackData* pAtk = new CAttackData();
-    pAtk->setAttackValue(m_oDamage);
 
     int buff = w->addTemplateAbility(this);
     pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
@@ -1800,14 +1806,18 @@ void CTransitiveLinkBuff::TransmitNext()
     p->setFromUnit(getFromUnit());
     p->setToUnit(getToUnit());
     p->setAttackData(pAtk);
+    p->setEffectiveTypeFlags(getEffectiveTypeFlags());
     p->setTriggerMask(CUnit::kMaskActiveTrigger);
     p->fire();
 }
 
 bool CTransitiveLinkBuff::checkConditions( CUnit* pUnit, CTransitiveLinkBuff* pBuff )
 {
-    if (!CUnitGroup::isLivingAllyOf(pUnit, pBuff->getOwner())
-        || pUnit == pBuff->getOwner()
+    CUnit* o = pBuff->getOwner();
+    CUnitForce* s = DCAST(o->getUnit(pBuff->getSrcUnit()), CUnitForce*);
+    if (pBuff->getOwner() == pUnit
+        || pUnit->isDead()
+        || !pUnit->isEffective(s, pBuff->getEffectiveTypeFlags())
         || pBuff->getUnitsTransmited().find(pUnit->getId()) != pBuff->getUnitsTransmited().end())
     {
         return false;
@@ -1887,8 +1897,7 @@ CKnockBackBuff::CKnockBackBuff( const char* pRootId, const char* pName, float fD
 CMultiRefObject* CKnockBackBuff::copy()
 {
     CKnockBackBuff* ret = new CKnockBackBuff(getRootId(), getName(), getDuration(), isStackable(), getDistance());
-    ret->setAppendBuff(getAppendBuff());
-
+    ret->copyData(this);
     return ret;
 }
 
@@ -1937,6 +1946,7 @@ CReflectBuff::CReflectBuff( const char* pRootId, const char* pName, float fDurat
 CMultiRefObject* CReflectBuff::copy()
 {
     CReflectBuff* ret = new CReflectBuff(getRootId(), getName(), m_fDuration);
+    ret->copyData(this);
     return ret;
 }
 
@@ -1999,7 +2009,6 @@ CMultiRefObject* CLimitedLifeBuff::copy()
 {
     CLimitedLifeBuff* ret = new CLimitedLifeBuff(getRootId(), getName(), m_fDuration);
     ret->copyData(this);
-
     return ret;
 }
 

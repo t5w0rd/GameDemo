@@ -69,7 +69,8 @@ SOURCES += main.cpp \
     ../../Classes/lua/lbitlib.c \
     ../../Classes/lua/lbaselib.c \
     ../../Classes/lua/lauxlib.c \
-    ../../Classes/lua/lapi.c
+    ../../Classes/lua/lapi.c \
+    ../../Classes/Stage.cpp
 
 HEADERS += \
     ../../Classes/UserData.h \
@@ -124,7 +125,8 @@ HEADERS += \
     ../../Classes/lua/lcode.h \
     ../../Classes/lua/lauxlib.h \
     ../../Classes/lua/lapi.h \
-    ../../Classes/lua/lua.hpp
+    ../../Classes/lua/lua.hpp \
+    ../../Classes/Stage.h
 
 INCLUDEPATH += $$PWD/../../../../cocos2dx \
     $$PWD/../../../../cocos2dx/include \

@@ -398,8 +398,9 @@ public:
     typedef set<int> SET_DAMAGED;
 
 public:    
-    CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, const CAttackValue& roDamage);
+    CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, uint32_t dwEffectiveTypeFlags = CUnitForce::kEnemy);
     virtual CMultiRefObject* copy();
+    virtual void copyData(CAbility* from);
 
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
@@ -408,7 +409,7 @@ public:
     void TransmitNext();
 
     M_SYNTHESIZE(float, m_fRange, Range);
-    M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oDamage, Damage);
+    M_SYNTHESIZE(uint32_t, m_dwEffectiveTypeFlags, EffectiveTypeFlags);
 
     M_SYNTHESIZE(int, m_iMaxTimes, MaxTimes);
     M_SYNTHESIZE(int, m_iTimesLeft, TimesLeft);

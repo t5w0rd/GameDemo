@@ -303,6 +303,8 @@ public:
     M_SYNTHESIZE_READONLY(CAbility*, m_pSrcAbility, SrcAbility);
     void setSrcAbility(CAbility* pSrcAbility);
 
+    M_SYNTHESIZE(uint32_t, m_dwEffectiveTypeFlags, EffectiveTypeFlags);
+
     enum PENALTY_FLAG_BIT
     {
         kOnDying = 1 << 0,

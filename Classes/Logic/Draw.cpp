@@ -1045,6 +1045,7 @@ CProjectile::CProjectile(const char* pName)
     , m_pAttackData(NULL)
     , m_dwTriggerMask(CUnit::kNoMasked)
     , m_pSrcAbility(NULL)
+    , m_dwEffectiveTypeFlags(CUnitForce::kEnemy)
     , m_eFromToType(kPointToPoint)
     , m_eFireType(kFireFollow)
     , m_iContactLeft(-1)
@@ -1070,6 +1071,7 @@ void CProjectile::copyData( const CProjectile* from )
     setMoveSpeed(from->getMoveSpeed());
     setMaxHeightDelta(from->getMaxHeightDelta());
     setSrcUnit(from->getSrcUnit());
+    setEffectiveTypeFlags(from->getEffectiveTypeFlags());
     setPenaltyFlags(from->getPenaltyFlags());
     setFromToType(from->getFromToType());
     setFireType(from->getFireType());
@@ -1140,7 +1142,7 @@ void CProjectile::effect(CUnit* pTarget)
         return;
     }
 
-    if (pTarget != NULL && getAttackData() != NULL && s->isEnemyOf(pTarget))
+    if (pTarget != NULL && getAttackData() != NULL && pTarget->isEffective(DCAST(s, CUnitForce*), getEffectiveTypeFlags()))
     {
         pTarget->damaged(getAttackData(), s, getTriggerMask());
         decContactLeft();

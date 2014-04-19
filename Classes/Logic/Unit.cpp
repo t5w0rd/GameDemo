@@ -970,10 +970,11 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
     CUnitDrawForCC* ccd = NULL;
     getDraw()->dcast(ccd);
 
-    if (ccd != NULL)
+    int dmg = toInt(fDamage);
+    if (ccd != NULL && dmg > 0)
     {
         char sz[64];
-        sprintf(sz, "-%d", toInt(fDamage));
+        sprintf(sz, "-%d", dmg);
         ccd->addBattleTip(sz, "", 18, ccc3(255, 0, 0));
     }
 #endif

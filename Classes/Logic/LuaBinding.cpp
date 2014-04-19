@@ -2419,11 +2419,10 @@ int TransitiveLinkBuff_ctor(lua_State* L)
     float duration = lua_tonumber(L, 3);
     float range = lua_tonumber(L, 4);
     int maxTimes = lua_tointeger(L, 5);
-    float t = lua_tonumber(L, 6);
-    float v = lua_tonumber(L, 7);
-    int projectile = lua_tointeger(L, 8);
+    uint32_t eff = lua_tounsigned(L, 6);
+    int projectile = lua_tointeger(L, 7);
 
-    CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, CAttackValue(t, v));
+    CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, eff);
     _p->setTemplateProjectile(projectile);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
@@ -2689,7 +2688,7 @@ int g_getUnits(lua_State* L)
             luaL_pushobjptr(L, "Unit", u);
             lua_pushvalue(L, matchparam);
             lua_call(L, 2, 1);
-            bool res = lua_toboolean(L, -1);
+            bool res = lua_toboolean(L, -1) != 0;
             lua_pop(L, 1);
             if (res == false)
             {
