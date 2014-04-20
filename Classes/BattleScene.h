@@ -134,8 +134,8 @@ public:
     int m_dscur;
     void onDragonStrikeUpdate(CCNode* pNode);
 
-    void onClickFist(CCNode* pNode);
-    void onClickHeroPortrait(CCNode* pNode);
+    void onClickFist(CCObject* pNode);
+    void onClickHeroPortrait(CCObject* pNode);
 
     void onClickRestart(CCObject* obj);
 };

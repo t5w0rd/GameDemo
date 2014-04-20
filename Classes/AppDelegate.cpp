@@ -7,6 +7,7 @@
 #include "TestScene.h"
 #include "LogoScene.h"
 #include "HeroRoomScene.h"
+#include "StageScene.h"
 
 
 // AppDelegate
@@ -38,7 +39,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     CCScene* pScene = CCTestSceneLayer::scene();
 #else
     //CCScene* pScene = CCLogoSceneLayer::scene();
-    CCScene* pScene = CCHeroRoomSceneLayer::scene();
+    //CCScene* pScene = CCHeroRoomSceneLayer::scene();
+    CCScene* pScene = CCStageSceneLayer::scene();
     
 #endif
     if (pScene == NULL)

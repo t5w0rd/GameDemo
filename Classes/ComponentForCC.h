@@ -188,10 +188,10 @@ protected:
     virtual ~CCButtonBase();
 
 public:
-    virtual bool initWithFile(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished);
-    virtual bool initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished);
-    virtual bool initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished);
-    //CREATE_FUNC_PARAM(CCButtonBase, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
+    virtual bool initWithFile(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
+    virtual bool initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
+    virtual bool initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
+    //CREATE_FUNC_PARAM(CCButtonBase, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
     virtual void setCoolDown(float fDuration) = 0;
     virtual float getCoolDown() const = 0;
     void setLabel(const char* pLabel);
@@ -209,8 +209,8 @@ private:
 
 protected:
     CCObject* m_pTarget;
-    SEL_CallFuncN m_pOnClick;
-    SEL_CallFuncN m_pOnFinished;
+    SEL_MenuHandler m_pOnClick;
+    SEL_MenuHandler m_pOnFinished;
     CCProgressTimer* m_pPt;
     CCFiniteTimeAction* m_pAct;
     CCSprite* m_pBlink;
@@ -221,9 +221,9 @@ protected:
 class CCButtonNormal : public CCButtonBase
 {
 public:
-    M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
     
     CC_SYNTHESIZE(float, m_fCoolDown, CoolDown);
 };
@@ -231,10 +231,10 @@ public:
 class CCCommmButton : public CCButtonNormal
 {
 public:
-    virtual bool init (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished, int iKey);
-    M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    virtual bool init (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished, int iKey);
+    M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
 
 public:
     int m_iKey;

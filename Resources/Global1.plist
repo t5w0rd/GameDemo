@@ -1853,7 +1853,7 @@
             <key>Effects/Stun/Small/11.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1600,1130},{46,32}}</string>
+                <string>{{1732,1208},{46,32}}</string>
                 <key>offset</key>
                 <string>{0,2}</string>
                 <key>rotated</key>
@@ -1866,7 +1866,7 @@
             <key>Effects/Stun/Small/12.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1684,1168},{46,32}}</string>
+                <string>{{1780,1232},{46,32}}</string>
                 <key>offset</key>
                 <string>{0,2}</string>
                 <key>rotated</key>
@@ -2291,6 +2291,32 @@
                 <string>{{11,10},{46,52}}</string>
                 <key>sourceSize</key>
                 <string>{68,68}</string>
+            </dict>
+            <key>UI/Stage/Star.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1600,1130},{46,42}}</string>
+                <key>offset</key>
+                <string>{0,2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{3,3},{46,42}}</string>
+                <key>sourceSize</key>
+                <string>{52,52}</string>
+            </dict>
+            <key>UI/Stage/Unstar.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1684,1168},{46,42}}</string>
+                <key>offset</key>
+                <string>{0,1}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{3,4},{46,42}}</string>
+                <key>sourceSize</key>
+                <string>{52,52}</string>
             </dict>
             <key>UI/cmd/Target.png</key>
             <dict>
@@ -5981,7 +6007,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:c292ca6a6a13bf9728587ea16d2f2544:e3c93e6fd6e36789afd49fb02ce2f5e1:6b10dddd3703c0167c193d86a3f92921$</string>
+            <string>$TexturePacker:SmartUpdate:fcf8f6af3a58cb3f4c55f46a054eb49a:2c2d3600b3559bdae495768ccaca8279:6b10dddd3703c0167c193d86a3f92921$</string>
             <key>textureFileName</key>
             <string>Global1.png</string>
         </dict>

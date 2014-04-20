@@ -85,9 +85,10 @@ void CCNotifyAnimate::update(float t)
 
         // new loop?  If so, reset frame counter
         unsigned int loopNumber = (unsigned int)t;
-        if(loopNumber > m_uExecutedLoops) {
+        if(loopNumber > m_uExecutedLoops)
+        {
             m_nNextFrame = 0;
-            m_uExecutedLoops++;
+            ++m_uExecutedLoops;
             m_bNotified = false;
         }
 
@@ -100,10 +101,12 @@ void CCNotifyAnimate::update(float t)
     CCSpriteFrame *frameToDisplay = NULL;
 
     M_DEF_GC(gc);
-    for(unsigned int i=m_nNextFrame; i < numberOfFrames; i++) {
+    for(unsigned int i = m_nNextFrame; i < numberOfFrames; i++)
+    {
         float splitTime = m_pSplitTimes->at(i);
 
-        if(splitTime <= t) {
+        if(splitTime <= t)
+        {
             CCAnimationFrame* frame = (CCAnimationFrame*)frames->objectAtIndex(i);
             frameToDisplay = frame->getSpriteFrame();
             ((CCSprite*)m_pTarget)->setDisplayFrame(frameToDisplay);

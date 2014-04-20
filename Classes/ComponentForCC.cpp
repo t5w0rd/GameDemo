@@ -692,7 +692,7 @@ void CCButtonBase::onCDBlickDone(CCNode* pNode)
     }
 }
 
-bool CCButtonBase::initWithFile( const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished )
+bool CCButtonBase::initWithFile( const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished )
 {
     CCSprite* pNormalSprite = NULL;
     CCSprite* pSelectedSprite = NULL;
@@ -709,7 +709,7 @@ bool CCButtonBase::initWithFile( const char* pNormalImage, const char* pSelected
     return initWithSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
 }
 
-bool CCButtonBase::initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished)
+bool CCButtonBase::initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished)
 {
     CCSprite* pNormalSprite = NULL;
     CCSprite* pSelectedSprite = NULL;
@@ -726,7 +726,7 @@ bool CCButtonBase::initWithFrameName(const char* pNormalImage, const char* pSele
     return initWithSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
 }
 
-bool CCButtonBase::initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_CallFuncN pOnClick, SEL_CallFuncN pOnFinished)
+bool CCButtonBase::initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished)
 {
     if (!initWithNormalSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, this, menu_selector(CCButtonBase::onClick)))
     {

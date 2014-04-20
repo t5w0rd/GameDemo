@@ -8,13 +8,39 @@ public:
     CStage();
 
     M_SYNTHESIZE(int, m_iIndex, Index);
-    typedef set<int> SET_INDEXES;
-    M_SYNTHESIZE_BY_REF_READONLY(SET_INDEXES, m_setNext, Next);
-    M_SYNTHESIZE_READONLY(uint32_t, m_dwStatus, Status);
-    void setStatus(uint32_t dwStatus);
-    M_SYNTHESIZE(CCNode*, m_pNode, Node);
 
-    virtual void onChangeStatus(uint32_t dwOldStatus);
+    enum STAGE_STATUS
+    {
+        kLocked,
+        kUnlocked,
+        kConquered
+    };
+    M_SYNTHESIZE_READONLY(STAGE_STATUS, m_eStatus, Status);
+    void setStatus(STAGE_STATUS eStatus);
+
+    M_SYNTHESIZE(CCNode*, m_pNode, Node);
+    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oPosition, Position);
+
+    M_SYNTHESIZE_STR(Name);
+    M_SYNTHESIZE_STR(Describe);
+    M_SYNTHESIZE_STR(NormalName);
+    M_SYNTHESIZE_STR(SelectedName);
+    M_SYNTHESIZE_STR(DisabledName);
+    M_SYNTHESIZE_STR(StarName);
+    M_SYNTHESIZE_STR(UnstarName);
+    M_SYNTHESIZE_READONLY(int, m_iGrade, Grade);
+    void setGrade(int iGrade);
+    
+protected:
+    CCNode* m_apStar[3];
+
+public:
+    void setStarNode(int iIndex, CCNode* pNode);
+    CCNode* getStarNode(int iIndex);
+    void setStarNodesVisible(bool bVisible = true);
+
+    virtual void onInit();
+    virtual void onChangeStatus(STAGE_STATUS eOldStatus);
 };
 
 class CStageMap
@@ -23,11 +49,38 @@ public:
     CStageMap();
     ~CStageMap();
 
-    typedef vector<CStage*> VEC_STAGES;
-    M_SYTHESIZE_BYREF_READONLY(VEC_STAGES, m_vecStages, Stages);
+    typedef vector<int> VEC_INDEXES;
 
-    typedef CStage::SET_INDEXES SET_INDEXES;
-    void addStage(const SET_INDEXES& setPrev);
+    struct STAGE_NEXT_INFO
+    {
+        int iIndex;
+        CCNode* pPath;
+    };
+    typedef vector<STAGE_NEXT_INFO> VEC_STAGE_NEXT_INFOS;
+
+    struct STAGE_INFO
+    {
+        CStage* pStage;
+        VEC_STAGE_NEXT_INFOS vecNextInfos;
+    };
+    typedef vector<STAGE_INFO> VEC_STAGE_INFOS;
+
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_STAGE_INFOS, m_vecStages, Stages);
+
+    M_SYNTHESIZE_STR(PathName);
+
+protected:
+    CCMenu* m_pPanel;
+    CCObject* m_pSender;
+    SEL_MenuHandler m_pHandler;
+
+public:
+    void setPanel(CCMenu* pPanel, CCObject* pSender, SEL_MenuHandler pHandler);
+
+    void addStage(CStage* pStage, const VEC_INDEXES& vecPrev);
+    void addStageNextInfos(int iIndex, int iNextIndex);
+    
+    void changeStageStatus(int iIndex, CStage::STAGE_STATUS eStatus);
 
 };
 

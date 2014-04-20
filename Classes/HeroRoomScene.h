@@ -19,8 +19,8 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(CCHeroRoomSceneLayer);
 
-    void onClickHeroPortrait(CCNode* pNode);
-    void onClickButtonDone(CCNode* pNode);
+    void onClickHeroPortrait(CCObject* pNode);
+    void onClickButtonDone(CCObject* pNode);
     void onHideDone(CCNode* pNode);
     void onScaleDone(CCNode* pNode);
     void onAct5Done(CCNode* pNode);

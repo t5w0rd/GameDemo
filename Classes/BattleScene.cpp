@@ -674,7 +674,7 @@ bool CCBattleSceneLayer::init()
     mn->setPosition(CCPointZero);
 
     CCButtonPanel* bp = CCButtonPanel::create(1, 1, 132, 132, 0, 0, NULL);
-    CCButtonBase* btn = CCButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickFist), NULL);
+    CCButtonBase* btn = CCButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, this, menu_selector(CCBattleSceneLayer::onClickFist), NULL);
     bp->addButton(btn, 0, 0);
 
     m_pCtrlLayer->addChild(bp);
@@ -1111,7 +1111,7 @@ void CCBattleSceneLayer::initHeroPortrait()
     const CCPoint& pos = m_pCtrlLayer->getChildByTag(1000)->getPosition();
     CCButtonPanel* bp = CCButtonPanel::create(1, 1, 112, 124, 0, 0, NULL);
     m_pCtrlLayer->addChild(bp);
-    CCButtonNormal* btn = CCButtonNormal::createWithFrameName(sz, sz, NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCBattleSceneLayer::onClickHeroPortrait), NULL);
+    CCButtonNormal* btn = CCButtonNormal::createWithFrameName(sz, sz, NULL, NULL, NULL, 0.0f, this, menu_selector(CCBattleSceneLayer::onClickHeroPortrait), NULL);
     bp->setPosition(ccp(oSz.width * 0.07, pos.y - btn->getContentSize().height * 0.5 - 100));
     bp->addButton(btn, 0, 0);
     
@@ -1386,7 +1386,7 @@ void CCBattleSceneLayer::onDragonStrikeUpdate( CCNode* pNode )
     ++m_dscur;
 }
 
-void CCBattleSceneLayer::onClickFist( CCNode* pNode )
+void CCBattleSceneLayer::onClickFist( CCObject* pNode )
 {
     M_DEF_GC(gc);
     gc->playSound("sounds/Effect/Sound_GUIButtonCommon.mp3");
@@ -1411,7 +1411,7 @@ void CCBattleSceneLayer::onClickFist( CCNode* pNode )
         NULL));
 }
 
-void CCBattleSceneLayer::onClickHeroPortrait( CCNode* pNode )
+void CCBattleSceneLayer::onClickHeroPortrait( CCObject* pNode )
 {
     M_DEF_GC(gc);
     gc->playSound("sounds/Effect/Sound_GUIButtonCommon.mp3");

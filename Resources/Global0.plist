@@ -1811,6 +1811,19 @@
                 <key>sourceSize</key>
                 <string>{156,164}</string>
             </dict>
+            <key>UI/Stage/Path.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{706,252},{16,16}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{16,16}}</string>
+                <key>sourceSize</key>
+                <string>{16,16}</string>
+            </dict>
             <key>UI/cmd/Target2.png</key>
             <dict>
                 <key>frame</key>
@@ -2614,7 +2627,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:c292ca6a6a13bf9728587ea16d2f2544:e3c93e6fd6e36789afd49fb02ce2f5e1:6b10dddd3703c0167c193d86a3f92921$</string>
+            <string>$TexturePacker:SmartUpdate:fcf8f6af3a58cb3f4c55f46a054eb49a:2c2d3600b3559bdae495768ccaca8279:6b10dddd3703c0167c193d86a3f92921$</string>
             <key>textureFileName</key>
             <string>Global0.png</string>
         </dict>

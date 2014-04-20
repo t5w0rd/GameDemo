@@ -60,8 +60,8 @@ bool CCMainMenuSceneLayer::init()
 
     CCMenu* pMenu = CCMenu::create();
     CCMenu* pMenu2 = CCMenu::create();
-    m_pItemStart = CCMenuItemImage::create("mainmenu/menu_startchain_0001.png"
-        , "mainmenu/menu_startchain_0002.png"
+    m_pItemStart = CCMenuItemImage::create("UI/UI/mainmenu/menu_startchain_0001.png"
+        , "UI/mainmenu/menu_startchain_0002.png"
         , this
         , menu_selector(CCMainMenuSceneLayer::CCMenuItemStartCallback));
     addChild(pMenu);
@@ -73,7 +73,7 @@ bool CCMainMenuSceneLayer::init()
     m_pItemStart->setPosition(winSize.width/2,winSize.height * 3/4);
     
     
-    CCMenuItemImage* pItemLogo = CCMenuItemImage::create("mainmenu/logo.png", NULL, this, menu_selector(CCMainMenuSceneLayer::CCMenuItemLogoCallback));
+    CCMenuItemImage* pItemLogo = CCMenuItemImage::create("UI/mainmenu/logo.png", NULL, this, menu_selector(CCMainMenuSceneLayer::CCMenuItemLogoCallback));
     pItemLogo->setPosition(winSize.width/2, winSize.height * 3/4);
     
     pMenu2->addChild(pItemLogo);
@@ -131,22 +131,22 @@ bool CCSelectArchiveLayer::init()
     {
         return false;
     }
-    CCSprite* pSprite = CCSprite::create("mainmenu/mainmenu_saveslot_bg.png");
+    CCSprite* pSprite = CCSprite::create("UI/mainmenu/mainmenu_saveslot_bg.png");
     CCSize winSize = CCDirector::sharedDirector()->getWinSize();
     //CCSize orgSize = pSprite->getContentSize();
     addChild(pSprite);
     pSprite->setPosition(ccp(winSize.width/2,winSize.height/2));
 
     CCMenu* pMenu = CCMenu::create();
-    m_pItem1 = CCMenuItemImage::create("mainmenu/mainmenu_saveslot_0001.png"
-        , "mainmenu/mainmenu_saveslot_0002.png"
+    m_pItem1 = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_0001.png"
+        , "UI/mainmenu/mainmenu_saveslot_0002.png"
         , this
         , menu_selector(CCSelectArchiveLayer::CCMenuItemCallback1));
-    m_pItem2 = CCMenuItemImage::create("mainmenu/mainmenu_saveslot_0001.png"
-        , "mainmenu/mainmenu_saveslot_0002.png"
+    m_pItem2 = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_0001.png"
+        , "UI/mainmenu/mainmenu_saveslot_0002.png"
         , this, menu_selector(CCSelectArchiveLayer::CCMenuItemCallback2));
-    m_pItem3 = CCMenuItemImage::create("mainmenu/mainmenu_saveslot_0001.png"
-        , "mainmenu/mainmenu_saveslot_0002.png"
+    m_pItem3 = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_0001.png"
+        , "UI/mainmenu/mainmenu_saveslot_0002.png"
         , this
         , menu_selector(CCSelectArchiveLayer::CCMenuItemCallback3));
 
@@ -169,8 +169,8 @@ bool CCSelectArchiveLayer::init()
     addChild(pMenu);
     pMenu->setPosition(0, 0);
 
-    CCMenuItemImage* pItemClose = CCMenuItemImage::create("mainmenu/mainmenu_saveslot_close_0001.png"
-        , "mainmenu/mainmenu_saveslot_close_0002.png"
+    CCMenuItemImage* pItemClose = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_close_0001.png"
+        , "UI/mainmenu/mainmenu_saveslot_close_0002.png"
         , this
         , menu_selector(CCSelectArchiveLayer::CCMenuItemCloseCallback));
     pItemClose->setPosition(winSize.width/2, winSize.height/2 - pSprite->getContentSize().height/2 - pItemClose->getContentSize().height/2);

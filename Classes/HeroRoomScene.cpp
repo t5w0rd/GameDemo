@@ -113,7 +113,7 @@ bool CCHeroRoomSceneLayer::init()
     bp->setPosition(ccp(sz.width * 0.05 + bp->getContentSize().width * 0.5, sz.height * 0.5 + 150));
     bp->getBackground()->setZOrder(10);
 
-    CCButtonNormal* btn = CCButtonNormal::createWithFrameName("UI/Portrait/WarriorSmall.png", "UI/Portrait/WarriorSmall.png", NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCHeroRoomSceneLayer::onClickHeroPortrait), NULL);
+    CCButtonNormal* btn = CCButtonNormal::createWithFrameName("UI/Portrait/WarriorSmall.png", "UI/Portrait/WarriorSmall.png", NULL, NULL, NULL, 0.0f, this, menu_selector(CCHeroRoomSceneLayer::onClickHeroPortrait), NULL);
     bp->addButton(btn, 0, 0);
 
     setSelectIndex(0);
@@ -127,10 +127,10 @@ bool CCHeroRoomSceneLayer::init()
     m_blinkSmall->setPosition(m_selSmall->getAnchorPointInPoints());
     m_blinkSmall->setOpacity(0);
 
-    btn = CCButtonNormal::createWithFrameName("UI/Portrait/ArcherSmall.png", "UI/Portrait/ArcherSmall.png", NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCHeroRoomSceneLayer::onClickHeroPortrait), NULL);
+    btn = CCButtonNormal::createWithFrameName("UI/Portrait/ArcherSmall.png", "UI/Portrait/ArcherSmall.png", NULL, NULL, NULL, 0.0f, this, menu_selector(CCHeroRoomSceneLayer::onClickHeroPortrait), NULL);
     bp->addButton(btn, 1, 0);
 
-    btn = CCButtonNormal::createWithFrameName("UI/Portrait/WizardSmall.png", "UI/Portrait/WizardSmall.png", NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCHeroRoomSceneLayer::onClickHeroPortrait), NULL);
+    btn = CCButtonNormal::createWithFrameName("UI/Portrait/WizardSmall.png", "UI/Portrait/WizardSmall.png", NULL, NULL, NULL, 0.0f, this, menu_selector(CCHeroRoomSceneLayer::onClickHeroPortrait), NULL);
     bp->addButton(btn, 2, 0);
 
     // пео╒©Р
@@ -266,7 +266,7 @@ bool CCHeroRoomSceneLayer::init()
     m_panel->addChild(mn);
     mn->setPosition(CCPointZero);
 
-    btn = CCButtonNormal::createWithFile("UI/Button/DoneNormal.png", "UI/Button/DoneOn.png", NULL, NULL, NULL, 0.0f, this, callfuncN_selector(CCHeroRoomSceneLayer::onClickButtonDone), NULL);
+    btn = CCButtonNormal::createWithFile("UI/Button/DoneNormal.png", "UI/Button/DoneOn.png", NULL, NULL, NULL, 0.0f, this, menu_selector(CCHeroRoomSceneLayer::onClickButtonDone), NULL);
     mn->addChild(btn);
     btn->setPosition(ccp(sz.width - btn->getContentSize().width * 0.5 - 40, btn->getContentSize().height * 0.5 + 40));
 
@@ -288,7 +288,7 @@ bool CCHeroRoomSceneLayer::init()
     return true;
 }
 
-void CCHeroRoomSceneLayer::onClickHeroPortrait( CCNode* pNode )
+void CCHeroRoomSceneLayer::onClickHeroPortrait( CCObject* pNode )
 {
     M_DEF_GC(gc);
     gc->playSound("sounds/Effect/UIMove.mp3");
@@ -296,7 +296,7 @@ void CCHeroRoomSceneLayer::onClickHeroPortrait( CCNode* pNode )
     int index = btn->getButtonIndex();
     setSelectIndex(index);
 
-    m_selSmall->setPosition(pNode->getPosition());
+    m_selSmall->setPosition(DCAST(pNode, CCNode*)->getPosition());
     m_blinkSmall->stopAllActions();
     m_blinkSmall->runAction(CCFadeOut::create(0.3f));
 
@@ -348,7 +348,7 @@ void CCHeroRoomSceneLayer::onClickHeroPortrait( CCNode* pNode )
     m_desc->setString(m_heroVals[index].desc);
 }
 
-void CCHeroRoomSceneLayer::onClickButtonDone( CCNode* pNode )
+void CCHeroRoomSceneLayer::onClickButtonDone( CCObject* pNode )
 {
     M_DEF_GC(gc);
     ((CCButtonNormal*)pNode)->setEnabled(false);
