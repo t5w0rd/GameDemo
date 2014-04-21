@@ -4,7 +4,7 @@
 
 #include "Stage.h"
 
-class CCStageSceneLayer : public CCLayerColor
+class CCStageSceneLayer : public CCWinLayer
 {
 public:
     CCStageSceneLayer();
@@ -18,16 +18,21 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(CCStageSceneLayer);
 
-    CStageMap m_oStageMap;
+    CStageMap m_stageMap;
 
     void onClickStage(CCObject* pObj);
-    void onClickBattle(CCObject* pObj);
+    void onClickPanelBattle(CCObject* pObj);
+    void onClickPanelClose(CCObject* pObj);
 
-    CCLabelTTF* m_pName;
-    CCLabelTTF* m_pDesc;
+    CCTouchMaskLayer* m_ctrlLayer;
+    CCSprite* m_panel;
+    
+    CCLabelTTF* m_name;
+    CCLabelTTF* m_desc;
+    CCSprite* m_stars[3];
 
-    int m_iSelIndex;
-    CCButtonNormal* m_pBattle;
+    int m_selIndex;
+    CCButtonNormal* m_btnBattle;
 };
 
 

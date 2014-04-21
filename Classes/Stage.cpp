@@ -21,7 +21,7 @@ void CStage::setGrade( int iGrade )
     M_DEF_GC(gc);
     for (int i = 0; i < 3; ++i)
     {
-        DCAST(m_apStar[i], CCSprite*)->setDisplayFrame(gc->getfc()->spriteFrameByName(i <= m_iGrade ? getStarName() : getUnstarName()));
+        DCAST(m_apStar[i], CCSprite*)->setDisplayFrame(gc->getfc()->spriteFrameByName(i < m_iGrade ? getStarName() : getUnstarName()));
     }
 }
 
@@ -59,6 +59,11 @@ void CStage::onInit()
 void CStage::onChangeStatus( STAGE_STATUS eOldStatus )
 {
     CCMenuItemImage* mi = DCAST(getNode(), CCMenuItemImage*);
+    if (mi == NULL)
+    {
+        return;
+    }
+
     switch (m_eStatus)
     {
     case kLocked:
@@ -85,6 +90,11 @@ CStageMap::CStageMap()
 
 CStageMap::~CStageMap()
 {
+}
+
+CStage* CStageMap::getStage( int iIndex )
+{
+    return m_vecStages[iIndex].pStage;
 }
 
 void CStageMap::setPanel( CCMenu* pPanel, CCObject* pSender, SEL_MenuHandler pHandler )
@@ -117,6 +127,7 @@ void CStageMap::addStage(CStage* pStage, const VEC_INDEXES& vecPrev)
     m_pPanel->addChild(btn);
     btn->setPosition(pStage->getPosition());
     pStage->setNode(btn);
+    pStage->setStatus(pStage->getStatus());
     
     M_DEF_GC(gc);
     // set star
@@ -174,7 +185,7 @@ void CStageMap::addStageNextInfos( int iIndex, int iNextIndex )
     m_vecStages[iIndex].vecNextInfos.push_back(nextInfo);
 }
 
-void CStageMap::changeStageStatus( int iIndex, CStage::STAGE_STATUS eStatus )
+void CStageMap::setStageStatus( int iIndex, CStage::STAGE_STATUS eStatus )
 {
     CStage* s = m_vecStages[iIndex].pStage;
     switch (eStatus)
@@ -186,14 +197,18 @@ void CStageMap::changeStageStatus( int iIndex, CStage::STAGE_STATUS eStatus )
         break;
 
     case CStage::kConquered:
+        if (s->getStatus() != CStage::kUnlocked)
+        {
+            setStageStatus(iIndex, CStage::kUnlocked);
+        }
+
         for (auto it = m_vecStages[iIndex].vecNextInfos.begin(); it != m_vecStages[iIndex].vecNextInfos.end(); ++it)
         {
-            changeStageStatus(it->iIndex, CStage::kUnlocked);
+            setStageStatus(it->iIndex, CStage::kUnlocked);
             //DCAST(it->pPath, CCSprite*)->setColor(ccc3(248, 168, 1));
             CCProgressBar* pth2 = DCAST(it->pPath->getChildByTag(2), CCProgressBar*);
             pth2->runActionForTimer(CCEaseExponentialOut::create(pth2->setPercentageAction(100.0f, 0.3f)));
         }
-        s->setGrade(rand() % 3);
         break;
     }
     s->setStatus(eStatus);

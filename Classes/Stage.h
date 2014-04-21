@@ -66,6 +66,7 @@ public:
     typedef vector<STAGE_INFO> VEC_STAGE_INFOS;
 
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_STAGE_INFOS, m_vecStages, Stages);
+    CStage* getStage(int iIndex);
 
     M_SYNTHESIZE_STR(PathName);
 
@@ -80,7 +81,7 @@ public:
     void addStage(CStage* pStage, const VEC_INDEXES& vecPrev);
     void addStageNextInfos(int iIndex, int iNextIndex);
     
-    void changeStageStatus(int iIndex, CStage::STAGE_STATUS eStatus);
+    void setStageStatus(int iIndex, CStage::STAGE_STATUS eStatus);
 
 };
 

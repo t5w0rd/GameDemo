@@ -196,7 +196,6 @@ CCWinLayer::CCWinLayer()
     , m_fTouchMovedDuration(0.0f)
     , m_fMoveR(0.0f)
     , m_bCanMove(false)
-    , m_pBackground(NULL)
 {
 }
 
@@ -216,7 +215,6 @@ void CCWinLayer::setBackgroundSprite(CCSprite* pSprite)
     addChild(pSprite);
     pSprite->setPosition(getAnchorPointInPoints());
     setPosition(ccp((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
-    m_pBackground = pSprite;
 }
 
 void CCWinLayer::setBackgroundSprite(CCSprite* pSprite, int zOrder, int tag)
@@ -229,7 +227,6 @@ void CCWinLayer::setBackgroundSprite(CCSprite* pSprite, int zOrder, int tag)
     addChild(pSprite, zOrder, tag);
     pSprite->setPosition(getAnchorPointInPoints());
     setPosition(ccp((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
-    m_pBackground = pSprite;
 }
 
 void CCWinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK)
@@ -540,6 +537,12 @@ void CCTouchSprite::touchDelegateRetain()
 void CCTouchSprite::touchDelegateRelease()
 {
     this->release();
+}
+
+// CCTouchMaskLayer
+bool CCTouchMaskLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
+{
+    return true;
 }
 
 // CCEffect

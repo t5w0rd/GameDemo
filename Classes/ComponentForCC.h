@@ -119,7 +119,6 @@ protected:
     float m_fTouchMovedDuration;
     float m_fMoveR;
     bool m_bCanMove;
-    CCSprite* m_pBackground;
 
     CCPoint m_oLast;
     float m_fStartScale;
@@ -156,6 +155,15 @@ protected:
         kStateGrabbed
     }; 
     TOUCH_SPRITE_STATE m_state;
+};
+
+class CCTouchMaskLayer : public CCLayerColor
+{
+public:
+    M_CREATE_FUNC_PARAM(CCTouchMaskLayer, ());
+    M_CREATE_INITWITH_FUNC_PARAM(Color, CCTouchMaskLayer, (const ccColor4B& color), color);
+
+    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
 };
 
 class CCEffect : public CCSprite
