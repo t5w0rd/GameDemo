@@ -4,7 +4,8 @@
 #include "GameControl.h"
 #include "ComponentForCC.h"
 #include "Stage.h"
-
+#include "UserData.h"
+#include "GameData.h"
 
 
 // CCStageSceneLayer
@@ -41,16 +42,6 @@ CCScene* CCStageSceneLayer::scene()
     // return the scene
     return pScene;
 }
-
-// 后续改为用户数据，此处为测试
-static char* nor[] = {"UI/Stage/Stage00Nor.png", "UI/Stage/Stage01Nor.png", "UI/Stage/Stage02Nor.png", "UI/Stage/Stage03Nor.png", "UI/Stage/Stage04Nor.png", "UI/Stage/Stage05Nor.png"};
-static char* dis[] = {"UI/Stage/Stage00Dis.png", "UI/Stage/Stage01Dis.png", "UI/Stage/Stage02Dis.png", "UI/Stage/Stage03Dis.png", "UI/Stage/Stage04Dis.png", "UI/Stage/Stage05Dis.png"};
-static CCPoint ps[] = {ccp(0, 0), ccp(1, 0), ccp(2, 0), ccp(1, 1), ccp(3, 0), ccp(3, 1)};
-static int previndex[][10] = {{}, {1}, {2}, {2}, {3, 4}, {5}};
-//static CStage::STAGE_STATUS status[] = {CStage::kUnlocked, CStage::kLocked, CStage::kLocked, CStage::kLocked, CStage::kLocked, CStage::kLocked};
-static char* name[] = {"the Sunwell", "The Death of the Captain", "Strike Back", "Doubt", "Siege", "The End"};
-static char* desc[] = {"The Sunwell is a fount of mystical power located in Quel\'Thalas", "It was created from a vial of water from the Well of Eternity", "It empowered the high elves for approximately nine thousand years, until Arthas used it to resurrect Kel'Thuzad as a lich", "His resurrection tainted the Sunwell in the process, severing the high elves from their source of power", "Kael\'thas attempted to summon Kil\'jaeden into Azeroth through the Sunwell using Anveena\'s powers", "In World of Warcraft, the Sunwell appears in the level 70 raid dungeon, Sunwell Plateau, on the Isle of Quel\'Danas"};
-static int grade[] = {0, 0, 0, 0, 0, 0};
 
 // on "init" you need to initialize your instance
 bool CCStageSceneLayer::init()
@@ -107,37 +98,38 @@ bool CCStageSceneLayer::init()
     m_stageMap.setPathName("UI/Stage/Path.png");
     m_stageMap.setPanel(mn, this, menu_selector(CCStageSceneLayer::onClickStage));
 
-    for (int i = 0; i < 6; ++i)
+    // 关卡数据，用户数据
+    CUserData::instance()->load("");
+    CGameData::VEC_STAGES& si = CGameData::instance()->m_stages;
+    vector<int>& sg = CUserData::instance()->m_stageGrades;
+
+    for (int i = 0; i < (int)si.size(); ++i)
     {
         CStage* stage = new CStage;
-        stage->setNormalName(nor[i]);
+        stage->setNormalName(si[i].btnNorName.c_str());
         stage->setSelectedName("UI/Stage/StageSel.png");
-        stage->setDisabledName(dis[i]);
+        stage->setDisabledName(si[i].btnDisName.c_str());
         stage->setStarName("UI/Stage/Star.png");
         stage->setUnstarName("UI/Stage/Unstar.png");
-        stage->setName(name[i]);
-        stage->setDescribe(desc[i]);
-        stage->setPosition(ccp(ps[i].x * 300 + 200 + rand() % 100 - 50, ps[i].y * 400 + 200 + rand() % 100 - 50));
+        stage->setName(si[i].name.c_str());
+        stage->setDescribe(si[i].desc.c_str());
+        stage->setPosition(si[i].pos);
 
-        CStageMap::VEC_INDEXES vecPrev;
-        for (int j = 0; previndex[i][j] != 0; ++j)
-        {
-            vecPrev.push_back(previndex[i][j] - 1);
-        }
-        m_stageMap.addStage(stage, vecPrev);
+        m_stageMap.addStage(stage, si[i].prevIndex);
     }
     
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < (int)sg.size(); ++i)
     {
-        m_stageMap.getStage(i)->setGrade(grade[i]);
-        if (grade[i] > 0)
+        m_stageMap.getStage(i)->setGrade(sg[i]);
+        if (sg[i] > 0)
         {
             m_stageMap.setStageStatus(i, CStage::kConquered);
         }
-        else if (i == 0)
-        {
-            m_stageMap.setStageStatus(0, CStage::kUnlocked);
-        }
+    }
+
+    if (m_stageMap.getStage(0)->getStatus() == CStage::kLocked)
+    {
+        m_stageMap.setStageStatus(0, CStage::kUnlocked);
     }
 
     m_btnBattle = CCButtonNormal::create(
@@ -194,6 +186,8 @@ bool CCStageSceneLayer::init()
     psz = psz * m_panel->getScale();
     m_panel->setPosition(ccp(wsz.width * 0.5, wsz.height + psz.height * 0.5));
 
+    CUserData::instance()->save("");
+
     return true;
 }
 
@@ -201,6 +195,8 @@ void CCStageSceneLayer::onClickStage( CCObject* pObj )
 {
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     M_DEF_GC(gc);
+
+    CGameData::VEC_STAGES& si = CGameData::instance()->m_stages;
 
     CCMenuItemImage* mi = DCAST(pObj, CCMenuItemImage*);
     m_selIndex = mi->getTag();
@@ -221,8 +217,8 @@ void CCStageSceneLayer::onClickStage( CCObject* pObj )
     
     sp->setPosition(mi->getPosition());
 
-    m_name->setString(name[m_selIndex]);
-    m_desc->setString(desc[m_selIndex]);
+    m_name->setString(si[m_selIndex].name.c_str());
+    m_desc->setString(si[m_selIndex].desc.c_str());
     for (int i = 0; i < 3; ++i)
     {
         DCAST(m_stars[i], CCSprite*)->setDisplayFrame(gc->getfc()->spriteFrameByName(i < stage->getGrade() ? "UI/Stage/Star.png" : "UI/Stage/Unstar.png"));
@@ -244,6 +240,9 @@ void CCStageSceneLayer::onClickPanelBattle( CCObject* pObj )
 {
     m_stageMap.setStageStatus(m_selIndex, CStage::kConquered);
     m_stageMap.getStage(m_selIndex)->setGrade(rand() % 3 + 1);
+
+    CUserData::instance()->updateGrades(&m_stageMap);
+    CUserData::instance()->save("");
 
     // for test
     onClickPanelClose(NULL);

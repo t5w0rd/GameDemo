@@ -94,7 +94,7 @@ CStageMap::~CStageMap()
 
 CStage* CStageMap::getStage( int iIndex )
 {
-    return m_vecStages[iIndex].pStage;
+    return m_stages[iIndex].pStage;
 }
 
 void CStageMap::setPanel( CCMenu* pPanel, CCObject* pSender, SEL_MenuHandler pHandler )
@@ -106,7 +106,7 @@ void CStageMap::setPanel( CCMenu* pPanel, CCObject* pSender, SEL_MenuHandler pHa
 
 void CStageMap::addStage(CStage* pStage, const VEC_INDEXES& vecPrev)
 {
-    pStage->setIndex(m_vecStages.size());
+    pStage->setIndex(m_stages.size());
     
     //CCMenuItemImage* mi = CCMenuItemImage::create(pStage->getNormalName(), pStage->getSelectedName(), pStage->getDisabledName(), m_pSender, m_pHandler);
     CCSprite* sel = CCSprite::create(pStage->getNormalName());
@@ -146,7 +146,7 @@ void CStageMap::addStage(CStage* pStage, const VEC_INDEXES& vecPrev)
 
     STAGE_INFO stageInfo = {};
     stageInfo.pStage = pStage;
-    m_vecStages.push_back(stageInfo);
+    m_stages.push_back(stageInfo);
     for (auto it = vecPrev.begin(); it != vecPrev.end(); ++it)
     {
         addStageNextInfos(*it, pStage->getIndex());
@@ -161,8 +161,8 @@ void CStageMap::addStageNextInfos( int iIndex, int iNextIndex )
     CCSprite* pth = CCSprite::createWithSpriteFrameName(getPathName());
     pth->setColor(ccc3(123, 123, 123));
     const CCSize& pthSz = pth->getContentSize();
-    const CCPoint& from = m_vecStages[iIndex].pStage->getPosition();
-    const CCPoint& to = m_vecStages[iNextIndex].pStage->getPosition();
+    const CCPoint& from = m_stages[iIndex].pStage->getPosition();
+    const CCPoint& to = m_stages[iNextIndex].pStage->getPosition();
     m_pPanel->getParent()->addChild(pth);
     CCSprite* sp = CCSprite::createWithSpriteFrameName(getPathName());
     sp->setColor(ccc3(248, 168, 1));
@@ -182,12 +182,12 @@ void CStageMap::addStageNextInfos( int iIndex, int iNextIndex )
     STAGE_NEXT_INFO nextInfo = {};
     nextInfo.iIndex = iNextIndex;
     nextInfo.pPath = pth;
-    m_vecStages[iIndex].vecNextInfos.push_back(nextInfo);
+    m_stages[iIndex].vecNextInfos.push_back(nextInfo);
 }
 
 void CStageMap::setStageStatus( int iIndex, CStage::STAGE_STATUS eStatus )
 {
-    CStage* s = m_vecStages[iIndex].pStage;
+    CStage* s = m_stages[iIndex].pStage;
     switch (eStatus)
     {
     case CStage::kLocked:
@@ -202,7 +202,7 @@ void CStageMap::setStageStatus( int iIndex, CStage::STAGE_STATUS eStatus )
             setStageStatus(iIndex, CStage::kUnlocked);
         }
 
-        for (auto it = m_vecStages[iIndex].vecNextInfos.begin(); it != m_vecStages[iIndex].vecNextInfos.end(); ++it)
+        for (auto it = m_stages[iIndex].vecNextInfos.begin(); it != m_stages[iIndex].vecNextInfos.end(); ++it)
         {
             setStageStatus(it->iIndex, CStage::kUnlocked);
             //DCAST(it->pPath, CCSprite*)->setColor(ccc3(248, 168, 1));

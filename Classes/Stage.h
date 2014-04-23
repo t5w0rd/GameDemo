@@ -65,7 +65,7 @@ public:
     };
     typedef vector<STAGE_INFO> VEC_STAGE_INFOS;
 
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_STAGE_INFOS, m_vecStages, Stages);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_STAGE_INFOS, m_stages, Stages);
     CStage* getStage(int iIndex);
 
     M_SYNTHESIZE_STR(PathName);

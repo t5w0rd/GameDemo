@@ -95,7 +95,7 @@ const float CBattleWorld::CONST_MAX_REWARD_RANGE = 400;
 
 CBattleWorld::CBattleWorld()
 {
-    lua_State* L = CWorld::getLuaHandle();
+    CWorld::getLuaHandle();
 }
 
 CBattleWorld::~CBattleWorld()
@@ -298,7 +298,6 @@ void CBattleWorld::onTick( float dt )
     l->updateHeroPortrait();
 }
 
-
 bool CBattleWorld::onLuaWorldInit()
 {
     // lua
@@ -327,38 +326,6 @@ bool CBattleWorld::onLuaWorldInit()
 
         return false;
     }
-/*
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-    string comm = "/sdcard/ts/gamedemo/common.lua";
-    string name = "/sdcard/ts/gamedemo/world.lua";
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-    string comm = "/var/mobile/Documents/common.lua";
-    string name = "/var/mobile/Documents/world.lua";
-#else
-    string comm = "scripts/common.lua";
-    string name = "scripts/world.lua";
-#endif
-    CCLOG("MSG | loadScript: %s", comm.c_str());
-    CCLOG("MSG | loadScript: %s", name.c_str());
-
-    string err;
-
-    if (luaL_loadscript4cc(L, comm.c_str(), err) == false)
-    {
-        CCLOG("ERR | LuaErr: %s", err.c_str());
-        layer->log("%s", err.c_str());
-
-        return false;
-    }
-
-    if (luaL_loadscript4cc(L, name.c_str(), err) == false)
-    {
-        CCLOG("ERR | LuaErr: %s", err.c_str());
-        layer->log("%s", err.c_str());
-
-        return false;
-    }*/
 
     lua_getglobal(L, "onWorldInit");
     res = lua_pcall(L, 0, 0, 0);

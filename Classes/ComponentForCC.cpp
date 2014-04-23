@@ -202,7 +202,13 @@ CCWinLayer::CCWinLayer()
 bool CCWinLayer::init()
 {
     m_bIsTouching = false;
-    return CCLayer::init();
+    return CCLayerColor::init();
+}
+
+bool CCWinLayer::initWithColor( const ccColor4B& color )
+{
+    m_bIsTouching = false;
+    return CCLayerColor::initWithColor(color);
 }
 
 void CCWinLayer::setBackgroundSprite(CCSprite* pSprite)

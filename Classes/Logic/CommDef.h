@@ -203,6 +203,16 @@ public:
         va_end(argv);
     }
 
+    inline CInitArray(const CInitArray& rArr)
+        : m_iCount(rArr.m_iCount)
+    {
+        m_pData = new TYPE[iCount];
+        for (int i = 0; i < m_iCount; ++i)
+        {
+            m_pData[i] = rArr.m_pData[i];
+        }
+    }
+
     inline ~CInitArray()
     {
         delete[] m_pData;

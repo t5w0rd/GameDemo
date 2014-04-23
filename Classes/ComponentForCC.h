@@ -61,7 +61,7 @@ protected:
     unsigned long m_uPos;
 };
 
-class CCWinLayer : public CCLayer
+class CCWinLayer : public CCLayerColor
 {
 public:
     enum TOUCH_ACTION_INDEX
@@ -79,7 +79,9 @@ public:
 public:
     CCWinLayer();
     virtual bool init();
-    CREATE_FUNC(CCWinLayer);
+    M_CREATE_FUNC_PARAM(CCWinLayer, ());
+    virtual bool initWithColor(const ccColor4B& color);
+    M_CREATE_INITWITH_FUNC_PARAM(Color, CCWinLayer, (const ccColor4B& color), color);
 
     // default implements are used to call script callback if exist
     void setBackgroundSprite(CCSprite* pSprite);
