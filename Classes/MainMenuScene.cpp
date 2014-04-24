@@ -5,6 +5,10 @@
 #include "platform/CCFileUtils.h"
 #include "ComponentForCC.h"
 #include "HeroRoomScene.h"
+#include "StageScene.h"
+#include "GameData.h"
+#include "UserData.h"
+
 
 CCMainMenuScene::CCMainMenuScene()
 {
@@ -60,7 +64,7 @@ bool CCMainMenuSceneLayer::init()
 
     CCMenu* pMenu = CCMenu::create();
     CCMenu* pMenu2 = CCMenu::create();
-    m_pItemStart = CCMenuItemImage::create("UI/UI/mainmenu/menu_startchain_0001.png"
+    m_pItemStart = CCMenuItemImage::create("UI/mainmenu/menu_startchain_0001.png"
         , "UI/mainmenu/menu_startchain_0002.png"
         , this
         , menu_selector(CCMainMenuSceneLayer::CCMenuItemStartCallback));
@@ -182,18 +186,24 @@ bool CCSelectArchiveLayer::init()
 
 void CCSelectArchiveLayer::CCMenuItemCallback1(CCObject* sender)
 {
-    CCLog("~~~~~");
-    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCHeroRoomSceneLayer::scene(), ccWHITE));
+    CUserData* udt = CUserData::instance();
+    udt->load("");
+    CUserData::HERO_INFO* hi = udt->getHeroSelected();
+
+    M_DEF_GC(gc);
+    gc->replaceSceneWithLoading(hi == NULL ? &CCHeroRoomSceneLayer::scene : &CCStageSceneLayer::scene);
 }
 
 void CCSelectArchiveLayer::CCMenuItemCallback2(CCObject* sender)
 {
 
 }
+
 void CCSelectArchiveLayer::CCMenuItemCallback3(CCObject* sender)
 {
 
 }
+
 void CCSelectArchiveLayer::CCMenuItemCloseCallback(CCObject* sender)
 {
     CCNode* pNode = getParent();
@@ -201,6 +211,7 @@ void CCSelectArchiveLayer::CCMenuItemCloseCallback(CCObject* sender)
     pMainLayer->CCRunStartAction();
     removeFromParent();
 }
+
 void CCSelectArchiveLayer::onEnter()
 {
     CCLayer::onEnter();

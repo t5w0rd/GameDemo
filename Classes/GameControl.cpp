@@ -1,11 +1,15 @@
 #include "CommHeader.h"
 #include "GameControl.h"
+#include "ComponentForCC.h"
 
 
 // CCameControler
 CCGameControler::CCGameControler(void)
+    : m_fc(NULL)
+    , m_ac(NULL)
+    , m_ae(NULL)
+    , m_sceneCreator(NULL)
 {
-
 }
 
 bool CCGameControler::init()
@@ -115,4 +119,40 @@ void CCGameControler::preloadMusic( const char* music )
 void CCGameControler::playMusic( const char* music, bool loop )
 {
     m_ae->playBackgroundMusic(music, loop);
+}
+
+CCLayer* CCGameControler::defaultLoadingLayer()
+{
+    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    
+    CCTouchMaskLayer* layer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 255));
+    CCSprite* sp = CCSprite::create("UI/Loading.png");
+    layer->addChild(sp);
+    sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
+    sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
+
+    return layer;
+}
+
+void CCGameControler::replaceSceneWithLoading( SCENE_CREATOR sceneCreator, CCLayer* loading )
+{
+    if (loading == NULL)
+    {
+        loading = defaultLoadingLayer();
+    }
+
+    CCDirector::sharedDirector()->getRunningScene()->addChild(loading, INT_MAX);
+
+    playSound("sounds/Effect/GUITransitionOpen.mp3");
+    m_sceneCreator = sceneCreator;
+    loading->runAction(CCSequence::createWithTwoActions(CCFadeIn::create(0.1f), CCCallFuncN::create(this, callfuncN_selector(CCGameControler::onReplaceScene))));
+
+    //CCTextureCache::sharedTextureCache()->addImageAsync()
+    //CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithDictionary(CCDictionary::createWithContentsOfFileThreadSafe())
+}
+
+void CCGameControler::onReplaceScene( CCNode* node )
+{
+    CCScene* sc = (*m_sceneCreator)();
+    CCDirector::sharedDirector()->replaceScene(sc);
 }

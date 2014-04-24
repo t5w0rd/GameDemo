@@ -17,13 +17,12 @@ public:
         string btnDisName;
         CCPoint pos;
         vector<int> prevIndex;
+        string script;
+        string background;
     };
 
     typedef vector<STAGE_INFO> VEC_STAGES;
     VEC_STAGES m_stages;
-
-    bool init();
-
 };
 
 #endif

@@ -33,6 +33,8 @@ public:
 
     int m_selIndex;
     CCButtonNormal* m_btnBattle;
+
+    CCSprite* m_stageCur;
 };
 
 

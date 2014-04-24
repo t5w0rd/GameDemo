@@ -4,6 +4,8 @@
 #include <cocos2d.h>
 
 
+typedef CCScene* (*SCENE_CREATOR)(void);
+
 class CCGameControler : public cocos2d::CCObject
 {
 public:
@@ -38,6 +40,14 @@ public:
 
     void preloadMusic(const char* music);
     void playMusic(const char* music, bool loop = true);
+
+protected:
+    SCENE_CREATOR m_sceneCreator;
+
+public:
+    static CCLayer* defaultLoadingLayer();
+    void replaceSceneWithLoading(SCENE_CREATOR sceneCreator, CCLayer* loading = NULL);
+    void onReplaceScene(CCNode* node);
     
 };
 

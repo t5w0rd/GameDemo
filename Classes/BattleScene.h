@@ -43,7 +43,7 @@ public:
 
     CUnitLibraryForCC m_oULib;
 
-    CCHeroRoomSceneLayer::HERO_INFO m_heroInfo;
+    M_SYNTHESIZE_STR(ScriptName);
 };
 
 class CCBattleScene : public CCScene
@@ -69,13 +69,13 @@ public:
     virtual bool init();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene(CCHeroRoomSceneLayer::HERO_INFO& heroInfo);
+    static cocos2d::CCScene* scene();
     
     // implement the "static node()" method manually
     CREATE_FUNC(CCBattleSceneLayer);
 
     virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
-    M_SYNTHESIZE(CCLayer*, m_pCtrlLayer, CtrlLayer);
+    M_SYNTHESIZE(CCTouchMaskLayer*, m_pCtrlLayer, CtrlLayer);
 
     M_SYNTHESIZE(int, m_iMaxLogs, MaxLogs);
     M_SYNTHESIZE(int, m_iBaseLogId, BaseLogId);

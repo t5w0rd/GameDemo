@@ -188,6 +188,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\ComponentForCC.cpp" />
     <ClCompile Include="..\Classes\DrawForCC.cpp" />
     <ClCompile Include="..\Classes\GameControl.cpp" />
+    <ClCompile Include="..\Classes\GameData.cpp" />
     <ClCompile Include="..\Classes\HeroRoomScene.cpp" />
     <ClCompile Include="..\Classes\Logic\Action.cpp" />
     <ClCompile Include="..\Classes\Logic\Application.cpp" />
@@ -234,6 +235,8 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClCompile Include="..\Classes\lua\lvm.c" />
     <ClCompile Include="..\Classes\lua\lzio.c" />
     <ClCompile Include="..\Classes\MainMenuScene.cpp" />
+    <ClCompile Include="..\Classes\Stage.cpp" />
+    <ClCompile Include="..\Classes\StageScene.cpp" />
     <ClCompile Include="..\Classes\TestScene.cpp" />
     <ClCompile Include="..\Classes\UnitLibraryForCC.cpp" />
     <ClCompile Include="..\Classes\UserData.cpp" />
@@ -248,6 +251,7 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\ComponentForCC.h" />
     <ClInclude Include="..\Classes\DrawForCC.h" />
     <ClInclude Include="..\Classes\GameControl.h" />
+    <ClInclude Include="..\Classes\GameData.h" />
     <ClInclude Include="..\Classes\HeroRoomScene.h" />
     <ClInclude Include="..\Classes\Logic\Action.h" />
     <ClInclude Include="..\Classes\Logic\Application.h" />
@@ -289,6 +293,8 @@ xcopy /Y /Q "$(ProjectDir)..\..\..\external\libwebsockets\win32\lib\*.*" "$(OutD
     <ClInclude Include="..\Classes\lua\lvm.h" />
     <ClInclude Include="..\Classes\lua\lzio.h" />
     <ClInclude Include="..\Classes\MainMenuScene.h" />
+    <ClInclude Include="..\Classes\Stage.h" />
+    <ClInclude Include="..\Classes\StageScene.h" />
     <ClInclude Include="..\Classes\TestScene.h" />
     <ClInclude Include="..\Classes\UnitLibraryForCC.h" />
     <ClInclude Include="..\Classes\UserData.h" />

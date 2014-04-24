@@ -8,6 +8,8 @@
 #include "LogoScene.h"
 #include "HeroRoomScene.h"
 #include "StageScene.h"
+#include "MainMenuScene.h"
+#include "UserData.h"
 
 
 // AppDelegate
@@ -38,9 +40,12 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #if GD_UNPACK
     CCScene* pScene = CCTestSceneLayer::scene();
 #else
+    CUserData::instance()->load("");
+    CCScene* pScene = CCBattleSceneLayer::scene();
     //CCScene* pScene = CCLogoSceneLayer::scene();
     //CCScene* pScene = CCHeroRoomSceneLayer::scene();
-    CCScene* pScene = CCStageSceneLayer::scene();
+    //CCScene* pScene = CCStageSceneLayer::scene();
+    //CCScene* pScene = CCMainMenuSceneLayer::scene();
     
 #endif
     if (pScene == NULL)

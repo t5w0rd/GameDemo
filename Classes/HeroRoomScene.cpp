@@ -3,6 +3,7 @@
 #include "HeroRoomScene.h"
 #include "GameControl.h"
 #include "ComponentForCC.h"
+#include "StageScene.h"
 #include "BattleScene.h"
 #include "UnitLibraryForCC.h"
 
@@ -10,32 +11,32 @@
 // CCHeroRoomSceneLayer
 CCHeroRoomSceneLayer::CCHeroRoomSceneLayer()
 {
-    m_heroVals[0].id = CUnitLibraryForCC::kBarracks;
-    m_heroVals[0].name = "Warrior";
-    m_heroVals[0].desc = "Sir.\nGerald\nLightSeeker";
-    m_heroVals[0].hp = 300.0f;
-    m_heroVals[0].atkVal = CAttackValue(0, 15);
-    m_heroVals[0].armVal = CArmorValue(0, 3);
-    m_heroVals[0].attackSpeed = 1 / 1.5f;
-    m_heroVals[0].moveSpeed = 80.0f;
+    m_heroInfos[0].id = CUnitLibraryForCC::kBarracks;
+    m_heroInfos[0].name = "Warrior";
+    m_heroInfos[0].desc = "Sir.\nGerald\nLightSeeker";
+    m_heroInfos[0].hp = 300.0f;
+    m_heroInfos[0].atkVal = CAttackValue(0, 15);
+    m_heroInfos[0].armVal = CArmorValue(0, 3);
+    m_heroInfos[0].attackSpeed = 1 / 1.5f;
+    m_heroInfos[0].moveSpeed = 80.0f;
 
-    m_heroVals[1].id = CUnitLibraryForCC::kArcher;
-    m_heroVals[1].name = "Archer";
-    m_heroVals[1].desc = "Alleria\nSwiftWind";
-    m_heroVals[1].hp = 240.0f;
-    m_heroVals[1].atkVal = CAttackValue(0, 18);
-    m_heroVals[1].armVal = CArmorValue(0, 2);
-    m_heroVals[1].attackSpeed = 1 / 1.2f;
-    m_heroVals[1].moveSpeed = 85.0f;
+    m_heroInfos[1].id = CUnitLibraryForCC::kArcher;
+    m_heroInfos[1].name = "Archer";
+    m_heroInfos[1].desc = "Alleria\nSwiftWind";
+    m_heroInfos[1].hp = 240.0f;
+    m_heroInfos[1].atkVal = CAttackValue(0, 18);
+    m_heroInfos[1].armVal = CArmorValue(0, 2);
+    m_heroInfos[1].attackSpeed = 1 / 1.2f;
+    m_heroInfos[1].moveSpeed = 85.0f;
 
-    m_heroVals[2].id = CUnitLibraryForCC::kWizard;
-    m_heroVals[2].name = "Wizard";
-    m_heroVals[2].desc = "Nivus";
-    m_heroVals[2].hp = 230.0f;
-    m_heroVals[2].atkVal = CAttackValue(1, 17);
-    m_heroVals[2].armVal = CArmorValue(1, 1);
-    m_heroVals[2].attackSpeed = 1 / 1.5f;
-    m_heroVals[2].moveSpeed = 75.0f;
+    m_heroInfos[2].id = CUnitLibraryForCC::kWizard;
+    m_heroInfos[2].name = "Wizard";
+    m_heroInfos[2].desc = "Nivus";
+    m_heroInfos[2].hp = 230.0f;
+    m_heroInfos[2].atkVal = CAttackValue(1, 17);
+    m_heroInfos[2].armVal = CArmorValue(1, 1);
+    m_heroInfos[2].attackSpeed = 1 / 1.5f;
+    m_heroInfos[2].moveSpeed = 75.0f;
 
     m_maxVal.hp = 300.0f;
     m_maxVal.atkVal = CAttackValue(0, 20);
@@ -160,9 +161,9 @@ bool CCHeroRoomSceneLayer::init()
     m_hpBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_hpBar);
     m_hpBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_hpBar->getContentSize().width * 0.5 + 50, -7)));
-    m_hpBar->runActionForTimer(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroVals[0].hp * 100 / m_maxVal.hp, 0.2f)));
+    m_hpBar->runActionForTimer(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroInfos[0].hp * 100 / m_maxVal.hp, 0.2f)));
 
-    sprintf(szVal, "%d", toInt(m_heroVals[0].hp));
+    sprintf(szVal, "%d", toInt(m_heroInfos[0].hp));
     m_hpLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_hpLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_hpLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -181,9 +182,9 @@ bool CCHeroRoomSceneLayer::init()
     m_attackBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_attackBar);
     m_attackBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_attackBar->getContentSize().width * 0.5 + 50, -7)));
-    m_attackBar->runActionForTimer(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroVals[0].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.2f)));
+    m_attackBar->runActionForTimer(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroInfos[0].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.2f)));
 
-    sprintf(szVal, "%d", toInt(m_heroVals[0].atkVal.getValue()));
+    sprintf(szVal, "%d", toInt(m_heroInfos[0].atkVal.getValue()));
     m_attackLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_attackLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_attackLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -202,9 +203,9 @@ bool CCHeroRoomSceneLayer::init()
     m_armorBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_armorBar);
     m_armorBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_armorBar->getContentSize().width * 0.5 + 50, -7)));
-    m_armorBar->runActionForTimer(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroVals[0].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.2f)));
+    m_armorBar->runActionForTimer(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroInfos[0].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.2f)));
 
-    sprintf(szVal, "%d", toInt(m_heroVals[0].armVal.getValue()));
+    sprintf(szVal, "%d", toInt(m_heroInfos[0].armVal.getValue()));
     m_armorLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_armorLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_armorLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -222,9 +223,9 @@ bool CCHeroRoomSceneLayer::init()
     m_attackSpeedBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_attackSpeedBar);
     m_attackSpeedBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_attackSpeedBar->getContentSize().width * 0.5 + 50, -7)));
-    m_attackSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroVals[0].attackSpeed * 100 / m_maxVal.attackSpeed, 0.2f)));
+    m_attackSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroInfos[0].attackSpeed * 100 / m_maxVal.attackSpeed, 0.2f)));
 
-    sprintf(szVal, "%.2f", m_heroVals[0].attackSpeed);
+    sprintf(szVal, "%.2f", m_heroInfos[0].attackSpeed);
     m_attackSpeedLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_attackSpeedLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_attackSpeedLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -242,9 +243,9 @@ bool CCHeroRoomSceneLayer::init()
     m_moveSpeedBar = CCProgressBar::create(CCSizeMake(300, sp->getContentSize().height * 0.7), sp2, CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_moveSpeedBar);
     m_moveSpeedBar->setPosition(ccpAdd(sp->getPosition(), ccp(m_moveSpeedBar->getContentSize().width * 0.5 + 50, -7)));
-    m_moveSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroVals[0].moveSpeed * 100 / m_maxVal.moveSpeed, 0.2f)));
+    m_moveSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroInfos[0].moveSpeed * 100 / m_maxVal.moveSpeed, 0.2f)));
 
-    sprintf(szVal, "%d", toInt(m_heroVals[0].moveSpeed));
+    sprintf(szVal, "%d", toInt(m_heroInfos[0].moveSpeed));
     m_moveSpeedLbl = CCLabelTTF::create(szVal, FONT_COMIC_BOOK, 30);
     m_moveSpeedLbl->setAnchorPoint(ccp(0.0f, 0.5f));
     m_moveSpeedLbl->setHorizontalAlignment(kCCTextAlignmentLeft);
@@ -252,11 +253,11 @@ bool CCHeroRoomSceneLayer::init()
     m_moveSpeedLbl->setPosition(ccpAdd(m_moveSpeedBar->getPosition(), ccp(m_moveSpeedBar->getContentSize().width * 0.5 + 30, 5.0f)));
 
     // Ãû×Ö¡¢¼ò½é
-    m_name = CCLabelTTF::create(m_heroVals[0].name, FONT_COMIC_BOOK, 52);
+    m_name = CCLabelTTF::create(m_heroInfos[0].name.c_str(), FONT_COMIC_BOOK, 52);
     info->addChild(m_name);
     m_name->setPosition(ccp(800, 680));
 
-    m_desc = CCLabelTTF::create(m_heroVals[0].desc, FONT_COMIC_BOOK, 32);
+    m_desc = CCLabelTTF::create(m_heroInfos[0].desc.c_str(), FONT_COMIC_BOOK, 32);
     m_desc->setAnchorPoint(ccp(0.5f, 1.0f));
     info->addChild(m_desc);
     m_desc->setPosition(ccpAdd(m_name->getPosition(), ccp(0, -m_name->getContentSize().height)));
@@ -324,28 +325,28 @@ void CCHeroRoomSceneLayer::onClickHeroPortrait( CCObject* pNode )
     m_eff->runAction(CCSequence::createWithTwoActions(CCSpawn::createWithTwoActions(CCEaseBounceOut::create(CCScaleTo::create(0.3f, 2.5f)), CCFadeTo::create(0.3f, 255)), CCCallFuncN::create(this, callfuncN_selector(CCHeroRoomSceneLayer::onScaleDone))));
     old->removeFromParentAndCleanup(true);
 
-    m_attackIcon->setDisplayFrame(gc->getfc()->spriteFrameByName(attackIcon[m_heroVals[index].atkVal.getType()]));
-    m_armorIcon->setDisplayFrame(gc->getfc()->spriteFrameByName(armorIcon[m_heroVals[index].armVal.getType()]));
-    m_hpBar->runActionForTimer(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroVals[index].hp * 100 / m_maxVal.hp, 0.3f)));
-    m_attackBar->runActionForTimer(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroVals[index].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.3f)));
-    m_armorBar->runActionForTimer(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroVals[index].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.3f)));
-    m_attackSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroVals[index].attackSpeed * 100 / m_maxVal.attackSpeed, 0.3f)));
-    m_moveSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroVals[index].moveSpeed * 100 / m_maxVal.moveSpeed, 0.3f)));
+    m_attackIcon->setDisplayFrame(gc->getfc()->spriteFrameByName(attackIcon[m_heroInfos[index].atkVal.getType()]));
+    m_armorIcon->setDisplayFrame(gc->getfc()->spriteFrameByName(armorIcon[m_heroInfos[index].armVal.getType()]));
+    m_hpBar->runActionForTimer(CCEaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroInfos[index].hp * 100 / m_maxVal.hp, 0.3f)));
+    m_attackBar->runActionForTimer(CCEaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroInfos[index].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.3f)));
+    m_armorBar->runActionForTimer(CCEaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroInfos[index].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.3f)));
+    m_attackSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroInfos[index].attackSpeed * 100 / m_maxVal.attackSpeed, 0.3f)));
+    m_moveSpeedBar->runActionForTimer(CCEaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroInfos[index].moveSpeed * 100 / m_maxVal.moveSpeed, 0.3f)));
 
     char szVal[64];
-    sprintf(szVal, "%d", toInt(m_heroVals[index].hp));
+    sprintf(szVal, "%d", toInt(m_heroInfos[index].hp));
     m_hpLbl->setString(szVal);
-    sprintf(szVal, "%d", toInt(m_heroVals[index].atkVal.getValue()));
+    sprintf(szVal, "%d", toInt(m_heroInfos[index].atkVal.getValue()));
     m_attackLbl->setString(szVal);
-    sprintf(szVal, "%d", toInt(m_heroVals[index].armVal.getValue()));
+    sprintf(szVal, "%d", toInt(m_heroInfos[index].armVal.getValue()));
     m_armorLbl->setString(szVal);
-    sprintf(szVal, "%.2f", m_heroVals[index].attackSpeed);
+    sprintf(szVal, "%.2f", m_heroInfos[index].attackSpeed);
     m_attackSpeedLbl->setString(szVal);
-    sprintf(szVal, "%d", toInt(m_heroVals[index].moveSpeed));
+    sprintf(szVal, "%d", toInt(m_heroInfos[index].moveSpeed));
     m_moveSpeedLbl->setString(szVal);
 
-    m_name->setString(m_heroVals[index].name);
-    m_desc->setString(m_heroVals[index].desc);
+    m_name->setString(m_heroInfos[index].name.c_str());
+    m_desc->setString(m_heroInfos[index].desc.c_str());
 }
 
 void CCHeroRoomSceneLayer::onClickButtonDone( CCObject* pNode )
@@ -358,7 +359,16 @@ void CCHeroRoomSceneLayer::onClickButtonDone( CCObject* pNode )
 
 void CCHeroRoomSceneLayer::onHideDone( CCNode* pNode )
 {
-    CCDirector::sharedDirector()->replaceScene(CCTransitionFade::create(1.0f, CCBattleSceneLayer::scene(m_heroVals[getSelectIndex()])));
+    M_DEF_GC(gc);
+    CUserData* udt = CUserData::instance();
+    
+    udt->m_heroes.push_back(m_heroInfos[m_selIndex]);
+    udt->m_heroSel = 0;
+
+    CUserData::instance()->save("");
+    //gc->replaceSceneWithLoading(&CCStageSceneLayer::scene);
+    //CCDirector::sharedDirector()->replaceScene(CCStageSceneLayer::scene());
+    CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
 }
 
 void CCHeroRoomSceneLayer::onScaleDone( CCNode* pNode )
@@ -370,13 +380,13 @@ void CCHeroRoomSceneLayer::onAct5Done( CCNode* pNode )
 {
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     M_DEF_GC(gc);
-    gc->playSound("sounds/Effect/UIMove.mp3");
+    //gc->playSound("sounds/Effect/UIMove.mp3");
     m_panel->runAction(CCSequence::createWithTwoActions(CCEaseExponentialOut::create(CCMoveTo::create(0.8f, ccp(wsz.width * 0.5, wsz.height + m_panel->getContentSize().height * m_panel->getScaleY() * 0.5))), CCCallFuncN::create(this, callfuncN_selector(CCHeroRoomSceneLayer::onHideDone))));
     
-    CCSprite* sp = CCSprite::create("UI/Loading.png");
-    addChild(sp);
-    sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
-    sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
-    gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
+    //CCSprite* sp = CCSprite::create("UI/Loading.png");
+    //addChild(sp);
+    //sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
+    //sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
+    //gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
 }
 

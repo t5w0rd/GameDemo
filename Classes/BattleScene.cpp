@@ -11,6 +11,8 @@
 #include "LuaBindingForCC.h"
 #include "ComponentForCC.h"
 #include "HeroRoomScene.h"
+#include "GameData.h"
+#include "UserData.h"
 
 
 class CHeroLevelUp : public CLevelUpdate
@@ -132,10 +134,9 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Effects/Stun/Small", "Effects/Stun/Small", 0.1f);
 
     m_oULib.init();
-
     // init hero
-    //u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
-    u = m_oULib.copyUnit(m_heroInfo.id == CUnitLibraryForCC::kBarracks ? CUnitLibraryForCC::kThor : m_heroInfo.id);
+    CUserData* udt = CUserData::instance();
+    u = m_oULib.copyUnit(udt->getHeroSelected()->id);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
@@ -211,12 +212,12 @@ bool CBattleWorld::onInit()
     d = DCAST(u->getDraw(), CUnitDrawForCC*);
     d->setPosition(CPoint(800, 600));
     
-    u->setName(m_heroInfo.name);
-    u->setMaxHp(m_heroInfo.hp);
-    atk->setBaseAttack(m_heroInfo.atkVal);
-    atk->setBaseAttackInterval(1 / m_heroInfo.attackSpeed);
-    u->setBaseArmor(m_heroInfo.armVal);
-    d->setBaseMoveSpeed(m_heroInfo.moveSpeed);
+    u->setName(udt->getHeroSelected()->name.c_str());
+    u->setMaxHp(udt->getHeroSelected()->hp);
+    atk->setBaseAttack(udt->getHeroSelected()->atkVal);
+    atk->setBaseAttackInterval(1 / udt->getHeroSelected()->attackSpeed);
+    u->setBaseArmor(udt->getHeroSelected()->armVal);
+    d->setBaseMoveSpeed(udt->getHeroSelected()->moveSpeed);
 
     onLuaWorldInit();
     
@@ -315,7 +316,7 @@ bool CBattleWorld::onLuaWorldInit()
     int res = 0;
 
     lua_getglobal(L, "include");
-    lua_pushstring(L, "world.lua");
+    lua_pushstring(L, CUserData::instance()->getStageSelected()->script.c_str());
     res = lua_pcall(L, 1, 0, 0);
     if (res != LUA_OK)
     {
@@ -583,7 +584,7 @@ CCBattleSceneLayer::~CCBattleSceneLayer()
     }
 }
 
-CCScene* CCBattleSceneLayer::scene(CCHeroRoomSceneLayer::HERO_INFO& heroInfo)
+CCScene* CCBattleSceneLayer::scene()
 {
     // 'scene' is an autorelease object
     CCBattleScene* pScene = CCBattleScene::create();
@@ -597,7 +598,6 @@ CCScene* CCBattleSceneLayer::scene(CCHeroRoomSceneLayer::HERO_INFO& heroInfo)
     pScene->addChild(layer);
     pScene->addChild(layer->getCtrlLayer(), 1);
 
-    pWorld->m_heroInfo = heroInfo;
     if (pWorld->init() == false)
     {
         return NULL;
@@ -612,22 +612,21 @@ bool CCBattleSceneLayer::init()
 {
     //////////////////////////////
     // 1. super init first
-    if (!CCLayer::init())
+    if (!CCUnitLayer::init())
     {
         return false;
     }
 
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
 
-    m_pCtrlLayer = CCLayer::create();
-    m_pCtrlLayer->retain();
+    m_pCtrlLayer = CCTouchMaskLayer::create();
+    //m_pCtrlLayer->retain();
 
     M_DEF_GC(gc);
-    gc->getfc()->addSpriteFramesWithFile("Global0.plist");
+    gc->loadTexture("Global0");
+    gc->loadTexture("Global1");
 
-    char sz[1024];
-    sprintf(sz, "backgrounds/BackgroundHD%02d.png", rand() % 2);
-    setBackgroundSprite(CCSprite::create(sz));
+    setBackgroundSprite(CCSprite::create(CUserData::instance()->getStageSelected()->background.c_str()));
     setBufferEffectParam(1.5f, 0.9f, 20.0f, 0.1f);
     setPosition(ccp(0, 0));
 
@@ -1016,6 +1015,7 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
         m_pTargetDefIcon->setDisplayFrame(fc->spriteFrameByName("UI/status/CrystalArmor.png"));
         break;
     }
+
     int iDef = toInt(pUnit->getRealArmorValue());
     if (iDef != m_stTargetInfo.iDef)
     {
@@ -1394,5 +1394,5 @@ void CCBattleSceneLayer::onClickHeroPortrait( CCObject* pNode )
 void CCBattleSceneLayer::onClickRestart( CCObject* obj )
 {
     getWorld()->shutdown();
-    CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene(DCAST(getWorld(), CBattleWorld*)->m_heroInfo));
+    CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
 }

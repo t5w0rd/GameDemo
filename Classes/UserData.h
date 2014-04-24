@@ -1,6 +1,8 @@
 #ifndef __USERDATA_H__
 #define	__USERDATA_H__
 
+#include "GameData.h"
+
 
 class CStageMap;
 
@@ -8,7 +10,8 @@ class CUserData : CMultiRefObject
 {
 public:
     CUserData();
-    bool init();
+
+    void reset();
     void load(const char* name);
     void save(const char* name);
 
@@ -19,7 +22,7 @@ public:
         int id;
         string name;
         string desc;
-        string hp;
+        float hp;
         CAttackValue atkVal;
         CArmorValue armVal;
         float attackSpeed;
@@ -29,10 +32,15 @@ public:
     typedef vector<HERO_INFO> VEC_HEROES;
     VEC_HEROES m_heroes;
 
+    int m_heroSel;
+    HERO_INFO* getHeroSelected();
+
     vector<int> m_stageGrades;
     void newGrades(int stage, int grade);
     void updateGrades(CStageMap* stageMap);
-    
+
+    int m_stageSel;
+    CGameData::STAGE_INFO* getStageSelected();
 };
 
 #endif

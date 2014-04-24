@@ -1,6 +1,8 @@
 #ifndef __HEROROOM_SCENE_H__
 #define __HEROROOM_SCENE_H__
 
+#include "UserData.h"
+
 
 class CCEffect;
 class CCProgressBar;
@@ -43,20 +45,8 @@ public:
     CCLabelTTF* m_attackSpeedLbl;
     CCLabelTTF* m_moveSpeedLbl;
 
-    struct HERO_INFO
-    {
-        int id;
-        const char* name;
-        const char* desc;
-        float hp;
-        CAttackValue atkVal;
-        CArmorValue armVal;
-        float attackSpeed;
-        float moveSpeed;
-    };
-
-    HERO_INFO m_heroVals[3];
-    HERO_INFO m_maxVal;
+    CUserData::HERO_INFO m_heroInfos[3];
+    CUserData::HERO_INFO m_maxVal;
 
     CCLabelTTF* m_name;
     CCLabelTTF* m_desc;

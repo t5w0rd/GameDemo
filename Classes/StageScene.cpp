@@ -6,6 +6,7 @@
 #include "Stage.h"
 #include "UserData.h"
 #include "GameData.h"
+#include "BattleScene.h"
 
 
 // CCStageSceneLayer
@@ -15,6 +16,7 @@ CCStageSceneLayer::CCStageSceneLayer()
     , m_desc(NULL)
     , m_selIndex(0)
     , m_btnBattle(NULL)
+    , m_stageCur(NULL)
 {
 }
 
@@ -99,7 +101,6 @@ bool CCStageSceneLayer::init()
     m_stageMap.setPanel(mn, this, menu_selector(CCStageSceneLayer::onClickStage));
 
     // 关卡数据，用户数据
-    CUserData::instance()->load("");
     CGameData::VEC_STAGES& si = CGameData::instance()->m_stages;
     vector<int>& sg = CUserData::instance()->m_stageGrades;
 
@@ -202,20 +203,19 @@ void CCStageSceneLayer::onClickStage( CCObject* pObj )
     m_selIndex = mi->getTag();
     CStage* stage = m_stageMap.getStage(m_selIndex);
 
-    static CCSprite* sp = NULL;
-    if (sp == NULL)
+    if (m_stageCur == NULL)
     {
-        sp = CCSprite::create("UI/Stage/StageCur.png");
-        addChild(sp);
-        sp->setPosition(mi->getPosition());
-        sp->setVisible(false);
+        m_stageCur = CCSprite::create("UI/Stage/StageCur.png");
+        addChild(m_stageCur);
+        m_stageCur->setPosition(mi->getPosition());
+        m_stageCur->setVisible(false);
     }
-    if (!sp->isVisible())
+    if (!m_stageCur->isVisible())
     {
-        sp->setVisible(true);
+        m_stageCur->setVisible(true);
     }
-    
-    sp->setPosition(mi->getPosition());
+
+    m_stageCur->setPosition(mi->getPosition());
 
     m_name->setString(si[m_selIndex].name.c_str());
     m_desc->setString(si[m_selIndex].desc.c_str());
@@ -238,14 +238,35 @@ void CCStageSceneLayer::onClickStage( CCObject* pObj )
 
 void CCStageSceneLayer::onClickPanelBattle( CCObject* pObj )
 {
-    m_stageMap.setStageStatus(m_selIndex, CStage::kConquered);
-    m_stageMap.getStage(m_selIndex)->setGrade(rand() % 3 + 1);
-
-    CUserData::instance()->updateGrades(&m_stageMap);
-    CUserData::instance()->save("");
-
     // for test
-    onClickPanelClose(NULL);
+//     m_stageMap.setStageStatus(m_selIndex, CStage::kConquered);
+//     m_stageMap.getStage(m_selIndex)->setGrade(rand() % 3 + 1);
+// 
+//     CUserData::instance()->updateGrades(&m_stageMap);
+//     CUserData::instance()->save("");
+//     
+//     onClickPanelClose(NULL);
+    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    M_DEF_GC(gc);
+
+    CUserData::instance()->m_stageSel = m_selIndex;
+    
+    //gc->playSound("sounds/Effect/UIMove.mp3");
+    //m_panel->runAction(CCSequence::createWithTwoActions(CCEaseExponentialOut::create(CCMoveTo::create(0.8f, ccp(wsz.width * 0.5, wsz.height + m_panel->getContentSize().height * m_panel->getScaleY() * 0.5))), CCCallFuncN::create(this, callfuncN_selector(CCStageSceneLayer::onHideDone))));
+
+    //CCTouchMaskLayer* ml = CCTouchMaskLayer::create(ccc4(0, 0, 0, 255));
+    //m_ctrlLayer->addChild(ml, 20);
+    //ml->setTouchMode(kCCTouchesOneByOne);
+    //ml->setTouchPriority(INT_MIN);
+
+    //CCSprite* sp = CCSprite::create("UI/Loading.png");
+    //ml->addChild(sp);
+    //sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
+    //sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
+    //gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
+    //gc->replaceSceneWithLoading(&CCBattleSceneLayer::scene);
+    //CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
+    CCDirector::sharedDirector()->replaceScene(CCHeroRoomSceneLayer::scene());
 }
 
 void CCStageSceneLayer::onClickPanelClose( CCObject* pObj )

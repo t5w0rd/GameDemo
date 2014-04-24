@@ -15,6 +15,8 @@ CGameData::CGameData()
     stage.btnDisName = "UI/Stage/Stage00Dis.png";
     stage.pos = ccp(200, 200);
     stage.prevIndex.clear();
+    stage.script = "stage00.lua";
+    stage.background = "backgrounds/BackgroundHD01.png";
     m_stages.push_back(stage);
 
     // stage 1
@@ -25,6 +27,8 @@ CGameData::CGameData()
     stage.pos = ccp(500, 200);
     stage.prevIndex.clear();
     stage.prevIndex.push_back(0);
+    stage.script = "stage01.lua";
+    stage.background = "backgrounds/BackgroundHD01.png";
     m_stages.push_back(stage);
 
     // stage 2
@@ -35,6 +39,8 @@ CGameData::CGameData()
     stage.pos = ccp(800, 200);
     stage.prevIndex.clear();
     stage.prevIndex.push_back(1);
+    stage.script = "stage02.lua";
+    stage.background = "backgrounds/BackgroundHD01.png";
     m_stages.push_back(stage);
 
     // stage 3
@@ -45,6 +51,8 @@ CGameData::CGameData()
     stage.pos = ccp(500, 550);
     stage.prevIndex.clear();
     stage.prevIndex.push_back(1);
+    stage.script = "stage03.lua";
+    stage.background = "backgrounds/BackgroundHD01.png";
     m_stages.push_back(stage);
 
     // stage 4
@@ -56,6 +64,8 @@ CGameData::CGameData()
     stage.prevIndex.clear();
     stage.prevIndex.push_back(2);
     stage.prevIndex.push_back(3);
+    stage.script = "stage04.lua";
+    stage.background = "backgrounds/BackgroundHD01.png";
     m_stages.push_back(stage);
 
     // stage 5
@@ -66,10 +76,7 @@ CGameData::CGameData()
     stage.pos = ccp(1100, 550);
     stage.prevIndex.clear();
     stage.prevIndex.push_back(4);
+    stage.script = "stage05.lua";
+    stage.background = "backgrounds/BackgroundHD01.png";
     m_stages.push_back(stage);
-}
-
-bool CGameData::init()
-{
-    return true;
 }
