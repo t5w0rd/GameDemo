@@ -16,7 +16,7 @@ public:
 
     CC_SINGLETON(GameControler);
 
-    void loadTexture(const char* pPath);
+    void loadFrames(const char* pPath);
     CCAnimation* loadAnimation(const char* pPath, const char* pName, float fDelay);
 
     CCSpriteFrame* getFrame(const char* pName);
@@ -48,9 +48,19 @@ public:
     static CCLayer* defaultLoadingLayer();
     void replaceSceneWithLoading(SCENE_CREATOR sceneCreator, CCLayer* loading = NULL);
     void onReplaceScene(CCNode* node);
-    
-};
 
+protected:
+    int m_loadCount;
+    int m_loaded;
+    vector<string> m_loadFrames;
+    CCObject* m_loadingTarget;
+    SEL_CallFuncO m_loadingProgressing;
+    SEL_CallFuncO m_loadingDone;
+
+public:
+    void loadTexturesAsync(const vector<string>& frames, const vector<string>& otherTextures, CCObject* target, SEL_CallFuncO loadingProgressing, SEL_CallFuncO loadingDone);
+    void onLoadingProgressing(CCObject* obj);
+};
 
 
 #endif  /* __GAMECONTROL_H__ */

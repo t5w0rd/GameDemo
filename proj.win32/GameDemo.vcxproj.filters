@@ -373,9 +373,6 @@
     <None Include="..\Resources\scripts\ability.lua">
       <Filter>scripts</Filter>
     </None>
-    <None Include="..\Resources\scripts\world.lua">
-      <Filter>scripts</Filter>
-    </None>
     <None Include="..\Resources\scripts\ai.lua">
       <Filter>scripts</Filter>
     </None>

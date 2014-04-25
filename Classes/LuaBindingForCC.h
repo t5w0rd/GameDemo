@@ -19,7 +19,7 @@ int sprite4cc_prepareAnimation(lua_State* L);
 int sprite4cc_setGeometry(lua_State* L);
 
 int g_log(lua_State* L);
-int g_loadTexture(lua_State* L);
+int g_loadFrames(lua_State* L);
 int g_loadAnimation(lua_State* L);
 int g_createUnit(lua_State* L);
 int g_createProjectile(lua_State* L);

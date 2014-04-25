@@ -20,7 +20,7 @@ bool CCGameControler::init()
     return true;
 }
 
-void CCGameControler::loadTexture(const char* pPath)
+void CCGameControler::loadFrames(const char* pPath)
 {
     char szName[256];
     sprintf(szName, "%s.plist", pPath);
@@ -155,4 +155,60 @@ void CCGameControler::onReplaceScene( CCNode* node )
 {
     CCScene* sc = (*m_sceneCreator)();
     CCDirector::sharedDirector()->replaceScene(sc);
+}
+
+void CCGameControler::loadTexturesAsync( const vector<string>& frames, const vector<string>& otherTextures, CCObject* target, SEL_CallFuncO loadingProgressing, SEL_CallFuncO loadingDone )
+{
+    CCTextureCache* tc = CCTextureCache::sharedTextureCache();
+    m_loadFrames = frames;
+    m_loadCount = frames.size() + otherTextures.size();
+    m_loaded = 0;
+    m_loadingTarget = target;
+    m_loadingProgressing = loadingProgressing;
+    m_loadingDone = loadingDone;
+
+    M_VEC_FOREACH(frames)
+    {
+        char sz[1024];
+        sprintf(sz, "%s.png", M_VEC_IT->c_str());
+        tc->addImageAsync(sz, this, callfuncO_selector(CCGameControler::onLoadingProgressing));
+        M_VEC_NEXT;
+    }
+
+    M_VEC_FOREACH(otherTextures)
+    {
+        char sz[1024];
+        sprintf(sz, "%s%s", M_VEC_IT->c_str(), M_VEC_IT->at(M_VEC_IT->length() - 4) == '.' ? "" : ".png");
+        tc->addImageAsync(sz, this, callfuncO_selector(CCGameControler::onLoadingProgressing));
+        M_VEC_NEXT;
+    }
+}
+
+void CCGameControler::onLoadingProgressing( CCObject* obj )
+{
+    ++m_loaded;
+
+    if (m_loadingTarget != NULL && m_loadingProgressing != NULL)
+    {
+        (m_loadingTarget->*m_loadingProgressing)(obj);
+    }
+
+    if (m_loaded >= m_loadCount)
+    {
+        // done
+        M_VEC_FOREACH(m_loadFrames)
+        {
+            char sz[1024];
+            sprintf(sz, "%s.plist", M_VEC_IT->c_str());
+            getfc()->addSpriteFramesWithFile(sz);
+            M_VEC_NEXT;
+        }
+
+        if (m_loadingTarget != NULL && m_loadingProgressing != NULL)
+        {
+            (m_loadingTarget->*m_loadingDone)(obj);
+        }
+        
+        return;
+    }
 }

@@ -116,16 +116,16 @@ bool CBattleWorld::onInit()
     CAttackAct* atk = NULL;
 
     M_DEF_GC(gc);
-    gc->loadTexture("Global0");
-    gc->loadTexture("Global1");
-    gc->loadTexture("Heroes0");
-    gc->loadTexture("Heroes1");
-    gc->loadTexture("Heroes2");
-    gc->loadTexture("Heroes3");
-    gc->loadTexture("Heroes4");
-    gc->loadTexture("Heroes5");
-    gc->loadTexture("Projectiles0");
-    gc->loadTexture("Battle0");
+    gc->loadFrames("Global0");
+    gc->loadFrames("Global1");
+    gc->loadFrames("Heroes0");
+    gc->loadFrames("Heroes1");
+    gc->loadFrames("Heroes2");
+    gc->loadFrames("Heroes3");
+    gc->loadFrames("Heroes4");
+    gc->loadFrames("Heroes5");
+    gc->loadFrames("Projectiles0");
+    gc->loadFrames("Battle0");
 
     gc->loadAnimation("Effects/Lightning", "Effects/Lightning", 0.05f);
     gc->loadAnimation("Effects/Lightning2", "Effects/Lightning2", 0.05f);
@@ -623,8 +623,8 @@ bool CCBattleSceneLayer::init()
     //m_pCtrlLayer->retain();
 
     M_DEF_GC(gc);
-    gc->loadTexture("Global0");
-    gc->loadTexture("Global1");
+    gc->loadFrames("Global0");
+    gc->loadFrames("Global1");
 
     setBackgroundSprite(CCSprite::create(CUserData::instance()->getStageSelected()->background.c_str()));
     setBufferEffectParam(1.5f, 0.9f, 20.0f, 0.1f);

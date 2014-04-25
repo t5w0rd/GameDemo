@@ -87,8 +87,8 @@ bool CCHeroRoomSceneLayer::init()
     CCLabelTTF* lbl = NULL;
     char szVal[64];
 
-    gc->loadTexture("Global0");
-    gc->loadTexture("Global1");
+    gc->loadFrames("Global0");
+    gc->loadFrames("Global1");
     gc->preloadSound("sounds/Effect/UIMove.mp3");
     gc->preloadSound("sounds/Effect/LevelUp.mp3");
     gc->preloadSound("sounds/Effect/GUITransitionOpen.mp3");
@@ -367,8 +367,8 @@ void CCHeroRoomSceneLayer::onHideDone( CCNode* pNode )
 
     CUserData::instance()->save("");
     //gc->replaceSceneWithLoading(&CCStageSceneLayer::scene);
-    //CCDirector::sharedDirector()->replaceScene(CCStageSceneLayer::scene());
-    CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
+    CCDirector::sharedDirector()->replaceScene(CCStageSceneLayer::scene());
+    //CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
 }
 
 void CCHeroRoomSceneLayer::onScaleDone( CCNode* pNode )

@@ -38,7 +38,6 @@ CCScene* CCStageSceneLayer::scene()
         //gc->preloadSound("sounds/Effect/xxxxxxx.mp3");
 
         pScene->addChild(layer);
-        pScene->addChild(layer->m_ctrlLayer);
     }
 
     // return the scene
@@ -55,20 +54,41 @@ bool CCStageSceneLayer::init()
         return false;
     }
 
-    setBackgroundSprite(CCSprite::create("UI/Stage/MapBackground.png"));
+    M_DEF_GC(gc);
 
-    setPosition(ccp(0.0f, 0.0f));
-    
+    vector<string> ts;
+    ts.push_back("Global0");
+    ts.push_back("Global1");
+
+    vector<string> ot;
+    ot.push_back("UI/Stage/MapBackground.png");
+    ot.push_back("UI/PanelBig.png");
+    gc->loadTexturesAsync(ts, ot, this, callfuncO_selector(CCStageSceneLayer::onLoadingProgress), callfuncO_selector(CCStageSceneLayer::onLoadingDone));
+
+    return true;
+}
+
+void CCStageSceneLayer::onLoadingProgress( CCObject* pObj )
+{
+
+}
+
+void CCStageSceneLayer::onLoadingDone( CCObject* pObj )
+{
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     M_DEF_GC(gc);
     CCSprite* sp = NULL;
     CCLabelTTF* lbl = NULL;
-    gc->loadTexture("Global0");
-    gc->loadTexture("Global1");
+
+    setBackgroundSprite(CCSprite::create("UI/Stage/MapBackground.png"));
+    setPosition(ccp(0.0f, 0.0f));
+
     gc->preloadSound("sounds/Effect/UIMove.mp3");
-    
+
     // ctrl layer
     m_ctrlLayer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0));
+    getParent()->addChild(m_ctrlLayer);
+
     m_ctrlLayer->setTouchMode(kCCTouchesOneByOne);
     m_ctrlLayer->setTouchEnabled(false);
     m_ctrlLayer->setTouchPriority(-5);
@@ -77,12 +97,12 @@ bool CCStageSceneLayer::init()
     m_panel = CCSprite::create("UI/PanelBig.png");
     m_ctrlLayer->addChild(m_panel);
     CCSize psz = m_panel->getContentSize();
-    
+
     CCMenu* panelMn = CCMenu::create();
     m_panel->addChild(panelMn);
     panelMn->setTouchPriority(-10);
     panelMn->setPosition(CCPointZero);
-    
+
     // БъЬт
     //sp = CCSprite::create("UI/Title.png");
     //lbl = CCLabelTTF::create("Hero Room", "fonts/Yikes!.ttf", 72);
@@ -118,7 +138,7 @@ bool CCStageSceneLayer::init()
 
         m_stageMap.addStage(stage, si[i].prevIndex);
     }
-    
+
     for (int i = 0; i < (int)sg.size(); ++i)
     {
         m_stageMap.getStage(i)->setGrade(sg[i]);
@@ -186,10 +206,6 @@ bool CCStageSceneLayer::init()
     m_panel->setScale(min(wsz.width / psz.width, wsz.height / psz.height));
     psz = psz * m_panel->getScale();
     m_panel->setPosition(ccp(wsz.width * 0.5, wsz.height + psz.height * 0.5));
-
-    CUserData::instance()->save("");
-
-    return true;
 }
 
 void CCStageSceneLayer::onClickStage( CCObject* pObj )
@@ -238,35 +254,14 @@ void CCStageSceneLayer::onClickStage( CCObject* pObj )
 
 void CCStageSceneLayer::onClickPanelBattle( CCObject* pObj )
 {
-    // for test
-//     m_stageMap.setStageStatus(m_selIndex, CStage::kConquered);
-//     m_stageMap.getStage(m_selIndex)->setGrade(rand() % 3 + 1);
-// 
-//     CUserData::instance()->updateGrades(&m_stageMap);
-//     CUserData::instance()->save("");
-//     
-//     onClickPanelClose(NULL);
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     M_DEF_GC(gc);
 
     CUserData::instance()->m_stageSel = m_selIndex;
     
-    //gc->playSound("sounds/Effect/UIMove.mp3");
-    //m_panel->runAction(CCSequence::createWithTwoActions(CCEaseExponentialOut::create(CCMoveTo::create(0.8f, ccp(wsz.width * 0.5, wsz.height + m_panel->getContentSize().height * m_panel->getScaleY() * 0.5))), CCCallFuncN::create(this, callfuncN_selector(CCStageSceneLayer::onHideDone))));
-
-    //CCTouchMaskLayer* ml = CCTouchMaskLayer::create(ccc4(0, 0, 0, 255));
-    //m_ctrlLayer->addChild(ml, 20);
-    //ml->setTouchMode(kCCTouchesOneByOne);
-    //ml->setTouchPriority(INT_MIN);
-
-    //CCSprite* sp = CCSprite::create("UI/Loading.png");
-    //ml->addChild(sp);
-    //sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
-    //sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
-    //gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
     //gc->replaceSceneWithLoading(&CCBattleSceneLayer::scene);
-    //CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
-    CCDirector::sharedDirector()->replaceScene(CCHeroRoomSceneLayer::scene());
+    CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
+    //CCDirector::sharedDirector()->replaceScene(CCHeroRoomSceneLayer::scene());
 }
 
 void CCStageSceneLayer::onClickPanelClose( CCObject* pObj )
@@ -281,4 +276,6 @@ void CCStageSceneLayer::onClickPanelClose( CCObject* pObj )
     m_ctrlLayer->setOpacity(0);
     m_ctrlLayer->setTouchEnabled(false);
 }
+
+
 

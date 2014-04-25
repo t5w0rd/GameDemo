@@ -214,12 +214,12 @@ int g_log(lua_State* L)
     return 0;
 }
 
-int g_loadTexture(lua_State* L)
+int g_loadFrames(lua_State* L)
 {
     const char* name = lua_tostring(L, 1);
 
     M_DEF_GC(gc);
-    gc->loadTexture(name);
+    gc->loadFrames(name);
 
     return 0;
 }
@@ -333,7 +333,7 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 
     // TODO: reg global funcs
     lua_register(L, "log", g_log);
-    lua_register(L, "loadTexture", g_loadTexture);
+    lua_register(L, "loadFrames", g_loadFrames);
     lua_register(L, "loadAnimation", g_loadAnimation);
     lua_register(L, "createUnit", g_createUnit);
     lua_register(L, "createProjectile", g_createProjectile);

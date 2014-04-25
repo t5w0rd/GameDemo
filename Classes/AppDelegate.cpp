@@ -41,10 +41,10 @@ bool AppDelegate::applicationDidFinishLaunching() {
     CCScene* pScene = CCTestSceneLayer::scene();
 #else
     CUserData::instance()->load("");
-    CCScene* pScene = CCBattleSceneLayer::scene();
+    //CCScene* pScene = CCBattleSceneLayer::scene();
     //CCScene* pScene = CCLogoSceneLayer::scene();
     //CCScene* pScene = CCHeroRoomSceneLayer::scene();
-    //CCScene* pScene = CCStageSceneLayer::scene();
+    CCScene* pScene = CCStageSceneLayer::scene();
     //CCScene* pScene = CCMainMenuSceneLayer::scene();
     
 #endif
