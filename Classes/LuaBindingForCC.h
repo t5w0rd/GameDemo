@@ -27,6 +27,8 @@ int g_showDebug(lua_State* L);
 int g_playSound(lua_State* L);
 int g_setSearchPath(lua_State* L);
 int g_include(lua_State* L);
+int g_endWithVictory(lua_State* L);
+int g_endWithDefeat(lua_State* L);
 
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld);
 

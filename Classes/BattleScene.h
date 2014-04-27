@@ -44,6 +44,9 @@ public:
     CUnitLibraryForCC m_oULib;
 
     M_SYNTHESIZE_STR(ScriptName);
+
+    void endWithVictory(int grade);
+    void endWithDefeat();
 };
 
 class CCBattleScene : public CCScene
@@ -66,7 +69,11 @@ public:
     CCBattleSceneLayer();
     virtual ~CCBattleSceneLayer();
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();
+    virtual bool initWithWorld(CWorldForCC* pWorld);
+    M_CREATEWITH_FUNC_PARAM(World, CCBattleSceneLayer, (CWorldForCC* pWorld), pWorld);
+
+    void onLoadingProgress(CCObject* pObj);
+    void onLoadingDone(CCObject* pObj);
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::CCScene* scene();
@@ -75,7 +82,8 @@ public:
     CREATE_FUNC(CCBattleSceneLayer);
 
     virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
-    M_SYNTHESIZE(CCTouchMaskLayer*, m_pCtrlLayer, CtrlLayer);
+    M_SYNTHESIZE(CCTouchMaskLayer*, m_ctrlLayer, CtrlLayer);
+    M_SYNTHESIZE(CCTouchMaskLayer*, m_ctrlLayer2, CtrlLayer2);
 
     M_SYNTHESIZE(int, m_iMaxLogs, MaxLogs);
     M_SYNTHESIZE(int, m_iBaseLogId, BaseLogId);
@@ -137,7 +145,18 @@ public:
     void onClickFist(CCObject* pNode);
     void onClickHeroPortrait(CCObject* pNode);
 
+    void onClickPause(CCObject* obj);
+
+    M_SYNTHESIZE(CCSprite*, m_panel, CtrlPanel)
+    void initCtrlPanel();
+    void showCtrlPanel();
+    void onCloseCtrlPanel(CCObject* obj);
+    void onClickResume(CCObject* obj);
     void onClickRestart(CCObject* obj);
+    void onClickQuit(CCObject* obj);
+    void onClickSound(CCObject* obj);
+    void onClickMusic(CCObject* obj);
+    
 };
 
 #endif // __BATTLE_SCENE_H__

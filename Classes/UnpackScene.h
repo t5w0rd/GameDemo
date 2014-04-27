@@ -1,24 +1,24 @@
-#ifndef __TEST_SCENE_H__
-#define __TEST_SCENE_H__
+#ifndef __UNPACK_SCENE_H__
+#define __UNPACK_SCENE_H__
 
 
-class CCTestScene : public CCScene
+class CCUnpackScene : public CCScene
 {
 public:
-    CCTestScene();
-    virtual ~CCTestScene();
+    CCUnpackScene();
+    virtual ~CCUnpackScene();
     
     virtual bool init();
-    CREATE_FUNC(CCTestScene);
+    CREATE_FUNC(CCUnpackScene);
 
 };
 
 class CCSpriteFrameCacheEx;
-class CCTestSceneLayer : public CCLayerColor
+class CCUnpackSceneLayer : public CCLayerColor
 {
 public:
-    CCTestSceneLayer();
-    virtual ~CCTestSceneLayer();
+    CCUnpackSceneLayer();
+    virtual ~CCUnpackSceneLayer();
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
 
@@ -26,7 +26,7 @@ public:
     static cocos2d::CCScene* scene();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(CCTestSceneLayer);
+    CREATE_FUNC(CCUnpackSceneLayer);
 
     void onLabelPrev(CCObject*);
     void onLabelNext(CCObject*);
@@ -44,4 +44,4 @@ public:
 
 };
 
-#endif // __TEST_SCENE_H__
+#endif // __UNPACK_SCENE_H__

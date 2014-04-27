@@ -163,9 +163,16 @@ class CCTouchMaskLayer : public CCLayerColor
 {
 public:
     M_CREATE_FUNC_PARAM(CCTouchMaskLayer, ());
-    M_CREATE_INITWITH_FUNC_PARAM(Color, CCTouchMaskLayer, (const ccColor4B& color), color);
+    
+    M_CREATE_INITWITH_FUNC_PARAM(Color, CCTouchMaskLayer, (const ccColor4B& color, GLubyte disOpacity, int touchPriority), color, disOpacity, touchPriority);
+    virtual bool initWithColor(const ccColor4B& color, GLubyte disOpacity, int touchPriority);
+    
+    void setMaskEnabled(bool enabled);
 
     virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
+
+protected:
+    GLubyte m_disOpacity;
 };
 
 class CCEffect : public CCSprite
@@ -398,7 +405,6 @@ public:
     LIST_ACTION m_lstActs;
     int m_iCount;
 };
-
 
 
 ////////////////////////////////// Inline ////////////////////////////////////////

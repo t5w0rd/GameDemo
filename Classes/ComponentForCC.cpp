@@ -546,6 +546,26 @@ void CCTouchSprite::touchDelegateRelease()
 }
 
 // CCTouchMaskLayer
+bool CCTouchMaskLayer::initWithColor( const ccColor4B& color, GLubyte disOpacity, int touchPriority )
+{
+    if (CCLayerColor::initWithColor(color) == false)
+    {
+        return false;
+    }
+
+    m_disOpacity = disOpacity;
+
+    setTouchMode(kCCTouchesOneByOne);
+    setTouchEnabled(false);
+    setTouchPriority(touchPriority);
+}
+
+void CCTouchMaskLayer::setMaskEnabled( bool enabled )
+{
+    setOpacity(enabled ? m_disOpacity : 0);
+    setTouchEnabled(enabled);
+}
+
 bool CCTouchMaskLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
 {
     return true;

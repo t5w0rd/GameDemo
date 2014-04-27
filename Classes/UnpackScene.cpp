@@ -1,45 +1,45 @@
 #include "CommHeader.h"
 
-#include "TestScene.h"
+#include "UnpackScene.h"
 #include "GameControl.h"
 #include "ComponentForCC.h"
 
 
-// CCTestScene
-CCTestScene::CCTestScene()
+// CCUnpackScene
+CCUnpackScene::CCUnpackScene()
 {
 }
 
-CCTestScene::~CCTestScene()
+CCUnpackScene::~CCUnpackScene()
 {
 }
 
-bool CCTestScene::init()
+bool CCUnpackScene::init()
 {
     return CCScene::init();
 }
 
 
-// CCTestSceneLayer
-CCTestSceneLayer::CCTestSceneLayer()
+// CCUnpackSceneLayer
+CCUnpackSceneLayer::CCUnpackSceneLayer()
     : m_fc(NULL)
     , m_arr(NULL)
     , m_sp(NULL)
 {
 }
 
-CCTestSceneLayer::~CCTestSceneLayer()
+CCUnpackSceneLayer::~CCUnpackSceneLayer()
 {
     CC_SAFE_RELEASE(m_fc);
     CC_SAFE_RELEASE(m_arr);
 }
 
-CCScene* CCTestSceneLayer::scene()
+CCScene* CCUnpackSceneLayer::scene()
 {
     // 'scene' is an autorelease object
-    CCTestScene* pScene = CCTestScene::create();
+    CCUnpackScene* pScene = CCUnpackScene::create();
 
-    CCTestSceneLayer* layer = CCTestSceneLayer::create();
+    CCUnpackSceneLayer* layer = CCUnpackSceneLayer::create();
 
     // add layer as a child to scene
     if (layer != NULL)
@@ -56,7 +56,7 @@ CCScene* CCTestSceneLayer::scene()
 #define PLIST_SAVE_NAME ("Unpack/Global0")
 
 // on "init" you need to initialize your instance
-bool CCTestSceneLayer::init()
+bool CCUnpackSceneLayer::init()
 {
     //////////////////////////////
     // 1. super init first
@@ -76,13 +76,13 @@ bool CCTestSceneLayer::init()
     addChild(mn);
     mn->setPosition(CCPointZero);
     
-    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("Prev", "", 32), this, menu_selector(CCTestSceneLayer::onLabelPrev));
+    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("Prev", "", 32), this, menu_selector(CCUnpackSceneLayer::onLabelPrev));
     mn->addChild(lbl);
     lbl->setPosition(ccp(sz.width * 0.3, sz.height * 0.95));
-    lbl = CCMenuItemLabel::create(CCLabelTTF::create("Next", "", 32), this, menu_selector(CCTestSceneLayer::onLabelNext));
+    lbl = CCMenuItemLabel::create(CCLabelTTF::create("Next", "", 32), this, menu_selector(CCUnpackSceneLayer::onLabelNext));
     mn->addChild(lbl);
     lbl->setPosition(ccp(sz.width * 0.7, sz.height * 0.95));
-    lbl = CCMenuItemLabel::create(CCLabelTTF::create("SaveAll", "", 32), this, menu_selector(CCTestSceneLayer::onLabelSave));
+    lbl = CCMenuItemLabel::create(CCLabelTTF::create("SaveAll", "", 32), this, menu_selector(CCUnpackSceneLayer::onLabelSave));
     mn->addChild(lbl);
     lbl->setPosition(ccp(sz.width * 0.5, sz.height * 0.95));
 
@@ -127,7 +127,7 @@ bool CCTestSceneLayer::init()
     return true;
 }
 
-void CCTestSceneLayer::onLabelPrev( CCObject* )
+void CCUnpackSceneLayer::onLabelPrev( CCObject* )
 {
     if (m_cur > 0)
     {
@@ -141,7 +141,7 @@ void CCTestSceneLayer::onLabelPrev( CCObject* )
     updateSprite();
 }
 
-void CCTestSceneLayer::onLabelNext( CCObject* )
+void CCUnpackSceneLayer::onLabelNext( CCObject* )
 {
     if (m_cur < m_arr->count() - 1)
     {
@@ -205,7 +205,7 @@ int preparePath(const char* name)
     return 0;
 }
 
-void CCTestSceneLayer::updateSprite()
+void CCUnpackSceneLayer::updateSprite()
 {
     CCString* s = DCAST(m_arr->objectAtIndex(m_cur), CCString*);
     m_sp->setDisplayFrame(m_fc->spriteFrameByName(s->getCString()));
@@ -213,7 +213,7 @@ void CCTestSceneLayer::updateSprite()
     m_sp->setPosition(ccp(sz.width * 0.5, sz.height * 0.5));
 }
 
-void CCTestSceneLayer::onLabelSave( CCObject* )
+void CCUnpackSceneLayer::onLabelSave( CCObject* )
 {
     vector<string> files;
     GetAllFileName(CCFileUtils::sharedFileUtils()->fullPathForFilename("Unpack").c_str(), files);
@@ -249,7 +249,7 @@ void CCTestSceneLayer::onLabelSave( CCObject* )
 #include <Psapi.h>
 #pragma comment(lib, "Psapi.lib")
 #endif
-bool CCTestSceneLayer::saveToPng( const char* name, const char* path, CCSpriteFrameCache* fc )
+bool CCUnpackSceneLayer::saveToPng( const char* name, const char* path, CCSpriteFrameCache* fc )
 {
     m_sp->setDisplayFrame(fc->spriteFrameByName(name));
     CCSize sz = m_sp->getContentSize();

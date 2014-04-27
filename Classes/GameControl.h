@@ -49,9 +49,10 @@ public:
     void replaceSceneWithLoading(SCENE_CREATOR sceneCreator, CCLayer* loading = NULL);
     void onReplaceScene(CCNode* node);
 
+    M_SYNTHESIZE_READONLY(int, m_loadCount, LoadCount);
+    M_SYNTHESIZE_READONLY(int, m_loaded, Loaded);
+
 protected:
-    int m_loadCount;
-    int m_loaded;
     vector<string> m_loadFrames;
     CCObject* m_loadingTarget;
     SEL_CallFuncO m_loadingProgressing;
@@ -59,6 +60,9 @@ protected:
 
 public:
     void loadTexturesAsync(const vector<string>& frames, const vector<string>& otherTextures, CCObject* target, SEL_CallFuncO loadingProgressing, SEL_CallFuncO loadingDone);
+    void addTexturesLoadedToFramesCache();
+
+protected:
     void onLoadingProgressing(CCObject* obj);
 };
 

@@ -38,6 +38,7 @@ CCScene* CCStageSceneLayer::scene()
         //gc->preloadSound("sounds/Effect/xxxxxxx.mp3");
 
         pScene->addChild(layer);
+        pScene->addChild(layer->m_ctrlLayer);
     }
 
     // return the scene
@@ -54,7 +55,11 @@ bool CCStageSceneLayer::init()
         return false;
     }
 
+    // ctrl layer
+    m_ctrlLayer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 80, -5);
+
     M_DEF_GC(gc);
+    addChild(gc->defaultLoadingLayer(), 100, 100);
 
     vector<string> ts;
     ts.push_back("Global0");
@@ -80,18 +85,12 @@ void CCStageSceneLayer::onLoadingDone( CCObject* pObj )
     CCSprite* sp = NULL;
     CCLabelTTF* lbl = NULL;
 
+    removeChildByTag(100);
+
     setBackgroundSprite(CCSprite::create("UI/Stage/MapBackground.png"));
     setPosition(ccp(0.0f, 0.0f));
 
     gc->preloadSound("sounds/Effect/UIMove.mp3");
-
-    // ctrl layer
-    m_ctrlLayer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0));
-    getParent()->addChild(m_ctrlLayer);
-
-    m_ctrlLayer->setTouchMode(kCCTouchesOneByOne);
-    m_ctrlLayer->setTouchEnabled(false);
-    m_ctrlLayer->setTouchPriority(-5);
 
     // ²¼ÖÃpannel
     m_panel = CCSprite::create("UI/PanelBig.png");
@@ -168,9 +167,9 @@ void CCStageSceneLayer::onLoadingDone( CCObject* pObj )
     m_btnBattle->setPosition(ccp(psz.width - m_btnBattle->getContentSize().width * 0.5 - 50, m_btnBattle->getContentSize().height * 0.5 + 50));
 
     CCButtonNormal* btnClose = CCButtonNormal::create(
-        CCSprite::create("UI/BtnCloseNor.png"),
-        CCSprite::create("UI/BtnCloseSel.png"),
-        CCSprite::create("UI/BtnCloseNor.png"),
+        CCSprite::create("UI/Button/BtnCloseNor.png"),
+        CCSprite::create("UI/Button/BtnCloseSel.png"),
+        CCSprite::create("UI/Button/BtnCloseNor.png"),
         NULL,
         NULL,
         0.0f,
@@ -240,16 +239,12 @@ void CCStageSceneLayer::onClickStage( CCObject* pObj )
         DCAST(m_stars[i], CCSprite*)->setDisplayFrame(gc->getfc()->spriteFrameByName(i < stage->getGrade() ? "UI/Stage/Star.png" : "UI/Stage/Unstar.png"));
     }
 
-    // Ëõ·Åpanel
+    // µ¯³öpanel
     gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
     m_panel->stopAllActions();
     m_panel->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height * 0.5))));
-
-    //CCLayerColor* mask = CCLayerColor::create(ccc4(0, 0, 0, 50));
-    //m_ctrlLayer->addChild(mask, -10, -10);
-    //mask->setTouchPriority(-5);
-    m_ctrlLayer->setOpacity(80);
-    m_ctrlLayer->setTouchEnabled(true);
+    
+    m_ctrlLayer->setMaskEnabled(true);
 }
 
 void CCStageSceneLayer::onClickPanelBattle( CCObject* pObj )
@@ -272,9 +267,7 @@ void CCStageSceneLayer::onClickPanelClose( CCObject* pObj )
     m_panel->stopAllActions();
     m_panel->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height + m_panel->getContentSize().height * m_panel->getScaleY() * 0.5))));
 
-    //m_ctrlLayer->removeChildByTag(-10);
-    m_ctrlLayer->setOpacity(0);
-    m_ctrlLayer->setTouchEnabled(false);
+    m_ctrlLayer->setMaskEnabled(false);
 }
 
 

@@ -4,7 +4,7 @@
 #include "BattleScene.h"
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
-#include "TestScene.h"
+#include "UnpackScene.h"
 #include "LogoScene.h"
 #include "HeroRoomScene.h"
 #include "StageScene.h"
@@ -38,13 +38,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
 #if GD_UNPACK
-    CCScene* pScene = CCTestSceneLayer::scene();
+    CCScene* pScene = CCUnpackSceneLayer::scene();
 #else
     CUserData::instance()->load("");
-    //CCScene* pScene = CCBattleSceneLayer::scene();
+    CCScene* pScene = CCBattleSceneLayer::scene();
     //CCScene* pScene = CCLogoSceneLayer::scene();
     //CCScene* pScene = CCHeroRoomSceneLayer::scene();
-    CCScene* pScene = CCStageSceneLayer::scene();
+    //CCScene* pScene = CCStageSceneLayer::scene();
     //CCScene* pScene = CCMainMenuSceneLayer::scene();
     
 #endif

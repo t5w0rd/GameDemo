@@ -427,8 +427,6 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
 
 #if 0
 
-    
-
     lbl->runAction(CCSequence::create(
 
         CCSpawn::create(
@@ -478,7 +476,7 @@ bool CCUnitLayer::initWithWorld(CWorldForCC* pWorld)
 {
     assert(pWorld != NULL);
 
-    setWorld(pWorld);
+    pWorld->setLayer(this);
 
     return CCWinLayer::init();
 }
@@ -486,7 +484,10 @@ bool CCUnitLayer::initWithWorld(CWorldForCC* pWorld)
 void CCUnitLayer::onEnter()
 {
     CCWinLayer::onEnter();
-    schedule(schedule_selector(CCUnitLayer::onWorldInterval), m_fWorldInterval);
+    if (m_fWorldInterval != 0.0)
+    {
+        schedule(schedule_selector(CCUnitLayer::onWorldInterval), m_fWorldInterval);
+    }
 }
 
 void CCUnitLayer::onExit()

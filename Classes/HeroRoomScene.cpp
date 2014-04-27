@@ -267,7 +267,7 @@ bool CCHeroRoomSceneLayer::init()
     m_panel->addChild(mn);
     mn->setPosition(CCPointZero);
 
-    btn = CCButtonNormal::createWithFile("UI/Button/DoneNormal.png", "UI/Button/DoneOn.png", NULL, NULL, NULL, 0.0f, this, menu_selector(CCHeroRoomSceneLayer::onClickButtonDone), NULL);
+    btn = CCButtonNormal::createWithFile("UI/Button/BtnDoneNor.png", "UI/Button/BtnDoneSel.png", NULL, NULL, NULL, 0.0f, this, menu_selector(CCHeroRoomSceneLayer::onClickButtonDone), NULL);
     mn->addChild(btn);
     btn->setPosition(ccp(sz.width - btn->getContentSize().width * 0.5 - 40, btn->getContentSize().height * 0.5 + 40));
 

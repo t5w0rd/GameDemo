@@ -125,7 +125,8 @@ CCLayer* CCGameControler::defaultLoadingLayer()
 {
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     
-    CCTouchMaskLayer* layer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 255));
+    CCTouchMaskLayer* layer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 255, -100);
+    layer->setMaskEnabled(true);
     CCSprite* sp = CCSprite::create("UI/Loading.png");
     layer->addChild(sp);
     sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
@@ -184,8 +185,26 @@ void CCGameControler::loadTexturesAsync( const vector<string>& frames, const vec
     }
 }
 
+void CCGameControler::addTexturesLoadedToFramesCache()
+{
+    M_VEC_FOREACH(m_loadFrames)
+    {
+        char sz[1024];
+        sprintf(sz, "%s.plist", M_VEC_IT->c_str());
+        getfc()->addSpriteFramesWithFile(sz);
+        M_VEC_NEXT;
+    }
+}
+
 void CCGameControler::onLoadingProgressing( CCObject* obj )
 {
+//     if (m_loaded < m_loadFrames.size())
+//     {
+//         char sz[1024];
+//         sprintf(sz, "%s.plist", m_loadFrames[m_loaded].c_str());
+//         getfc()->addSpriteFramesWithFile(sz, DCAST(obj, CCTexture2D*));
+//     }
+
     ++m_loaded;
 
     if (m_loadingTarget != NULL && m_loadingProgressing != NULL)
@@ -196,16 +215,11 @@ void CCGameControler::onLoadingProgressing( CCObject* obj )
     if (m_loaded >= m_loadCount)
     {
         // done
-        M_VEC_FOREACH(m_loadFrames)
-        {
-            char sz[1024];
-            sprintf(sz, "%s.plist", M_VEC_IT->c_str());
-            getfc()->addSpriteFramesWithFile(sz);
-            M_VEC_NEXT;
-        }
+        //addTexturesLoadedToFramesCache();
 
-        if (m_loadingTarget != NULL && m_loadingProgressing != NULL)
+        if (m_loadingTarget != NULL && m_loadingDone != NULL)
         {
+            addTexturesLoadedToFramesCache();
             (m_loadingTarget->*m_loadingDone)(obj);
         }
         

@@ -327,6 +327,28 @@ int g_include(lua_State* L)
     return 0;
 }
 
+int g_endWithVictory(lua_State* L)
+{
+    int grade = lua_tointeger(L, 1);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    w->endWithVictory(grade);
+    lua_pop(L, 1);  // pop _world
+
+    return 0;
+}
+
+int g_endWithDefeat(lua_State* L)
+{
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    w->endWithDefeat();
+    lua_pop(L, 1);  // pop _world
+
+    return 0;
+}
+
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -341,6 +363,8 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "playSound", g_playSound);
     lua_register(L, "setSearchPath", g_setSearchPath);
     lua_register(L, "include", g_include);
+    lua_register(L, "endWithVictory", g_endWithVictory);
+    lua_register(L, "endWithDefeat", g_endWithDefeat);
     
     // TODO: reg global class members
     lua_getglobal(L, "Unit");

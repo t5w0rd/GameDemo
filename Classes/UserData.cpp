@@ -131,7 +131,10 @@ void CUserData::newGrades( int stage, int grade )
         m_stageGrades.push_back(0);
     }
 
-    m_stageGrades[stage] = grade;
+    if (grade > m_stageGrades[stage])
+    {
+        m_stageGrades[stage] = grade;
+    }
 }
 
 void CUserData::updateGrades( CStageMap* stageMap )
