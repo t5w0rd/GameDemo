@@ -165,9 +165,6 @@
     <ClCompile Include="..\Classes\Logic\LuaBinding.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\TestScene.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
     <ClCompile Include="..\Classes\LuaBindingForCC.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
@@ -196,6 +193,9 @@
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\GameData.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\UnpackScene.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -335,9 +335,6 @@
     <ClInclude Include="..\Classes\Logic\LuaBinding.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\TestScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\LuaBindingForCC.h">
       <Filter>Classes</Filter>
     </ClInclude>
@@ -368,6 +365,9 @@
     <ClInclude Include="..\Classes\GameData.h">
       <Filter>Classes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\UnpackScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\scripts\ability.lua">
@@ -377,6 +377,9 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\Resources\scripts\common.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Stage00.lua">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

@@ -206,7 +206,7 @@ public:
     inline CInitArray(const CInitArray& rArr)
         : m_iCount(rArr.m_iCount)
     {
-        m_pData = new TYPE[iCount];
+        m_pData = new TYPE[m_iCount];
         for (int i = 0; i < m_iCount; ++i)
         {
             m_pData[i] = rArr.m_pData[i];

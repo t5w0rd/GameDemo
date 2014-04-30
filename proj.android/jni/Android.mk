@@ -7,24 +7,6 @@ LOCAL_MODULE := cocos2dcpp_shared
 LOCAL_MODULE_FILENAME := libcocos2dcpp
 
 LOCAL_SRC_FILES := hellocpp/main.cpp \
-../../Classes/AbilityForCC.cpp \
-../../Classes/ActionForCC.cpp \
-../../Classes/AppDelegate.cpp \
-../../Classes/BattleScene.cpp \
-../../Classes/ComponentForCC.cpp \
-../../Classes/DrawForCC.cpp \
-../../Classes/GameControl.cpp \
-../../Classes/HeroRoomScene.cpp \
-../../Classes/Logic/Ability.cpp \
-../../Classes/Logic/Action.cpp \
-../../Classes/Logic/Application.cpp \
-../../Classes/Logic/Base.cpp \
-../../Classes/Logic/Draw.cpp \
-../../Classes/Logic/Item.cpp \
-../../Classes/Logic/Level.cpp \
-../../Classes/Logic/LuaBinding.cpp \
-../../Classes/Logic/MultiRefObject.cpp \
-../../Classes/Logic/Unit.cpp \
 ../../Classes/lua/lapi.c \
 ../../Classes/lua/lauxlib.c \
 ../../Classes/lua/lbaselib.c \
@@ -57,9 +39,30 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/lua/lundump.c \
 ../../Classes/lua/lvm.c \
 ../../Classes/lua/lzio.c \
+../../Classes/Logic/Ability.cpp \
+../../Classes/Logic/Action.cpp \
+../../Classes/Logic/Application.cpp \
+../../Classes/Logic/Base.cpp \
+../../Classes/Logic/Draw.cpp \
+../../Classes/Logic/Item.cpp \
+../../Classes/Logic/Level.cpp \
+../../Classes/Logic/LuaBinding.cpp \
+../../Classes/Logic/MultiRefObject.cpp \
+../../Classes/Logic/Unit.cpp \
+../../Classes/AbilityForCC.cpp \
+../../Classes/ActionForCC.cpp \
+../../Classes/AppDelegate.cpp \
+../../Classes/BattleScene.cpp \
+../../Classes/ComponentForCC.cpp \
+../../Classes/DrawForCC.cpp \
+../../Classes/GameControl.cpp \
+../../Classes/GameData.cpp \
+../../Classes/HeroRoomScene.cpp \
 ../../Classes/LogoScene.cpp \
 ../../Classes/LuaBindingForCC.cpp \
 ../../Classes/MainMenuScene.cpp \
+../../Classes/Stage.cpp \
+../../Classes/StageScene.cpp \
 ../../Classes/UnitLibraryForCC.cpp \
 ../../Classes/UserData.cpp
 
