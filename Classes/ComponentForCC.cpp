@@ -36,7 +36,7 @@ bool CCProgressBar::init(const CCSize& roSize, CCSprite* pFill, CCSprite* pBorde
     m_pPt->setBarChangeRate(ccp(1, 0));
     m_pPt->setMidpoint(ccp(0, 0));
 
-    if (pBorder)
+    if (pBorder != NULL)
     {
         addChild(pBorder, !bFillOnTop);
         oSz = pBorder->getContentSize();
@@ -44,6 +44,8 @@ bool CCProgressBar::init(const CCSize& roSize, CCSprite* pFill, CCSprite* pBorde
         pBorder->setScaleX(roSize.width / oSz.width);
         pBorder->setScaleY(roSize.height / oSz.height);
     }
+
+    setCascadeOpacityEnabled(true);
 
     return true;
 }
@@ -558,6 +560,8 @@ bool CCTouchMaskLayer::initWithColor( const ccColor4B& color, GLubyte disOpacity
     setTouchMode(kCCTouchesOneByOne);
     setTouchEnabled(false);
     setTouchPriority(touchPriority);
+
+    return true;
 }
 
 void CCTouchMaskLayer::setMaskEnabled( bool enabled )
@@ -701,6 +705,146 @@ void CCEffect::stop()
     stopActionByTag(CONST_ACT_TAG);
 }
 
+// CCMenuEx
+CCMenuEx* CCMenuEx::create()
+{
+    return CCMenuEx::create(NULL, NULL);
+}
+
+CCMenuEx * CCMenuEx::create(CCMenuItem* item, ...)
+{
+    va_list args;
+    va_start(args,item);
+
+    CCMenuEx *pRet = CCMenuEx::createWithItems(item, args);
+
+    va_end(args);
+
+    return pRet;
+}
+
+CCMenuEx* CCMenuEx::createWithArray(CCArray* pArrayOfItems)
+{
+    CCMenuEx *pRet = new CCMenuEx();
+    if (pRet && pRet->initWithArray(pArrayOfItems))
+    {
+        pRet->autorelease();
+    }
+    else
+    {
+        CC_SAFE_DELETE(pRet);
+    }
+
+    return pRet;
+}
+
+CCMenuEx* CCMenuEx::createWithItems(CCMenuItem* item, va_list args)
+{
+    CCArray* pArray = NULL;
+    if( item )
+    {
+        pArray = CCArray::create(item, NULL);
+        CCMenuItem *i = va_arg(args, CCMenuItem*);
+        while(i)
+        {
+            pArray->addObject(i);
+            i = va_arg(args, CCMenuItem*);
+        }
+    }
+
+    return CCMenuEx::createWithArray(pArray);
+}
+
+CCMenuEx* CCMenuEx::createWithItem(CCMenuItem* item)
+{
+    return CCMenuEx::create(item, NULL);
+}
+
+bool CCMenuEx::ccTouchBegan( CCTouch* touch, CCEvent* event )
+{
+    CC_UNUSED_PARAM(event);
+    if (m_eState != kCCMenuStateWaiting || !isVisible() || !isEnabled())
+    {
+        return false;
+    }
+
+    for (CCNode *c = this->m_pParent; c != NULL; c = c->getParent())
+    {
+        if (c->isVisible() == false)
+        {
+            return false;
+        }
+    }
+
+    m_pSelectedItem = this->itemForTouchEx(touch);
+    if (m_pSelectedItem && m_pSelectedItem->isEnabled())
+    {
+        m_eState = kCCMenuStateTrackingTouch;
+        m_pSelectedItem->selected();
+
+        return true;
+    }
+
+    return m_pSelectedItem != NULL;
+}
+
+void CCMenuEx::ccTouchEnded( CCTouch* touch, CCEvent* event )
+{
+    if (m_eState != kCCMenuStateTrackingTouch)
+    {
+        return;
+    }
+
+    CCMenu::ccTouchEnded(touch, event);
+}
+
+void CCMenuEx::ccTouchCancelled( CCTouch *touch, CCEvent* event )
+{
+    if (m_eState != kCCMenuStateTrackingTouch)
+    {
+        return;
+    }
+
+    CCMenu::ccTouchCancelled(touch, event);
+}
+
+void CCMenuEx::ccTouchMoved( CCTouch* touch, CCEvent* event )
+{
+    if (m_eState != kCCMenuStateTrackingTouch)
+    {
+        return;
+    }
+
+    CCMenu::ccTouchMoved(touch, event);
+}
+
+CCMenuItem* CCMenuEx::itemForTouchEx( CCTouch * touch )
+{
+    CCPoint touchLocation = touch->getLocation();
+
+    if (m_pChildren && m_pChildren->count() > 0)
+    {
+        CCObject* pObject = NULL;
+        CCARRAY_FOREACH(m_pChildren, pObject)
+        {
+            CCMenuItem* pChild = dynamic_cast<CCMenuItem*>(pObject);
+            if (pChild && pChild->isVisible())
+            {
+                CCPoint local = pChild->convertToNodeSpace(touchLocation);
+                CCRect r = pChild->rect();
+                r.origin = CCPointZero;
+
+                if (r.containsPoint(local))
+                {
+                    return pChild;
+                }
+            }
+        }
+    }
+
+    return NULL;
+}
+
 // CCButtonBase
 CCButtonBase::CCButtonBase()
     : m_pTarget(NULL)
@@ -723,11 +867,11 @@ void CCButtonBase::onCDBlickDone(CCNode* pNode)
 
 bool CCButtonBase::initWithFile( const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished )
 {
-    CCSprite* pNormalSprite = NULL;
-    CCSprite* pSelectedSprite = NULL;
-    CCSprite* pDisabledSprite = NULL;
-    CCSprite* pBlinkSprite = NULL;
-    CCSprite* pMaskSprite = NULL;
+    CCNode* pNormalSprite = NULL;
+    CCNode* pSelectedSprite = NULL;
+    CCNode* pDisabledSprite = NULL;
+    CCNode* pBlinkSprite = NULL;
+    CCNode* pMaskSprite = NULL;
 
     pNormalImage && (pNormalSprite = CCSprite::create(pNormalImage));
     pSelectedImage && (pSelectedSprite = CCSprite::create(pSelectedImage));
@@ -740,11 +884,11 @@ bool CCButtonBase::initWithFile( const char* pNormalImage, const char* pSelected
 
 bool CCButtonBase::initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished)
 {
-    CCSprite* pNormalSprite = NULL;
-    CCSprite* pSelectedSprite = NULL;
-    CCSprite* pDisabledSprite = NULL;
-    CCSprite* pBlinkSprite = NULL;
-    CCSprite* pMaskSprite = NULL;
+    CCNode* pNormalSprite = NULL;
+    CCNode* pSelectedSprite = NULL;
+    CCNode* pDisabledSprite = NULL;
+    CCNode* pBlinkSprite = NULL;
+    CCNode* pMaskSprite = NULL;
 
     pNormalImage && (pNormalSprite = CCSprite::createWithSpriteFrameName(pNormalImage));
     pSelectedImage && (pSelectedSprite = CCSprite::createWithSpriteFrameName(pSelectedImage));
@@ -755,12 +899,15 @@ bool CCButtonBase::initWithFrameName(const char* pNormalImage, const char* pSele
     return initWithSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
 }
 
-bool CCButtonBase::initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished)
+bool CCButtonBase::initWithSprite(CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished)
 {
     if (!initWithNormalSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, this, menu_selector(CCButtonBase::onClick)))
     {
         return false;
     }
+
+    //pNormalSprite->setZOrder((pDisabledSprite != NULL ? pDisabledSprite->getZOrder() : pNormalSprite->getZOrder()) + 1);
+
     m_pTarget = pTarget;
     m_pOnClick = pOnClick;
     m_pOnFinished = pOnFinished;
@@ -776,7 +923,7 @@ bool CCButtonBase::initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSp
     m_pPt->setType(kCCProgressTimerTypeRadial);
 
     // Create Blink Image
-    if (pBlinkSprite)
+    if (pBlinkSprite != NULL)
     {
         m_pBlink = pBlinkSprite;
         addChild(m_pBlink, 10);
@@ -788,7 +935,7 @@ bool CCButtonBase::initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSp
         m_pBlink = NULL;
     }
 
-    if (pMaskSprite)
+    if (pMaskSprite != NULL)
     {
         m_pMask = pMaskSprite;
         addChild(m_pMask);
@@ -813,36 +960,39 @@ bool CCButtonBase::initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSp
 void CCButtonBase::onClick(CCObject* pObject)
 {
     setClickRetCode(0);
-    if (m_pTarget && m_pOnClick)
+    if (m_pTarget != NULL && m_pOnClick != NULL)
     {
         (m_pTarget->*m_pOnClick)(this);
     }
+
     if (getClickRetCode() < 0)
     {
         return;
     }
 
+    coolDown();  // for test
 }
 
 void CCButtonBase::onCoolDownDone(CCNode* pNode)
 {
     if (getCoolDown())
     {
-        if (m_pMask)
+        if (m_pMask != NULL)
         {
             m_pMask->setVisible(false);
         }
         
         m_pPt->setVisible(false);
         this->setEnabled(true);
-        if (m_pBlink)
+
+        if (m_pBlink != NULL)
         {
             m_pBlink->setVisible(true);
             m_pBlink->runAction(CCSequence::create(CCFadeIn::create(0.25f), CCFadeOut::create(0.25f), CCCallFuncN::create(this, callfuncN_selector(CCButtonBase::onCDBlickDone)), NULL));
         }
     }
 
-    if (m_pTarget && m_pOnFinished)
+    if (m_pTarget != NULL && m_pOnFinished != NULL)
     {
         (m_pTarget->*m_pOnFinished)(this);
     }
@@ -853,30 +1003,31 @@ void CCButtonBase::coolDown(float fFromPercent)
     if (getCoolDown())
     {
         float fCoolDownReal = getCoolDown() * (100.0 - fFromPercent) / 100.0;
-        if (m_pMask)
+        if (m_pMask != NULL)
         {
             m_pMask->setVisible(true);
         }
         
         m_pPt->setVisible(true);
         this->setEnabled(false);
-        if (m_pDisabledImage)
+
+        if (m_pDisabledImage != NULL)
         {
+            m_pDisabledImage->stopAllActions();
             DCAST(m_pDisabledImage, CCSprite*)->setOpacity(0x50 + (0xFF - 0x50) * fFromPercent / 100.0);
             m_pDisabledImage->runAction(CCFadeTo::create(fCoolDownReal, 0xFF));
         }
         
 
-        m_pPt->setOpacity(0x7F + (0xFF - 0x7F) * fFromPercent / 100.0);
+        //m_pPt->setOpacity(0x7F + (0xFF - 0x7F) * fFromPercent / 100.0);
         CCProgressFromTo* pPro = CCProgressFromTo::create(fCoolDownReal, fFromPercent, 100.0f);
 
-        //m_pPt->runAction();
-
-
-        m_pPt->runAction(CCSpawn::createWithTwoActions(
-            CCFadeTo::create(fCoolDownReal, 0xFF),
-            CCSequence::create(pPro, CCCallFuncN::create(this, callfuncN_selector(CCButtonBase::onCoolDownDone)), NULL)
-            ));
+        m_pPt->stopAllActions();
+        m_pPt->runAction(
+            //CCSpawn::createWithTwoActions(
+            //CCFadeTo::create(fCoolDownReal, 0xFF),
+            CCSequence::create(pPro, CCCallFuncN::create(this, callfuncN_selector(CCButtonBase::onCoolDownDone)),
+            NULL));
     }
     else
     {
@@ -890,6 +1041,10 @@ float CCButtonBase::getPercentage() const
 }
 
 // CCButtonNormal
+CCButtonNormal::CCButtonNormal()
+    : m_fCoolDown(0.0f)
+{
+}
 
 // CCButtonPanel
 CCButtonPanel::CCButtonPanel()
@@ -947,7 +1102,7 @@ bool CCButtonPanel::init( int iRow, int iColumn, float fButtonWidth, float fButt
 
     m_iOwnerKey = 0;
 
-    m_pInnerMenu = CCMenu::create();
+    m_pInnerMenu = CCMenuEx::create();
     addChild(m_pInnerMenu);
     m_pInnerMenu->setContentSize(getContentSize());
     m_pInnerMenu->setPosition(CCPointZero);
@@ -963,6 +1118,8 @@ bool CCButtonPanel::init( int iRow, int iColumn, float fButtonWidth, float fButt
     memset(m_ppBtnPos, 0, sizeof(CCButtonBase*) * uCount);
 
     m_iCount = 0;
+
+    setCascadeOpacityEnabled(true);
 
     return true;
 }
@@ -1365,4 +1522,155 @@ int CCButtonPanel::getMaxCount() const
 int CCButtonPanel::getCount() const
 {
     return m_iCount;
+}
+
+// CCPopPanel
+CCPopPanel::CCPopPanel()
+    : m_mn(NULL)
+{
+}
+
+bool CCPopPanel::initWithSize( const CCSize& size )
+{
+    setAnchorPoint(ccp(0.5f, 0.5f));
+    setContentSize(size);
+    m_mn = CCMenuEx::create();
+    addChild(m_mn, 10);
+
+    setCascadeOpacityEnabled(true);
+
+    return true;
+}
+
+bool CCPopPanel::initWithBackground( CCSprite* background )
+{
+    setAnchorPoint(ccp(0.5f, 0.5f));
+    setContentSize(background->getContentSize());
+    m_mn = CCMenuEx::create();
+    addChild(m_mn, 10);
+
+    addChild(background);
+    background->setPosition(getAnchorPointInPoints());
+
+    setCascadeOpacityEnabled(true);
+
+    return true;
+}
+
+void CCPopPanel::setBackground( CCSprite* background, bool tile )
+{
+    addChild(background);
+    background->setPosition(getAnchorPointInPoints());
+
+    const CCSize& bgSz = background->getContentSize();
+    const CCSize& sz = getContentSize();
+    if (tile)
+    {
+        background->setScaleX(sz.width / bgSz.width);
+        background->setScaleY(sz.height / bgSz.height);
+    }
+    else
+    {
+        background->setScale(min(sz.width / bgSz.width, sz.height / bgSz.height));
+    }
+}
+
+void CCPopPanel::addButton( CCMenuItem* mi )
+{
+    m_mn->addChild(mi);
+}
+
+void CCPopPanel::onClickClose( CCObject* obj )
+{
+    hide();
+}
+
+void CCPopPanel::show()
+{
+    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    runAction(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height * 0.5)), CCSequence::createWithTwoActions(CCDelayTime::create(0.25f), CCFadeIn::create(0.25f)))));
+}
+
+void CCPopPanel::hide()
+{
+    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    stopAllActions();
+    runAction(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height + getContentSize().height * getScaleY() * 0.5)), CCSequence::createWithTwoActions(CCDelayTime::create(0.25f), CCFadeOut::create(0.25f)))));
+}
+
+// CCUtils
+CCImage* CCUtils::nodeToImage( CCNode* node )
+{
+    CCRenderTexture rt;
+    rt.initWithWidthAndHeight(node->getContentSize().width, node->getContentSize().height, kTexture2DPixelFormat_RGBA8888);
+
+    CCPoint pos = node->getPosition();
+    node->setPosition(node->getAnchorPointInPoints());
+    rt.begin();
+    node->visit();
+    rt.end();
+    node->setPosition(pos);
+
+    return rt.newCCImage();
+}
+
+CCImage* CCUtils::transformImage( CCImage* image, FUNC_TRAN_CCC4 funcTransform )
+{
+    ccColor4B* data = (ccColor4B*)image->getData();
+    
+    GLushort w = image->getWidth();
+    GLushort h = image->getHeight();
+
+    for (GLushort y = 0; y < h; ++y)
+    {
+        for (GLushort x = 0; x < w; ++x)
+        {
+            funcTransform(data, x, y, w, h);
+            ++data;
+        }
+    }
+
+    return image;
+}
+
+bool CCUtils::imageToFile( CCImage* image, const char* file )
+{
+    return image->saveToFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(file).c_str(), false);
+}
+
+CCTexture2D* CCUtils::nodeToTexture( CCNode* node, FUNC_TRAN_CCC4 funcTransform )
+{
+    CCImage* image = nodeToImage(node);
+    if (funcTransform != NULL)
+    {
+        transformImage(image, funcTransform);
+    }
+
+    CCTexture2D* ret = new CCTexture2D;
+    ret->initWithImage(image);
+    delete image;
+
+    return ret;
+}
+
+bool CCUtils::nodeToFile( CCNode* node, const char* file, FUNC_TRAN_CCC4 funcTransform /*= NULL*/ )
+{
+    CCImage* image = nodeToImage(node);
+    if (funcTransform != NULL)
+    {
+        transformImage(image, funcTransform);
+    }
+
+    bool ret = imageToFile(image, file);
+    delete image;
+
+    return ret;
+}
+
+void CCUtils::tranGrayscale( ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h )
+{
+    GLubyte gray = (c->r + (c->g << 1) + c->b) >> 2;
+    c->r = gray;
+    c->g = gray;
+    c->b = gray;
 }

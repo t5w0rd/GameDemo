@@ -31,7 +31,7 @@ public:
         pLevel->setMaxExp(funcExp(lvl));
     }
 
-    virtual void onLevelChange(CLevelExp* pLevel, int iChanged)
+    virtual void onChangeLevel(CLevelExp* pLevel, int iChanged)
     {
         static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
         static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
@@ -49,7 +49,12 @@ public:
         u->addBuffAbility(new CReflectBuff("Reflect", "Reflect", 5.0f));
         CAttackAct* atk = DCAST(u->getActiveAbility(u->getAttackAbilityId()), CAttackAct*);
         atk->getBaseAttack().setValue(atk->getBaseAttack().getValue() + 7.8);
-        d->setBaseMoveSpeed(d->getBaseMoveSpeed() + 1);
+        d->setBaseMoveSpeed(d->getBaseMoveSpeed() + 1.5);
+
+        atk->setExAttackSpeed(CExtraCoeff(atk->getExAttackSpeed().getMulriple() + 0.03, atk->getExAttackSpeed().getAddend()));
+
+        CUserData::instance()->getHeroSelected()->exp = u->getExp();
+        CUserData::instance()->save("");
     }
 };
 
@@ -97,6 +102,7 @@ public:
 const float CBattleWorld::CONST_MAX_REWARD_RANGE = 400;
 
 CBattleWorld::CBattleWorld()
+    : m_bLuaWorldTickEnabled(true)
 {
     CWorld::getLuaHandle();
 }
@@ -210,6 +216,8 @@ bool CBattleWorld::onInit()
     u->setBaseArmor(udt->getHeroSelected()->armVal);
     d->setBaseMoveSpeed(udt->getHeroSelected()->moveSpeed);
 
+    u->addExp(udt->getHeroSelected()->exp);
+
     onLuaWorldInit();
     
     CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
@@ -285,7 +293,10 @@ void CBattleWorld::onTick( float dt )
         g_fight = 100.0f;
     }
     
-    onLuaWorldTick(dt);
+    if (isLuaWorldTickEnabled())
+    {
+        onLuaWorldTick(dt);
+    }
 
     CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
     l->updateTargetInfo();
@@ -508,7 +519,6 @@ void CBattleWorld::onUnitProjectileEffect( CUnit* pUnit, CProjectile* pProjectil
     }
 }
 
-
 void CBattleWorld::onChangeGold( CMultiRefObject* obj )
 {
     CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
@@ -522,19 +532,6 @@ void CBattleWorld::onChangeGold( CMultiRefObject* obj )
 void CBattleWorld::onAniDone( CMultiRefObject* obj, void* data )
 {
     getHero()->resume();
-}
-
-void CBattleWorld::endWithVictory( int grade )
-{
-    CUserData::instance()->newGrades(CUserData::instance()->m_stageSel, grade);
-    CUserData::instance()->save("");
-
-    CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
-    l->onClickQuit(NULL);
-}
-
-void CBattleWorld::endWithDefeat()
-{
 }
 
 // CCBattleScene
@@ -555,7 +552,6 @@ bool CCBattleScene::init()
 
     return CCScene::init();
 }
-
 
 // CCBattleSceneLayer
 CCBattleSceneLayer::CCBattleSceneLayer()
@@ -616,7 +612,7 @@ bool CCBattleSceneLayer::initWithWorld(CWorldForCC* pWorld)
     }
 
     m_ctrlLayer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 80, -6);
-    m_ctrlLayer2 = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 80, -5);
+    m_ctrlLayer2 = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 120, -5);
 
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     M_DEF_GC(gc);
@@ -1450,14 +1446,29 @@ void CCBattleSceneLayer::initCtrlPanel()
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
 
     // ²¼ÖÃpannel
-    m_panel = CCSprite::create("UI/PanelBig.png");
+    m_panel = CCPopPanel::create(CCSprite::create("UI/PanelSmall.png"));
+    m_panel->getMenu()->setTouchPriority(-10);
+    m_panel->getMenu()->setPosition(CCPointZero);
+
     m_ctrlLayer2->addChild(m_panel);
     CCSize psz = m_panel->getContentSize();
 
-    CCMenu* panelMn = CCMenu::create();
-    m_panel->addChild(panelMn);
-    panelMn->setTouchPriority(-10);
-    panelMn->setPosition(CCPointZero);
+    CCSprite* sp = CCSprite::create("UI/Chain.png");
+    m_panel->addChild(sp, -1);
+    sp->setPosition(ccp(psz.width * 0.2, psz.height + sp->getContentSize().height * 0.2));
+
+    sp = CCSprite::create("UI/Chain.png");
+    m_panel->addChild(sp, -1);
+    sp->setPosition(ccp(psz.width * 0.8, psz.height + sp->getContentSize().height * 0.2));
+
+    sp = CCSprite::create("UI/Title.png");
+    m_panel->addChild(sp, 1, 2);
+    sp->setPosition(ccp(psz.width * 0.5, psz.height));
+
+    CCLabelTTF* lbl = CCLabelTTF::create("OPTIONS", FONT_YIKES, 72);
+    lbl->setColor(ccc3(80, 60, 50));
+    sp->addChild(lbl, 1, 2);
+    lbl->setPosition(ccpAdd(sp->getAnchorPointInPoints(), ccp(0.0f, 20)));
 
     CCMenuItemSprite* btnClose = CCMenuItemSprite::create(
         CCSprite::create("UI/Button/BtnCloseNor.png"),
@@ -1465,7 +1476,7 @@ void CCBattleSceneLayer::initCtrlPanel()
         NULL,
         this,
         menu_selector(CCBattleSceneLayer::onCloseCtrlPanel));
-    panelMn->addChild(btnClose);
+    m_panel->addButton(btnClose);
     btnClose->setPosition(ccp(psz.width - btnClose->getContentSize().width * 0.5 - 50, psz.height - btnClose->getContentSize().height * 0.5 - 50));
 
     CCMenuItemSprite* btnResume = CCMenuItemSprite::create(
@@ -1474,8 +1485,9 @@ void CCBattleSceneLayer::initCtrlPanel()
         NULL,
         this,
         menu_selector(CCBattleSceneLayer::onClickResume));
-    panelMn->addChild(btnResume);
-    btnResume->setPosition(ccp(psz.width * 0.5, psz.height * 0.5 + 200));
+    m_panel->addButton(btnResume);
+    btnResume->setTag(1);
+    btnResume->setPosition(ccp(psz.width * 0.5, psz.height * 0.5 + btnResume->getContentSize().height + 20));
     
     CCMenuItemSprite* btnRestart = CCMenuItemSprite::create(
         CCSprite::create("UI/Button/BtnRestartNor.png"),
@@ -1483,8 +1495,9 @@ void CCBattleSceneLayer::initCtrlPanel()
         NULL,
         this,
         menu_selector(CCBattleSceneLayer::onClickRestart));
-    panelMn->addChild(btnRestart);
-    btnRestart->setPosition(ccpAdd(ccp(0.0f, -20 - btnResume->getContentSize().height * 0.5 - btnRestart->getContentSize().height * 0.5), btnResume->getPosition()));
+    m_panel->addButton(btnRestart);
+    btnRestart->setTag(2);
+    btnRestart->setPosition(ccpAdd(ccp(0.0f, -20 - btnRestart->getContentSize().height), btnResume->getPosition()));
 
     CCMenuItemSprite* btnQuit = CCMenuItemSprite::create(
         CCSprite::create("UI/Button/BtnQuitNor.png"),
@@ -1492,11 +1505,12 @@ void CCBattleSceneLayer::initCtrlPanel()
         NULL,
         this,
         menu_selector(CCBattleSceneLayer::onClickQuit));
-    panelMn->addChild(btnQuit);
-    btnQuit->setPosition(ccpAdd(ccp(0.0f, -20 - btnRestart->getContentSize().height * 0.5 - btnQuit->getContentSize().height * 0.5), btnRestart->getPosition()));
+    m_panel->addButton(btnQuit);
+    btnQuit->setTag(3);
+    btnQuit->setPosition(ccpAdd(ccp(0.0f, -20 - btnQuit->getContentSize().height), btnRestart->getPosition()));
 
     // panelËõ·Å
-    m_panel->setScale(min(wsz.width / psz.width, wsz.height / psz.height));
+    m_panel->setScale(min(wsz.width * 0.6 / psz.width, wsz.height * 0.6 / psz.height));
     psz = psz * m_panel->getScale();
     m_panel->setPosition(ccp(wsz.width * 0.5, wsz.height + psz.height * 0.5));
 }
@@ -1507,8 +1521,7 @@ void CCBattleSceneLayer::showCtrlPanel()
     M_DEF_GC(gc);
     // µ¯³öpanel
     gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
-    m_panel->stopAllActions();
-    m_panel->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height * 0.5))));
+    m_panel->show();
 
     m_ctrlLayer2->setMaskEnabled(true);
     
@@ -1521,8 +1534,7 @@ void CCBattleSceneLayer::onCloseCtrlPanel( CCObject* obj )
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     M_DEF_GC(gc);
     gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
-    m_panel->stopAllActions();
-    m_panel->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height + m_panel->getContentSize().height * m_panel->getScaleY() * 0.5))));
+    m_panel->hide();
 
     m_ctrlLayer2->setMaskEnabled(false);
 
@@ -1554,3 +1566,67 @@ void CCBattleSceneLayer::onClickSound( CCObject* obj )
 void CCBattleSceneLayer::onClickMusic( CCObject* obj )
 {
 }
+
+void CCBattleSceneLayer::endWithVictory( int grade )
+{
+    CCDirector::sharedDirector()->getScheduler()->setTimeScale(1.0f);
+    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    M_DEF_GC(gc);
+
+    CUserData::instance()->newGrades(CUserData::instance()->m_stageSel, grade);
+    CUserData::instance()->save("");
+
+    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
+    w->setLuaWorldTickEnabled(false);
+
+    m_ctrlLayer2->setMaskEnabled(true);
+    CCSprite* sp = CCSprite::create("UI/VictoryBadge.png");
+    sp->setUserData((void*)grade);
+    
+    m_ctrlLayer2->addChild(sp);
+    sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.6));
+    float scale = m_panel->getScale();
+    sp->setScale(scale * 0.2);
+    
+    sp->runAction(CCSequence::create(CCScaleTo::create(0.2f, scale * 1.2), CCScaleTo::create(0.1f, scale * 1.0), CCDelayTime::create(1.0f), CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onShowVictoryDone)), NULL));
+}
+
+void CCBattleSceneLayer::endWithDefeat()
+{
+    CCDirector::sharedDirector()->getScheduler()->setTimeScale(1.0f);
+    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
+    w->setLuaWorldTickEnabled(false);
+
+    CCLabelTTF* lbl = DCAST(m_panel->getChildByTag(2)->getChildByTag(2), CCLabelTTF*);
+    lbl->setString("DEFEATS");
+
+    CCMenuItemSprite* btn = DCAST(m_panel->getMenu()->getChildByTag(2), CCMenuItemSprite*);
+    btn->setNormalImage(CCSprite::create("UI/Button/BtnTryAgainNor.png"));
+    btn->setSelectedImage(CCSprite::create("UI/Button/BtnTryAgainSel.png"));
+
+    //btn = DCAST(m_panel->getMenu()->getChildByTag(1), CCMenuItemSprite*);
+    //btn->setVisible(false);
+
+    showCtrlPanel();
+}
+
+void CCBattleSceneLayer::onShowVictoryDone( CCNode* node )
+{
+    int grade = (int)node->getUserData();
+
+    for (int i = 0; i < 3; ++i)
+    {
+        CCSprite* sp = CCSprite::createWithSpriteFrameName(i < grade ? "UI/Stage/Star.png" : "UI/Stage/Unstar.png");
+        node->getParent()->addChild(sp, 10 - i);
+        sp->setScale(node->getScale() * 3);
+        const CCSize ndSz = node->getContentSize() * node->getScale();
+        const CCSize spSz = sp->getContentSize() * sp->getScale();
+        float bx = spSz.width + 0;
+        float by = ndSz.height * 0.5 + spSz.height * 0.5 + 0;
+        sp->setPosition(ccpAdd(node->getPosition(), ccp(0.0f, -by)));
+        sp->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccpAdd(node->getPosition(), ccp(bx * (i - 1), -by)))));
+    }
+
+    node->runAction(CCSequence::create(CCDelayTime::create(5.0f), CCCallFuncO::create(this, callfuncO_selector(CCBattleSceneLayer::onClickQuit), NULL), NULL));
+}
+

@@ -333,7 +333,7 @@ int g_endWithVictory(lua_State* L)
 
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    w->endWithVictory(grade);
+    DCAST(w->getLayer(), CCBattleSceneLayer*)->endWithVictory(grade);
     lua_pop(L, 1);  // pop _world
 
     return 0;
@@ -343,7 +343,7 @@ int g_endWithDefeat(lua_State* L)
 {
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    w->endWithDefeat();
+    DCAST(w->getLayer(), CCBattleSceneLayer*)->endWithDefeat();
     lua_pop(L, 1);  // pop _world
 
     return 0;

@@ -69,6 +69,9 @@ void CUserData::load( const char* name )
         sprintf(sz, "hero_%d_moveSpeed", i);
         hi.moveSpeed = ud->getFloatForKey(sz);
 
+        sprintf(sz, "hero_%d_exp", i);
+        hi.exp = ud->getIntegerForKey(sz);
+
         m_heroes.push_back(hi);
     }
 }
@@ -119,6 +122,9 @@ void CUserData::save( const char* name )
 
         sprintf(sz, "hero_%d_moveSpeed", i);
         ud->setFloatForKey(sz, hi.moveSpeed);
+
+        sprintf(sz, "hero_%d_exp", i);
+        ud->setIntegerForKey(sz, hi.exp);
     }
 
     ud->flush();

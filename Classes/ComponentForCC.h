@@ -2,7 +2,7 @@
 #define __COMPONENTFORCC_H__
 
 
-class CCProgressBar : public CCNode
+class CCProgressBar : public CCNodeRGBA
 {
 public:
     static const float CONST_MAX_PROCESS_BAR_PERCENT;
@@ -198,6 +198,24 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ANIS, m_vecAnis, AnimationNames);
 };
 
+class CCMenuEx : public CCMenu
+{
+public:
+    static CCMenuEx* create();
+    static CCMenuEx* create(CCMenuItem* item, ...);
+    static CCMenuEx* createWithArray(CCArray* pArrayOfItems);
+    static CCMenuEx* createWithItem(CCMenuItem* item);
+    static CCMenuEx* createWithItems(CCMenuItem *firstItem, va_list args);
+
+    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
+    virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
+    virtual void ccTouchCancelled(CCTouch *touch, CCEvent* event);
+    virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
+
+protected:
+    CCMenuItem* itemForTouchEx(CCTouch * touch);
+};
+
 class CCButtonBase : public CCMenuItemImage
 {
 protected:
@@ -207,14 +225,14 @@ protected:
 public:
     virtual bool initWithFile(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
     virtual bool initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
-    virtual bool initWithSprite(CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
+    virtual bool initWithSprite(CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
     //CREATE_FUNC_PARAM(CCButtonBase, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
     virtual void setCoolDown(float fDuration) = 0;
     virtual float getCoolDown() const = 0;
     void setLabel(const char* pLabel);
-    CC_SYNTHESIZE(int, m_iClickRetCode, ClickRetCode);
+    M_SYNTHESIZE(int, m_iClickRetCode, ClickRetCode);
 
-    CC_SYNTHESIZE(int, m_iButtonIndex, ButtonIndex);
+    M_SYNTHESIZE(int, m_iButtonIndex, ButtonIndex);
 
     virtual void coolDown(float fFromPercent = 0);
     float getPercentage() const;
@@ -230,17 +248,19 @@ protected:
     SEL_MenuHandler m_pOnFinished;
     CCProgressTimer* m_pPt;
     CCFiniteTimeAction* m_pAct;
-    CCSprite* m_pBlink;
-    CCSprite* m_pMask;
+    CCNode* m_pBlink;
+    CCNode* m_pMask;
 
 };
 
 class CCButtonNormal : public CCButtonBase
 {
 public:
+    CCButtonNormal();
+
     M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
     M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
     
     CC_SYNTHESIZE(float, m_fCoolDown, CoolDown);
 };
@@ -251,14 +271,14 @@ public:
     virtual bool init (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished, int iKey);
     M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
     M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCSprite* pNormalSprite, CCSprite* pSelectedSprite, CCSprite* pDisabledSprite, CCSprite* pBlinkSprite, CCSprite* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
 
 public:
     int m_iKey;
 
 };
 
-class CCButtonPanel : public CCNode
+class CCButtonPanel : public CCNodeRGBA
 {
 public:
     enum ADD_HORIZONTAL
@@ -395,7 +415,7 @@ public:
     CC_SYNTHESIZE(float, m_fOffsetY, OffsetY);
     CC_SYNTHESIZE(float, m_fInnerBorderWidth, InnerBorderWidth);
     CC_SYNTHESIZE(float, m_fBorderWidth, BorderWidth);
-    CC_SYNTHESIZE(CCMenu*, m_pInnerMenu, InnerMenu);
+    CC_SYNTHESIZE(CCMenuEx*, m_pInnerMenu, InnerMenu);
     CC_SYNTHESIZE(CCSprite*, m_pBackground, Background);
 
 public:
@@ -405,6 +425,44 @@ public:
     LIST_ACTION m_lstActs;
     int m_iCount;
 };
+
+class CCPopPanel : public CCNodeRGBA
+{
+public:
+    CCPopPanel();
+
+    virtual bool initWithSize(const CCSize& size);
+    M_CREATE_INITWITH_FUNC_PARAM(Size, CCPopPanel, (const CCSize& size), size);
+    virtual bool initWithBackground(CCSprite* background);
+    M_CREATE_INITWITH_FUNC_PARAM(Background, CCPopPanel, (CCSprite* background), background);
+
+    void setBackground(CCSprite* background, bool tile);
+    M_SYNTHESIZE(CCMenuEx*, m_mn, Menu);
+    void addButton(CCMenuItem* mi);
+
+    void onClickClose(CCObject* obj);
+
+    void show();
+    void hide();
+};
+
+typedef void (*FUNC_TRAN_CCC4)(ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h);
+class CCUtils
+{
+public:
+    static CCImage* nodeToImage(CCNode* node);
+    static CCImage* transformImage(CCImage* image, FUNC_TRAN_CCC4 funcTransform);
+    static bool imageToFile(CCImage* image, const char* file);
+    static CCTexture2D* nodeToTexture(CCNode* node, FUNC_TRAN_CCC4 funcTransform = NULL);
+    static bool nodeToFile(CCNode* node, const char* file, FUNC_TRAN_CCC4 funcTransform = NULL);
+
+    static void tranGrayscale(ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h);
+};
+
+
+
+
+
 
 
 ////////////////////////////////// Inline ////////////////////////////////////////

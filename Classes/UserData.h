@@ -27,6 +27,7 @@ public:
         CArmorValue armVal;
         float attackSpeed;
         float moveSpeed;
+        int exp;
     };
 
     typedef vector<HERO_INFO> VEC_HEROES;

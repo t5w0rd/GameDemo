@@ -27,7 +27,7 @@ public:
     void onClickPanelClose(CCObject* pObj);
 
     CCTouchMaskLayer* m_ctrlLayer;
-    CCSprite* m_panel;
+    CCPopPanel* m_panel;
     
     CCLabelTTF* m_name;
     CCLabelTTF* m_desc;

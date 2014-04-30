@@ -23,6 +23,7 @@ public:
     virtual void onTick(float dt);
     bool onLuaWorldInit();
     void onLuaWorldTick(float dt);
+    M_SYNTHESIZE_BOOL(LuaWorldTickEnabled);
     
     virtual CProjectile* copyProjectile(int id) const;
 
@@ -44,9 +45,7 @@ public:
     CUnitLibraryForCC m_oULib;
 
     M_SYNTHESIZE_STR(ScriptName);
-
-    void endWithVictory(int grade);
-    void endWithDefeat();
+    
 };
 
 class CCBattleScene : public CCScene
@@ -147,7 +146,7 @@ public:
 
     void onClickPause(CCObject* obj);
 
-    M_SYNTHESIZE(CCSprite*, m_panel, CtrlPanel)
+    M_SYNTHESIZE(CCPopPanel*, m_panel, CtrlPanel)
     void initCtrlPanel();
     void showCtrlPanel();
     void onCloseCtrlPanel(CCObject* obj);
@@ -156,6 +155,11 @@ public:
     void onClickQuit(CCObject* obj);
     void onClickSound(CCObject* obj);
     void onClickMusic(CCObject* obj);
+
+    void endWithVictory(int grade);
+    void endWithDefeat();
+
+    void onShowVictoryDone(CCNode* node);
     
 };
 

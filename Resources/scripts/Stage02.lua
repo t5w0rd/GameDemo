@@ -68,15 +68,15 @@ function spawnHero(id)
     end
     hero = spawnSoldier(id, 1)
     hero:addPassiveAbility(OnDyingPas:new())
-    hero:setMaxHp(me:getMaxHp() * 1.0 + (kill / 2.5) * 100)
+    hero:setMaxHp(400 + (kill / 2.5) * 100)
     hero:setRewardGold(50 + kill * 20 / 1.5)
     hero:setRewardExp(20 + kill * 10 / 1.5)
     hero:setExArmorValue(1.0, kill * 0.7)
     atk = hero:getAttackAbility()
     t, v = atk:getBaseAttack()
-    atk:setBaseAttack(t, v * (1 + kill / 2.5))
+    atk:setBaseAttack(t, v * (1 + kill / 3.0))
     atk:setExAttackSpeed(1.0 + kill / 20, 0.0)
-    for i = 1, (3 + kill) do
+    for i = 1, (3 + kill / 2) do
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
 
@@ -171,7 +171,8 @@ up2 = UnitPath:new()
 up2:addPoint(1900, 500)
 up2:addPoint(100, 500)
 uc = 0
-
+tower1 = 0
+tower2 = 0
 function game01()
     a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.006, 0, 0, -1)
     id = addTemplateAbility(a)
@@ -196,6 +197,7 @@ function game01()
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0)
     u:addPassiveAbility(a)
+    tower1 = u:getId()
 
     u = createUnit(UL.kTesla)
     u:setMaxHp(u:getMaxHp() * 3)
@@ -212,12 +214,17 @@ function game01()
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0)
     u:addPassiveAbility(a)
+    tower2 = u:getId()
     
 end
 
 function game01_tick(dt)
-    if me:getLevel() == 2 then
+    if not getUnit(tower1) then
         endWithVictory(math.random(1, 3))
+    end
+    
+    if not getUnit(tower2) then
+        endWithDefeat()
     end
     
     a = ChangeHpBuff:new("MageHeal", "MageHeal", 5, false, 0.3, 0.006, 0, 0, -1)

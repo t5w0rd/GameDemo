@@ -59,6 +59,7 @@ bool CCStageSceneLayer::init()
     m_ctrlLayer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 80, -5);
 
     M_DEF_GC(gc);
+    gc->playMusic("sounds/Background/Map_Theme.mp3");
     addChild(gc->defaultLoadingLayer(), 100, 100);
 
     vector<string> ts;
@@ -93,23 +94,29 @@ void CCStageSceneLayer::onLoadingDone( CCObject* pObj )
     gc->preloadSound("sounds/Effect/UIMove.mp3");
 
     // 布置pannel
-    m_panel = CCSprite::create("UI/PanelBig.png");
+    m_panel = CCPopPanel::create(CCSprite::create("UI/PanelBig.png"));
     m_ctrlLayer->addChild(m_panel);
     CCSize psz = m_panel->getContentSize();
 
-    CCMenu* panelMn = CCMenu::create();
-    m_panel->addChild(panelMn);
-    panelMn->setTouchPriority(-10);
-    panelMn->setPosition(CCPointZero);
+    m_panel->getMenu()->setTouchPriority(-10);
+    m_panel->getMenu()->setPosition(CCPointZero);
 
-    // 标题
-    //sp = CCSprite::create("UI/Title.png");
-    //lbl = CCLabelTTF::create("Hero Room", "fonts/Yikes!.ttf", 72);
-    //lbl->setColor(ccc3(80, 60, 50));
-    //sp->addChild(lbl);
-    //lbl->setPosition(ccpAdd(sp->getAnchorPointInPoints(), ccp(0.0f, 20)));
-    //m_panel->addChild(sp);
-    //sp->setPosition(ccp(sz.width * 0.5, sz.height - lbl->getContentSize().height - 100));
+    sp = CCSprite::create("UI/Chain.png");
+    m_panel->addChild(sp, -1);
+    sp->setPosition(ccp(psz.width * 0.2, psz.height + sp->getContentSize().height * 0.2));
+
+    sp = CCSprite::create("UI/Chain.png");
+    m_panel->addChild(sp, -1);
+    sp->setPosition(ccp(psz.width * 0.8, psz.height + sp->getContentSize().height * 0.2));
+
+    sp = CCSprite::create("UI/Title.png");
+    m_panel->addChild(sp, 1, 2);
+    sp->setPosition(ccp(psz.width * 0.5, psz.height));
+
+    lbl = CCLabelTTF::create("STAGES", FONT_YIKES, 72);
+    lbl->setColor(ccc3(80, 60, 50));
+    sp->addChild(lbl, 1, 2);
+    lbl->setPosition(ccpAdd(sp->getAnchorPointInPoints(), ccp(0.0f, 20)));
 
     CCMenu* mn = CCMenu::create();
     addChild(mn, 10);
@@ -163,7 +170,7 @@ void CCStageSceneLayer::onLoadingDone( CCObject* pObj )
         menu_selector(CCStageSceneLayer::onClickPanelBattle),
         NULL);
 
-    panelMn->addChild(m_btnBattle);
+    m_panel->addButton(m_btnBattle);
     m_btnBattle->setPosition(ccp(psz.width - m_btnBattle->getContentSize().width * 0.5 - 50, m_btnBattle->getContentSize().height * 0.5 + 50));
 
     CCButtonNormal* btnClose = CCButtonNormal::create(
@@ -177,7 +184,7 @@ void CCStageSceneLayer::onLoadingDone( CCObject* pObj )
         menu_selector(CCStageSceneLayer::onClickPanelClose),
         NULL);
 
-    panelMn->addChild(btnClose);
+    m_panel->addButton(btnClose);
     btnClose->setPosition(ccp(psz.width - btnClose->getContentSize().width * 0.5 - 50, psz.height - btnClose->getContentSize().height * 0.5 - 50));
 
     // 名字、简介
@@ -202,7 +209,7 @@ void CCStageSceneLayer::onLoadingDone( CCObject* pObj )
     }
 
     // panel缩放
-    m_panel->setScale(min(wsz.width / psz.width, wsz.height / psz.height));
+    m_panel->setScale(min(wsz.width * 0.8 / psz.width, wsz.height * 0.8 / psz.height));
     psz = psz * m_panel->getScale();
     m_panel->setPosition(ccp(wsz.width * 0.5, wsz.height + psz.height * 0.5));
 }
@@ -241,8 +248,7 @@ void CCStageSceneLayer::onClickStage( CCObject* pObj )
 
     // 弹出panel
     gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
-    m_panel->stopAllActions();
-    m_panel->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height * 0.5))));
+    m_panel->show();
     
     m_ctrlLayer->setMaskEnabled(true);
 }
@@ -264,8 +270,7 @@ void CCStageSceneLayer::onClickPanelClose( CCObject* pObj )
     static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
     M_DEF_GC(gc);
     gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
-    m_panel->stopAllActions();
-    m_panel->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height + m_panel->getContentSize().height * m_panel->getScaleY() * 0.5))));
+    m_panel->hide();
 
     m_ctrlLayer->setMaskEnabled(false);
 }

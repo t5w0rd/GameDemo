@@ -101,7 +101,7 @@ bool CCHeroRoomSceneLayer::init()
 
     // БъЬт
     sp = CCSprite::create("UI/Title.png");
-    lbl = CCLabelTTF::create("Hero Room", "fonts/Yikes!.ttf", 72);
+    lbl = CCLabelTTF::create("Hero Room", FONT_YIKES, 72);
     lbl->setColor(ccc3(80, 60, 50));
     sp->addChild(lbl);
     lbl->setPosition(ccpAdd(sp->getAnchorPointInPoints(), ccp(0.0f, 20)));

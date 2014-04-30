@@ -15,12 +15,12 @@ class CLevelUpdate
 {
 public:
     virtual void updateExpRange(CLevelExp* pLevel) = 0; // @override
-    virtual void onLevelChange(CLevelExp* pLevel, int iChanged) = 0; // @override
+    virtual void onChangeLevel(CLevelExp* pLevel, int iChanged) = 0; // @override
 };
 
 // 等级经验值，赋予对象等级经验值特性
 // 需要覆盖 updateExpRange，提供等级变化时的最大经验值变更公式
-// 等级变化后触发 onLevelChange
+// 等级变化后触发 onChangeLevel
 class CLevelExp
 {
 public:

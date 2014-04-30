@@ -35,10 +35,13 @@ using namespace CocosDenshion;
 #if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
 #define FONT_COMIC_BOOK "Comic Book"
 #define FONT_ARIAL "Arial"
+#define FONT_YIKES "Yikes!"
 #else
 #define FONT_COMIC_BOOK "fonts/Comic Book.ttf"
 #define FONT_ARIAL "fonts/Arial.ttf"
+#define FONT_YIKES "fonts/Yikes!.ttf"
 #endif
+
 
 #endif  /* __COMMHEADER_H__ */
 

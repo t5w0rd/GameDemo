@@ -44,19 +44,56 @@ CCScene* CCMainMenuSceneLayer::scene()
     return pScene;
 }
 
+void tranBlink(ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h)
+{
+    static int ly = -1;
+    static int status = 0;
+    static int c1 = 0;
+
+    if (y != ly)
+    {
+        ly = y;
+        status = 0;
+        c1 = 0;
+    }
+
+    if (c->a == 0)
+    {
+        if (status == 2 && c1 < 60)
+        {
+            c->a = c->r = c->g = c->b = 255;
+        }
+
+        if (status == 1 || status == 3)
+        {
+            ++status;
+        }
+    }
+    else
+    {
+        c->a = c->r = c->g = c->b = 0;
+        if (status == 0 || status == 2)
+        {
+            ++status;
+        }
+
+        if (status == 1)
+        {
+            ++c1;
+        }
+    }
+}
+
 bool CCMainMenuSceneLayer::init()
 {
     if (!CCLayer::init())
     {
         return false;
     }
-    char sz[1024];
-    sprintf(sz, "backgrounds/BackgroundHD%02d.png", rand() % 2);
-    CCSprite* pSprite = CCSprite::create(sz);
-    CCSize winSize = CCDirector::sharedDirector()->getWinSize();
+    CCSprite* pSprite = CCSprite::create("backgrounds/MainMenuBackground.png");
+    static CCSize winSize = CCDirector::sharedDirector()->getWinSize();
     CCSize orgSize = pSprite->getContentSize();
-    pSprite->setScaleX(winSize.width/orgSize.width);
-    pSprite->setScaleY(winSize.height/orgSize.height);
+    pSprite->setScale(max(winSize.width/orgSize.width, winSize.height/orgSize.height));
     addChild(pSprite);
     pSprite->setAnchorPoint(ccp(0,0));
     pSprite->setPosition(ccp(0,0));
@@ -75,7 +112,6 @@ bool CCMainMenuSceneLayer::init()
     pMenu->setZOrder(2);
     pMenu2->setZOrder(3);
     m_pItemStart->setPosition(winSize.width/2,winSize.height * 3/4);
-    
     
     CCMenuItemImage* pItemLogo = CCMenuItemImage::create("UI/mainmenu/logo.png", NULL, this, menu_selector(CCMainMenuSceneLayer::CCMenuItemLogoCallback));
     pItemLogo->setPosition(winSize.width/2, winSize.height * 3/4);
@@ -99,7 +135,7 @@ void CCMainMenuSceneLayer::onEnter()
 void CCMainMenuSceneLayer::CCRunStartAction()
 {
     CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-    m_pItemStart->runAction(CCMoveTo::create(0.5, ccp(winSize.width/2, winSize.height/2)));
+    m_pItemStart->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5, ccp(winSize.width/2, winSize.height/2))));
     m_pItemStart->setEnabled(true);
 }
 
@@ -125,10 +161,12 @@ CCSelectArchiveLayer::CCSelectArchiveLayer()
 {
 
 }
+
 CCSelectArchiveLayer::~CCSelectArchiveLayer()
 {
 
 }
+
 bool CCSelectArchiveLayer::init()
 {
     if(!CCLayer::init())

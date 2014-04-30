@@ -61,7 +61,7 @@ void CLevelExp::addExp(int iExp)
         updateExpRange();
         if (m_pUpdate)
         {
-            m_pUpdate->onLevelChange(this, 1);
+            m_pUpdate->onChangeLevel(this, 1);
         }
         onChangeLevel(1);
     }
@@ -99,7 +99,7 @@ void CLevelExp::setLevel(int iLvl)
         }
         if (m_pUpdate)
         {
-            m_pUpdate->onLevelChange(this, iChanged);
+            m_pUpdate->onChangeLevel(this, iChanged);
         }
         onChangeLevel(iChanged);
         updateExpRange();
