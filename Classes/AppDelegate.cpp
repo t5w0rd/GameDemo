@@ -2,17 +2,12 @@
 
 #include "AppDelegate.h"
 #include "BattleScene.h"
-#include "LuaBinding.h"
-#include "LuaBindingForCC.h"
-#include "UnpackScene.h"
-#include "LogoScene.h"
-#include "HeroRoomScene.h"
-#include "StageScene.h"
 #include "MainMenuScene.h"
-#include "UserData.h"
+#include "LogoScene.h"
+#include "StageScene.h"
+#include "EmptyScene.h"
 
 
-// AppDelegate
 AppDelegate::AppDelegate()
 {
 }
@@ -21,59 +16,55 @@ AppDelegate::~AppDelegate()
 {
 }
 
-bool AppDelegate::applicationDidFinishLaunching() {
+bool AppDelegate::applicationDidFinishLaunching()
+{
     // initialize director
-    CCDirector* pDirector = CCDirector::sharedDirector();
-    CCEGLView* pEGLView = CCEGLView::sharedOpenGLView();
-
-    pDirector->setOpenGLView(pEGLView);
-	
+    auto director = Director::getInstance();
+    //
     // turn on display FPS
-    pDirector->setDisplayStats(false);
+    director->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
-    pDirector->setAnimationInterval(1.0 / 60);
+    director->setAnimationInterval(1.0 / 60);
 
-    pDirector->setContentScaleFactor(1.0);
+    director->setContentScaleFactor(1.0);
 
     // create a scene. it's an autorelease object
 #if GD_UNPACK
-    CCScene* pScene = CCUnpackSceneLayer::scene();
+    auto scene = UnpackSceneLayer::scene();
 #else
     CUserData::instance()->load("");
-    //CCScene* pScene = CCBattleSceneLayer::scene();
-    CCScene* pScene = CCLogoSceneLayer::scene();
-    //CCScene* pScene = CCHeroRoomSceneLayer::scene();
-    //CCScene* pScene = CCStageSceneLayer::scene();
-    //CCScene* pScene = CCMainMenuSceneLayer::scene();
-    
+    auto scene = BattleSceneLayer::scene();
+    //auto scene = LogoSceneLayer::scene();
+    //auto scene = HeroRoomSceneLayer::scene();
+    //auto scene = StageSceneLayer::scene();
+    //auto scene = MainMenuSceneLayer::scene();
+    //auto scene = EmptySceneLayer::scene();
+
 #endif
-    if (pScene == NULL)
-    {
-        exit(1);
-        return false;
-    }
 
     // run
-    pDirector->runWithScene(pScene);
+    director->runWithScene(scene);
 
     return true;
 }
 
 // This function will be called when the app is inactive. When comes a phone call,it's be invoked too
-void AppDelegate::applicationDidEnterBackground() {
-    CCDirector::sharedDirector()->stopAnimation();
+void AppDelegate::applicationDidEnterBackground()
+{
+    Director::getInstance()->stopAnimation();
 
     // if you use SimpleAudioEngine, it must be pause
-    SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
-    SimpleAudioEngine::sharedEngine()->pauseAllEffects();
+    SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+    SimpleAudioEngine::getInstance()->pauseAllEffects();
 }
 
 // this function will be called when the app is active again
-void AppDelegate::applicationWillEnterForeground() {
-    CCDirector::sharedDirector()->startAnimation();
+void AppDelegate::applicationWillEnterForeground()
+{
+    Director::getInstance()->startAnimation();
 
     // if you use SimpleAudioEngine, it must resume here
-    SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
-    SimpleAudioEngine::sharedEngine()->resumeAllEffects();
+    SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+    SimpleAudioEngine::getInstance()->resumeAllEffects();
 }

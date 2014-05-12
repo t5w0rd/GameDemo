@@ -174,9 +174,9 @@ uc = 0
 tower1 = 0
 tower2 = 0
 function game01()
-    a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.006, 0, 0, -1)
+    a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.001, 5, 0, -1)
     id = addTemplateAbility(a)
-    a = AuraPas:new("HealAura", 1, id, 200, 5)
+    a = AuraPas:new("HealAura", 1, id, 200, UnitForce.kAlly, false)
     taid = addTemplateAbility(a)
 
     initAIAbility()
@@ -229,7 +229,7 @@ function game01_tick(dt)
     
     a = ChangeHpBuff:new("MageHeal", "MageHeal", 5, false, 0.3, 0.006, 0, 0, -1)
     arid = addTemplateAbility(a)
-    a = AuraPas:new("HealAura", 1, arid, 220, 4)
+    a = AuraPas:new("HealAura", 1, arid, 220, UnitForce.kAlly + UnitForce.kSelf, false)
     arid = addTemplateAbility(a)
     
     el = el + dt
@@ -237,7 +237,7 @@ function game01_tick(dt)
         if el > 2 then
             uc = uc + 1
             el = el - 2
-            playSound("sounds/Effect/OpenDoor.mp3")
+            playSound("sounds/Effects/OpenDoor.mp3")
             if uc == 4 then
                 u = spawnSoldier(2, 1)
                 u:addPassiveAbility(arid)
@@ -279,7 +279,7 @@ function game01_tick(dt)
     else
         if el > WAVE then
             -- wave in coming
-            playSound("sounds/Effect/WaveIncoming.mp3")
+            playSound("sounds/Effects/WaveIncoming.mp3")
             uc = 0
             el = el - WAVE
         end
@@ -295,9 +295,9 @@ function initAIAbility()
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("ThrowHammer", 18.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastRange(300.0)
-    a:addCastAnimation(Unit.kAniAct2)
+    a:addCastAnimation(Sprite.kAniAct2)
     a:setTemplateProjectile(PL.kThorHammer)
-    a:addEffectSound("sounds/Effect/LightningLink.mp3")
+    a:addEffectSound("sounds/Effects/LightningLink.mp3")
     thowHammer = addTemplateAbility(a)
     
     -- ThunderCap
@@ -308,25 +308,25 @@ function initAIAbility()
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("ThunderCap", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastTargetRadius(150.0)
-    a:addCastAnimation(Unit.kAniAct3)
-    a:addEffectSound("sounds/Effect/ThunderCap.mp3")
+    a:addCastAnimation(Sprite.kAniAct3)
+    a:addEffectSound("sounds/Effects/ThunderCap.mp3")
     thunderCap = addTemplateAbility(a)
     
     -- SpeedUp
     a = SpeedBuff:new("SpeedUp", "SpeedUp", 5.0, false, 0.8, 0.0, 0.8, 0.0)
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("SpeedUp", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
-    a:addCastAnimation(Unit.kAniAct5)
-    a:addEffectSound("sounds/Effect/LevelUp.mp3")
-    a:addEffectSound("sounds/Effect/LevelUp.mp3")
+    a:addCastAnimation(Sprite.kAniAct5)
+    a:addEffectSound("sounds/Effects/LevelUp.mp3")
+    a:addEffectSound("sounds/Effects/LevelUp.mp3")
     speedUp = addTemplateAbility(a)
     
     -- Reflect
     a = ReflectBuff:new("Reflect", "Reflect", 5.0)
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("Reflect", 15.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
-    a:addCastAnimation(Unit.kAniAct4)
-    a:addEffectSound("sounds/Effect/LevelUp2.mp3")
+    a:addCastAnimation(Sprite.kAniAct4)
+    a:addEffectSound("sounds/Effects/LevelUp2.mp3")
     reflect = addTemplateAbility(a)
     
     -- Cutter
@@ -340,16 +340,40 @@ function initAIAbility()
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("Cutter", 10.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastRange(600.0)
-    a:addCastAnimation(Unit.kAniAct2)
-    a:setTemplateProjectile(PL.kMirageProy)
+    a:addCastAnimation(Sprite.kAniAct2)
+    a:setImageName("UI/Ability/AbilityFireBall.png");
+    a:setTemplateProjectile(PL.kPirateProy)
     cutter = addTemplateAbility(a)
+    --me:addActiveAbility(cutter)
+
+    -- Curse
+    a = CurseBuff:new(13, false, 20, 4, 40 / 100)
+    id = addTemplateAbility(a)
+    a = BuffMakerAct:new("Curse", 5.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastRange(200.0)
+    a:setCastTargetRadius(100.0)
+    a:addCastAnimation(Sprite.kAniAct4)
+    a:setImageName("UI/Ability/AbilityCurse.png");
+    a:addEffectSound("sounds/Effects/KRF_sfx_vodoo_kamikazelanza.mp3");
+    curse = addTemplateAbility(a)
+    --me:addActiveAbility(curse)
+
+    -- SummonUnitAct
+    a = SummonUnitAct:new("Summon", 5.0, CommandTarget.kPointTarget, UL.kThor)
+    a:setCastRange(200.0)
+    --a:setCastTargetRadius(100.0)
+    a:addCastAnimation(Sprite.kAniAct4)
+    a:setImageName("UI/Ability/AbilityCurse.png");
+    a:addEffectSound("sounds/Effects/KRF_sfx_vodoo_kamikazelanza.mp3");
+    summon = addTemplateAbility(a)
+    me:addActiveAbility(summon)
     
     -- SpeedUp2
     a = SpeedBuff:new("SpeedUp2", "SpeedUp2", 2.0, false, 3.0, 0.0, 3.0, 0.0)
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("SpeedUp2", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
-    a:addCastAnimation(Unit.kAniAct5)
-    a:addEffectSound("sounds/Effect/LevelUp.mp3")
+    a:addCastAnimation(Sprite.kAniAct5)
+    a:addEffectSound("sounds/Effects/LevelUp.mp3")
     speedUp2 = addTemplateAbility(a)
     
     -- KnockBack
@@ -360,8 +384,8 @@ function initAIAbility()
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("KnockBack", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastTargetRadius(150.0)
-    a:addCastAnimation(Unit.kAniAct2)
-    a:addEffectSound("sounds/Effect/KidnapGrab.mp3")
+    a:addCastAnimation(Sprite.kAniAct2)
+    a:addEffectSound("sounds/Effects/KidnapGrab.mp3")
     knockBack = addTemplateAbility(a)
 end
 

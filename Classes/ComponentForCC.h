@@ -2,38 +2,37 @@
 #define __COMPONENTFORCC_H__
 
 
-class CCProgressBar : public CCNodeRGBA
+class ProgressBar : public Node
 {
 public:
     static const float CONST_MAX_PROCESS_BAR_PERCENT;
 
 public:
-    CCProgressBar();
-    virtual ~CCProgressBar();
+    ProgressBar();
+    virtual ~ProgressBar();
 
-    virtual bool init(const CCSize& roSize, CCSprite* pFill, CCSprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop);
-    M_CREATE_FUNC_PARAM(CCProgressBar, (const CCSize& roSize, CCSprite* pFill, CCSprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop), roSize, pFill, pBorder, fHorizBorderWidth, fVertBorderWidth, bFillOnTop);
+    virtual bool init(const Size& roSize, Sprite* pFill, Sprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop);
+    M_CREATE_FUNC_PARAM(ProgressBar, (const Size& roSize, Sprite* pFill, Sprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop), roSize, pFill, pBorder, fHorizBorderWidth, fVertBorderWidth, bFillOnTop);
 
     virtual void setPercentage(float fPercent);
-    virtual void setPercentage(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction = NULL);
-    virtual CCActionInterval* setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction = NULL);
-    virtual void setFillColor(const ccColor3B& roColor);
-    void runActionForTimer(CCAction* pAction);
+    virtual void setPercentage(float fPercent, float fDuration, FiniteTimeAction* pEndAction = nullptr);
+    virtual ActionInterval* setPercentageAction(float fPercent, float fDuration, FiniteTimeAction* pEndAction = nullptr);
+    virtual void setFillColor(const Color3B& roColor);
+    void runActionForTimer(Action* pAction);
 
 public:
-    CCProgressTimer* m_pPt;
+    ProgressTimer* m_pPt;
 };
 
-typedef std::set<std::string> SET_STR;
-class CCSpriteFrameCacheEx : public CCSpriteFrameCache
+class SpriteFrameCacheEx : public SpriteFrameCache
 {
 public:
-    CCDictionary* getSpriteFrames();
-    CCDictionary* getSpriteFramesAliases();
-    SET_STR*  getLoadedFileNames();
+    Map<std::string, SpriteFrame*>* getSpriteFrames();
+    ValueMap* getSpriteFramesAliases();
+    std::set<std::string>* getLoadedFileNames();
 };
 
-class CCGameFile : public CCObject
+class GameFile : public Ref
 {
 public:
     enum FILE_ORIGIN
@@ -44,24 +43,23 @@ public:
     };
 
 public:
-    CCGameFile(void);
-    virtual ~CCGameFile(void);
+    GameFile(void);
+    virtual ~GameFile(void);
     virtual bool init(const char* pFileName, const char* pMode);
-    M_CREATE_FUNC_PARAM(CCGameFile, (const char* pFileName, const char* pMode), pFileName, pMode);
+    M_CREATE_FUNC_PARAM(GameFile, (const char* pFileName, const char* pMode), pFileName, pMode);
 
     template <typename TYPE>
-    size_t read(TYPE* pData, size_t uCount = 1);
-    size_t tell() const;
+    ssize_t read(TYPE* pData, ssize_t uCount = 1);
+    ssize_t tell() const;
     bool eof() const;
     bool seek(long lOffset, FILE_ORIGIN eOrigin);
 
 protected:
-    uint8_t* m_pData;
-    unsigned long m_uSize;
-    unsigned long m_uPos;
+    Data m_data;
+    ssize_t m_uPos;
 };
 
-class CCWinLayer : public CCLayerColor
+class WinLayer : public LayerColor
 {
 public:
     enum TOUCH_ACTION_INDEX
@@ -77,18 +75,18 @@ public:
     static const float CONST_MAX_CAN_MOVE_DURATION;
 
 public:
-    CCWinLayer();
+    WinLayer();
     virtual bool init();
-    M_CREATE_FUNC_PARAM(CCWinLayer, ());
-    virtual bool initWithColor(const ccColor4B& color);
-    M_CREATE_INITWITH_FUNC_PARAM(Color, CCWinLayer, (const ccColor4B& color), color);
+    M_CREATE_FUNC_PARAM(WinLayer, ());
+    virtual bool initWithColor(const Color4B& color);
+    M_CREATE_INITWITH_FUNC_PARAM(Color, WinLayer, (const Color4B& color), color);
 
     // default implements are used to call script callback if exist
-    void setBackgroundSprite(CCSprite* pSprite);
-    void setBackgroundSprite(CCSprite* pSprite, int zOrder, int tag);
+    void setBackgroundSprite(Sprite* pSprite);
+    void setBackgroundSprite(Sprite* pSprite, int zOrder, int tag);
     void setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK);
     virtual void setScale(float fScale);
-    virtual void setPosition(const CCPoint& newPosition);
+    virtual void setPosition(const Point& newPosition);
     
     float getTouchMovedDuration() const;
     float getTouchMovedDistance() const;
@@ -103,12 +101,12 @@ protected:
     virtual void onEnter();
     virtual void onExit();
     void bufferWindowEffect(float fDt);
-    //void adjustWinPos(CCPoint& roPos);
+    //void adjustWinPos(Point& roPos);
 
-    virtual void ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent);
-    virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent);
-    virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
-    virtual void ccTouchesCancelled(CCSet *pTouches, CCEvent *pEvent);
+    virtual void onTouchesBegan(const std::vector<Touch*>& touches, cocos2d::Event *event);
+    virtual void onTouchesMoved(const std::vector<Touch*>& touches, cocos2d::Event *event);
+    virtual void onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event *event);
+    virtual void onTouchesCancelled(const std::vector<Touch*>& touches, cocos2d::Event *event);
 
 protected:
     int m_iPendingAbilityOwner;
@@ -117,38 +115,34 @@ protected:
     float m_fBuffRange;
     float m_fEdgeK;
     float m_fMoveDelta;
-    CCPoint m_oMoveStart;
+    Point m_oMoveStart;
     float m_fTouchMovedDuration;
     float m_fMoveR;
     bool m_bCanMove;
 
-    CCPoint m_oLast;
+    Point m_oLast;
     float m_fStartScale;
     float m_fStartDis;
 };
 
-class CCTouchSprite : public CCSprite, public CCTargetedTouchDelegate
+class TouchSprite : public Sprite
 {
 public:
-    CCTouchSprite();
-    M_CREATE_INITWITH_FUNC_PARAM(File, CCTouchSprite, (const char *pszFilename), pszFilename);
-    M_CREATEWITH_FUNC_PARAM(SpriteFrame, CCTouchSprite, (CCSpriteFrame *pSpriteFrame), pSpriteFrame);
-    M_CREATEWITH_FUNC_PARAM(Texture, CCTouchSprite, (CCTexture2D *pTexture), pTexture);
-    M_CREATEWITH_FUNC_PARAM(Texture, CCTouchSprite, (CCTexture2D *pTexture, const CCRect& rect), pTexture, rect);
-    static CCTouchSprite* createWithSpriteFrameName(const char *pszSpriteFrameName);
+    TouchSprite();
+    M_CREATE_INITWITH_FUNC_PARAM(File, TouchSprite, (const char *pszFilename), pszFilename);
+    M_CREATEWITH_FUNC_PARAM(SpriteFrame, TouchSprite, (SpriteFrame *pSpriteFrame), pSpriteFrame);
+    M_CREATEWITH_FUNC_PARAM(Texture, TouchSprite, (Texture2D *pTexture), pTexture);
+    M_CREATEWITH_FUNC_PARAM(Texture, TouchSprite, (Texture2D *pTexture, const Rect& rect), pTexture, rect);
+    static TouchSprite* createWithSpriteFrameName(const char *pszSpriteFrameName);
     
-    virtual CCObject* copyWithZone(CCZone *pZone);
+    virtual TouchSprite* clone() const;
     
-    virtual void onEnter();
-    virtual void onExit();
-    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
+    virtual void onEnter() override;
+    bool onTouchBegan(Touch* touch, Event* event);
+    void onTouchMoved(Touch* touch, Event* event);
+    void onTouchEnded(Touch* touch, Event* event);
     
-    bool containsTouchLocation(CCTouch* touch);
-    
-    virtual void touchDelegateRetain();
-    virtual void touchDelegateRelease();
+    bool containsTouchLocation(Touch* touch);
     
 protected:
     enum TOUCH_SPRITE_STATE 
@@ -159,74 +153,76 @@ protected:
     TOUCH_SPRITE_STATE m_state;
 };
 
-class CCTouchMaskLayer : public CCLayerColor
+class TouchMaskLayer : public LayerColor
 {
 public:
-    M_CREATE_FUNC_PARAM(CCTouchMaskLayer, ());
+    M_CREATE_FUNC_PARAM(TouchMaskLayer, ());
     
-    M_CREATE_INITWITH_FUNC_PARAM(Color, CCTouchMaskLayer, (const ccColor4B& color, GLubyte disOpacity, int touchPriority), color, disOpacity, touchPriority);
-    virtual bool initWithColor(const ccColor4B& color, GLubyte disOpacity, int touchPriority);
+    M_CREATE_INITWITH_FUNC_PARAM(Color, TouchMaskLayer, (const Color4B& color, GLubyte disOpacity), color, disOpacity);
+    virtual bool initWithColor(const Color4B& color, GLubyte disOpacity);
     
     void setMaskEnabled(bool enabled);
-
-    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
 
 protected:
     GLubyte m_disOpacity;
 };
 
-class CCEffect : public CCSprite
+class Effect : public Sprite
 {
 protected:
     const int CONST_ACT_TAG;
 
 public:
-    CCEffect();
-    virtual ~CCEffect();
+    Effect();
+    virtual ~Effect();
 
     virtual bool initWithPath(const char* path, float delay);
-    M_CREATE_INITWITH_FUNC_PARAM(Path, CCEffect, (const char* path, float delay), path, delay);
+    M_CREATE_INITWITH_FUNC_PARAM(Path, Effect, (const char* path, float delay), path, delay);
 
-    void play(int index = 0, float speed = 1.0f, int times = 1.0, CCObject* target = NULL, SEL_CallFuncN done = NULL);
+    void play(int index = 0, float speed = 1.0f, int times = 1.0, FiniteTimeAction* done = NULL);
     void playRelease(int index = 0, float speed = 1.0f, int times = 1.0);
     void playForever(int index = 0, float speed = 1.0f);
 
-    CCAnimation* addAnimation(const char* path, float delay);
+    Animation* addAnimation(const char* path, float delay);
     void stop();
 
     typedef vector<string> VEC_ANIS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ANIS, m_vecAnis, AnimationNames);
 };
 
-class CCMenuEx : public CCMenu
+class MenuEx : public Menu
 {
 public:
-    static CCMenuEx* create();
-    static CCMenuEx* create(CCMenuItem* item, ...);
-    static CCMenuEx* createWithArray(CCArray* pArrayOfItems);
-    static CCMenuEx* createWithItem(CCMenuItem* item);
-    static CCMenuEx* createWithItems(CCMenuItem *firstItem, va_list args);
+    static MenuEx* create();
+    static MenuEx* create(MenuItem* item, ...) CC_REQUIRES_NULL_TERMINATION;
+    static MenuEx* createWithArray(const Vector<MenuItem*>& arrayOfItems);
+    static MenuEx* createWithItem(MenuItem* item);
+    static MenuEx* createWithItems(MenuItem *firstItem, va_list args);
 
-    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchCancelled(CCTouch *touch, CCEvent* event);
-    virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
+    virtual bool onTouchBegan(Touch* touch, Event* event);
+    virtual void onTouchEnded(Touch* touch, Event* event);
+    virtual void onTouchCancelled(Touch *touch, Event* event);
+    virtual void onTouchMoved(Touch* touch, Event* event);
 
 protected:
-    CCMenuItem* itemForTouchEx(CCTouch * touch);
+    MenuItem* getItemForTouchEx(Touch* touch);
 };
 
-class CCButtonBase : public CCMenuItemImage
+class ButtonBase : public MenuItemImage
 {
 protected:
-    CCButtonBase();
-    virtual ~CCButtonBase();
+    ButtonBase();
+    virtual ~ButtonBase();
 
 public:
-    virtual bool initWithFile(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
-    virtual bool initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
-    virtual bool initWithSprite(CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished);
-    //CREATE_FUNC_PARAM(CCButtonBase, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
+    virtual bool initWithFile(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished);
+    virtual bool initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished);
+    virtual bool initWithSprite(Node* pNormalSprite, Node* pSelectedSprite, Node* pDisabledSprite, Node* pBlinkSprite, Node* pMaskSprite, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished);
+    //CREATE_FUNC_PARAM(ButtonBase, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, onClick, onFinished);
+
+    virtual void activate() override;
+    virtual void unselected() override;
+
     virtual void setCoolDown(float fDuration) = 0;
     virtual float getCoolDown() const = 0;
     void setLabel(const char* pLabel);
@@ -238,47 +234,46 @@ public:
     float getPercentage() const;
 
 private:
-    void onClick(CCObject* pObject);
-    void onCoolDownDone(CCNode* pNode);
-    void onCDBlickDone(CCNode* pNode);
+    void onClick(Ref* pObject);
+    void onCoolDownDone(Node* pNode);
+    void onCDBlickDone(Node* pNode);
 
 protected:
-    CCObject* m_pTarget;
-    SEL_MenuHandler m_pOnClick;
-    SEL_MenuHandler m_pOnFinished;
-    CCProgressTimer* m_pPt;
-    CCFiniteTimeAction* m_pAct;
-    CCNode* m_pBlink;
-    CCNode* m_pMask;
+    ccMenuCallback m_onClick;
+    ccMenuCallback m_onFinished;
+    ProgressTimer* m_pPt;
+    FiniteTimeAction* m_pAct;
+    Node* m_pBlink;
+    Node* m_pMask;
 
 };
 
-class CCButtonNormal : public CCButtonBase
+class ButtonNormal : public ButtonBase
 {
 public:
-    CCButtonNormal();
+    ButtonNormal();
 
-    M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    M_CREATEWITH_FUNC_PARAM(File, ButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, onClick, onFinished);
+    M_CREATEWITH_FUNC_PARAM(FrameName, ButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, onClick, onFinished);
+    M_CREATE_INITWITH_FUNC_PARAM(Sprite, ButtonNormal, (Node* pNormalSprite, Node* pSelectedSprite, Node* pDisabledSprite, Node* pBlinkSprite, Node* pMaskSprite, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, onClick, onFinished);
     
     CC_SYNTHESIZE(float, m_fCoolDown, CoolDown);
 };
 
-class CCCommmButton : public CCButtonNormal
+class CommmButton : public ButtonNormal
 {
 public:
-    virtual bool init (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished, int iKey);
-    M_CREATEWITH_FUNC_PARAM(File, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATEWITH_FUNC_PARAM(FrameName, CCButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, pTarget, pOnClick, pOnFinished);
-    M_CREATE_INITWITH_FUNC_PARAM(Sprite, CCButtonNormal, (CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    virtual bool init (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished, int iKey);
+    M_CREATEWITH_FUNC_PARAM(File, ButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, onClick, onFinished);
+    M_CREATEWITH_FUNC_PARAM(FrameName, ButtonNormal, (const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished), pNormalImage, pSelectedImage, pDisabledImage, pBlinkImage, pMaskImage, fCoolDown, onClick, onFinished);
+    M_CREATE_INITWITH_FUNC_PARAM(Sprite, ButtonNormal, (Node* pNormalSprite, Node* pSelectedSprite, Node* pDisabledSprite, Node* pBlinkSprite, Node* pMaskSprite, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished), pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, onClick, onFinished);
 
 public:
     int m_iKey;
 
 };
 
-class CCButtonPanel : public CCNodeRGBA
+class ButtonPanel : public Node
 {
 public:
     enum ADD_HORIZONTAL
@@ -308,10 +303,10 @@ public:
     struct ACTION_NODE
     {
         ACTION_NODE() { memset(this, 0, sizeof(ACTION_NODE)); }
-        ACTION_NODE(CCButtonBase* pBtn, int iIndex): eAct(kAdd) { stAdd.pBtn = pBtn; stAdd.iIndex = iIndex; }
-        ACTION_NODE(int iIndex, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor, bool bClearUp): eAct(kDel) { stDel.pBtn = NULL; stDel.iIndex = iIndex; stDel.eVer = eVer; stDel.eHor = eHor; stDel.bClearUp = bClearUp; }
-        ACTION_NODE(int iIndexSrc, int iIndexDst): eAct(kMove) { stMove.pBtn = NULL; stMove.iIndexSrc = iIndexSrc; stMove.iIndexDst = iIndexDst; }
-        ACTION_NODE(CCButtonBase* pBtn, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor): eAct(kAddEx) { stAddEx.pBtn = pBtn; stAddEx.eVer = eVer; stAddEx.eHor = eHor; }
+        ACTION_NODE(ButtonBase* pBtn, int iIndex): eAct(kAdd) { stAdd.pBtn = pBtn; stAdd.iIndex = iIndex; }
+        ACTION_NODE(int iIndex, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor, bool bClearUp): eAct(kDel) { stDel.pBtn = nullptr; stDel.iIndex = iIndex; stDel.eVer = eVer; stDel.eHor = eHor; stDel.bClearUp = bClearUp; }
+        ACTION_NODE(int iIndexSrc, int iIndexDst): eAct(kMove) { stMove.pBtn = nullptr; stMove.iIndexSrc = iIndexSrc; stMove.iIndexDst = iIndexDst; }
+        ACTION_NODE(ButtonBase* pBtn, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor): eAct(kAddEx) { stAddEx.pBtn = pBtn; stAddEx.eVer = eVer; stAddEx.eHor = eHor; }
         ACTION_NODE(ADD_VERTICAL eVer, ADD_HORIZONTAL eHor): eAct(kClearUp) { stClearUp.eVer = eVer; stClearUp.eHor = eHor; }
         //~ACTION_NODE() { if (eAct == kAdd) {CC_SAFE_RELEASE(stAdd.pBtn); } else if (eAct == kAddEx) {CCLOG("release");CC_SAFE_RELEASE(stAddEx.pBtn);} }
 
@@ -320,13 +315,13 @@ public:
         {
             struct // ADD
             {
-                CCButtonBase* pBtn;
+                ButtonBase* pBtn;
                 int iIndex;
             } stAdd;
 
             struct // DEL
             {
-                CCButtonBase* pBtn;
+                ButtonBase* pBtn;
                 int iIndex;
                 ADD_VERTICAL eVer;
                 ADD_HORIZONTAL eHor;
@@ -335,14 +330,14 @@ public:
 
             struct // MOVE
             {
-                CCButtonBase* pBtn;
+                ButtonBase* pBtn;
                 int iIndexSrc;
                 int iIndexDst;
             } stMove;
 
             struct // ADDEX
             {
-                CCButtonBase* pBtn;
+                ButtonBase* pBtn;
                 ADD_VERTICAL eVer;
                 ADD_HORIZONTAL eHor;
             } stAddEx;
@@ -358,49 +353,50 @@ public:
     typedef list<ACTION_NODE> LIST_ACTION;
 
 public:
-    CCButtonPanel();
-    virtual ~CCButtonPanel();
+    ButtonPanel();
+    virtual ~ButtonPanel();
 
-    virtual bool init(int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fBorderWidth, float fInnerBorderWidth, CCSprite* pBackground, float fOffsetX = 0.0f, float fOffsetY = 0.0f);
-    M_CREATE_FUNC_PARAM(CCButtonPanel, (int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fBorderWidth, float fInnerBorderWidth, CCSprite* pBackground, float fOffsetX = 0.0f, float fOffsetY = 0.0f), iRow, iColumn, fButtonWidth, fButtonHeight, fBorderWidth, fInnerBorderWidth, pBackground, fOffsetX, fOffsetY);
+    virtual bool init(int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fHorBorderWidth, float fVerBorderWidth, Sprite* pBackground, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f);
+    M_CREATE_FUNC_PARAM(ButtonPanel, (int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fHorBorderWidth, float fVerBorderWidth, Sprite* pBackground, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f), iRow, iColumn, fButtonWidth, fButtonHeight, fHorBorderWidth, fVerBorderWidth, pBackground, fBackgroundOffsetX, fBackgroundOffsetY);
 
-    void addButton(CCButtonBase* pButton, int iIndex); // org
-    void addButton(CCButtonBase* pButton, int iX, int iY);
+    void addButton(ButtonBase* pButton, int iIndex); // org
+    void addButton(ButtonBase* pButton, int iX, int iY);
 
     void delButton(int iIndex); // org
     void delButton(int iX, int iY);
-    void delButton(CCButtonBase* pButton);
+    void delButton(ButtonBase* pButton);
 
     void moveButton(int iIndexSrc, int iIndexDst); // org
 
-    void addButtonEx(CCButtonBase* pButton, ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
+    void addButtonEx(ButtonBase* pButton, ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
 
     int allotSlot(ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
     int allotSlot(int iStartX, int iStartY, int iEndX, int iEndY, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor);
     void clearUpSlot(ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
 
-    void retainButton(CCButtonBase* pButton);
-    CCButtonBase* getRetainButton() const;
+    void retainButton(ButtonBase* pButton);
+    ButtonBase* getRetainButton() const;
 
-    CCButtonBase* getButton(int iX, int iY) const;
-    CCButtonBase* getButton(int iIndex) const;
+    ButtonBase* getButton(int iX, int iY) const;
+    ButtonBase* getButton(int iIndex) const;
+    ButtonBase* getButton(const function<bool(ButtonBase*)>& match) const;
 
-    int getButtonIndex(CCButtonBase* pButton) const;
+    int getButtonIndex(ButtonBase* pButton) const;
 
     int index2Y(int iIndex) const;
     int index2X(int iIndex) const;
     int toIndex(int iX, int iY) const;
-    CCPoint index2Point(int iIndex);
+    Point index2Point(int iIndex);
 
     bool isFull();
 
     void pushAction(const ACTION_NODE& roAct);
-    void onPrevActEnd(CCNode* pNode);
+    void onPrevActEnd(Node* pNode);
 
-    void pushAddButtonAction(CCButtonBase* pButton, int iIndex);
+    void pushAddButtonAction(ButtonBase* pButton, int iIndex);
     void pushDelButtonAction(int iIndex, ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight, bool bClearUp = true);
     void pushMoveButtonAction(int iIndexSrc, int iIndexDst);
-    void pushAddButtonExAction(CCButtonBase* pButton, ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
+    void pushAddButtonExAction(ButtonBase* pButton, ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
     void pushClearUpSlotAction(ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
 
     int getMaxCount() const;
@@ -411,52 +407,52 @@ public:
     CC_SYNTHESIZE(int, m_iColumn, Column);
     CC_SYNTHESIZE(float, m_fButtonWidth, ButtonWidth);
     CC_SYNTHESIZE(float, m_fButtonHeight, ButtonHeight);
-    CC_SYNTHESIZE(float, m_fOffsetX, OffsetX);
-    CC_SYNTHESIZE(float, m_fOffsetY, OffsetY);
-    CC_SYNTHESIZE(float, m_fInnerBorderWidth, InnerBorderWidth);
-    CC_SYNTHESIZE(float, m_fBorderWidth, BorderWidth);
-    CC_SYNTHESIZE(CCMenuEx*, m_pInnerMenu, InnerMenu);
-    CC_SYNTHESIZE(CCSprite*, m_pBackground, Background);
+    CC_SYNTHESIZE(float, m_fHorBorderWidth, HorBorderWidth);
+    CC_SYNTHESIZE(float, m_fVerBorderWidth, VerBorderWidth);
+    CC_SYNTHESIZE(MenuEx*, m_pInnerMenu, InnerMenu);
+    CC_SYNTHESIZE(Sprite*, m_pBackground, Background);
 
 public:
     int m_iOwnerKey;
-    CCButtonBase** m_ppBtnPos;
-    CCButtonBase* m_pRetain;
+    ButtonBase** m_ppBtnPos;
+    ButtonBase* m_pRetain;
     LIST_ACTION m_lstActs;
     int m_iCount;
 };
 
-class CCPopPanel : public CCNodeRGBA
+class PopPanel : public Node
 {
 public:
-    CCPopPanel();
+    PopPanel();
 
-    virtual bool initWithSize(const CCSize& size);
-    M_CREATE_INITWITH_FUNC_PARAM(Size, CCPopPanel, (const CCSize& size), size);
-    virtual bool initWithBackground(CCSprite* background);
-    M_CREATE_INITWITH_FUNC_PARAM(Background, CCPopPanel, (CCSprite* background), background);
+    virtual bool initWithSize(const Size& size);
+    M_CREATE_INITWITH_FUNC_PARAM(Size, PopPanel, (const Size& size), size);
+    virtual bool initWithBackground(Sprite* background);
+    M_CREATE_INITWITH_FUNC_PARAM(Background, PopPanel, (Sprite* background), background);
 
-    void setBackground(CCSprite* background, bool tile);
-    M_SYNTHESIZE(CCMenuEx*, m_mn, Menu);
-    void addButton(CCMenuItem* mi);
+    void setBackground(Sprite* background, bool tile);
+    M_SYNTHESIZE(MenuEx*, m_mn, Menu);
+    void addButton(MenuItem* mi);
 
-    void onClickClose(CCObject* obj);
+    void onClickClose(Ref* obj);
 
     void show();
     void hide();
 };
 
-typedef void (*FUNC_TRAN_CCC4)(ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h);
-class CCUtils
+class Utils
 {
 public:
-    static CCImage* nodeToImage(CCNode* node);
-    static CCImage* transformImage(CCImage* image, FUNC_TRAN_CCC4 funcTransform);
-    static bool imageToFile(CCImage* image, const char* file);
-    static CCTexture2D* nodeToTexture(CCNode* node, FUNC_TRAN_CCC4 funcTransform = NULL);
-    static bool nodeToFile(CCNode* node, const char* file, FUNC_TRAN_CCC4 funcTransform = NULL);
+    typedef function<void(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h)> FUNC_TRAN;
+    static Image* nodeToImage(Node* node);
+    static Image* transformImage(Image* image, const FUNC_TRAN& funcTransform);
+    static Texture2D* nodeToTexture(Node* node, const FUNC_TRAN& funcTransform = nullptr);
+    static bool nodeToFile(Node* node, const char* file, const FUNC_TRAN& funcTransform = nullptr);
 
-    static void tranGrayscale(ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h);
+#define M_TRAN_COLOR_BIND(func, ...) std::bind(func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, ##__VA_ARGS__)
+    static void tranGrayscale(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h);
+    static void tranFillColor(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h, Color4B* fill);
+    static void tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h, GLushort a);
 };
 
 
@@ -466,16 +462,16 @@ public:
 
 
 ////////////////////////////////// Inline ////////////////////////////////////////
-// CCGameFile
+// GameFile
 template <typename TYPE>
-size_t CCGameFile::read( TYPE* pData, size_t uCount /*= 1*/ )
+ssize_t GameFile::read(TYPE* pData, ssize_t uCount /*= 1*/)
 {
-    size_t uRead;
-    TYPE* pCur = (TYPE*)((size_t)m_pData + m_uPos);
-    for (uRead = 0; uRead < uCount && m_uPos + (uRead + 1) * sizeof(TYPE) <= m_uSize; ++uRead);
-    size_t uReadSize = uRead * sizeof(TYPE);
-    memmove(pData, pCur, uReadSize);
+    ssize_t uRead;
+    for (uRead = 0; uRead < uCount && m_uPos + (uRead + 1) * (ssize_t)sizeof(TYPE) <= m_data.getSize(); ++uRead);
+    ssize_t uReadSize = uRead * sizeof(TYPE);
+    m_data.copy((uint8_t*)pData, uReadSize);
     m_uPos += uReadSize;
+
     return uRead;
 }
 

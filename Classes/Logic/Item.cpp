@@ -20,7 +20,7 @@ CItem::CItem(const char* pRootId, const char* pName, ITEM_TYPE eItemType, unsign
 , m_bEquipped(false)
 , m_uStackCount(1)
 , m_uMaxStackSize(uMaxStackSize)
-, m_pOwner(NULL)
+, m_pOwner(nullptr)
 {
     setDbgClassName("CItem");
 }
@@ -78,10 +78,10 @@ void CItem::onUnitDelItem()
 
 bool CItem::use()
 {
-    if (checkConditions() == false)
-    {
-        return false;
-    }
+    //if (checkConditions() == false)
+    //{
+        //return false;
+    //}
     
     CUnit* o = getOwner();
 
@@ -111,10 +111,10 @@ bool CItem::use()
     return true;
 }
 
-bool CItem::checkConditions()
+bool CItem::checkConditions(const CCommandTarget& rTarget)
 {
     CUnit* o = getOwner();
-    if (o == NULL)
+    if (o == nullptr)
     {
         return false;
     }
@@ -135,7 +135,7 @@ bool CItem::checkConditions()
         
         if (m_vecActAbilitys.front()->getCastTargetType() != CCommandTarget::kNoTarget ||
             m_vecActAbilitys.front()->isCoolingDown() ||
-            m_vecActAbilitys.front()->checkConditions() == false)
+            m_vecActAbilitys.front()->checkConditions(rTarget) == false)
         {
             return false;
         }
@@ -169,7 +169,7 @@ void CItem::onDelFromSlot()
     
     onUnitDelItem();
     
-    setOwner(NULL);
+    setOwner(nullptr);
 }
 
 void CItem::addAbilityToOwner(CUnit* pOwner, bool bNotify)
@@ -180,9 +180,9 @@ void CItem::addAbilityToOwner(CUnit* pOwner, bool bNotify)
     {
         for (auto it = m_vecActAbilityIds.begin(); it != m_vecActAbilityIds.end(); ++it)
         {
-            CActiveAbility* pActAbility = NULL;
+            CActiveAbility* pActAbility = nullptr;
             w->copyAbility(*it)->dcast(pActAbility);
-            if (pActAbility != NULL)
+            if (pActAbility != nullptr)
             {
                 m_vecActAbilitys.addObject(pActAbility);
             }
@@ -200,9 +200,9 @@ void CItem::addAbilityToOwner(CUnit* pOwner, bool bNotify)
     {
         for (auto it = m_vecPasAbilityIds.begin(); it != m_vecPasAbilityIds.end(); ++it)
         {
-            CPassiveAbility* pPasAbility = NULL;
+            CPassiveAbility* pPasAbility = nullptr;
             w->copyAbility(*it)->dcast(pPasAbility);
-            if (pPasAbility != NULL)
+            if (pPasAbility != nullptr)
             {
                 m_vecPasAbilitys.addObject(pPasAbility);
             }

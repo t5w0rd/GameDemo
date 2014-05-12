@@ -86,7 +86,7 @@ static l_noret errorlimit (FuncState *fs, int limit, const char *what) {
   int line = fs->f->linedefined;
   const char *where = (line == 0)
                       ? "main function"
-                      : luaO_pushfstring(L, "function at line %d", line);
+                  : luaO_pushfstring(L, "function at line %d", line);
   msg = luaO_pushfstring(L, "too many %s (limit is %d) in %s",
                              what, limit, where);
   luaX_syntaxerror(fs->ls, msg);
@@ -463,7 +463,7 @@ static void breaklabel (LexState *ls) {
 static l_noret undefgoto (LexState *ls, Labeldesc *gt) {
   const char *msg = isreserved(gt->name)
                     ? "<%s> at line %d not inside a loop"
-                    : "no visible label " LUA_QS " for <goto> at line %d";
+                : "no visible label " LUA_QS " for <goto> at line %d";
   msg = luaO_pushfstring(ls->L, msg, getstr(gt->name), gt->line);
   semerror(ls, msg);
 }

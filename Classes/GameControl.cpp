@@ -4,56 +4,56 @@
 
 
 // CCameControler
-CCGameControler::CCGameControler(void)
-    : m_fc(NULL)
-    , m_ac(NULL)
-    , m_ae(NULL)
-    , m_sceneCreator(NULL)
+GameControler::GameControler(void)
+: m_fc(nullptr)
+, m_ac(nullptr)
+, m_ae(nullptr)
+, m_sceneCreator(nullptr)
 {
 }
 
-CCGameControler::~CCGameControler()
+GameControler::~GameControler()
 {
-    CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCGameControler::step), this);
+    Director::getInstance()->getScheduler()->unschedule(schedule_selector(GameControler::step), this);
 }
 
-bool CCGameControler::init()
+bool GameControler::init()
 {
-    m_fc = CCSpriteFrameCache::sharedSpriteFrameCache();
-    m_ac = CCAnimationCache::sharedAnimationCache();
-    m_ae = SimpleAudioEngine::sharedEngine();
-    CCDirector::sharedDirector()->getScheduler()->scheduleSelector(schedule_selector(CCGameControler::step), this, 0.1f, false);
+    m_fc = SpriteFrameCache::getInstance();
+    m_ac = AnimationCache::getInstance();
+    m_ae = SimpleAudioEngine::getInstance();
+    Director::getInstance()->getScheduler()->schedule(schedule_selector(GameControler::step), this, 0.1f, false);
 
     return true;
 }
 
-void CCGameControler::loadFrames(const char* pPath)
+void GameControler::loadFrames(const char* pPath)
 {
     char szName[256];
     sprintf(szName, "%s.plist", pPath);
     m_fc->addSpriteFramesWithFile(szName);
 }
 
-CCAnimation* CCGameControler::loadAnimation(const char* pPath, const char* pName, float fDelay)
+Animation* GameControler::loadAnimation(const char* pPath, const char* pName, float fDelay)
 {
-    CCSpriteFrame* pSf;
-    CCAnimation* pAni = NULL;
+    SpriteFrame* pSf;
+    Animation* pAni = nullptr;
     char sz[256];
     for (int i = 0; ; ++i)
     {
         sprintf(sz, "%s/%02d.png", pPath, i);
-        pSf = m_fc->spriteFrameByName(sz);
-        if (pSf == NULL)
+        pSf = m_fc->getSpriteFrameByName(sz);
+        if (pSf == nullptr)
         {
             if (i == 0)
             {
-                return NULL;
+                return nullptr;
             }
             break;
         }
         if (!pAni)
         {
-            pAni = CCAnimation::create();
+            pAni = Animation::create();
         }
         pAni->addSpriteFrame(pSf);
     }
@@ -63,19 +63,19 @@ CCAnimation* CCGameControler::loadAnimation(const char* pPath, const char* pName
     return pAni;
 }
 
-CCSpriteFrame* CCGameControler::getFrame(const char* pName)
+SpriteFrame* GameControler::getFrame(const char* pName)
 {
     char szName[256];
     sprintf(szName, "%s.png", pName);
-    return m_fc->spriteFrameByName(szName);
+    return m_fc->getSpriteFrameByName(szName);
 }
 
-CCAnimation* CCGameControler::getAnimation(const char* pName)
+Animation* GameControler::getAnimation(const char* pName)
 {
-    return m_ac->animationByName(pName);
+    return m_ac->getAnimation(pName);
 }
 
-void CCGameControler::step( float dt )
+void GameControler::step(float dt)
 {
     M_MAP_FOREACH(m_mapSoundDur)
     {
@@ -91,12 +91,12 @@ void CCGameControler::step( float dt )
     }
 }
 
-void CCGameControler::preloadSound(const char* sound)
+void GameControler::preloadSound(const char* sound)
 {
     m_ae->preloadEffect(sound);
 }
 
-int CCGameControler::playSound(const char* sound, float duration)
+int GameControler::playSound(const char* sound, float duration)
 {
     int id = m_ae->playEffect(sound);
     if (duration > 0.0f)
@@ -107,79 +107,78 @@ int CCGameControler::playSound(const char* sound, float duration)
     return id;
 }
 
-bool CCGameControler::isSoundPlaying( int id ) const
+bool GameControler::isSoundPlaying(int id) const
 {
     return m_mapSoundDur.find(id) != m_mapSoundDur.end();
 }
 
-void CCGameControler::stopSound( int id )
+void GameControler::stopSound(int id)
 {
     m_ae->stopEffect(id);
     m_mapSoundDur.erase(id);
 }
 
-void CCGameControler::preloadMusic( const char* music )
+void GameControler::preloadMusic(const char* music)
 {
     m_ae->preloadBackgroundMusic(music);
 }
 
-void CCGameControler::playMusic( const char* music, bool loop )
+void GameControler::playMusic(const char* music, bool loop)
 {
     m_ae->playBackgroundMusic(music, loop);
 }
 
-CCLayer* CCGameControler::defaultLoadingLayer()
+Layer* GameControler::defaultLoadingLayer()
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     
-    CCTouchMaskLayer* layer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 255, -100);
+    TouchMaskLayer* layer = TouchMaskLayer::create(Color4B(0, 0, 0, 0), 255);
     layer->setMaskEnabled(true);
-    CCSprite* sp = CCSprite::create("UI/Loading.png");
+    Sprite* sp = Sprite::create("UI/Loading.png");
     layer->addChild(sp);
     sp->setScale(wsz.width / sp->getContentSize().width * 0.3f);
-    sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.5));
+    sp->setPosition(Point(wsz.width * 0.5, wsz.height * 0.5));
 
     return layer;
 }
 
-void CCGameControler::replaceSceneWithLoading( SCENE_CREATOR sceneCreator, CCLayer* loading )
+void GameControler::replaceSceneWithLoading(SCENE_CREATOR sceneCreator, Layer* loading)
 {
-    if (loading == NULL)
+    if (loading == nullptr)
     {
         loading = defaultLoadingLayer();
     }
 
-    CCDirector::sharedDirector()->getRunningScene()->addChild(loading, INT_MAX);
+    Director::getInstance()->getRunningScene()->addChild(loading, INT_MAX);
 
-    playSound("sounds/Effect/GUITransitionOpen.mp3");
+    playSound("sounds/Effects/GUITransitionOpen.mp3");
     m_sceneCreator = sceneCreator;
-    loading->runAction(CCSequence::createWithTwoActions(CCFadeIn::create(0.1f), CCCallFuncN::create(this, callfuncN_selector(CCGameControler::onReplaceScene))));
+    loading->runAction(Sequence::createWithTwoActions(FadeIn::create(0.1f), CallFuncN::create(CC_CALLBACK_1(GameControler::onReplaceScene, this))));
 
-    //CCTextureCache::sharedTextureCache()->addImageAsync()
-    //CCSpriteFrameCache::sharedSpriteFrameCache()->addSpriteFramesWithDictionary(CCDictionary::createWithContentsOfFileThreadSafe())
+    //Director::getInstance()->getTextureCache()()->addImageAsync()
+    //SpriteFrameCache::getInstance()->addSpriteFramesWithDictionary(Dictionary::createWithContentsOfFileThreadSafe())
 }
 
-void CCGameControler::onReplaceScene( CCNode* node )
+void GameControler::onReplaceScene(Node* node)
 {
-    CCScene* sc = (*m_sceneCreator)();
-    CCDirector::sharedDirector()->replaceScene(sc);
+    Scene* sc = (*m_sceneCreator)();
+    Director::getInstance()->replaceScene(sc);
 }
 
-void CCGameControler::loadTexturesAsync( const vector<string>& frames, const vector<string>& otherTextures, CCObject* target, SEL_CallFuncO loadingProgressing, SEL_CallFuncO loadingDone )
+void GameControler::loadTexturesAsync(const vector<string>& frames, const vector<string>& otherTextures, const FUNC_VOID& onLoadingProgressing, const FUNC_VOID& onLoadingDone)
 {
-    CCTextureCache* tc = CCTextureCache::sharedTextureCache();
+    TextureCache* tc = Director::getInstance()->getTextureCache();
     m_loadFrames = frames;
     m_loadCount = frames.size() + otherTextures.size();
     m_loaded = 0;
-    m_loadingTarget = target;
-    m_loadingProgressing = loadingProgressing;
-    m_loadingDone = loadingDone;
+    m_onLoadingProgressing = onLoadingProgressing;
+    m_onLoadingDone = onLoadingDone;
 
     M_VEC_FOREACH(frames)
     {
         char sz[1024];
         sprintf(sz, "%s.png", M_VEC_IT->c_str());
-        tc->addImageAsync(sz, this, callfuncO_selector(CCGameControler::onLoadingProgressing));
+        tc->addImageAsync(sz, CC_CALLBACK_1(GameControler::onLoadingProgressing, this));
         M_VEC_NEXT;
     }
 
@@ -187,12 +186,12 @@ void CCGameControler::loadTexturesAsync( const vector<string>& frames, const vec
     {
         char sz[1024];
         sprintf(sz, "%s%s", M_VEC_IT->c_str(), M_VEC_IT->at(M_VEC_IT->length() - 4) == '.' ? "" : ".png");
-        tc->addImageAsync(sz, this, callfuncO_selector(CCGameControler::onLoadingProgressing));
+        tc->addImageAsync(sz, CC_CALLBACK_1(GameControler::onLoadingProgressing, this));
         M_VEC_NEXT;
     }
 }
 
-void CCGameControler::addTexturesLoadedToFramesCache()
+void GameControler::addTexturesLoadedToFramesCache()
 {
     M_VEC_FOREACH(m_loadFrames)
     {
@@ -203,20 +202,20 @@ void CCGameControler::addTexturesLoadedToFramesCache()
     }
 }
 
-void CCGameControler::onLoadingProgressing( CCObject* obj )
+void GameControler::onLoadingProgressing(Ref* obj)
 {
-//     if (m_loaded < m_loadFrames.size())
-//     {
-//         char sz[1024];
-//         sprintf(sz, "%s.plist", m_loadFrames[m_loaded].c_str());
-//         getfc()->addSpriteFramesWithFile(sz, DCAST(obj, CCTexture2D*));
-//     }
+     if (m_loaded < (int)m_loadFrames.size())
+     {
+         char sz[1024];
+         sprintf(sz, "%s.plist", m_loadFrames[m_loaded].c_str());
+         getfc()->addSpriteFramesWithFile(sz, DCAST(obj, Texture2D*));
+     }
 
     ++m_loaded;
 
-    if (m_loadingTarget != NULL && m_loadingProgressing != NULL)
+    if (m_onLoadingProgressing)
     {
-        (m_loadingTarget->*m_loadingProgressing)(obj);
+        m_onLoadingProgressing();
     }
 
     if (m_loaded >= m_loadCount)
@@ -224,10 +223,10 @@ void CCGameControler::onLoadingProgressing( CCObject* obj )
         // done
         //addTexturesLoadedToFramesCache();
 
-        if (m_loadingTarget != NULL && m_loadingDone != NULL)
+        if (m_onLoadingDone)
         {
             addTexturesLoadedToFramesCache();
-            (m_loadingTarget->*m_loadingDone)(obj);
+            m_onLoadingDone();
         }
         
         return;

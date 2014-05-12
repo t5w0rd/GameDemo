@@ -16,7 +16,7 @@ int luaModuleLoader4cc(lua_State *L)
     {
         filename = filename.substr(0, pos);
     }
-    
+
     pos = filename.find_first_of(".");
     while (pos != std::string::npos)
     {
@@ -24,24 +24,22 @@ int luaModuleLoader4cc(lua_State *L)
         pos = filename.find_first_of(".");
     }
     filename.append(".lua");
-    
-    unsigned long codeBufferSize = 0;
-    unsigned char* codeBuffer = CCFileUtils::sharedFileUtils()->getFileData(filename.c_str(), "rb", &codeBufferSize);
-    
-    if (codeBuffer)
+
+    Data data = FileUtils::getInstance()->getDataFromFile(filename);
+
+    if (!data.isNull())
     {
-        if (luaL_loadbuffer(L, (char*)codeBuffer, codeBufferSize, filename.c_str()) != 0)
+        if (luaL_loadbuffer(L, (char*)data.getBytes(), data.getSize(), filename.c_str()) != 0)
         {
             luaL_error(L, "error loading module %s from file %s :\n\t%s",
                 lua_tostring(L, 1), filename.c_str(), lua_tostring(L, -1));
         }
-        delete []codeBuffer;
     }
     else
     {
-        //CCLog("can not get file data of %s", filename.c_str());
+        log("can not get file data of %s", filename.c_str());
     }
-    
+
     return 1;
 }
 
@@ -53,7 +51,7 @@ bool luaL_loadscript4cc(lua_State *L, const char* name, string& err)
     code.append("\"");
     int nRet = luaL_dostring(L, code.c_str());
 #else
-    std::string fullPath = CCFileUtils::sharedFileUtils()->fullPathForFilename(name);
+    std::string fullPath = FileUtils::getInstance()->fullPathForFilename(name);
     int nRet = luaL_dofile(L, fullPath.c_str());
 #endif
     if (nRet != 0)
@@ -68,19 +66,20 @@ bool luaL_loadscript4cc(lua_State *L, const char* name, string& err)
 }
 
 luaL_Reg unit4cc_funcs[] = {
-    {"ctor", unit4cc_ctor},
-    {"addBattleTip", unit4cc_addBattleTip},
-    {NULL, NULL}
+    { "ctor", unit4cc_ctor },
+    { "addBattleTip", unit4cc_addBattleTip },
+    { "setGeometry", unit4cc_setGeometry },
+    { nullptr, nullptr }
 };
 
 int unit4cc_ctor(lua_State* L)
 {
-    int sprite = 2;
+    CSpriteInfo* si = nullptr;
+    luaL_toobjptr(L, 2, si);
     const char* name = lua_tostring(L, 3);
 
-    CUnitDrawForCC* d = luaL_tospriteptr(L, sprite);
-    CUnit* u = new CUnit(d->getName());
-    u->setDraw(d);
+    CUnitDrawForCC* d = new CUnitDrawForCC(si);
+    CUnit* u = new CUnit(d);
     u->setName(name);
 
     lua_pushlightuserdata(L, u);
@@ -95,6 +94,7 @@ int unit4cc_ctor(lua_State* L)
 
     return 0;
 }
+
 int unit4cc_addBattleTip(lua_State* L)
 {
     CUnit* _p = luaL_tounitptr(L);
@@ -104,21 +104,35 @@ int unit4cc_addBattleTip(lua_State* L)
     unsigned int r = lua_tounsigned(L, 5);
     unsigned int g = lua_tounsigned(L, 6);
     unsigned int b = lua_tounsigned(L, 7);
-    
+
     CUnitDrawForCC* d = DCAST(_p->getDraw(), CUnitDrawForCC*);
-    d->addBattleTip(tip, font, fontSize, ccc3(r, g, b));
-    
+    d->addBattleTip(tip, font, fontSize, Color3B(r, g, b));
+
+    return 0;
+}
+
+int unit4cc_setGeometry(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    float fHalfOfWidth = lua_tonumber(L, 2);
+    float fHalfOfHeight = lua_tonumber(L, 3);
+    Point anchorPoint(lua_tonumber(L, 4), lua_tonumber(L, 5));
+    CPoint firePoint(lua_tonumber(L, 6), lua_tonumber(L, 7));
+
+    CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
+    d->setGeometry(fHalfOfWidth, fHalfOfHeight, anchorPoint, firePoint);
+
     return 0;
 }
 
 luaL_Reg UnitPath4CC_funcs[] = {
-    {"addPoints", UnitPath4CC_addPoints},
-    {NULL, NULL}
+    { "addPoints", UnitPath4CC_addPoints },
+    { nullptr, nullptr }
 };
 
 int UnitPath4CC_addPoints(lua_State* L)
 {
-    CUnitPathForCC* _p = NULL;
+    CUnitPathForCC* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     const char* f = lua_tostring(L, 2);
 
@@ -137,18 +151,17 @@ CUnitDrawForCC* luaL_tospriteptr(lua_State* L, int idx /*= 1*/)
 }
 
 luaL_Reg sprite4cc_funcs[] = {
-    {"ctor", sprite4cc_ctor},
-    {"prepareFrame", sprite4cc_prepareFrame},
-    {"prepareAnimation", sprite4cc_prepareAnimation},
-    {"setGeometry", sprite4cc_setGeometry},
-    {NULL, NULL}
+    { "ctor", sprite4cc_ctor },
+    { "prepareFrame", sprite4cc_prepareFrame },
+    { "prepareAnimation", sprite4cc_prepareAnimation },
+    { nullptr, nullptr }
 };
 
 int sprite4cc_ctor(lua_State* L)
 {
     const char* name = lua_tostring(L, 2);
 
-    CUnitDrawForCC* d = new CUnitDrawForCC(name);
+    CSpriteInfo* d = new CSpriteInfo(name);
     lua_pushlightuserdata(L, d);
     lua_setfield(L, 1, "_p");
 
@@ -157,36 +170,25 @@ int sprite4cc_ctor(lua_State* L)
 
 int sprite4cc_prepareFrame(lua_State* L)
 {
+    CSpriteInfo* si = nullptr;
+    luaL_toobjptr(L, 1, si);
     int id = lua_tointeger(L, 2);
     const char* name = lua_tostring(L, 3);
-    
-    CUnitDrawForCC* d = luaL_tospriteptr(L);
-    d->prepareFrame((CUnitDraw2D::FRM_ID)id, name);
+
+    si->prepareFrame(id, name);
 
     return 0;
 }
 
 int sprite4cc_prepareAnimation(lua_State* L)
 {
+    CSpriteInfo* si = nullptr;
+    luaL_toobjptr(L, 1, si);
     int id = lua_tointeger(L, 2);
     const char* name = lua_tostring(L, 3);
     int notify = lua_tointeger(L, 4);
 
-    CUnitDrawForCC* d = luaL_tospriteptr(L);
-    d->prepareAnimation((CUnitDraw2D::ANI_ID)id, name, notify);
-
-    return 0;
-}
-
-int sprite4cc_setGeometry(lua_State* L)
-{
-    float fHalfOfWidth = lua_tonumber(L, 2);
-    float fHalfOfHeight = lua_tonumber(L, 3);
-    CCPoint anchorPoint(lua_tonumber(L, 4), lua_tonumber(L, 5));
-    CPoint firePoint(lua_tonumber(L, 6), lua_tonumber(L, 7));
-
-    CUnitDrawForCC* d = luaL_tospriteptr(L);
-    d->setGeometry(fHalfOfWidth, fHalfOfHeight, anchorPoint, firePoint);
+    si->prepareAnimation(id, name, notify);
 
     return 0;
 }
@@ -201,16 +203,16 @@ int g_log(lua_State* L)
         lua_pushvalue(L, i);
     }
     lua_call(L, n, 1);
-    
+
     const char* log = lua_tostring(L, -1);
     CCLOG("%s", log);
 
     lua_getglobal(L, "_world");
     CWorldForCC* w = (CWorldForCC*)lua_touserdata(L, -1);
-    DCAST(w->getLayer(), CCBattleSceneLayer*)->log("%s", log);
-    
+    DCAST(w->getLayer(), BattleSceneLayer*)->log("%s", log);
+
     lua_pop(L, 3);  // pop res and "string" and _world
-    
+
     return 0;
 }
 
@@ -236,41 +238,72 @@ int g_loadAnimation(lua_State* L)
     return 0;
 }
 
-int g_createUnit( lua_State* L )
+int g_addTemplateUnit(lua_State* L)
+{
+    int id = lua_tointeger(L, 1);
+    CUnit* u = luaL_tounitptr(L, 2);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    w->m_oULib.addUnit(id, u);
+
+    return 0;
+}
+
+int g_addTemplateProjectile(lua_State* L)
+{
+    int id = lua_tointeger(L, 1);
+    CProjectile* p = nullptr;
+    luaL_toobjptr(L, 2, p);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    w->m_oULib.addProjectile(id, p);
+
+    return 0;
+}
+
+int g_createUnit(lua_State* L)
 {
     int id = lua_tointeger(L, 1);
 
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
     CUnit* _p = w->m_oULib.copyUnit(id);
     w->addUnit(_p);
-    lua_pop(L, 1);  // pop _world
 
     luaL_pushobjptr(L, "Unit", _p);
 
     return 1;
 }
 
-int g_createProjectile( lua_State* L )
+int g_createProjectile(lua_State* L)
 {
     int id = lua_tointeger(L, 1);
 
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
     CProjectile* _p = w->m_oULib.copyProjectile(id);
     w->addProjectile(_p);
-    lua_pop(L, 1);  // pop _world
 
     luaL_pushobjptr(L, "Projectile", _p);
 
     return 1;
 }
 
-int g_showDebug( lua_State* L )
+int g_showDebug(lua_State* L)
 {
     bool bOn = lua_toboolean(L, 1) != 0;
-    
-    CCDirector::sharedDirector()->setDisplayStats(bOn);
+
+    Director::getInstance()->setDisplayStats(bOn);
 
     return 0;
 }
@@ -279,7 +312,7 @@ int g_playSound(lua_State* L)
 {
     const char* eff = lua_tostring(L, 1);
 
-    SimpleAudioEngine::sharedEngine()->playEffect(eff);
+    SimpleAudioEngine::getInstance()->playEffect(eff);
 
     return 0;
 }
@@ -301,7 +334,7 @@ int g_setSearchPath(lua_State* L)
     else
     {
         const char* path = lua_tostring(L, 1);
-        if (path != NULL)
+        if (path != nullptr)
         {
             g_sLuaSearchPath = path;
         }
@@ -333,7 +366,7 @@ int g_endWithVictory(lua_State* L)
 
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    DCAST(w->getLayer(), CCBattleSceneLayer*)->endWithVictory(grade);
+    DCAST(w->getLayer(), BattleSceneLayer*)->endWithVictory(grade);
     lua_pop(L, 1);  // pop _world
 
     return 0;
@@ -343,7 +376,7 @@ int g_endWithDefeat(lua_State* L)
 {
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    DCAST(w->getLayer(), CCBattleSceneLayer*)->endWithDefeat();
+    DCAST(w->getLayer(), BattleSceneLayer*)->endWithDefeat();
     lua_pop(L, 1);  // pop _world
 
     return 0;
@@ -357,6 +390,8 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "log", g_log);
     lua_register(L, "loadFrames", g_loadFrames);
     lua_register(L, "loadAnimation", g_loadAnimation);
+    lua_register(L, "addTemplateUnit", g_addTemplateUnit);
+    lua_register(L, "addTemplateProjectile", g_addTemplateProjectile);
     lua_register(L, "createUnit", g_createUnit);
     lua_register(L, "createProjectile", g_createProjectile);
     lua_register(L, "showDebug", g_showDebug);
@@ -365,7 +400,7 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "include", g_include);
     lua_register(L, "endWithVictory", g_endWithVictory);
     lua_register(L, "endWithDefeat", g_endWithDefeat);
-    
+
     // TODO: reg global class members
     lua_getglobal(L, "Unit");
     luaL_setfuncs(L, unit4cc_funcs, 0);

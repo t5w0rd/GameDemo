@@ -73,7 +73,10 @@ int unit_setHp(lua_State* L);
 int unit_getHp(lua_State* L);
 int unit_isDead(lua_State* L);
 int unit_setForceByIndex(lua_State* L);
+int unit_setForce(lua_State* L);
+int unit_getForce(lua_State* L);
 int unit_setAlly(lua_State* L);
+int unit_getAlly(lua_State* L);
 int unit_setBaseArmor(lua_State* L);
 int unit_getBaseArmor(lua_State* L);
 int unit_getRealArmorValue(lua_State* L);
@@ -87,13 +90,18 @@ int unit_attack(lua_State* L);
 int unit_damaged(lua_State* L);
 int unit_attackLow(lua_State* L);
 int unit_damagedLow(lua_State* L);
+int unit_setLevel(lua_State* L);
 int unit_getLevel(lua_State* L);
+int unit_setMaxLevel(lua_State* L);
+int unit_getMaxLevel(lua_State* L);
 int unit_addExp(lua_State* L);
 int unit_setRewardGold(lua_State* L);
 int unit_getRewardGold(lua_State* L);
 int unit_setRewardExp(lua_State* L);
 int unit_getRewardExp(lua_State* L);
 int unit_setAI(lua_State* L);
+int unit_say(lua_State* L);
+int unit_setGhost(lua_State* L);
 
 int unit_startDoing(lua_State* L);
 int unit_endDoing(lua_State* L);
@@ -119,7 +127,9 @@ int unit2d_move(lua_State* L);
 int unit2d_moveAlongPath(lua_State* L);
 int unit2d_setCastTarget(lua_State* L);
 int unit2d_getCastTarget(lua_State* L);
-int unit2d_castSpell(lua_State* L);
+int unit2d_castSpellWithoutTarget(lua_State* L);
+int unit2d_castSpellWithTargetUnit(lua_State* L);
+int unit2d_castSpellWithTargetPoint(lua_State* L);
 int unit2d_stop(lua_State* L);
 int unit2d_setHostilityRange(lua_State* L);
 int unit2d_getHostilityRange(lua_State* L);
@@ -129,6 +139,7 @@ int unit2d_isDoingCastingAction(lua_State* L);
 int unit2d_getDistance(lua_State* L);
 int unit2d_getTouchDistance(lua_State* L);
 int unit2d_getAttackingTarget(lua_State* L);
+int unit2d_doAnimation(lua_State* L);
 
 int UnitPath_ctor(lua_State* L);
 int UnitPath_addPoint(lua_State* L);
@@ -172,8 +183,6 @@ int projectile_setContactLeft(lua_State* L);
 int projectile_getContactLeft(lua_State* L);
 int projectile_decContactLeft(lua_State* L);
 
-
-
 int ability_ctor(lua_State* L);
 int ability_onUnitAddAbility(lua_State* L);
 int ability_onUnitDelAbility(lua_State* L);
@@ -205,6 +214,7 @@ int ability_coolDown(lua_State* L);
 int ability_setLevel(lua_State* L);
 int ability_getLevel(lua_State* L);
 int ability_addEffectSound(lua_State* L);
+int ability_setImageName(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -221,6 +231,7 @@ int ActiveAbility_setTemplateProjectile(lua_State* L);
 int ActiveAbility_setCastHorizontal(lua_State* L);
 int ActiveAbility_isCastHorizontal(lua_State* L);
 int ActiveAbility_addCastAnimation(lua_State* L);
+int ActiveAbility_getAbilityEffectPoint(lua_State* L);
 
 int PassiveAbility_ctor(lua_State* L);
 
@@ -257,6 +268,7 @@ int DamageBuff_ctor(lua_State* L);
 int TransitiveLinkBuff_ctor(lua_State* L);
 int SplashPas_ctor(lua_State* L);
 int KnockBackBuff_ctor(lua_State* L);
+int AttractBuff_ctor(lua_State* L);
 int ReflectBuff_ctor(lua_State* L);
 int LimitedLifeBuff_ctor(lua_State* L);
 
@@ -286,6 +298,11 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 template <typename PTYPE>
 PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr)
 {
+    if (lua_istable(L, idx) == false)
+    {
+        return nullptr;
+    }
+
     lua_getfield(L, idx, "_p");
     ptr = (PTYPE)lua_touserdata(L, lua_gettop(L));
     lua_pop(L, 1);
@@ -296,6 +313,12 @@ PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr)
 template <typename PTYPE>
 void luaL_pushobjptr(lua_State* L, const char* name, const PTYPE _p)
 {
+    if (_p == nullptr)
+    {
+        lua_pushnil(L);
+        return;
+    }
+
     lua_newtable(L);
     int obj = lua_gettop(L);
 

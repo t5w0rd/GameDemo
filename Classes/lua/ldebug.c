@@ -412,7 +412,7 @@ static const char *getobjname (Proto *p, int lastpc, int reg,
         int t = GETARG_B(i);  /* table index */
         const char *vn = (op == OP_GETTABLE)  /* name of indexed variable */
                          ? luaF_getlocalname(p, t + 1, pc)
-                         : upvalname(p, t);
+                     : upvalname(p, t);
         kname(p, pc, k, name);
         return (vn && strcmp(vn, LUA_ENV) == 0) ? "global" : "field";
       }
@@ -423,7 +423,7 @@ static const char *getobjname (Proto *p, int lastpc, int reg,
       case OP_LOADK:
       case OP_LOADKX: {
         int b = (op == OP_LOADK) ? GETARG_Bx(i)
-                                 : GETARG_Ax(p->code[pc + 1]);
+                             : GETARG_Ax(p->code[pc + 1]);
         if (ttisstring(&p->k[b])) {
           *name = svalue(&p->k[b]);
           return "constant";

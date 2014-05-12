@@ -300,7 +300,7 @@ CAction* CActionManager::getActionByTag(int iTag)
         M_VEC_NEXT;
     }
     
-    return NULL;
+    return nullptr;
 }
 
 void CActionManager::onTick(float dt)
@@ -330,6 +330,12 @@ CCommandTarget::CCommandTarget()
 {
 }
 
+CCommandTarget::CCommandTarget(int iTargetUnit)
+: m_eTargetType(kUnitTarget)
+, m_iTargetUnit(iTargetUnit)
+{
+}
+
 CCommandTarget::CCommandTarget(const CPoint& rTargetPoint)
 : m_eTargetType(kPointTarget)
 , m_oTargetPoint(rTargetPoint)
@@ -337,10 +343,26 @@ CCommandTarget::CCommandTarget(const CPoint& rTargetPoint)
 {
 }
 
-CCommandTarget::CCommandTarget(int iTargetUnit)
-: m_eTargetType(kUnitTarget)
-, m_iTargetUnit(iTargetUnit)
+bool CCommandTarget::operator==(const CCommandTarget& rTarget) const
 {
+    if (m_eTargetType != rTarget.getTargetType())
+    {
+        return false;
+    }
+
+    switch (m_eTargetType)
+    {
+    case kNoTarget:
+        return true;
+
+    case kPointTarget:
+        return m_oTargetPoint == rTarget.getTargetPoint();
+
+    case kUnitTarget:
+        return m_iTargetUnit == rTarget.getTargetUnit();
+    }
+
+    return false;
 }
 
 // CUnitEventAdapter
@@ -365,7 +387,7 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
     }
 
     CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
-    if (d == NULL)
+    if (d == nullptr)
     {
         return;
     }
@@ -374,10 +396,10 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
     if (d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
     {
         CUnit* tt = pUnit->getUnit(d->getCastTarget().getTargetUnit());
-        if (tt != NULL)
+        if (tt != nullptr)
         {
             CUnitDraw2D* ttd = DCAST(tt->getDraw(), CUnitDraw2D*);
-            if (ttd != NULL && pUnit->isDoingAnd(CUnit::kCasting | CUnit::kMoving) && d->getPosition().getDistance(ttd->getPosition()) < d->getHostilityRange())
+            if (ttd != nullptr && pUnit->isDoingAnd(CUnit::kCasting | CUnit::kMoving) && d->getPosition().getDistance(ttd->getPosition()) < d->getHostilityRange())
             {
                 // 正在追击施法，距离在仇恨范围内
                 return;
@@ -391,16 +413,15 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
         return;
     }
 
-    CUnit* t = CUnitGroup::getNearestUnitInRange(pUnit->getWorld(), d->getPosition(), d->getHostilityRange(), (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(pUnit, CUnitForce*));
-    if (t == NULL || t->isDead())
+    CUnit* t = CUnitGroup::getNearestUnitInRange(pUnit->getWorld(), d->getPosition(), d->getHostilityRange(), bind(&CUnitGroup::isLivingEnemyOf, placeholders::_1, DCAST(pUnit, CUnitForce*)));
+    if (t == nullptr || t->isDead())
     {
         //d->stop();
         // 搜不到仇恨区内的目标，有没有必要设置为doNothing？
         return;
     }
 
-    d->setCastTarget(CCommandTarget(t->getId()));
-    d->cmdCastSpell(atk, false);
+    d->cmdCastSpell(CCommandTarget(t->getId()), atk, false);
 }
 
 void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
@@ -410,13 +431,13 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
         return;
     }
     //CCLOG("%s", u->isDoingAnd(CUnit::kObstinate) ? "Obs" : "NOT");
-    if (pSource == NULL || pSource->isDead() || pSource->isAllyOf(pUnit))
+    if (pSource == nullptr || pSource->isDead() || pSource->isAllyOf(pUnit))
     {
         return;
     }
 
     CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
-    if (d == NULL)
+    if (d == nullptr)
     {
         return;
     }
@@ -427,23 +448,27 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
         return;
     }
 
-    CActiveAbility* atking = ((atk == d->getCastActiveAbilityId()) ? pUnit->getActiveAbility(atk) : NULL);
-    CUnitDraw2D* td = NULL;
-    if (atking != NULL && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+    CActiveAbility* atking = ((atk == d->getCastActiveAbilityId()) ? pUnit->getActiveAbility(atk) : nullptr);
+    CUnitDraw2D* td = nullptr;
+    if (atking != nullptr && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
     {
-        // 正在试图释放一个目标为单位的攻击技能
+        // 正在进行攻击，而且攻击目标类型为单位目标
         if (d->getCastTarget().getTargetUnit() != pSource->getId())
         {
             // 伤害源不是当前的攻击目标
             CUnit* t = pUnit->getUnit(d->getCastTarget().getTargetUnit());
-            if (t != NULL)
+            if (t != nullptr)
             {
                 td = DCAST(t->getDraw(), CUnitDraw2D*);
             }
             else
             {
+                // 当前攻击目标已经不存在
+                CCLOG("setCastTarget(CCommandTarget())");
                 d->setCastTarget(CCommandTarget());
-                t = NULL;
+                pUnit->endDoing(CUnit::kCasting);
+                d->setCastActiveAbilityId(0);
+                t = nullptr;
             }
         }
         else
@@ -454,7 +479,7 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
 
     // 当前目标存在！   如果能打到之前的目标且  (目标非建筑  或(是建筑，且源也是建筑))
     // 果伤害源
-    if (td != NULL && d->checkCastTargetDistance(atking, d->getPosition(), td))
+    if (td != nullptr && d->checkCastTargetDistance(atking, d->getPosition(), d->getCastTarget(), td))
     {
         // 如果能打到之前的目标，不改变攻击目标
         return;
@@ -470,15 +495,14 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
         return;
     }
 
-    d->setCastTarget(CCommandTarget(pSource->getId()));
-    d->cmdCastSpell(atk, false);
+    d->cmdCastSpell(CCommandTarget(pSource->getId()), atk, false);
 
     return;
 }
 
 // CUnitAI
 CUnitAI::CUnitAI()
-    : m_iScriptHandler(0)
+: m_iScriptHandler(0)
 {
 }
 
@@ -491,7 +515,7 @@ CUnitAI::~CUnitAI()
     }
 }
 
-void CUnitAI::onUnitChangeHp( CUnit* pUnit, float fChanged )
+void CUnitAI::onUnitChangeHp(CUnit* pUnit, float fChanged)
 {
     if (getScriptHandler() == 0)
     {
@@ -505,12 +529,19 @@ void CUnitAI::onUnitChangeHp( CUnit* pUnit, float fChanged )
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     lua_pushnumber(L, fChanged);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }
 
-void CUnitAI::onUnitTick( CUnit* pUnit, float dt )
+void CUnitAI::onUnitTick(CUnit* pUnit, float dt)
 {
     CBaseAI::onUnitTick(pUnit, dt);
 
@@ -538,7 +569,7 @@ void CUnitAI::onUnitTick( CUnit* pUnit, float dt )
     lua_pop(L, 1);  // pop 'ai'
 }
 
-void CUnitAI::onUnitDamagedDone( CUnit* pUnit, float fDamage, CUnit* pSource )
+void CUnitAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
 {
     CBaseAI::onUnitDamagedDone(pUnit, fDamage, pSource);
 
@@ -555,12 +586,19 @@ void CUnitAI::onUnitDamagedDone( CUnit* pUnit, float fDamage, CUnit* pSource )
     luaL_pushobjptr(L, "Unit", pUnit);
     lua_pushnumber(L, fDamage);
     luaL_pushobjptr(L, "Unit", pSource);
-    lua_call(L, 4, 0);
+    if (lua_pcall(L, 4, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }
 
-void CUnitAI::onUnitDamageTargetDone( CUnit* pUnit, float fDamage, CUnit* pTarget )
+void CUnitAI::onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget)
 {
     if (getScriptHandler() == 0)
     {
@@ -575,12 +613,19 @@ void CUnitAI::onUnitDamageTargetDone( CUnit* pUnit, float fDamage, CUnit* pTarge
     luaL_pushobjptr(L, "Unit", pUnit);
     lua_pushnumber(L, fDamage);
     luaL_pushobjptr(L, "Unit", pTarget);
-    lua_call(L, 4, 0);
+    if (lua_pcall(L, 4, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }
 
-void CUnitAI::onUnitAddBuffAbility( CUnit* pUnit, CBuffAbility* pAbility )
+void CUnitAI::onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility)
 {
     if (getScriptHandler() == 0)
     {
@@ -594,12 +639,19 @@ void CUnitAI::onUnitAddBuffAbility( CUnit* pUnit, CBuffAbility* pAbility )
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     luaL_pushobjptr(L, "BuffAbility", pAbility);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }
 
-void CUnitAI::onUnitDelBuffAbility( CUnit* pUnit, CBuffAbility* pAbility )
+void CUnitAI::onUnitDelBuffAbility(CUnit* pUnit, CBuffAbility* pAbility)
 {
     if (getScriptHandler() == 0)
     {
@@ -613,12 +665,19 @@ void CUnitAI::onUnitDelBuffAbility( CUnit* pUnit, CBuffAbility* pAbility )
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     luaL_pushobjptr(L, "BuffAbility", pAbility);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }
 
-void CUnitAI::onUnitAbilityReady( CUnit* pUnit, CAbility* pAbility )
+void CUnitAI::onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility)
 {
     if (getScriptHandler() == 0)
     {
@@ -632,54 +691,59 @@ void CUnitAI::onUnitAbilityReady( CUnit* pUnit, CAbility* pAbility )
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     luaL_pushobjptr(L, "Ability", pAbility);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);  // pop 'ai'
 }
 
 // CUnit
-CUnit::CUnit(const char* pRootId)
-: CONST_ROOT_ID(pRootId)
-, m_pWorld(NULL)
+CUnit::CUnit(CUnitDraw* draw)
+: m_pWorld(nullptr)
 , m_fHp(1.001f)
 , m_fMaxHp(1.001f)
-, m_pAI(NULL)
-, m_pEventAdapter(NULL)
+, m_pAI(nullptr)
+, m_pEventAdapter(nullptr)
 , m_iAttackAbilityId(0)
 , m_iTriggerRefCount(0)
 , m_iSuspendRef(0)
 , m_bRevivable(false)
-, m_bGhost(false)
-, m_pResource(NULL)
+, m_iGhostOwner(0)
+, m_pResource(nullptr)
 , m_iRewardGold(0)
 , m_iRewardExp(0)
 , m_dwDoingFlags(0)
 , m_iPriority(0)
-, m_pDraw(NULL)
+, m_pDraw(nullptr)
 , m_eSpecies(kUnknown)
 {
+    setDraw(draw);
     setDbgClassName("CUnit");
 }
 
 CUnit::~CUnit()
 {
-    setAI(NULL);
-    setEventAdapter(NULL);
-    setDraw(NULL);
-    setResource(NULL);
+    setAI(nullptr);
+    setEventAdapter(nullptr);
+    setDraw(nullptr);
+    setResource(nullptr);
 }
 
 CMultiRefObject* CUnit::copy()
 {
-    CUnit* ret = new CUnit(CONST_ROOT_ID.c_str());
+    CUnit* ret = new CUnit(getDraw()->copy());
     ret->copyData(this);
     return ret;
 }
 
-void CUnit::copyData( const CUnit* from )
+void CUnit::copyData(const CUnit* from)
 {
-    setDraw(DCAST(from->m_pDraw->copy(), CUnitDraw*));
-
     m_sName = from->m_sName;
     m_dwForceFlag = from->m_dwForceFlag;
     m_dwAllyMaskFlag = from->m_dwAllyMaskFlag;
@@ -721,20 +785,27 @@ const char* CUnit::getDbgTag() const
 
 CUnit* CUnit::getUnit(int id)
 {
-    return id != 0 ? getWorld()->getUnit(id) : NULL;
+    return id != 0 ? getWorld()->getUnit(id) : nullptr;
 }
 
 void CUnit::abilityCD(CAbility* pAbility)
 {
     CWorld* w = getWorld();
-    assert(w != NULL);
+    assert(w != nullptr);
+
+    if (!pAbility->isCoolingDown())
+    {
+        return;
+    }
+
     w->addAbilityCD(pAbility);
+    onAbilityCD(pAbility);
 }
 
 void CUnit::updateAbilityCD(int id)
 {
     CWorld* w = getWorld();
-    assert(w != NULL);
+    assert(w != nullptr);
     w->updateAbilityCD(id);
 }
 
@@ -810,7 +881,7 @@ float CUnit::getRealMaxHp() const
 
 void CUnit::onChangeLevel(int iChanged)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitChangeLevel(this, iChanged);
     }
@@ -819,14 +890,14 @@ void CUnit::onChangeLevel(int iChanged)
 void CUnit::onRevive()
 {
     CUnitDraw* d = getDraw();
-    if (d != NULL)
+    if (d != nullptr)
     {
         d->onUnitRevive();
     }
 
     triggerOnRevive();
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitRevive(this);
     }
@@ -835,19 +906,19 @@ void CUnit::onRevive()
 void CUnit::onDying()
 {
     CUnitDraw* d = getDraw();
-    if (d != NULL)
+    if (d != nullptr)
     {
         d->onUnitDying();
     }
 
     triggerOnDying();
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDying(this);
     }
 
-    if (m_pEventAdapter != NULL)
+    if (m_pEventAdapter != nullptr)
     {
         m_pEventAdapter->onUnitDying(this);
     }
@@ -857,7 +928,7 @@ void CUnit::onDead()
 {
     triggerOnDead();
 
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDead(this);
     }
@@ -867,7 +938,7 @@ void CUnit::onChangeHp(float fChanged)
 {
     triggerOnChangeHp(fChanged);
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitChangeHp(this, fChanged);
     }
@@ -885,7 +956,7 @@ void CUnit::step(float dt)
 void CUnit::onTick(float dt)
 {
     CUnitDraw* d = getDraw();
-    if (d != NULL && !isDead())
+    if (d != nullptr && !isDead())
     {
         d->onUnitTick(dt);
     }
@@ -905,12 +976,12 @@ void CUnit::onAttackTarget(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTrig
         triggerOnAttackTarget(pAttack, pTarget);
     }
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitAttackTarget(this, pAttack, pTarget);
     }
 
-    if (m_pEventAdapter != NULL)
+    if (m_pEventAdapter != nullptr)
     {
         m_pEventAdapter->onUnitAttackTarget(this, pAttack, pTarget);
     }
@@ -924,7 +995,7 @@ bool CUnit::onAttacked(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerM
         res = triggerOnAttacked(pAttack, pSource);
     }
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitAttacked(this, pAttack, pSource);
     }
@@ -944,7 +1015,7 @@ void CUnit::onDamaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMa
         triggerOnDamagedInner(pAttack, pSource);
     }
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDamaged(this, pAttack, pSource);
     }
@@ -960,22 +1031,22 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
     LOG("%s受到%d点伤害", getName(), toInt(fDamage));
     LOG("%s HP: %d/%d\n", getName(), toInt(getHp()), toInt(getRealMaxHp()));
 
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDamagedDone(this, fDamage, pSource);
     }
 
 #ifdef DEBUG_FOR_CC
     // for cocos2dx
-    CUnitDrawForCC* ccd = NULL;
+    CUnitDrawForCC* ccd = nullptr;
     getDraw()->dcast(ccd);
 
     int dmg = toInt(fDamage);
-    if (ccd != NULL && dmg > 0)
+    if (ccd != nullptr && dmg > 0)
     {
         char sz[64];
         sprintf(sz, "-%d", dmg);
-        ccd->addBattleTip(sz, "", 18, ccc3(255, 0, 0));
+        ccd->addBattleTip(sz, "", 18, Color3B(255, 0, 0));
     }
 #endif
 }
@@ -987,7 +1058,7 @@ void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTrigger
         triggerOnDamageTargetDone(fDamage, pTarget);
     }
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDamageTargetDone(this, fDamage, pTarget);
     }
@@ -997,12 +1068,12 @@ void CUnit::onProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     triggerOnProjectileEffect(pProjectile, pTarget);
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitProjectileEffect(this, pProjectile, pTarget);
     }
 
-    if (m_pEventAdapter != NULL)
+    if (m_pEventAdapter != nullptr)
     {
         m_pEventAdapter->onUnitProjectileEffect(this, pProjectile, pTarget);
     }
@@ -1015,12 +1086,12 @@ bool CUnit::onProjectileArrive(CProjectile* pProjectile)
         return false;
     }
 
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitProjectileArrive(this, pProjectile);
     }
 
-    if (m_pEventAdapter != NULL)
+    if (m_pEventAdapter != nullptr)
     {
         m_pEventAdapter->onUnitProjectileArrive(this, pProjectile);
     }
@@ -1030,23 +1101,33 @@ bool CUnit::onProjectileArrive(CProjectile* pProjectile)
 
 void CUnit::onAddActiveAbility(CActiveAbility* pAbility)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitAddActiveAbility(this, pAbility);
+    }
+
+    if (m_pEventAdapter != nullptr)
+    {
+        m_pEventAdapter->onUnitAddActiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onDelActiveAbility(CActiveAbility* pAbility)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDelActiveAbility(this, pAbility);
+    }
+
+    if (m_pEventAdapter != nullptr)
+    {
+        m_pEventAdapter->onUnitDelActiveAbility(this, pAbility);
     }
 }
 
 void CUnit::onAddPassiveAbility(CPassiveAbility* pAbility)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitAddPassiveAbility(this, pAbility);
     }
@@ -1054,7 +1135,7 @@ void CUnit::onAddPassiveAbility(CPassiveAbility* pAbility)
 
 void CUnit::onDelPassiveAbility(CPassiveAbility* pAbility)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDelPassiveAbility(this, pAbility);
     }
@@ -1062,7 +1143,7 @@ void CUnit::onDelPassiveAbility(CPassiveAbility* pAbility)
 
 void CUnit::onAddBuffAbility(CBuffAbility* pAbility)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitAddBuffAbility(this, pAbility);
     }
@@ -1070,9 +1151,22 @@ void CUnit::onAddBuffAbility(CBuffAbility* pAbility)
 
 void CUnit::onDelBuffAbility(CBuffAbility* pAbility)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDelBuffAbility(this, pAbility);
+    }
+}
+
+void CUnit::onAbilityCD(CAbility* pAbility)
+{
+    if (m_pAI != nullptr)
+    {
+        m_pAI->onUnitAbilityCD(this, pAbility);
+    }
+
+    if (m_pEventAdapter != nullptr)
+    {
+        m_pEventAdapter->onUnitAbilityCD(this, pAbility);
     }
 }
 
@@ -1080,7 +1174,7 @@ void CUnit::onAbilityReady(CAbility* pAbility)
 {
     pAbility->onUnitAbilityReady();
     
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitAbilityReady(this, pAbility);
     }
@@ -1088,7 +1182,7 @@ void CUnit::onAbilityReady(CAbility* pAbility)
 
 void CUnit::onAddItem(int iIndex)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitAddItem(this, iIndex);
     }
@@ -1096,13 +1190,13 @@ void CUnit::onAddItem(int iIndex)
 
 void CUnit::onDelItem(int iIndex)
 {
-    if (m_pAI != NULL)
+    if (m_pAI != nullptr)
     {
         m_pAI->onUnitDelItem(this, iIndex);
     }
 }
 
-void CUnit::setAI( CBaseAI* pAI )
+void CUnit::setAI(CBaseAI* pAI)
 {
     if (pAI == m_pAI)
     {
@@ -1115,7 +1209,7 @@ void CUnit::setAI( CBaseAI* pAI )
     m_pAI = pAI;
 }
 
-void CUnit::setEventAdapter( CUnitEventAdapter* pEventAdapter )
+void CUnit::setEventAdapter(CUnitEventAdapter* pEventAdapter)
 {
     if (pEventAdapter == m_pEventAdapter)
     {
@@ -1140,6 +1234,11 @@ void CUnit::attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMa
 
 bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
+    while (pSource != nullptr && pSource->isGhost())
+    {
+        pSource = pSource->getUnit(pSource->getGhostOwner());
+    }
+
     if (onAttacked(pAttack, pSource, dwTriggerMask) == false)
     {
         return false;
@@ -1168,6 +1267,11 @@ bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
 
 void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
+    while (pSource != nullptr && pSource->isGhost())
+    {
+        pSource = pSource->getUnit(pSource->getGhostOwner());
+    }
+
     if (fDamage > m_fHp)
     {
         setHp(0);
@@ -1218,7 +1322,7 @@ void CUnit::addActiveAbility(CActiveAbility* pAbility, bool bNotify)
 void CUnit::addActiveAbility(int id, int iLevel)
 {
     CWorld* w = getWorld();
-    CActiveAbility* pAbility = NULL;
+    CActiveAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
     pAbility->setLevel(iLevel);
     addActiveAbility(pAbility);
@@ -1253,10 +1357,10 @@ void CUnit::delActiveAbility(int id, bool bNotify)
 
 CActiveAbility* CUnit::getActiveAbility(int id)
 {
-    return id != 0 ? m_mapActAbilitys.getObject(id) : NULL;
+    return id != 0 ? m_mapActAbilitys.getObject(id) : nullptr;
 }
 
-CActiveAbility* CUnit::getActiveAbility( const char* name )
+CActiveAbility* CUnit::getActiveAbility(const char* name)
 {
     M_MAP_FOREACH(m_mapActAbilitys)
     {
@@ -1269,7 +1373,7 @@ CActiveAbility* CUnit::getActiveAbility( const char* name )
         M_MAP_NEXT;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 void CUnit::addPassiveAbility(CPassiveAbility* pAbility, bool bNotify)
@@ -1287,7 +1391,7 @@ void CUnit::addPassiveAbility(CPassiveAbility* pAbility, bool bNotify)
 void CUnit::addPassiveAbility(int id, int iLevel)
 {
     CWorld* w = getWorld();
-    CPassiveAbility* pAbility = NULL;
+    CPassiveAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
     pAbility->setLevel(iLevel);
     addPassiveAbility(pAbility);
@@ -1322,7 +1426,7 @@ void CUnit::delPassiveAbility(int id, bool bNotify)
 
 CPassiveAbility* CUnit::getPassiveAbility(int id)
 {
-    return id != 0 ? m_mapPasAbilitys.getObject(id) : NULL;
+    return id != 0 ? m_mapPasAbilitys.getObject(id) : nullptr;
 }
 
 void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
@@ -1360,7 +1464,9 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
                 pBuff->setSrcUnit(pAbility->getSrcUnit());
                 pBuff->setLevel(pAbility->getLevel());
                 pBuff->setName(pAbility->getName());
+                pBuff->setDuration(pAbility->getDuration());
                 pBuff->setElapsed(0.0f);
+                pBuff->onUnitDisplaceAbility();
                 return;
             }
             M_MAP_NEXT;
@@ -1386,7 +1492,7 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
 void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel)
 {
     CWorld* w = getWorld();
-    CBuffAbility* pAbility = NULL;
+    CBuffAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
     pAbility->setSrcUnit(iSrcUnit);
     pAbility->setLevel(iLevel);
@@ -1422,10 +1528,10 @@ void CUnit::delBuffAbility(int id, bool bNotify)
 
 CBuffAbility* CUnit::getBuffAbility(int id)
 {
-    return id != 0 ? m_mapBuffAbilitys.getObject(id) : NULL;
+    return id != 0 ? m_mapBuffAbilitys.getObject(id) : nullptr;
 }
 
-CBuffAbility* CUnit::getBuffAbility( const char* name )
+CBuffAbility* CUnit::getBuffAbility(const char* name)
 {
     M_MAP_FOREACH(m_mapBuffAbilitys)
     {
@@ -1438,10 +1544,10 @@ CBuffAbility* CUnit::getBuffAbility( const char* name )
         M_MAP_NEXT;
     }
 
-    return NULL;
+    return nullptr;
 }
 
-void CUnit::addSystemAbility( CPassiveAbility* pAbility )
+void CUnit::addSystemAbility(CPassiveAbility* pAbility)
 {
     m_mapSysAbilitys.addObject(pAbility);
     pAbility->onAddToUnit(this);  // 消息传递
@@ -1495,7 +1601,7 @@ void CUnit::updateBuffAbilityElapsed(float dt)
 
 void CUnit::addAbilityToTriggers(CAbility* pAbility)
 {
-    assert(pAbility != NULL);
+    assert(pAbility != nullptr);
     uint32_t dwTriggerFlags = pAbility->getTriggerFlags();
     if (dwTriggerFlags == 0)
     {
@@ -1576,7 +1682,7 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
 
 void CUnit::delAbilityFromTriggers(CAbility* pAbility)
 {
-    assert(pAbility != NULL);
+    assert(pAbility != nullptr);
     uint32_t dwTriggerFlags = pAbility->getTriggerFlags();
     if (dwTriggerFlags == 0)
     {
@@ -1913,22 +2019,23 @@ float CUnit::getRealArmorValue() const
     return m_oExArmorValue.getValue(m_oBaseArmor.getValue());
 }
 
-void CUnit::setGhost(bool bGhost)
+void CUnit::setGhost(int iGhostOwner)
 {
-    if (m_bGhost == bGhost)
+    bool bGhost = m_iGhostOwner != 0;
+    m_iGhostOwner = iGhostOwner;
+
+    if ((m_iGhostOwner != 0) == bGhost)
     {
         return;
     }
-
-    m_bGhost = bGhost;
 
     CWorld* w = getWorld();
-    if (w == NULL)
+    if (w == nullptr)
     {
         return;
     }
 
-    if (bGhost)
+    if (m_iGhostOwner != 0)
     {
         w->onDelNormalAttributes(this);
     }
@@ -1940,10 +2047,15 @@ void CUnit::setGhost(bool bGhost)
 
 bool CUnit::isGhost() const
 {
-    return m_bGhost;
+    return m_iGhostOwner != 0;
 }
 
-void CUnit::setResource( CForceResource* var )
+int CUnit::getGhostOwner() const
+{
+    return m_iGhostOwner;
+}
+
+void CUnit::setResource(CForceResource* var)
 {
     M_SAFE_RETAIN(var);
     M_SAFE_RELEASE(m_pResource);
@@ -1973,7 +2085,7 @@ bool CUnit::addItem(CItem* pItem)
     for (int i = 0; i < (int)m_vecItems.size(); ++i)
     {
         CItem* pSlot = m_vecItems[i];
-        if (pSlot == NULL)
+        if (pSlot == nullptr)
         {
             // 找到第一个空位
             if (iFirstEmpty == -1)
@@ -2023,7 +2135,7 @@ void CUnit::delItem(int iIndex)
         return;
     }
     
-    if (m_vecItems[iIndex] == NULL)
+    if (m_vecItems[iIndex] == nullptr)
     {
         return;
     }
@@ -2038,7 +2150,7 @@ CItem* CUnit::getItem(int iIndex)
 {
     if (iIndex < 0 || iIndex >= (int)m_vecItems.size())
     {
-        return NULL;
+        return nullptr;
     }
     
     return m_vecItems[iIndex];
@@ -2052,7 +2164,7 @@ int CUnit::useItem(int iIndex)
     }
     
     CItem* pItem = m_vecItems[iIndex];
-    if (pItem == NULL)
+    if (pItem == nullptr)
     {
         return -1;
     }
@@ -2096,7 +2208,7 @@ bool CUnit::isDoingNothing() const
     return m_dwDoingFlags == 0;
 }
 
-bool CUnit::tryDoing( int priority )
+bool CUnit::tryDoing(int priority)
 {
     if (priority > m_iPriority)
     {
@@ -2114,7 +2226,7 @@ void CUnit::setDraw(CUnitDraw* pDraw)
         return;
     }
     
-    if (pDraw != NULL)
+    if (pDraw != nullptr)
     {
         pDraw->retain();
         pDraw->setUnit(this);
@@ -2148,8 +2260,8 @@ CWorld::~CWorld()
 
 lua_State* CWorld::getLuaHandle()
 {
-    static lua_State* L = NULL;
-    if (L == NULL)
+    static lua_State* L = nullptr;
+    if (L == nullptr)
     {
         L = luaL_newstate();
         luaL_openlibs(L);
@@ -2217,10 +2329,10 @@ void CWorld::delUnit(int id, bool bRevivable /*= false*/)
     else
     {
         // 如果不可以复活，该单位将不再拥有世界，清除该单位的所有CD中的技能
-        pUnit->setWorld(NULL);
+        pUnit->setWorld(nullptr);
         if (pUnit->getEventAdapter() == this)
         {
-            pUnit->setEventAdapter(NULL);
+            pUnit->setEventAdapter(nullptr);
         }
         cleanAbilitysCD(pUnit);
     }
@@ -2243,7 +2355,7 @@ void CWorld::reviveUnit(int id, float fHp)
     }
     
     CUnit* pUnit = it->second;
-    if (pUnit == NULL)
+    if (pUnit == nullptr)
     {
         return;
     }
@@ -2266,7 +2378,7 @@ void CWorld::addAbilityCD(CAbility* pAbility)
         return;
     }
     m_mapAbilitysCD.addObject(pAbility);
-    LOG("%s的%s技能开始冷却(%.1fs)", pAbility->getOwner()->getName(), pAbility->getName(), pAbility->getCoolDown());
+    LOG("%s的%s技能开始冷却(%.1fs)", pAbility->getOwner()->getName(), pAbility->getName(), pAbility->getRealCoolDown());
 }
 
 void CWorld::delAbilityCD(int id)
@@ -2348,7 +2460,7 @@ void CWorld::abilityReady(CAbility* pAbility)
 {
     // 由于技能的所有者可能在等待重生，所以主世界可能不存在该单位，但是单位仍未被释放
     CUnit* o = getUnit(pAbility->getOwner()->getId());
-    if (o != NULL)
+    if (o != nullptr)
     {
         // 存在于主世界中，则触发事件
         o->onAbilityReady(pAbility);
@@ -2421,9 +2533,9 @@ void CWorld::loadTemplateAbilitys()
 CAbility* CWorld::copyAbility(int id) const
 {
     CAbility* pAbility = m_mapTemplateAbilitys.getObject(id);
-    if (pAbility == NULL)
+    if (pAbility == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
     
     return pAbility->copy()->dcast(pAbility);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
@@ -2438,9 +2550,9 @@ int CWorld::addTemplateProjectile(CProjectile* pProjectile)
 CProjectile* CWorld::copyProjectile(int id) const
 {
     CProjectile* pProjectile = m_mapTemplateProjectiles.getObject(id);
-    if (pProjectile == NULL)
+    if (pProjectile == nullptr)
     {
-        return NULL;
+        return nullptr;
     }
 
     return pProjectile->copy()->dcast(pProjectile);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
@@ -2466,7 +2578,7 @@ void CWorld::delProjectile(int id)
     CProjectile* pProjectile = it->second;
     onDelProjectile(pProjectile);
 
-    pProjectile->setWorld(NULL);
+    pProjectile->setWorld(nullptr);
     pProjectile->release();
     m_mapProjectiles.erase(it);
 }
@@ -2477,14 +2589,14 @@ void CWorld::shutdown()
 }
 
 // CForceResource
-CForceResource::CForceResource( CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc )
+CForceResource::CForceResource(CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc)
 {
     setGold(0);
     m_pSender = pSender;
     m_pCallback = pFunc;
 }
 
-void CForceResource::changeGold( int iChange )
+void CForceResource::changeGold(int iChange)
 {
     m_iGold += iChange;
     if (iChange)
@@ -2493,7 +2605,7 @@ void CForceResource::changeGold( int iChange )
     }
 }
 
-void CForceResource::onGoldChange( int iChange )
+void CForceResource::onGoldChange(int iChange)
 {
     if (m_pSender && m_pCallback)
     {

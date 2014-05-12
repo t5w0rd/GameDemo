@@ -13,7 +13,7 @@
 
 // CAction
 CAction::CAction()
-: m_pTarget(NULL)
+: m_pTarget(nullptr)
 , m_iTag(0)
 {
     setDbgClassName("CAction");
@@ -31,7 +31,7 @@ void CAction::start(CUnit* pTarget)
 
 void CAction::stop()
 {
-    m_pTarget = NULL;
+    m_pTarget = nullptr;
 }
 
 void CAction::step(float dt)
@@ -131,7 +131,7 @@ CSequence::CSequence(CFiniteTimeAction* pAct1, CFiniteTimeAction* pAct2)
 CSequence::CSequence(CFiniteTimeAction* pAct1, ...)
 : CFiniteTimeAction(0.0f)
 , m_pFirstAction(pAct1)
-, m_pSecondAction(NULL)
+, m_pSecondAction(nullptr)
 , m_fSplit(0.0f)
 , m_bFirst(true)
 {
@@ -220,7 +220,7 @@ CMoveTo::~CMoveTo()
 void CMoveTo::start(CUnit* pTarget)
 {
     CUnitDraw2D* d = DCAST(pTarget->getDraw(), CUnitDraw2D*);
-    assert(d != NULL);
+    assert(d != nullptr);
     m_oStartPos = d->getPosition();
     m_oDelta = m_oEndPos - m_oStartPos;
     CFiniteTimeAction::start(pTarget);

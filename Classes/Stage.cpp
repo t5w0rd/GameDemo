@@ -7,21 +7,21 @@
 
 // CStage
 CStage::CStage()
-    : m_iIndex(0)
-    , m_eStatus(kLocked)
-    , m_pNode(NULL)
-    , m_iGrade(0)
+: m_iIndex(0)
+, m_eStatus(kLocked)
+, m_pNode(nullptr)
+, m_iGrade(0)
 {
     memset(m_apStar, 0, sizeof(m_apStar));
 }
 
-void CStage::setGrade( int iGrade )
+void CStage::setGrade(int iGrade)
 {
     m_iGrade = iGrade;
     M_DEF_GC(gc);
     for (int i = 0; i < 3; ++i)
     {
-        DCAST(m_apStar[i], CCSprite*)->setDisplayFrame(gc->getfc()->spriteFrameByName(i < m_iGrade ? getStarName() : getUnstarName()));
+        DCAST(m_apStar[i], Sprite*)->setSpriteFrame(gc->getfc()->getSpriteFrameByName(i < m_iGrade ? getStarName() : getUnstarName()));
     }
 }
 
@@ -36,17 +36,17 @@ void CStage::setStatus(STAGE_STATUS eStatus)
     onChangeStatus(eOldStatus);
 }
 
-void CStage::setStarNode( int iIndex, CCNode* pNode )
+void CStage::setStarNode(int iIndex, Node* pNode)
 {
     m_apStar[iIndex] = pNode;
 }
 
-CCNode* CStage::getStarNode( int iIndex )
+Node* CStage::getStarNode(int iIndex)
 {
     return m_apStar[iIndex];
 }
 
-void CStage::setStarNodesVisible( bool bVisible /*= true*/ )
+void CStage::setStarNodesVisible(bool bVisible /*= true*/)
 {
     m_apStar[0]->setVisible(bVisible);
     m_apStar[1]->setVisible(bVisible);
@@ -56,10 +56,10 @@ void CStage::onInit()
 {
 }
 
-void CStage::onChangeStatus( STAGE_STATUS eOldStatus )
+void CStage::onChangeStatus(STAGE_STATUS eOldStatus)
 {
-    CCMenuItemImage* mi = DCAST(getNode(), CCMenuItemImage*);
-    if (mi == NULL)
+    MenuItemImage* mi = DCAST(getNode(), MenuItemImage*);
+    if (mi == nullptr)
     {
         return;
     }
@@ -82,9 +82,7 @@ void CStage::onChangeStatus( STAGE_STATUS eOldStatus )
 
 // CStageMap
 CStageMap::CStageMap()
-    : m_pPanel(NULL)
-    , m_pSender(NULL)
-    , m_pHandler(NULL)
+: m_pPanel(nullptr)
 {
 }
 
@@ -92,37 +90,35 @@ CStageMap::~CStageMap()
 {
 }
 
-CStage* CStageMap::getStage( int iIndex )
+CStage* CStageMap::getStage(int iIndex)
 {
     return m_stages[iIndex].pStage;
 }
 
-void CStageMap::setPanel( CCMenu* pPanel, CCObject* pSender, SEL_MenuHandler pHandler )
+void CStageMap::setPanel(Menu* pPanel, const ccMenuCallback& onClickStage)
 {
     m_pPanel = pPanel;
-    m_pSender = pSender;
-    m_pHandler = pHandler;
+    m_onClickStage = onClickStage;
 }
 
 void CStageMap::addStage(CStage* pStage, const VEC_INDEXES& vecPrev)
 {
     pStage->setIndex(m_stages.size());
     
-    //CCMenuItemImage* mi = CCMenuItemImage::create(pStage->getNormalName(), pStage->getSelectedName(), pStage->getDisabledName(), m_pSender, m_pHandler);
-    CCSprite* sel = CCSprite::create(pStage->getNormalName());
-    CCSprite* sel2 = CCSprite::create(pStage->getSelectedName());
+    //MenuItemImage* mi = MenuItemImage::create(pStage->getNormalName(), pStage->getSelectedName(), pStage->getDisabledName(), m_pSender, m_pHandler);
+    Sprite* sel = Sprite::create(pStage->getNormalName());
+    Sprite* sel2 = Sprite::create(pStage->getSelectedName());
     sel->addChild(sel2);
     sel2->setPosition(sel->getAnchorPointInPoints());
-    CCButtonNormal* btn = CCButtonNormal::create(
-        CCSprite::create(pStage->getNormalName()),
+    ButtonNormal* btn = ButtonNormal::create(
+        Sprite::create(pStage->getNormalName()),
         sel,
-        CCSprite::create(pStage->getDisabledName()),
-        NULL,
-        NULL,
+        Sprite::create(pStage->getDisabledName()),
+        nullptr,
+        nullptr,
         0.0f,
-        m_pSender,
-        m_pHandler,
-        NULL);
+        m_onClickStage,
+        nullptr);
     btn->setTag(pStage->getIndex());
     m_pPanel->addChild(btn);
     btn->setPosition(pStage->getPosition());
@@ -133,14 +129,14 @@ void CStageMap::addStage(CStage* pStage, const VEC_INDEXES& vecPrev)
     // set star
     for (int i = 0; i < 3; ++i)
     {
-        CCSprite* nd = CCSprite::createWithSpriteFrameName(pStage->getUnstarName());
+        Sprite* nd = Sprite::createWithSpriteFrameName(pStage->getUnstarName());
         pStage->setStarNode(i, nd);
         btn->addChild(nd);
-        const CCSize& oStageSz = btn->getContentSize();
-        const CCSize& oStarSz = nd->getContentSize();
+        const Size& oStageSz = btn->getContentSize();
+        const Size& oStarSz = nd->getContentSize();
         float bx = oStarSz.width + 0;
         float by = oStageSz.height * 0.5 + oStarSz.height * 0.5 + 0;
-        nd->setPosition(ccpAdd(btn->getAnchorPointInPoints(), ccp(bx * (i - 1), -by)));
+        nd->setPosition(btn->getAnchorPointInPoints() + Point(bx * (i - 1), -by));
     }
     pStage->setStarNodesVisible(false);
 
@@ -155,27 +151,27 @@ void CStageMap::addStage(CStage* pStage, const VEC_INDEXES& vecPrev)
     pStage->onInit();
 }
 
-void CStageMap::addStageNextInfos( int iIndex, int iNextIndex )
+void CStageMap::addStageNextInfos(int iIndex, int iNextIndex)
 {
     // create path
-    CCSprite* pth = CCSprite::createWithSpriteFrameName(getPathName());
-    pth->setColor(ccc3(123, 123, 123));
-    const CCSize& pthSz = pth->getContentSize();
-    const CCPoint& from = m_stages[iIndex].pStage->getPosition();
-    const CCPoint& to = m_stages[iNextIndex].pStage->getPosition();
+    Sprite* pth = Sprite::createWithSpriteFrameName(getPathName());
+    pth->setColor(Color3B(123, 123, 123));
+    const Size& pthSz = pth->getContentSize();
+    const Point& from = m_stages[iIndex].pStage->getPosition();
+    const Point& to = m_stages[iNextIndex].pStage->getPosition();
     m_pPanel->getParent()->addChild(pth);
-    CCSprite* sp = CCSprite::createWithSpriteFrameName(getPathName());
-    sp->setColor(ccc3(248, 168, 1));
-    CCProgressBar* pth2 = CCProgressBar::create(pth->getContentSize(), sp, NULL, 0.0f, 0.0f, true);
+    Sprite* sp = Sprite::createWithSpriteFrameName(getPathName());
+    sp->setColor(Color3B(248, 168, 1));
+    ProgressBar* pth2 = ProgressBar::create(pth->getContentSize(), sp, nullptr, 0.0f, 0.0f, true);
     pth->addChild(pth2, 1, 2);
     pth2->setPosition(pth->getAnchorPointInPoints());
     pth2->setPercentage(0.0f);
 
     // scale path
-    CCPoint oDelta = ccpSub(to, from);
-    float fR = CC_RADIANS_TO_DEGREES(-ccpToAngle(oDelta));
+    Point oDelta = to - from;
+    float fR = CC_RADIANS_TO_DEGREES(-oDelta.getAngle());
     float fScale = (sqrt(oDelta.x * oDelta.x + oDelta.y * oDelta.y) - 200) / pthSz.width;
-    pth->setPosition(ccp((from.x + to.x) / 2, (from.y + to.y) / 2));
+    pth->setPosition(Point((from.x + to.x) / 2, (from.y + to.y) / 2));
     pth->setRotation(fR);
     pth->setScaleX(fScale);
 
@@ -185,7 +181,7 @@ void CStageMap::addStageNextInfos( int iIndex, int iNextIndex )
     m_stages[iIndex].vecNextInfos.push_back(nextInfo);
 }
 
-void CStageMap::setStageStatus( int iIndex, CStage::STAGE_STATUS eStatus )
+void CStageMap::setStageStatus(int iIndex, CStage::STAGE_STATUS eStatus)
 {
     CStage* s = m_stages[iIndex].pStage;
     switch (eStatus)
@@ -205,9 +201,9 @@ void CStageMap::setStageStatus( int iIndex, CStage::STAGE_STATUS eStatus )
         for (auto it = m_stages[iIndex].vecNextInfos.begin(); it != m_stages[iIndex].vecNextInfos.end(); ++it)
         {
             setStageStatus(it->iIndex, CStage::kUnlocked);
-            //DCAST(it->pPath, CCSprite*)->setColor(ccc3(248, 168, 1));
-            CCProgressBar* pth2 = DCAST(it->pPath->getChildByTag(2), CCProgressBar*);
-            pth2->runActionForTimer(CCEaseExponentialOut::create(pth2->setPercentageAction(100.0f, 0.3f)));
+            //DCAST(it->pPath, Sprite*)->setColor(Color3B(248, 168, 1));
+            ProgressBar* pth2 = DCAST(it->pPath->getChildByTag(2), ProgressBar*);
+            pth2->runActionForTimer(EaseExponentialOut::create(pth2->setPercentageAction(100.0f, 0.3f)));
         }
         break;
     }

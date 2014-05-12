@@ -5,13 +5,13 @@
 #include "Ability.h"
 
 
-class CCProgressBar;
+class ProgressBar;
 
 class CShowStatusPas : public CPassiveAbility
 {
 public:
     CShowStatusPas();
-    virtual CMultiRefObject* copy();
+    virtual CShowStatusPas* copy() override;
 
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
@@ -21,7 +21,7 @@ public:
     virtual void onUnitDying();
 
 public:
-    CCProgressBar* m_pProgressBar;
+    ProgressBar* m_pProgressBar;
 };
 
 #endif	/* __ABILITYFORCC_H__ */

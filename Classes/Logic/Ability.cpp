@@ -20,7 +20,7 @@ CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 : CONST_ROOT_ID(pRootId)
 , m_iScriptHandler(0)
 , m_sName(pName)
-, m_pOwner(NULL)
+, m_pOwner(nullptr)
 , m_fCoolDown(fCoolDown)
 , m_fCoolingDownElapsed(FLT_MAX)
 , m_fInterval(0.0f)
@@ -44,7 +44,7 @@ const char* CAbility::getDbgTag() const
     return getName();
 }
 
-void CAbility::copyData( CAbility* from )
+void CAbility::copyData(CAbility* from)
 {
     // TODO: copy some members which are not in the constuctor params
     setMaxLevel(from->getMaxLevel());
@@ -54,6 +54,7 @@ void CAbility::copyData( CAbility* from )
     setInterval(from->getInterval());
     m_vecCastAnis = from->m_vecCastAnis;
     m_vecEffectSounds = from->m_vecEffectSounds;
+    m_sImageName = from->m_sImageName;
 }
 
 void CAbility::copyScriptHandler(int iScriptHandler)
@@ -69,11 +70,20 @@ void CAbility::copyScriptHandler(int iScriptHandler)
     lua_getglobal(L, "table");
     lua_getfield(L, -1, "copy");
     luaL_getregistery(L, iScriptHandler);
-    lua_call(L, 1, 1);
-
-    lua_pushlightuserdata(L, this);
-    lua_setfield(L, -2, "_p");
-    setScriptHandler(luaL_ref(L, LUA_REGISTRYINDEX));
+    if (lua_pcall(L, 1, 1, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+    else
+    {
+        lua_pushlightuserdata(L, this);
+        lua_setfield(L, -2, "_p");
+        setScriptHandler(luaL_ref(L, LUA_REGISTRYINDEX));
+    }
 
     lua_pop(L, 1);  // pop "table"
 }
@@ -83,9 +93,14 @@ const char* CAbility::getRootId() const
     return CONST_ROOT_ID.c_str();
 }
 
+float CAbility::getRealCoolDown() const
+{
+    return getCoolDown();
+}
+
 bool CAbility::isCoolingDown() const
 {
-    return m_fCoolingDownElapsed < getCoolDown();
+    return m_fCoolingDownElapsed < getRealCoolDown();
 }
 
 void CAbility::resetCD()
@@ -124,7 +139,14 @@ void CAbility::onUnitAddAbility()
     
     lua_getfield(L, a, "onUnitAddAbility");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -141,7 +163,14 @@ void CAbility::onUnitDelAbility()
     
     lua_getfield(L, a, "onUnitDelAbility");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -158,7 +187,14 @@ void CAbility::onUnitAbilityReady()
 
     lua_getfield(L, a, "onUnitAbilityReady");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -175,7 +211,14 @@ void CAbility::onUnitRevive()
 
     lua_getfield(L, a, "onUnitRevive");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -192,7 +235,14 @@ void CAbility::onUnitDying()
 
     lua_getfield(L, a, "onUnitDying");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -209,7 +259,14 @@ void CAbility::onUnitDead()
 
     lua_getfield(L, a, "onUnitDead");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -227,7 +284,14 @@ void CAbility::onUnitChangeHp(float fChanged)
     lua_getfield(L, a, "onUnitChangeHp");
     lua_pushvalue(L, a);
     lua_pushnumber(L, fChanged);
-    lua_call(L, 2, 0);
+    if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -245,7 +309,14 @@ void CAbility::onUnitTick(float dt)
     lua_getfield(L, a, "onUnitTick");
     lua_pushvalue(L, a);
     lua_pushnumber(L, dt);
-    lua_call(L, 2, 0);
+    if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -262,7 +333,14 @@ void CAbility::onUnitInterval()
 
     lua_getfield(L, a, "onUnitInterval");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -281,7 +359,14 @@ void CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
     lua_pushvalue(L, a);
     luaL_pushobjptr(L, "AttackData", pAttack);
     luaL_pushobjptr(L, "Unit", pTarget);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -300,9 +385,20 @@ bool CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
     lua_pushvalue(L, a);
     luaL_pushobjptr(L, "AttackData", pAttack);
     luaL_pushobjptr(L, "Unit", pSource);
-    lua_call(L, 3, 1);
 
-    bool res = (lua_toboolean(L, -1) != 0);
+    bool res = true;
+    if (lua_pcall(L, 3, 1, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+    else
+    {
+        res = (lua_toboolean(L, -1) != 0);
+    }
 
     lua_pop(L, 2);  // pop 'a' and ret
 
@@ -323,7 +419,14 @@ void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
     lua_pushvalue(L, a);
     luaL_pushobjptr(L, "AttackData", pAttack);
     luaL_pushobjptr(L, "Unit", pSource);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -342,7 +445,14 @@ void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
     lua_pushvalue(L, a);
     lua_pushnumber(L, fDamage);
     luaL_pushobjptr(L, "Unit", pSource);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -361,7 +471,14 @@ void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     lua_pushvalue(L, a);
     lua_pushnumber(L, fDamage);
     luaL_pushobjptr(L, "Unit", pTarget);
-    lua_call(L, 3, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
@@ -378,22 +495,77 @@ void CAbility::onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 
     lua_getfield(L, a, "onUnitProjectileEffect");
     lua_pushvalue(L, a);
-    const CPoint& p = pProjectile->getPosition();
-    lua_pushnumber(L, p.x);
-    lua_pushnumber(L, p.y);
+    luaL_pushobjptr(L, "Projectile", pProjectile);
     luaL_pushobjptr(L, "Unit", pTarget);
-    lua_call(L, 4, 0);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
     
     lua_pop(L, 1);  // pop 'a'
 }
 
 bool CAbility::onUnitProjectileArrive(CProjectile* pProjectile)
 {
-    return true;
+    if (getScriptHandler() == 0)
+    {
+        return true;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitProjectileArrive");
+    lua_pushvalue(L, a);
+    luaL_pushobjptr(L, "Projectile", pProjectile);
+
+    bool res = true;
+    if (lua_pcall(L, 2, 1, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+    else
+    {
+        res = (lua_toboolean(L, -1) != 0);
+    }
+
+    lua_pop(L, 2);  // pop 'a' and ret
+
+    return res;
 }
 
 void CAbility::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CWorld::getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitAbilityEffect");
+    lua_pushvalue(L, a);
+    luaL_pushobjptr(L, "Projectile", pProjectile);
+    luaL_pushobjptr(L, "Unit", pTarget);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'a'
 }
 
 void CAbility::onAddToUnit(CUnit* pOwner)
@@ -405,7 +577,7 @@ void CAbility::onAddToUnit(CUnit* pOwner)
 void CAbility::onDelFromUnit()
 {
     onUnitDelAbility();
-    setOwner(NULL);
+    setOwner(nullptr);
 }
 
 void CAbility::setTriggerFlags(uint32_t dwTriggerFlags)
@@ -418,7 +590,7 @@ void CAbility::unsetTriggerFlags(uint32_t dwTriggerFlags)
     m_dwTriggerFlags &= ~dwTriggerFlags;
 }
 
-void CAbility::addEffectSound( const char* pSounds )
+void CAbility::addEffectSound(const char* pSounds)
 {
     m_vecEffectSounds.push_back(pSounds);
 }
@@ -452,14 +624,14 @@ CActiveAbility::~CActiveAbility()
 {
 }
 
-CMultiRefObject* CActiveAbility::copy()
+CActiveAbility* CActiveAbility::copy()
 {
     CActiveAbility* ret = new CActiveAbility(getRootId(), getName(), m_fCoolDown, m_eCastTargetType, m_dwEffectiveTypeFlags);
     ret->copyData(this);
     return ret;
 }
 
-void CActiveAbility::copyData( CAbility* from )
+void CActiveAbility::copyData(CAbility* from)
 {
     CAbility::copyData(from);
     CActiveAbility* a = DCAST(from, CActiveAbility*);
@@ -483,11 +655,6 @@ bool CActiveAbility::cast()
         return false;
     }
 
-    if (checkConditions() == false)
-    {
-        return false;
-    }
-
     CUnit* o = getOwner();
     LOG("%s%s%s..", o->getName(), o->getAttackAbilityId() == getId() ? "的" : "施放了", getName());
     coolDown();
@@ -496,7 +663,7 @@ bool CActiveAbility::cast()
     return true;
 }
 
-bool CActiveAbility::checkConditions()
+bool CActiveAbility::checkConditions(const CCommandTarget& rTarget)
 {
     if (getScriptHandler() == 0)
     {
@@ -508,9 +675,43 @@ bool CActiveAbility::checkConditions()
 
     lua_getfield(L, a, "checkConditions");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 1);
-    bool res = lua_toboolean(L, -1) != 0;
-    lua_pop(L, 1);
+    lua_newtable(L);
+    int t = lua_gettop(L);
+    lua_pushinteger(L, rTarget.getTargetType());
+    lua_setfield(L, t, "type");
+    switch (rTarget.getTargetType())
+    {
+    case CCommandTarget::kNoTarget:
+        break;
+
+    case CCommandTarget::kUnitTarget:
+        lua_pushinteger(L, rTarget.getTargetUnit());
+        lua_setfield(L, t, "unit");
+        break;
+
+    case CCommandTarget::kPointTarget:
+        lua_pushnumber(L, rTarget.getTargetPoint().x);
+        lua_setfield(L, t, "x");
+        lua_pushnumber(L, rTarget.getTargetPoint().y);
+        lua_setfield(L, t, "y");
+        break;
+    }
+
+    bool res = false;
+    if (lua_pcall(L, 2, 1, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+    else
+    {
+        res = lua_toboolean(L, -1) != 0;
+    }
+
+    lua_pop(L, 2);
 
     return res;
 }
@@ -527,7 +728,14 @@ void CActiveAbility::onUnitCastAbility()
 
     lua_getfield(L, a, "onUnitCastAbility");
     lua_pushvalue(L, a);
-    lua_call(L, 1, 0);
+    if (lua_pcall(L, 1, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pop(L, 1);
 }
@@ -562,14 +770,14 @@ void CActiveAbility::effect()
     {
     case CCommandTarget::kNoTarget:
         playEffectSound();
-        onUnitAbilityEffect(NULL, NULL);
+        onUnitAbilityEffect(nullptr, nullptr);
         break;
 
     case CCommandTarget::kUnitTarget:
         {
             CUnit* t = o->getUnit(d->getCastTarget().getTargetUnit());
 
-            if (t == NULL || t->isDead())
+            if (t == nullptr || t->isDead())
             {
                 return;
             }
@@ -585,7 +793,7 @@ void CActiveAbility::effect()
 
                 CUnit* t = w->getUnit(d->getCastTarget().getTargetUnit());
                 CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-                assert(td != NULL);
+                assert(td != nullptr);
 
                 p->setFromToType(CProjectile::kUnitToUnit);
                 p->setFromUnit(o->getId());
@@ -596,7 +804,7 @@ void CActiveAbility::effect()
             else
             {
                 playEffectSound();
-                onUnitAbilityEffect(NULL, t);
+                onUnitAbilityEffect(nullptr, t);
             }
         }
         break;
@@ -619,7 +827,7 @@ void CActiveAbility::effect()
         else
         {
             playEffectSound();
-            onUnitAbilityEffect(NULL, NULL);
+            onUnitAbilityEffect(nullptr, nullptr);
         }
 
         break;
@@ -637,6 +845,13 @@ void CActiveAbility::effect()
 #endif
 }
 
+const CPoint& CActiveAbility::getAbilityEffectPoint(CProjectile* pProjectile, CUnit* pTarget)
+{
+    CUnitDraw2D* od = DCAST(getOwner()->getDraw(), CUnitDraw2D*);
+    const CPoint& ret = ((pProjectile != nullptr) ? pProjectile->getPosition() : (getCastTargetType() == CCommandTarget::kNoTarget ? od->getPosition() : od->getCastTarget().getTargetPoint()));
+    return ret;
+}
+
 // CPassiveAbility
 CPassiveAbility::CPassiveAbility(const char* pRootId, const char* pName, float fCoolDown)
 : CAbility(pRootId, pName, fCoolDown)
@@ -648,7 +863,7 @@ CPassiveAbility::~CPassiveAbility()
 {
 }
 
-CMultiRefObject* CPassiveAbility::copy()
+CPassiveAbility* CPassiveAbility::copy()
 {
     CPassiveAbility* ret = new CPassiveAbility(getRootId(), getName(), m_fCoolDown);
     ret->copyData(this);
@@ -667,19 +882,23 @@ CBuffAbility::CBuffAbility(const char* pRootId, const char* pName, float fDurati
     setDbgClassName("CBuffAbility");
 }
 
-CMultiRefObject* CBuffAbility::copy()
+CBuffAbility* CBuffAbility::copy()
 {
     CBuffAbility* ret = new CBuffAbility(getRootId(), getName(), m_fDuration, m_bStackable);
     ret->copyData(this);
     return ret;
 }
 
-void CBuffAbility::copyData( CAbility* from )
+void CBuffAbility::copyData(CAbility* from)
 {
     CAbility::copyData(from);
     CBuffAbility* a = DCAST(from, CBuffAbility*);
     setSrcUnit(a->getSrcUnit());
     setAppendBuff(a->getAppendBuff());
+}
+
+void CBuffAbility::onUnitDisplaceAbility()
+{
 }
 
 bool CBuffAbility::isDone() const
@@ -700,7 +919,7 @@ CAttackAct::CAttackAct(const char* pRootId, const char* pName, float fCoolDown, 
     setDbgClassName("CAttackAct");
 }
 
-CMultiRefObject* CAttackAct::copy()
+CAttackAct* CAttackAct::copy()
 {
     CAttackAct* pRet = new CAttackAct(getRootId(), getName(), m_fCoolDown, m_oAttackValue, m_fAttackValueRandomRange);
     pRet->copyData(this);
@@ -717,14 +936,14 @@ void CAttackAct::onUnitDelAbility()
     getOwner()->setAttackAbilityId(0);
 }
 
-bool CAttackAct::checkConditions()
+bool CAttackAct::checkConditions(const CCommandTarget& rTarget)
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(d != NULL);
+    assert(d != nullptr);
 
-    CUnit* t = o->getUnit(d->getCastTarget().getTargetUnit());
-    if (t == NULL || t->isDead())
+    CUnit* t = o->getUnit(rTarget.getTargetUnit());
+    if (t == nullptr || t->isDead())
     {
         return false;
     }
@@ -732,19 +951,15 @@ bool CAttackAct::checkConditions()
     return true;
 }
 
-void CAttackAct::onUnitCastAbility()
-{
-}
-
 void CAttackAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     CUnit* o = getOwner();
-    if (o == NULL)
+    if (o == nullptr)
     {
         return;
     }
 
-    if (pProjectile != NULL)
+    if (pProjectile != nullptr)
     {
         pProjectile->decContactLeft();
     }
@@ -754,7 +969,7 @@ void CAttackAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 
     o->attack(ad, pTarget);
 
-    if (pTarget != NULL)
+    if (pTarget != nullptr)
     {
         pTarget->damaged(ad, o);
     }
@@ -779,7 +994,7 @@ float CAttackAct::getRealAttackValue(bool bUseRandomRange) const
     return m_aoExAttackValue.getValue(m_oAttackValue.getValue());
 }
 
-float CAttackAct::getCoolDown() const
+float CAttackAct::getRealCoolDown() const
 {
     return getRealAttackInterval();
 }
@@ -791,7 +1006,7 @@ void CAttackAct::setBaseAttackInterval(float fAttackInterval)
 
 float CAttackAct::getBaseAttackInterval() const
 {
-    return m_fCoolDown;
+    return getCoolDown();
 }
 
 float CAttackAct::getBaseAttackSpeed() const
@@ -832,7 +1047,7 @@ const CExtraCoeff& CAttackAct::getExAttackSpeed() const
 void CAttackAct::updateAttackSpeed()
 {
     CUnit* o = getOwner();
-    assert(o != NULL);
+    assert(o != nullptr);
     o->updateAbilityCD(getId());
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
     if (d->getCastActiveAbilityId() == o->getAttackAbilityId())
@@ -852,7 +1067,7 @@ void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
     CUnit* t = o->getUnit(pAi->iTarget);
     CAttackData* ad = pAi->pAttackData;
     
-    if (t != NULL && t->isDead() == false)
+    if (t != nullptr && t->isDead() == false)
     {
         t->damaged(ad, o);
     }
@@ -867,37 +1082,24 @@ CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCool
 : CActiveAbility(pRootId, pName, fCoolDown, eCastType, dwEffectiveTypeFlags)
 , m_fChance(fChance)
 , m_iTemplateBuff(iTemplateBuff)
-, m_pTarget(NULL)
+, m_pTarget(nullptr)
 {
     setDbgClassName("CBuffMakerAct");
 }
 
-CMultiRefObject* CBuffMakerAct::copy()
+CBuffMakerAct* CBuffMakerAct::copy()
 {
     CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getCastTargetType(), getEffectiveTypeFlags(), getChance(), getTemplateBuff());
     pRet->copyData(this);
     return pRet;
 }
 
-void CBuffMakerAct::copyData( CAbility* from )
+bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
 {
-    CActiveAbility::copyData(from);
-    CBuffMakerAct* a = DCAST(from, CBuffMakerAct*);
-    setCastTargetType(a->getCastTargetType());
-    setEffectiveTypeFlags(a->getEffectiveTypeFlags());
-    setCastMinRange(a->getCastMinRange());
-    setCastRange(a->getCastRange());
-    setCastTargetRadius(a->getCastTargetRadius());
-    setTemplateProjectile(a->getTemplateProjectile());
-    setCastHorizontal(a->isCastHorizontal());
-}
-
-bool CBuffMakerAct::checkConditions()
-{
-    m_pTarget = NULL;
+    m_pTarget = nullptr;
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(d != NULL);
+    assert(d != nullptr);
 
     switch (getCastTargetType())
     {
@@ -906,10 +1108,10 @@ bool CBuffMakerAct::checkConditions()
         break;
         
     case CCommandTarget::kUnitTarget:
-        m_pTarget = o->getUnit(d->getCastTarget().getTargetUnit());
-        if (m_pTarget != NULL && m_pTarget->isDead())
+        m_pTarget = o->getUnit(rTarget.getTargetUnit());
+        if (m_pTarget != nullptr && m_pTarget->isDead())
         {
-            m_pTarget = NULL;
+            m_pTarget = nullptr;
         }
         break;
         
@@ -917,7 +1119,7 @@ bool CBuffMakerAct::checkConditions()
         ;
     }
     
-    if (m_pTarget != NULL &&
+    if (m_pTarget != nullptr &&
         !o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
     {
         // 如果有待选目标(自身或命令目标)，但是无法作用
@@ -932,13 +1134,9 @@ bool CBuffMakerAct::checkConditions()
     return true;
 }
 
-void CBuffMakerAct::onUnitCastAbility()
+void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
-}
-
-void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarget )
-{
-    if (pTarget != NULL)
+    if (pTarget != nullptr)
     {
         // 抛射物被反弹后，m_pTarget需要更新
         m_pTarget = pTarget;
@@ -951,7 +1149,7 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
     case CCommandTarget::kNoTarget:
     case CCommandTarget::kUnitTarget:
 
-        if (M_RAND_HIT(m_fChance) && (pProjectile != NULL || o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags())))
+        if (M_RAND_HIT(m_fChance) && (pProjectile != nullptr || o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags())))
         {
             m_pTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
@@ -962,7 +1160,7 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
     }
 
     CWorld* w = o->getWorld();
-    if (pProjectile != NULL && pProjectile->hasPenaltyType(CProjectile::kOnContact) && pTarget != NULL)
+    if (pProjectile != nullptr && pProjectile->hasPenaltyType(CProjectile::kOnContact) && pTarget != nullptr)
     {
         // 接触型抛射物，接触单位
         if (M_RAND_HIT(m_fChance) && o->isEffective(DCAST(pTarget, CUnitForce*), m_dwEffectiveTypeFlags))
@@ -982,15 +1180,15 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
     }
 
     CUnitDraw2D* od  = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(od != NULL);
-    CBuffAbility* pBuff = NULL;
+    assert(od != nullptr);
+    CBuffAbility* pBuff = nullptr;
     CWorld::MAP_UNITS& mapUnits = w->getUnits();
     M_MAP_FOREACH(mapUnits)
     {
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
 
-        if (M_RAND_HIT(m_fChance) == false || u == NULL || u->isDead() || u == m_pTarget)
+        if (M_RAND_HIT(m_fChance) == false || u == nullptr || u->isDead() || u == m_pTarget)
         {
             continue;
         }
@@ -1001,15 +1199,15 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
         }
 
         CUnitDraw2D* ud  = DCAST(u->getDraw(), CUnitDraw2D*);
-        assert(ud != NULL);
+        assert(ud != nullptr);
         
-        const CPoint& p = ((pProjectile != NULL) ? pProjectile->getPosition() : (getCastTargetType() == CCommandTarget::kNoTarget ? od->getPosition() : od->getCastTarget().getTargetPoint()));
-        if (ud->getPosition().getDistance(p) > getCastTargetRadius())
+        const CPoint& p = getAbilityEffectPoint(pProjectile, pTarget);
+        if (ud->getPosition().getDistance(p) - ud->getHalfOfWidth() > getCastTargetRadius())
         {
             continue;
         }
 
-        if (pBuff == NULL)
+        if (pBuff == nullptr)
         {
             w->copyAbility(getTemplateBuff())->dcast(pBuff);
             pBuff->setSrcUnit(o->getId());
@@ -1027,14 +1225,14 @@ void CBuffMakerAct::onUnitAbilityEffect( CProjectile* pProjectile, CUnit* pTarge
     }
 }
 
-
 // CAuraPas
-CAuraPas::CAuraPas(const char* pRootId, const char* pName, float fInterval, int iTemplateBuff, float fRange, uint32_t dwEffectiveTypeFlags)
+CAuraPas::CAuraPas(const char* pRootId, const char* pName, float fInterval, int iTemplateBuff, float fRange, uint32_t dwEffectiveTypeFlags, bool bEffectFixed)
 : CPassiveAbility(pRootId, pName)
 , m_iTemplateBuff(iTemplateBuff)
 , m_fRange(fRange)
 , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
 , m_fEffectCD(0.0f)
+, m_bEffectFixed(bEffectFixed)
 {
     setDbgClassName("CAuraPas");
     setInterval(fInterval);
@@ -1044,38 +1242,44 @@ CAuraPas::~CAuraPas()
 {
 }
 
-CMultiRefObject* CAuraPas::copy()
+CAuraPas* CAuraPas::copy()
 {
-    return new CAuraPas(getRootId(), getName(), m_fInterval, m_iTemplateBuff, m_fRange, m_dwEffectiveTypeFlags);
+    return new CAuraPas(getRootId(), getName(), m_fInterval, m_iTemplateBuff, m_fRange, m_dwEffectiveTypeFlags, m_bEffectFixed);
 }
 
 void CAuraPas::onUnitInterval()
 {
     CUnit* o = getOwner();
+    if (o->isDead())
+    {
+        return;
+    }
+
     CWorld* w = o->getWorld();
-    CBuffAbility* pBuff = NULL;
+    CBuffAbility* pBuff = nullptr;
     CUnitDraw2D* od = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(od != NULL);
+    assert(od != nullptr);
     
+#if 0
     // DemoTemp
     m_fEffectCD += getInterval();
     if (m_fEffectCD > 2.0f)
     {
         m_fEffectCD = 0.0f;
-        CCSprite* sp = CCSprite::createWithSpriteFrameName("UI/cmd/Target2.png");
-        CCNode* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+        Sprite* sp = Sprite::createWithSpriteFrameName("UI/cmd/Target2.png");
+        Node* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
         sn->addChild(sp);
-        sp->setColor(ccc3(236, 156, 85));
-        sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
-        sp->runAction(CCSequence::create(CCSpawn::create(CCScaleTo::create(1.0f, 3.5f, 3.5f), CCFadeOut::create(1.0f), NULL), CCRemoveSelf::create(true), NULL));
+        sp->setColor(Color3B(236, 156, 85));
+        sp->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
+        sp->runAction(Sequence::create(Spawn::create(ScaleTo::create(1.0f, 3.5f, 3.5f), FadeOut::create(1.0f), nullptr), RemoveSelf::create(true), nullptr));
         
-        sp = CCSprite::createWithSpriteFrameName("UI/cmd/Target.png");
+        sp = Sprite::createWithSpriteFrameName("UI/cmd/Target.png");
         sn->addChild(sp);
-        sp->setColor(ccc3(236, 156, 85));
-        sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
-        sp->runAction(CCSequence::create(CCDelayTime::create(0.5f), CCSpawn::create(CCScaleTo::create(1.0f, 3.5f, 3.5f), CCFadeOut::create(1.0f), NULL), CCRemoveSelf::create(true), NULL));
+        sp->setColor(Color3B(236, 156, 85));
+        sp->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
+        sp->runAction(Sequence::create(DelayTime::create(0.5f), Spawn::create(ScaleTo::create(1.0f, 3.5f, 3.5f), FadeOut::create(1.0f), nullptr), RemoveSelf::create(true), nullptr));
     }
-    
+#endif
     
     CWorld::MAP_UNITS& mapUnits = w->getUnits();
     M_MAP_FOREACH(mapUnits)
@@ -1083,7 +1287,7 @@ void CAuraPas::onUnitInterval()
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
         
-        if (u == NULL || u->isDead())
+        if (u == nullptr || u->isDead())
         {
             continue;
         }
@@ -1094,21 +1298,23 @@ void CAuraPas::onUnitInterval()
         }
 
         CUnitDraw2D* ud = DCAST(u->getDraw(), CUnitDraw2D*);
-        assert(ud != NULL);
-        if (ud->getPosition().getDistance(od->getPosition()) > m_fRange)
+        assert(ud != nullptr);
+        if (ud->getPosition().getDistance(od->getPosition()) > m_fRange || (!isEffectFixed() && ud->isFixed()))
         {
             continue;
         }
         
-        if (pBuff == NULL)
+        if (pBuff == nullptr)
         {
             w->copyAbility(m_iTemplateBuff)->dcast(pBuff);
         }
         else
         {
-            pBuff->copy()->dcast(pBuff);
+            pBuff = pBuff->copy();
         }
         
+        pBuff->setSrcUnit(o->getId());
+        pBuff->setLevel(getLevel());
         u->addBuffAbility(pBuff);
     }
 }
@@ -1125,7 +1331,7 @@ CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName,
     setTriggerFlags(CUnit::kOnAttackTargetTrigger);
 }
 
-CMultiRefObject* CAttackBuffMakerPas::copy()
+CAttackBuffMakerPas* CAttackBuffMakerPas::copy()
 {
     CAttackBuffMakerPas* ret = new CAttackBuffMakerPas(getRootId(), getName(), m_fChance, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
     ret->setCoolDown(getCoolDown());
@@ -1163,7 +1369,7 @@ void CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarge
 }
 
 // CDamageBuff
-CDamageBuff::CDamageBuff( const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf /*= false*/, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/ )
+CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf /*= false*/, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/)
 : CBuffAbility("DBM", pName, 0.0f, true)
 , m_oDamage(rDamage)
 , m_fChance(fChance)
@@ -1172,7 +1378,7 @@ CDamageBuff::CDamageBuff( const char* pName, const CAttackValue& rDamage, float 
 {
 }
 
-CMultiRefObject* CDamageBuff::copy()
+CDamageBuff* CDamageBuff::copy()
 {
     CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getChance(), isToSelf(), getExAttackValue());
     ret->copyData(this);
@@ -1189,9 +1395,9 @@ void CDamageBuff::onUnitAddAbility()
     CAttackData* ad = new CAttackData;
     if (getDamage().getValue() == 0.0f)
     {
-        CAttackAct* atk = NULL;
+        CAttackAct* atk = nullptr;
         s->getActiveAbility(s->getAttackAbilityId())->dcast(atk);
-        if (atk != NULL)
+        if (atk != nullptr)
         {
             ad->setAttackValue(atk->getBaseAttack().getType(), getExAttackValue().getValue(atk->getRealAttackValue()));
         }
@@ -1205,7 +1411,7 @@ void CDamageBuff::onUnitAddAbility()
     {
         if (isToSelf())
         {
-            if (s != NULL && !s->isDead())
+            if (s != nullptr && !s->isDead())
             {
                 s->addBuffAbility(getAppendBuff(), getSrcUnit(), getLevel());
             }
@@ -1229,7 +1435,7 @@ CVampirePas::CVampirePas(const char* pRootId, const char* pName, float fPercentC
     setTriggerFlags(CUnit::kOnDamageTargetDoneTrigger);
 }
 
-CMultiRefObject* CVampirePas::copy()
+CVampirePas* CVampirePas::copy()
 {
     return new CVampirePas(getRootId(), getName(), getPercentConversion());
 }
@@ -1251,14 +1457,14 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 #ifdef DEBUG_FOR_CC
     // for cocos2d
     CUnit* u = getOwner();
-    CUnitDrawForCC* d = NULL;
+    CUnitDrawForCC* d = nullptr;
     u->getDraw()->dcast(d);
 
-    if (d != NULL)
+    if (d != nullptr)
     {
         char sz[64];
         sprintf(sz, "+%d", toInt(fDtHp));
-        d->addBattleTip(sz, "", 18, ccc3(113, 205, 44));
+        d->addBattleTip(sz, "", 18, Color3B(113, 205, 44));
     }
 #endif
 }
@@ -1270,7 +1476,7 @@ CStunBuff::CStunBuff(const char* pRootId, const char* pName, float fDuration, bo
     setDbgClassName("CStunBuff");
 }
 
-CMultiRefObject* CStunBuff::copy()
+CStunBuff* CStunBuff::copy()
 {
     CStunBuff* ret = new CStunBuff(getRootId(), getName(), m_fDuration, m_bStackable);
     ret->copyData(this);
@@ -1281,7 +1487,7 @@ void CStunBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(d != NULL);
+    assert(d != nullptr);
     if (d->isFixed())
     {
         setDuration(0.0f);
@@ -1294,22 +1500,22 @@ void CStunBuff::onUnitAddAbility()
 
 #ifdef DEBUG_FOR_CC
     // for cocos2d
-    CUnitDrawForCC* ccd = NULL;
+    CUnitDrawForCC* ccd = nullptr;
     o->getDraw()->dcast(ccd);
 
-    if (ccd != NULL)
+    if (ccd != nullptr)
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, "", 18, ccc3(250, 104, 16));
+        ccd->addBattleTip(sz, "", 18, Color3B(250, 104, 16));
 
         M_DEF_GC(gc);
 
-        CCNode* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
-        CCSprite* sp = DCAST(sn->getChildByTag(4242), CCSprite*);
-        if (sp == NULL)
+        Node* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+        Sprite* sp = DCAST(sn->getChildByTag(4242), Sprite*);
+        if (sp == nullptr)
         {
-            sp = CCSprite::createWithSpriteFrameName("Effects/Stun/Big/00.png");
+            sp = Sprite::createWithSpriteFrameName("Effects/Stun/Big/00.png");
             sn->addChild(sp, M_BASE_Z - sn->getPosition().y, 4242);
         }
         else
@@ -1317,11 +1523,11 @@ void CStunBuff::onUnitAddAbility()
             sp->stopAllActions();
         }
 
-        CCAnimation* pAni = gc->getAnimation("Effects/Stun/Big");
+        Animation* pAni = gc->getAnimation("Effects/Stun/Big");
         pAni->setLoops(2);
         
-        sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
-        sp->runAction(CCSequence::create(CCAnimate::create(pAni), CCRemoveSelf::create(), NULL));
+        sp->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
+        sp->runAction(Sequence::create(Animate::create(pAni), RemoveSelf::create(), nullptr));
     }
 #endif
 }
@@ -1330,7 +1536,7 @@ void CStunBuff::onUnitDelAbility()
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(d != NULL);
+    assert(d != nullptr);
     if (d->isFixed())
     {
         return;
@@ -1342,9 +1548,9 @@ void CStunBuff::onUnitDelAbility()
     {
         LOG("%s不在%s", o->getName(), getName());
 
-        CCNode* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
-        CCSprite* sp = DCAST(sn->getChildByTag(4242), CCSprite*);
-        if (sp != NULL)
+        Node* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+        Sprite* sp = DCAST(sn->getChildByTag(4242), Sprite*);
+        if (sp != nullptr)
         {
             sp->stopAllActions();
             sp->removeFromParentAndCleanup(true);
@@ -1359,7 +1565,7 @@ CDoubleAttackPas::CDoubleAttackPas(const char* pRootId, const char* pName, float
     setDbgClassName("CDoubleAttackPas");
 }
 
-CMultiRefObject* CDoubleAttackPas::copy()
+CDoubleAttackPas* CDoubleAttackPas::copy()
 {
     return new CDoubleAttackPas(getRootId(), getName(), m_fChance, m_oExAttackValue);
 }
@@ -1386,7 +1592,7 @@ void CDoubleAttackPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 
     pAttack->getAttackValue().setValue(m_oExAttackValue.getValue(pAttack->getAttackValue().getValue()));
 
-    CAttackAct* pAtk = NULL;
+    CAttackAct* pAtk = nullptr;
     o->getActiveAbility(o->getAttackAbilityId())->dcast(pAtk);
     
     pAtk->resetCD();
@@ -1403,7 +1609,7 @@ CSpeedBuff::CSpeedBuff(const char* pRootId, const char* pName, float fDuration, 
     setDbgClassName("CSpeedBuff");
 }
 
-CMultiRefObject* CSpeedBuff::copy()
+CSpeedBuff* CSpeedBuff::copy()
 {
     CSpeedBuff* ret = new CSpeedBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_oExMoveSpeedDelta, m_oExAttackSpeedDelta);
     ret->copyData(this);
@@ -1415,13 +1621,13 @@ void CSpeedBuff::onUnitAddAbility()
     CUnit* o = getOwner();
     
     CUnitDraw2D* od = DCAST(o->getDraw(), CUnitDraw2D*);
-    assert(od != NULL);
+    assert(od != nullptr);
     const CExtraCoeff& rExMs = od->getExMoveSpeed();
     od->setExMoveSpeed(CExtraCoeff(rExMs.getMulriple() + m_oExMoveSpeedDelta.getMulriple(), rExMs.getAddend() + m_oExMoveSpeedDelta.getAddend()));
     
-    CAttackAct* pAtkAct = NULL;
+    CAttackAct* pAtkAct = nullptr;
     o->getActiveAbility(o->getAttackAbilityId())->dcast(pAtkAct);
-    if (pAtkAct == NULL)
+    if (pAtkAct == nullptr)
     {
         return;
     }
@@ -1434,14 +1640,14 @@ void CSpeedBuff::onUnitAddAbility()
 
 #ifdef DEBUG_FOR_CC
     // for cocos2d
-    CUnitDrawForCC* ccd = NULL;
+    CUnitDrawForCC* ccd = nullptr;
     o->getDraw()->dcast(ccd);
 
-    if (ccd != NULL)
+    if (ccd != nullptr)
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, "", 18, ccc3(72, 130, 200));
+        ccd->addBattleTip(sz, "", 18, Color3B(72, 130, 200));
     }
 #endif
 }
@@ -1454,9 +1660,9 @@ void CSpeedBuff::onUnitDelAbility()
     const CExtraCoeff& rExMs = d->getExMoveSpeed();
     d->setExMoveSpeed(CExtraCoeff(rExMs.getMulriple() - m_oExMoveSpeedDelta.getMulriple(), rExMs.getAddend() - m_oExMoveSpeedDelta.getAddend()));
     
-    CAttackAct* pAtkAct = NULL;
+    CAttackAct* pAtkAct = nullptr;
     o->getActiveAbility(o->getAttackAbilityId())->dcast(pAtkAct);
-    if (pAtkAct == NULL)
+    if (pAtkAct == nullptr)
     {
         return;
     }
@@ -1470,15 +1676,15 @@ void CSpeedBuff::onUnitDelAbility()
 
 // CChangeHpPas
 CChangeHpPas::CChangeHpPas(const char* pRootId, const char* pName, float fInterval, const CExtraCoeff& roChangeHp, const CExtraCoeff& roMinHp)
-    : CPassiveAbility(pRootId, pName)
-    , m_oChangeHp(roChangeHp)
-    , m_oMinHp(roMinHp)
+: CPassiveAbility(pRootId, pName)
+, m_oChangeHp(roChangeHp)
+, m_oMinHp(roMinHp)
 {
     setDbgClassName("CChangeHpPas");
     setInterval(fInterval);
 }
 
-CMultiRefObject* CChangeHpPas::copy()
+CChangeHpPas* CChangeHpPas::copy()
 {
     return new CChangeHpPas(getRootId(), getName(), m_fInterval, m_oChangeHp, m_oMinHp);
 }
@@ -1521,7 +1727,7 @@ CChangeHpBuff::CChangeHpBuff(const char* pRootId, const char* pName, float fDura
     setInterval(fInterval);
 }
 
-CMultiRefObject* CChangeHpBuff::copy()
+CChangeHpBuff* CChangeHpBuff::copy()
 {
     CChangeHpBuff* ret = new CChangeHpBuff(getRootId(), getName(), m_fDuration, m_bStackable, m_fInterval, m_oChangeHp, m_oMinHp);
     ret->copyData(this);
@@ -1559,15 +1765,15 @@ void CChangeHpBuff::onUnitInterval()
 
 // CRebirthPas
 CRebirthPas::CRebirthPas(const char* pRootId, const char* pName, float fCoolDown, const CExtraCoeff& rExMaxHp)
-    : CPassiveAbility(pRootId, pName, fCoolDown)
-    , m_oExMaxHp(rExMaxHp)
-    , m_bRevivableBefore(false)
+: CPassiveAbility(pRootId, pName, fCoolDown)
+, m_oExMaxHp(rExMaxHp)
+, m_bRevivableBefore(false)
 {
     setDbgClassName("CRebirthPas");
     setTriggerFlags(CUnit::kOnDeadTrigger);
 }
 
-CMultiRefObject* CRebirthPas::copy()
+CRebirthPas* CRebirthPas::copy()
 {
     return new CRebirthPas(getRootId(), getName(), getCoolDown(), m_oExMaxHp);
 }
@@ -1599,7 +1805,7 @@ void CRebirthPas::onUnitDead()
 
     CUnit* oo = w->getUnit(o->getId());
     float fHp = getExMaxHp().getValue(o->getRealMaxHp());
-    if (oo != NULL)
+    if (oo != nullptr)
     {
         oo->revive(fHp);
     }
@@ -1610,14 +1816,14 @@ void CRebirthPas::onUnitDead()
 
 #ifdef DEBUG_FOR_CC
     // for cocos2d
-    CUnitDrawForCC* ccd = NULL;
+    CUnitDrawForCC* ccd = nullptr;
     o->getDraw()->dcast(ccd);
 
-    if (ccd != NULL)
+    if (ccd != nullptr)
     {
         char sz[64];
         sprintf(sz, "%s!", getName());
-        ccd->addBattleTip(sz, "", 18, ccc3(217, 47, 111));
+        ccd->addBattleTip(sz, "", 18, Color3B(217, 47, 111));
     }
 #endif
 
@@ -1626,15 +1832,15 @@ void CRebirthPas::onUnitDead()
 
 // CEvadePas
 CEvadePas::CEvadePas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff)
-    : CPassiveAbility(pRootId, pName)
-    , m_fChance(fChance)
-    , m_iTemplateBuff(iTemplateBuff)
+: CPassiveAbility(pRootId, pName)
+, m_fChance(fChance)
+, m_iTemplateBuff(iTemplateBuff)
 {
     setDbgClassName("CEvadePas");
     setTriggerFlags(CUnit::kOnAttackedTrigger);
 }
 
-CMultiRefObject* CEvadePas::copy()
+CEvadePas* CEvadePas::copy()
 {
     return new CEvadePas(getRootId(), getName(), m_fChance, m_iTemplateBuff);
 }
@@ -1649,18 +1855,21 @@ bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             o->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
 
-        LOG("%s%s了%s的攻击", getOwner()->getName(), getName(), pSource->getName());
+        if (pSource != nullptr)
+        {
+            LOG("%s%s了%s的攻击", getOwner()->getName(), getName(), pSource->getName());
+        }
 
 #ifdef DEBUG_FOR_CC
         // for cocos2d
-        CUnitDrawForCC* ccd = NULL;
+        CUnitDrawForCC* ccd = nullptr;
         o->getDraw()->dcast(ccd);
 
-        if (ccd != NULL)
+        if (ccd != nullptr)
         {
             char sz[64];
             sprintf(sz, "%s!", getName());
-            ccd->addBattleTip(sz, "", 18, ccc3(250, 104, 16));
+            ccd->addBattleTip(sz, "", 18, Color3B(250, 104, 16));
         }
 #endif
         return false;
@@ -1671,14 +1880,14 @@ bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 
 // CEvadeBuff
 CEvadeBuff::CEvadeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance)
-    : CBuffAbility(pRootId, pName, fDuration, bStackable)
-    , m_fChance(fChance)
+: CBuffAbility(pRootId, pName, fDuration, bStackable)
+, m_fChance(fChance)
 {
     setDbgClassName("CEvadeBuff");
     setTriggerFlags(CUnit::kOnAttackedTrigger);
 }
 
-CMultiRefObject* CEvadeBuff::copy()
+CEvadeBuff* CEvadeBuff::copy()
 {
     CEvadeBuff* ret = new CEvadeBuff(getRootId(), getName(), getDuration(), isStackable(), m_fChance);
     ret->copyData(this);
@@ -1694,14 +1903,14 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 #ifdef DEBUG_FOR_CC
         // for cocos2d
         CUnit* o = getOwner();
-        CUnitDrawForCC* ccd = NULL;
+        CUnitDrawForCC* ccd = nullptr;
         o->getDraw()->dcast(ccd);
 
-        if (ccd != NULL)
+        if (ccd != nullptr)
         {
             char sz[64];
             sprintf(sz, "%s!", getName());
-            ccd->addBattleTip(sz, "", 18, ccc3(250, 104, 16));
+            ccd->addBattleTip(sz, "", 18, Color3B(250, 104, 16));
         }
         return false;
 #endif
@@ -1711,29 +1920,29 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 }
 
 // CTransitiveLinkBuff
-CTransitiveLinkBuff::CTransitiveLinkBuff( const char* pName, float fDuration, float fRange, int iMaxTimes, uint32_t dwEffectiveTypeFlags )
-    : CBuffAbility("ChainBuff", pName, fDuration, true)
-    , m_fRange(fRange)
-    , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
-    , m_iMaxTimes(iMaxTimes)
-    , m_iTimesLeft(m_iMaxTimes)
-    , m_iFromUnit(0)
-    , m_iToUnit(0)
-    , m_iTemplateProjectile(0)
-    , m_bTransmited(false)
+CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, uint32_t dwEffectiveTypeFlags)
+: CBuffAbility("LinkBuff", pName, fDuration, true)
+, m_fRange(fRange)
+, m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
+, m_iMaxTimes(iMaxTimes)
+, m_iTimesLeft(m_iMaxTimes)
+, m_iFromUnit(0)
+, m_iToUnit(0)
+, m_iTemplateProjectile(0)
+, m_bTransmited(false)
 {
     setTriggerFlags(CUnit::kOnDeadTrigger);
     setDbgClassName("CTransitiveLinkBuff");
 }
 
-CMultiRefObject* CTransitiveLinkBuff::copy()
+CTransitiveLinkBuff* CTransitiveLinkBuff::copy()
 {
     CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_dwEffectiveTypeFlags);
     ret->copyData(this);
     return ret;
 }
 
-void CTransitiveLinkBuff::copyData( CAbility* from )
+void CTransitiveLinkBuff::copyData(CAbility* from)
 {
     CBuffAbility::copyData(from);
     CTransitiveLinkBuff* a = DCAST(from, CTransitiveLinkBuff*);
@@ -1783,7 +1992,7 @@ void CTransitiveLinkBuff::TransmitNext()
         //return;
     }
     CWorld* w = o->getWorld();
-    CUnit* t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), m_fRange, CONDITION(CTransitiveLinkBuff::checkConditions), this);
+    CUnit* t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), m_fRange, bind(&CTransitiveLinkBuff::checkConditions, this, placeholders::_1));
     if (!t)
     {
         return;
@@ -1811,14 +2020,19 @@ void CTransitiveLinkBuff::TransmitNext()
     p->fire();
 }
 
-bool CTransitiveLinkBuff::checkConditions( CUnit* pUnit, CTransitiveLinkBuff* pBuff )
+bool CTransitiveLinkBuff::checkConditions(CUnit* pUnit)
 {
-    CUnit* o = pBuff->getOwner();
-    CUnitForce* s = DCAST(o->getUnit(pBuff->getSrcUnit()), CUnitForce*);
-    if (pBuff->getOwner() == pUnit
-        || pUnit->isDead()
-        || !pUnit->isEffective(s, pBuff->getEffectiveTypeFlags())
-        || pBuff->getUnitsTransmited().find(pUnit->getId()) != pBuff->getUnitsTransmited().end())
+    CUnit* o = getOwner();
+    CUnitForce* s = DCAST(o->getUnit(getSrcUnit()), CUnitForce*);
+    if (s == nullptr)
+    {
+        return false;
+    }
+
+    if (getOwner() == pUnit ||
+        pUnit->isDead() ||
+        !pUnit->isEffective(s, getEffectiveTypeFlags()) ||
+        getUnitsTransmited().find(pUnit->getId()) != getUnitsTransmited().end())
     {
         return false;
     }
@@ -1827,25 +2041,25 @@ bool CTransitiveLinkBuff::checkConditions( CUnit* pUnit, CTransitiveLinkBuff* pB
 }
 
 // CSplashPas
-CSplashPas::CSplashPas( const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage )
-    : CPassiveAbility("SplashPas", pName)
-    , m_fNearRange(fNearRange)
-    , m_oExNearDamage(roExNearDamage)
-    , m_fFarRange(fFarRange)
-    , m_oExFarDamage(roExFarDamage)
+CSplashPas::CSplashPas(const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage)
+: CPassiveAbility("SplashPas", pName)
+, m_fNearRange(fNearRange)
+, m_oExNearDamage(roExNearDamage)
+, m_fFarRange(fFarRange)
+, m_oExFarDamage(roExFarDamage)
 {
     setTriggerFlags(CUnit::kOnDamageTargetDoneTrigger);
     setDbgClassName("CSplashPas");
 }
 
-CMultiRefObject* CSplashPas::copy()
+CSplashPas* CSplashPas::copy()
 {
     CSplashPas* ret = new CSplashPas(getName(), getNearRange(), getExNearDamage(), getFarRange(), getExFarDamage());
 
     return ret;
 }
 
-void CSplashPas::onUnitDamageTargetDone( float fDamage, CUnit* pTarget )
+void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 {
     CUnit* o = getOwner();
     if (!pTarget || !o)
@@ -1862,7 +2076,7 @@ void CSplashPas::onUnitDamageTargetDone( float fDamage, CUnit* pTarget )
     {
         CUnit* pUnit = M_MAP_EACH;
         CUnitDraw2D* pDraw = DCAST(pUnit->getDraw(), CUnitDraw2D*);
-        if (!pUnit)
+        if (!pUnit || pUnit->isGhost())
         {
             M_MAP_NEXT;
             continue;
@@ -1887,44 +2101,24 @@ void CSplashPas::onUnitDamageTargetDone( float fDamage, CUnit* pTarget )
 // CKnockBackBuff
 const int CKnockBackBuff::CONST_ACT_TAG = CKeyGen::nextKey();
 
-CKnockBackBuff::CKnockBackBuff( const char* pRootId, const char* pName, float fDuration, bool bStackable, float fDistance )
-    : CStunBuff(pRootId, pName, fDuration, bStackable)
-    , m_fDistance(fDistance)
+CKnockBackBuff::CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance)
+: CStunBuff(pRootId, pName, fDuration, false)
+, m_fDistance(fDistance)
 {
     setDbgClassName("CKnockBackBuff");
 }
 
-CMultiRefObject* CKnockBackBuff::copy()
+CKnockBackBuff* CKnockBackBuff::copy()
 {
-    CKnockBackBuff* ret = new CKnockBackBuff(getRootId(), getName(), getDuration(), isStackable(), getDistance());
+    CKnockBackBuff* ret = new CKnockBackBuff(getRootId(), getName(), getDuration(), getDistance());
     ret->copyData(this);
     return ret;
 }
 
 void CKnockBackBuff::onUnitAddAbility()
 {
-    CUnit* o = getOwner();
-    CUnitDrawForCC* d = DCAST(o->getDraw(), CUnitDrawForCC*);
-    if (d->isFixed())
-    {
-        return;
-    }
-
+    knockBack();
     CStunBuff::onUnitAddAbility();
-    CUnit* s = o->getUnit(getSrcUnit());
-    CUnitDraw2D* sd = DCAST(s->getDraw(), CUnitDraw2D*);
-
-    const CPoint& p1 = sd->getPosition();
-    const CPoint& p2 = d->getPosition();
-    
-    float fA = -(p1 - p2).getAngle();
-    CPoint tp = CPoint(cos(fA) * m_fDistance, sin(-fA) * m_fDistance);
-    CCPoint cctp(-tp.x, -tp.y);
-
-    d->stopAction(CONST_ACT_TAG);
-    CCAction* pAct = CCEaseExponentialOut::create(CCMoveBy::create(getDuration(), cctp));
-    pAct->setTag(CONST_ACT_TAG);
-    d->getSprite()->runAction(pAct);
 }
 
 void CKnockBackBuff::onUnitDelAbility()
@@ -1935,22 +2129,115 @@ void CKnockBackBuff::onUnitDelAbility()
     d->stopAction(CONST_ACT_TAG);
 }
 
+void CKnockBackBuff::onUnitDisplaceAbility()
+{
+    knockBack();
+}
+
+void CKnockBackBuff::knockBack()
+{
+    CUnit* o = getOwner();
+    CUnitDrawForCC* d = DCAST(o->getDraw(), CUnitDrawForCC*);
+    if (d->isFixed())
+    {
+        return;
+    }
+
+    CUnit* s = o->getUnit(getSrcUnit());
+    CUnitDraw2D* sd = DCAST(s->getDraw(), CUnitDraw2D*);
+
+    const CPoint& p1 = sd->getPosition();
+    const CPoint& p2 = d->getPosition();
+
+    CPoint tp = p2.getForwardPoint(p1, -m_fDistance);
+    Point cctp(tp.x, tp.y);
+
+    d->stopAction(CONST_ACT_TAG);
+    Action* pAct = EaseExponentialOut::create(MoveTo::create(getDuration(), cctp));
+    pAct->setTag(CONST_ACT_TAG);
+    d->getSprite()->runAction(pAct);
+}
+
+// CAttractBuff
+const int CAttractBuff::CONST_ACT_TAG = CKeyGen::nextKey();
+
+CAttractBuff::CAttractBuff(const char* pRootId, const char* pName, float fDuration, float fDistance)
+: CStunBuff(pRootId, pName, fDuration, false)
+, m_fDistance(fDistance)
+{
+    setDbgClassName("CAttractBuff");
+}
+
+CAttractBuff* CAttractBuff::copy()
+{
+    CAttractBuff* ret = new CAttractBuff(getRootId(), getName(), getDuration(), getDistance());
+    ret->copyData(this);
+    return ret;
+}
+
+void CAttractBuff::onUnitAddAbility()
+{
+    attract();
+    CStunBuff::onUnitAddAbility();
+}
+
+void CAttractBuff::onUnitDelAbility()
+{
+    CStunBuff::onUnitDelAbility();
+    CUnit* o = getOwner();
+    CUnitDrawForCC* d = DCAST(o->getDraw(), CUnitDrawForCC*);
+    d->stopAction(CONST_ACT_TAG);
+}
+
+void CAttractBuff::onUnitDisplaceAbility()
+{
+    attract();
+}
+
+void CAttractBuff::attract()
+{
+    CUnit* o = getOwner();
+    CUnitDrawForCC* d = DCAST(o->getDraw(), CUnitDrawForCC*);
+    if (d->isFixed())
+    {
+        return;
+    }
+
+    CUnit* s = o->getUnit(getSrcUnit());
+    CUnitDraw2D* sd = DCAST(s->getDraw(), CUnitDraw2D*);
+
+    const CPoint& p1 = sd->getPosition();
+    const CPoint& p2 = d->getPosition();
+    float dis = min(p2.getDistance(p1) - d->getHalfOfWidth() - sd->getHalfOfWidth(), getDistance());
+
+    CPoint tp = p2.getForwardPoint(p1, dis);
+    Point cctp(tp.x, tp.y);
+
+    if (!d->isDoingAction(CONST_ACT_TAG))
+    {
+        //d->stopAction(CONST_ACT_TAG);
+        Action* pAct = EaseIn::create(MoveTo::create(getDuration(), cctp), 2.0f);
+        pAct->setTag(CONST_ACT_TAG);
+        d->getSprite()->runAction(pAct);
+    }
+}
+
 // CReflectBuff
-CReflectBuff::CReflectBuff( const char* pRootId, const char* pName, float fDuration )
-    : CBuffAbility(pRootId, pName, fDuration, false)
+CReflectBuff::CReflectBuff(const char* pRootId, const char* pName, float fDuration)
+: CBuffAbility(pRootId, pName, fDuration, false)
 {
     setTriggerFlags(CUnit::kOnProjectileArriveTrigger);
     setDbgClassName("CReflectBuff");
 }
 
-CMultiRefObject* CReflectBuff::copy()
+CReflectBuff* CReflectBuff::copy()
 {
     CReflectBuff* ret = new CReflectBuff(getRootId(), getName(), m_fDuration);
     ret->copyData(this);
     return ret;
 }
 
-bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
+bool CReflectBuff::onUnitProjectileArrive(CProjectile* pProjectile)
 {
     CUnit* o = getOwner();
     //pProjectile->setSrcUnit(o->getId());
@@ -1958,14 +2245,14 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
 
     int swp = pProjectile->getSrcUnit();
     CUnit* s = o->getUnit(swp);
-    if (s == NULL)
+    if (s == nullptr)
     {
         return true;
     }
 
     if (pProjectile->getFireType() == CProjectile::kFireFollow && pProjectile->getFromToType() == CProjectile::kUnitToUnit)
     {
-        //pProjectile->setSrcUnit(o->getId());  如果反射后，源发射源死亡，当反射的抛射物到达目标点后，调用getSrcAbility()->onAbilityEffect()的时候，技能内部的getOwner()将指向无效指针，故不能重设源单位
+        //pProjectile->setSrcUnit(o->getId());  如果反射后，源发射源死亡，当反射的抛射物到达目标点后，调用getSrcAbility()->onUnitAbilityEffect()的时候，技能内部的getOwner()将指向无效指针，故不能重设源单位
         pProjectile->setToUnit(swp);
 
         pProjectile->setMoveSpeed(pProjectile->getMoveSpeed() * 3.0f);
@@ -2000,12 +2287,12 @@ bool CReflectBuff::onUnitProjectileArrive( CProjectile* pProjectile )
 }
 
 // CLimitedLife
-CLimitedLifeBuff::CLimitedLifeBuff( const char* pRootId, const char* pName, float fDuration )
-    : CBuffAbility(pRootId, pName, fDuration, false)
+CLimitedLifeBuff::CLimitedLifeBuff(const char* pRootId, const char* pName, float fDuration)
+: CBuffAbility(pRootId, pName, fDuration, false)
 {
 }
 
-CMultiRefObject* CLimitedLifeBuff::copy()
+CLimitedLifeBuff* CLimitedLifeBuff::copy()
 {
     CLimitedLifeBuff* ret = new CLimitedLifeBuff(getRootId(), getName(), m_fDuration);
     ret->copyData(this);

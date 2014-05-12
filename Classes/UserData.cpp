@@ -7,8 +7,8 @@
 
 // CUserData
 CUserData::CUserData()
-    : m_heroSel(0)
-    , m_stageSel(0)
+: m_heroSel(0)
+, m_stageSel(0)
 {
 }
 
@@ -20,11 +20,11 @@ void CUserData::reset()
     m_stageSel = 0;
 }
 
-void CUserData::load( const char* name )
+void CUserData::load(const char* name)
 {
     reset();
 
-    CCUserDefault* ud = CCUserDefault::sharedUserDefault();
+    UserDefault* ud = UserDefault::getInstance();
     int stageGrades = ud->getIntegerForKey("stageGrades_size");
     for (int i = 0; i < stageGrades; ++i)
     {
@@ -76,9 +76,9 @@ void CUserData::load( const char* name )
     }
 }
 
-void CUserData::save( const char* name )
+void CUserData::save(const char* name)
 {
-    CCUserDefault* ud = CCUserDefault::sharedUserDefault();
+    UserDefault* ud = UserDefault::getInstance();
     ud->setIntegerForKey("stageGrades_size", m_stageGrades.size());
     for (int i = 0; i < (int)m_stageGrades.size(); ++i)
     {
@@ -130,7 +130,7 @@ void CUserData::save( const char* name )
     ud->flush();
 }
 
-void CUserData::newGrades( int stage, int grade )
+void CUserData::newGrades(int stage, int grade)
 {
     for (int i = m_stageGrades.size(); i <= stage; ++i)
     {
@@ -143,7 +143,7 @@ void CUserData::newGrades( int stage, int grade )
     }
 }
 
-void CUserData::updateGrades( CStageMap* stageMap )
+void CUserData::updateGrades(CStageMap* stageMap)
 {
     CStageMap::VEC_STAGE_INFOS& stages = stageMap->getStages();
     for (size_t i = m_stageGrades.size(); i < stages.size(); ++i)
@@ -162,7 +162,7 @@ CGameData::STAGE_INFO* CUserData::getStageSelected()
     CGameData* gd = CGameData::instance();
     if (m_stageSel >= (int)gd->m_stages.size())
     {
-        return NULL;
+        return nullptr;
     }
 
     return &gd->m_stages[m_stageSel];
@@ -172,7 +172,7 @@ CUserData::HERO_INFO* CUserData::getHeroSelected()
 {
     if (m_heroSel >= (int)m_heroes.size())
     {
-        return NULL;
+        return nullptr;
     }
 
     return &m_heroes[m_heroSel];

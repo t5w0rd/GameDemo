@@ -3,40 +3,40 @@
 #include "ComponentForCC.h"
 
 
-// CCProgressBar
-const float CCProgressBar::CONST_MAX_PROCESS_BAR_PERCENT = 99.99999f;
+// ProgressBar
+const float ProgressBar::CONST_MAX_PROCESS_BAR_PERCENT = 99.99999f;
 
-CCProgressBar::CCProgressBar()
+ProgressBar::ProgressBar()
 {
 }
 
-CCProgressBar::~CCProgressBar()
+ProgressBar::~ProgressBar()
 {
 }
 
-bool CCProgressBar::init(const CCSize& roSize, CCSprite* pFill, CCSprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop)
+bool ProgressBar::init(const Size& roSize, Sprite* pFill, Sprite* pBorder, float fHorizBorderWidth, float fVertBorderWidth, bool bFillOnTop)
 {
-    setAnchorPoint(ccp(0.5f, 0.5f));
+    setAnchorPoint(Point(0.5f, 0.5f));
     setContentSize(roSize);
 
-    CCSize oFillSz(roSize.width - fVertBorderWidth * 2, roSize.height - fHorizBorderWidth * 2);
+    Size oFillSz(roSize.width - fVertBorderWidth * 2, roSize.height - fHorizBorderWidth * 2);
 
-    m_pPt = CCProgressTimer::create(pFill);
+    m_pPt = ProgressTimer::create(pFill);
     if (m_pPt->getParent())
     {
         m_pPt->removeFromParentAndCleanup(true);
     }
     addChild(m_pPt, bFillOnTop);
-    CCSize oSz = m_pPt->getContentSize();
+    Size oSz = m_pPt->getContentSize();
     m_pPt->setPosition(getAnchorPointInPoints());
     m_pPt->setScaleX(oFillSz.width / oSz.width);
     m_pPt->setScaleY(oFillSz.height / oSz.height);
-    m_pPt->setType(kCCProgressTimerTypeBar);
+    m_pPt->setType(ProgressTimer::Type::BAR);
     m_pPt->setPercentage(0);
-    m_pPt->setBarChangeRate(ccp(1, 0));
-    m_pPt->setMidpoint(ccp(0, 0));
+    m_pPt->setBarChangeRate(Point(1, 0));
+    m_pPt->setMidpoint(Point(0, 0));
 
-    if (pBorder != NULL)
+    if (pBorder != nullptr)
     {
         addChild(pBorder, !bFillOnTop);
         oSz = pBorder->getContentSize();
@@ -50,7 +50,7 @@ bool CCProgressBar::init(const CCSize& roSize, CCSprite* pFill, CCSprite* pBorde
     return true;
 }
 
-void CCProgressBar::setPercentage(float fPercent)
+void ProgressBar::setPercentage(float fPercent)
 {
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
     {
@@ -60,7 +60,7 @@ void CCProgressBar::setPercentage(float fPercent)
     m_pPt->setPercentage(fPercent);
 }
 
-void CCProgressBar::setPercentage(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/)
+void ProgressBar::setPercentage(float fPercent, float fDuration, FiniteTimeAction* pEndAction /*= nullptr*/)
 {
     m_pPt->stopAllActions();
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
@@ -70,16 +70,16 @@ void CCProgressBar::setPercentage(float fPercent, float fDuration, CCFiniteTimeA
     float fWidth = m_pPt->getScaleX() * m_pPt->getContentSize().width;
     if (pEndAction)
     {
-        m_pPt->runAction(CCSequence::create(CCProgressTo::create(fDuration, fPercent), pEndAction, NULL));
+        m_pPt->runAction(Sequence::create(ProgressTo::create(fDuration, fPercent), pEndAction, nullptr));
     }
     else
     {
-        m_pPt->runAction(CCSequence::create(CCProgressTo::create(fDuration, fPercent), NULL));
+        m_pPt->runAction(Sequence::create(ProgressTo::create(fDuration, fPercent), nullptr));
     }
 
 }
 
-CCActionInterval* CCProgressBar::setPercentageAction(float fPercent, float fDuration, CCFiniteTimeAction* pEndAction /*= NULL*/)
+ActionInterval* ProgressBar::setPercentageAction(float fPercent, float fDuration, FiniteTimeAction* pEndAction /*= nullptr*/)
 {
     m_pPt->stopAllActions();
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
@@ -90,72 +90,75 @@ CCActionInterval* CCProgressBar::setPercentageAction(float fPercent, float fDura
 
     if (pEndAction)
     {
-        return CCSequence::create(CCProgressTo::create(fDuration, fPercent), pEndAction, NULL);
+        return Sequence::create(ProgressTo::create(fDuration, fPercent), pEndAction, nullptr);
     }
-    return CCSequence::create(CCProgressTo::create(fDuration, fPercent), NULL);
+    return Sequence::create(ProgressTo::create(fDuration, fPercent), nullptr);
 }
 
-void CCProgressBar::setFillColor(const ccColor3B& roColor)
+void ProgressBar::setFillColor(const Color3B& roColor)
 {
     m_pPt->setColor(roColor);
 }
 
-void CCProgressBar::runActionForTimer( CCAction* pAction )
+void ProgressBar::runActionForTimer(Action* pAction)
 {
     m_pPt->runAction(pAction);
 }
 
-// CCSpriteFrameCacheEx
-CCDictionary* CCSpriteFrameCacheEx::getSpriteFrames()
+// SpriteFrameCacheEx
+Map<std::string, SpriteFrame*>* SpriteFrameCacheEx::getSpriteFrames()
 {
-    return m_pSpriteFrames;
+    return &_spriteFrames;
 }
 
-CCDictionary* CCSpriteFrameCacheEx::getSpriteFramesAliases()
+ValueMap* SpriteFrameCacheEx::getSpriteFramesAliases()
 {
-    return m_pSpriteFramesAliases;
+    return &_spriteFramesAliases;
 }
 
-SET_STR* CCSpriteFrameCacheEx::getLoadedFileNames()
+std::set<std::string>* SpriteFrameCacheEx::getLoadedFileNames()
 {
-    return m_pLoadedFileNames;
+    return _loadedFileNames;
 }
 
-// CCGameFile
-CCGameFile::CCGameFile(void)
-{
-}
-
-
-CCGameFile::~CCGameFile(void)
+// GameFile
+GameFile::GameFile(void)
+: m_uPos(0)
 {
 }
 
-bool CCGameFile::init( const char* pFileName, const char* pMode )
+
+GameFile::~GameFile(void)
+{
+}
+
+bool GameFile::init(const char* pFileName, const char* pMode)
 {
     M_DEF_FU(pFu);
-    m_uPos = m_uSize = 0;
-    m_pData = pFu->getFileData(pFu->fullPathForFilename(pFileName).c_str(), pMode, &m_uSize);
-    if (!m_pData)
+    m_uPos = 0;
+
+    m_data = pFu->getDataFromFile(pFu->fullPathForFilename(pFileName));
+    if (m_data.isNull())
     {
         return false;
     }
+
     return true;
 }
 
-size_t CCGameFile::tell() const
+ssize_t GameFile::tell() const
 {
     return m_uPos;
 }
 
-bool CCGameFile::eof() const
+bool GameFile::eof() const
 {
-    return m_uPos >= m_uSize;
+    return m_uPos >= m_data.getSize();
 }
 
-bool CCGameFile::seek( long lOffset, FILE_ORIGIN eOrigin )
+bool GameFile::seek(long lOffset, FILE_ORIGIN eOrigin)
 {
-    unsigned long uPos = 0;
+    ssize_t uPos = 0;
     switch (eOrigin)
     {
         case kBegin:
@@ -167,82 +170,83 @@ bool CCGameFile::seek( long lOffset, FILE_ORIGIN eOrigin )
             break;
 
         case kEnd:
-            uPos = m_uSize + lOffset;
+            uPos = m_data.getSize() + lOffset;
             break;
 
         default:
             return false;
     }
 
-    if (uPos < 0 || uPos > m_uSize)
+    if (uPos < 0 || uPos > m_data.getSize())
     {
         return false;
     }
 
     m_uPos = uPos;
+
     return true;
 }
 
-// CCWinLayer
-const float CCWinLayer::CONST_MIN_MOVE_DELTA = 10.0f;
-const float CCWinLayer::CONST_MAX_CAN_MOVE_DURATION = 0.15f;
+// WinLayer
+const float WinLayer::CONST_MIN_MOVE_DELTA = 10.0f;
+const float WinLayer::CONST_MAX_CAN_MOVE_DURATION = 0.15f;
 
-CCWinLayer::CCWinLayer()
-    : m_bMoveEnabled(true)
-    , m_iPendingAbilityOwner(0)
-    , m_bIsTouching(false)
-    , m_fMoveK(0.0f)
-    , m_fBuffRange(0.0f)
-    , m_fEdgeK(0.0f)
-    , m_fMoveDelta(0.0f)
-    , m_fTouchMovedDuration(0.0f)
-    , m_fMoveR(0.0f)
-    , m_bCanMove(false)
+WinLayer::WinLayer()
+: m_bMoveEnabled(true)
+, m_iPendingAbilityOwner(0)
+, m_bIsTouching(false)
+, m_fMoveK(0.0f)
+, m_fBuffRange(0.0f)
+, m_fEdgeK(0.0f)
+, m_fMoveDelta(0.0f)
+, m_fTouchMovedDuration(0.0f)
+, m_fMoveR(0.0f)
+, m_bCanMove(false)
 {
 }
 
-bool CCWinLayer::init()
+bool WinLayer::init()
 {
     m_bIsTouching = false;
-    return CCLayerColor::init();
+    return LayerColor::init();
 }
 
-bool CCWinLayer::initWithColor( const ccColor4B& color )
+bool WinLayer::initWithColor(const Color4B& color)
 {
     m_bIsTouching = false;
-    return CCLayerColor::initWithColor(color);
+    return LayerColor::initWithColor(color);
 }
 
-void CCWinLayer::setBackgroundSprite(CCSprite* pSprite)
+void WinLayer::setBackgroundSprite(Sprite* pSprite)
 {
-    CCSize oSz = pSprite->getContentSize();
+    Size oSz = pSprite->getContentSize();
     oSz.width *= pSprite->getScaleX();
     oSz.height *= pSprite->getScaleY();
-    CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
+    Size oWinSz = Director::getInstance()->getVisibleSize();
     setContentSize(oSz);
-    addChild(pSprite);
+    addChild(pSprite, -1);
     pSprite->setPosition(getAnchorPointInPoints());
-    setPosition(ccp((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
+    setPosition(Point((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
 }
 
-void CCWinLayer::setBackgroundSprite(CCSprite* pSprite, int zOrder, int tag)
+void WinLayer::setBackgroundSprite(Sprite* pSprite, int zOrder, int tag)
 {
-    CCSize oSz = pSprite->getContentSize();
+    Size oSz = pSprite->getContentSize();
     oSz.width *= pSprite->getScaleX();
     oSz.height *= pSprite->getScaleY();
-    CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
+    Size oWinSz = Director::getInstance()->getVisibleSize();
     setContentSize(oSz);
     addChild(pSprite, zOrder, tag);
     pSprite->setPosition(getAnchorPointInPoints());
-    setPosition(ccp((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
+    setPosition(Point((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
 }
 
-void CCWinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK)
+void WinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK)
 {
     setScale(fScale);
     m_fMoveK = min(1.0f, max(0.0f, fMoveK));
-    CCSize oSz = getContentSize() * getScale();
-    static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
+    Size oSz = getContentSize() * getScale();
+    static Size oWinSz = Director::getInstance()->getVisibleSize();
     oSz.width = max(0.0f, oSz.width - oWinSz.width);
     oSz.height = max(0.0f, oSz.height - oWinSz.height);
     m_fBuffRange = fBuffRange;
@@ -250,57 +254,66 @@ void CCWinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRan
     m_fEdgeK = min(1.0f, max(0.0f, fEdgeK));
 }
 
-void CCWinLayer::setScale(float fScale)
+void WinLayer::setScale(float fScale)
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
-    CCSize oSz = getContentSize();
-    CCLayer::setScale(min(max(max(wsz.width / oSz.width, wsz.height / oSz.height), fScale), 4.0f));
+    static Size wsz = Director::getInstance()->getVisibleSize();
+    Size oSz = getContentSize();
+    Layer::setScale(min(max(max(wsz.width / oSz.width, wsz.height / oSz.height), fScale), 4.0f));
 }
 
-void CCWinLayer::setPosition( const CCPoint& newPosition )
+void WinLayer::setPosition(const Point& newPosition)
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
-    CCSize oSz = getContentSize() * getScale();
+    static Size wsz = Director::getInstance()->getVisibleSize();
+    Size oSz = getContentSize() * getScale();
     float fX = (1 - 1 / getScale()) *  0.5 * oSz.width;
     float fY = (1 - 1 / getScale()) *  0.5 * oSz.height;
-    CCLayer::setPosition(ccp(min(max(newPosition.x, (wsz.width - oSz.width) + fX), fX), min(max(newPosition.y, (wsz.height - oSz.height) + fY), fY)));
+    Layer::setPosition(Point(min(max(newPosition.x, (wsz.width - oSz.width) + fX), fX), min(max(newPosition.y, (wsz.height - oSz.height) + fY), fY)));
 }
 
-float CCWinLayer::getTouchMovedDuration() const
+float WinLayer::getTouchMovedDuration() const
 {
     return m_fTouchMovedDuration;
 }
 
-float CCWinLayer::getTouchMovedDistance() const
+float WinLayer::getTouchMovedDistance() const
 {
     return m_fMoveDelta;
 }
 
-float CCWinLayer::getTouchMovedRadian() const
+float WinLayer::getTouchMovedRadian() const
 {
     return m_fMoveR;
 }
 
-bool CCWinLayer::isSlideAction() const
+bool WinLayer::isSlideAction() const
 {
     return m_bCanMove;
 }
 
-void CCWinLayer::onEnter()
+void WinLayer::onEnter()
 {
-    setTouchEnabled(true);
-    schedule(schedule_selector(CCWinLayer::bufferWindowEffect), 1.0f / 200.0f);
-    CCLayer::onEnter();
+    auto listener = EventListenerTouchAllAtOnce::create();
+    listener->onTouchesBegan = CC_CALLBACK_2(WinLayer::onTouchesBegan, this);
+    listener->onTouchesMoved = CC_CALLBACK_2(WinLayer::onTouchesMoved, this);
+    listener->onTouchesEnded = CC_CALLBACK_2(WinLayer::onTouchesEnded, this);
+
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    _touchListener = listener;
+
+    schedule(schedule_selector(WinLayer::bufferWindowEffect), 1.0f / 200.0f);
+    LayerColor::onEnter();
 }
 
-void CCWinLayer::onExit()
+void WinLayer::onExit()
 {
-    setTouchEnabled(false);
-    unschedule(schedule_selector(CCWinLayer::bufferWindowEffect));
-    CCLayer::onExit();
+    unschedule(schedule_selector(WinLayer::bufferWindowEffect));
+    _eventDispatcher->removeEventListener(_touchListener);
+    _touchListener = nullptr;
+
+    LayerColor::onExit();
 }
 
-void CCWinLayer::bufferWindowEffect(float fDt)
+void WinLayer::bufferWindowEffect(float fDt)
 {
     if (m_bIsTouching)
     {
@@ -308,9 +321,9 @@ void CCWinLayer::bufferWindowEffect(float fDt)
         return;
     }
 
-    static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
-    CCSize oSz = getContentSize() * getScale();
-    CCPoint oT = getPosition();
+    static Size oWinSz = Director::getInstance()->getVisibleSize();
+    Size oSz = getContentSize() * getScale();
+    Point oT = getPosition();
 
     float fW = MAX(0, oSz.width - oWinSz.width);
     float fH = MAX(0, oSz.height - oWinSz.height);
@@ -344,7 +357,7 @@ void CCWinLayer::bufferWindowEffect(float fDt)
     }
     if (bOut)
     {
-        CCLayer::setPosition(oT);
+        LayerColor::setPosition(oT);
         m_fMoveDelta = 0;
     }
     else if (m_bCanMove && m_bMoveEnabled)
@@ -353,7 +366,7 @@ void CCWinLayer::bufferWindowEffect(float fDt)
         if (m_fMoveDelta >= CONST_MIN_MOVE_DELTA)
         {
             float fMove = m_fMoveDelta * fDt / m_fTouchMovedDuration;
-            CCPoint oP = ccpAdd(oT, ccp(cos(m_fMoveR) * fMove, sin(-m_fMoveR) * fMove));
+            Point oP = oT + Point(cos(m_fMoveR) * fMove, sin(-m_fMoveR) * fMove);
             //adjustWinPos(oP);
             setPosition(oP);
         }
@@ -364,15 +377,15 @@ void CCWinLayer::bufferWindowEffect(float fDt)
     }
 }
 
-bool CCWinLayer::isClickAction() const
+bool WinLayer::isClickAction() const
 {
     return m_fMoveDelta < CONST_MIN_MOVE_DELTA;
 }
 /*
-void CCWinLayer::adjustWinPos(CCPoint& roPos)
+void WinLayer::adjustWinPos(Point& roPos)
 {
-    static CCSize oWinSz = CCDirector::sharedDirector()->getVisibleSize();
-    CCSize oSz = getContentSize() * getScale();
+    static Size oWinSz = Director::getInstance()->getVisibleSize();
+    Size oSz = getContentSize() * getScale();
     float fX = (1 - 1 / getScale()) *  0.5 * oSz.width;
     float fY = (1 - 1 / getScale()) *  0.5 * oSz.height;
     roPos.x = MAX(roPos.x, (oWinSz.width - oSz.width) + fX);
@@ -381,7 +394,7 @@ void CCWinLayer::adjustWinPos(CCPoint& roPos)
     roPos.y = MIN(roPos.y, fY);
 }
 */
-int CCWinLayer::touchActionIndex() const
+int WinLayer::touchActionIndex() const
 {
     if (isSlideAction())
     {
@@ -394,11 +407,11 @@ int CCWinLayer::touchActionIndex() const
     return m_iPendingAbilityOwner != 0 ? kUnitCastTarget : kNormalTouch;
 }
 
-void CCWinLayer::ccTouchesBegan( CCSet *pTouches, CCEvent *pEvent )
+void WinLayer::onTouchesBegan(const std::vector<Touch*>& touches, cocos2d::Event* event)
 {
-    CCSetIterator it = pTouches->begin();
-    CCTouch* pTouch = ((CCTouch*)(*it));
-    if (pTouches->count() == 1)
+    auto it = touches.begin();
+    Touch* pTouch = ((Touch*)(*it));
+    if (touches.size() == 1)
     {
         m_bIsTouching = true;
         m_fTouchMovedDuration = 0;
@@ -407,95 +420,102 @@ void CCWinLayer::ccTouchesBegan( CCSet *pTouches, CCEvent *pEvent )
         m_bCanMove = false;
 
         m_fStartScale = getScale();
-        m_fStartDis = ccpDistance(m_oMoveStart, m_oLast);
+        m_fStartDis = m_oMoveStart.getDistance(m_oLast);
         m_oLast = m_oMoveStart;
     }
 }
 
-void CCWinLayer::ccTouchesMoved( CCSet *pTouches, CCEvent *pEvent )
+void WinLayer::onTouchesMoved(const std::vector<Touch*>& touches, cocos2d::Event* event)
 {
     if (m_bMoveEnabled == false)
     {
         return;
     }
 
-    CCSetIterator it = pTouches->begin();
-    CCTouch* pTouch = ((CCTouch*)(*it));
-    if (pTouches->count() == 1)
+    auto it = touches.begin();
+    Touch* pTouch = ((Touch*)(*it));
+    if (touches.size() == 1)
     {
-        CCPoint oT = ccpAdd(getPosition(), pTouch->getDelta());
+        Point oT = getPosition() + pTouch->getDelta();
         //adjustWinPos(oT);
         setPosition(oT);
     }
-    else if (pTouches->count() == 2)
+    else if (touches.size() == 2)
     {
-        CCPoint p1 = pTouch->getLocation();
+        Point p1 = pTouch->getLocation();
         ++it;
-        CCPoint p2 = ((CCTouch*)(*it))->getLocation();
-        float fDis = ccpDistance(p2, p1);
+        Point p2 = ((Touch*)(*it))->getLocation();
+        float fDis = p2.getDistance(p1);
         float fScale = fDis / MAX(m_fStartDis, 1.0f) * m_fStartScale;
-        CCPoint oT = getPosition();
+        Point oT = getPosition();
         setScale(fScale);
         //adjustWinPos(oT);
         setPosition(oT);
     }
 }
 
-void CCWinLayer::ccTouchesEnded( CCSet *pTouches, CCEvent *pEvent )
+void WinLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event* event)
 {
-    CCSetIterator it = pTouches->begin();
-    CCTouch* pTouch = ((CCTouch*)(*it));
-    if (pTouches->count() == 1)
+    auto it = touches.begin();
+    Touch* pTouch = ((Touch*)(*it));
+    if (touches.size() == 1)
     {
         m_bIsTouching = false;
-        m_fMoveDelta = ccpDistance(pTouch->getLocation(), m_oMoveStart);
-        m_fMoveR = -ccpToAngle(ccpSub(pTouch->getLocation(), m_oMoveStart));
+        m_fMoveDelta = pTouch->getLocation().getDistance(m_oMoveStart);
+        m_fMoveR = -(pTouch->getLocation() - m_oMoveStart).getAngle();
         m_bMoveEnabled && (m_fTouchMovedDuration <= CONST_MAX_CAN_MOVE_DURATION && !isClickAction()) && (m_bCanMove = true);
     }
 }
 
-void CCWinLayer::ccTouchesCancelled( CCSet *pTouches, CCEvent *pEvent )
+void WinLayer::onTouchesCancelled(const std::vector<Touch*>& touches, cocos2d::Event* event)
 {
 }
 
-// CCTouchSprite
-CCTouchSprite::CCTouchSprite()
+// TouchSprite
+TouchSprite::TouchSprite()
 : m_state(kStateUngrabbed)
 {
 }
 
-CCTouchSprite* CCTouchSprite::createWithSpriteFrameName(const char *pszSpriteFrameName)
+TouchSprite* TouchSprite::createWithSpriteFrameName(const char* pszSpriteFrameName)
 {
-    CCSpriteFrame *pFrame = CCSpriteFrameCache::sharedSpriteFrameCache()->spriteFrameByName(pszSpriteFrameName);
+    SpriteFrame *pFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(pszSpriteFrameName);
     
 #if COCOS2D_DEBUG > 0
     char msg[256] = {0};
     sprintf(msg, "Invalid spriteFrameName: %s", pszSpriteFrameName);
-    CCAssert(pFrame != NULL, msg);
+    CCAssert(pFrame != nullptr, msg);
 #endif
     
     return createWithSpriteFrame(pFrame);
 }
 
-CCObject* CCTouchSprite::copyWithZone(CCZone *pZone)
+TouchSprite* TouchSprite::clone() const
 {
-    this->retain();
-    return this;
+    TouchSprite* ret = TouchSprite::createWithTexture(_texture);
+    ret->m_state = m_state;
+    ret->setPosition(getPosition());
+    ret->setAnchorPoint(getAnchorPoint());
+
+    return ret;
 }
 
-void CCTouchSprite::onEnter()
+void TouchSprite::onEnter()
 {
-    CCDirector::sharedDirector()->getTouchDispatcher()->addTargetedDelegate(this, 0, true);
-    CCSprite::onEnter();
+    Sprite::onEnter();
+
+    // Register Touch Event
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->setSwallowTouches(true);
+
+    listener->onTouchBegan = CC_CALLBACK_2(TouchSprite::onTouchBegan, this);
+    listener->onTouchMoved = CC_CALLBACK_2(TouchSprite::onTouchMoved, this);
+    listener->onTouchEnded = CC_CALLBACK_2(TouchSprite::onTouchEnded, this);
+
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
 
-void CCTouchSprite::onExit()
-{
-    CCDirector::sharedDirector()->getTouchDispatcher()->removeDelegate(this);
-    CCSprite::onExit();
-}    
-
-bool CCTouchSprite::ccTouchBegan(CCTouch* touch, CCEvent* event)
+bool TouchSprite::onTouchBegan(Touch* touch, Event* event)
 {
     if (m_state != kStateUngrabbed || !containsTouchLocation(touch))
     {
@@ -507,7 +527,7 @@ bool CCTouchSprite::ccTouchBegan(CCTouch* touch, CCEvent* event)
     return true;
 }
 
-void CCTouchSprite::ccTouchMoved(CCTouch* touch, CCEvent* event)
+void TouchSprite::onTouchMoved(Touch* touch, Event* event)
 {
     // If it weren't for the TouchDispatcher, you would need to keep a reference
     // to the touch from touchBegan and check that the current touch is the same
@@ -516,87 +536,77 @@ void CCTouchSprite::ccTouchMoved(CCTouch* touch, CCEvent* event)
     // you get CCSets instead of 1 UITouch, so you'd need to loop through the set
     // in each touchXXX method.
     
-    CCAssert(m_state == kStateGrabbed, "CCTouchSprite - Unexpected state!");    
+    CCAssert(m_state == kStateGrabbed, "TouchSprite - Unexpected state!");    
     
-    CCPoint touchPoint = touch->getLocation();
+    Point touchPoint = touch->getLocation();
     
-    setPosition( ccp(touchPoint.x, getPosition().y) );
+    setPosition(Point(touchPoint.x, getPosition().y));
 }
 
-void CCTouchSprite::ccTouchEnded(CCTouch* touch, CCEvent* event)
+void TouchSprite::onTouchEnded(Touch* touch, Event* event)
 {
-    CCAssert(m_state == kStateGrabbed, "CCTouchSprite - Unexpected state!");    
+    CCAssert(m_state == kStateGrabbed, "TouchSprite - Unexpected state!");    
     
     m_state = kStateUngrabbed;
 } 
 
-bool CCTouchSprite::containsTouchLocation(CCTouch* touch)
+bool TouchSprite::containsTouchLocation(Touch* touch)
 {
-    CCSize s = getTexture()->getContentSize();
-    CCRect rt(-s.width / 2, -s.height / 2, s.width, s.height);
+    Size s = getTexture()->getContentSize();
+    Rect rt(-s.width / 2, -s.height / 2, s.width, s.height);
     return rt.containsPoint(convertTouchToNodeSpaceAR(touch));
 }
 
-void CCTouchSprite::touchDelegateRetain()
+// TouchMaskLayer
+bool TouchMaskLayer::initWithColor(const Color4B& color, GLubyte disOpacity)
 {
-    this->retain();
-}
-
-void CCTouchSprite::touchDelegateRelease()
-{
-    this->release();
-}
-
-// CCTouchMaskLayer
-bool CCTouchMaskLayer::initWithColor( const ccColor4B& color, GLubyte disOpacity, int touchPriority )
-{
-    if (CCLayerColor::initWithColor(color) == false)
+    if (LayerColor::initWithColor(color) == false)
     {
         return false;
     }
 
     m_disOpacity = disOpacity;
 
-    setTouchMode(kCCTouchesOneByOne);
-    setTouchEnabled(false);
-    setTouchPriority(touchPriority);
+    // Register Touch Event
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->onTouchBegan = [](Touch*, Event*){ return true; };  //CC_CALLBACK_2(TouchMaskLayer::onTouchBegan, this);
+
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+    _touchListener = listener;
+
+    setMaskEnabled(false);
 
     return true;
 }
 
-void CCTouchMaskLayer::setMaskEnabled( bool enabled )
+void TouchMaskLayer::setMaskEnabled(bool enabled)
 {
     setOpacity(enabled ? m_disOpacity : 0);
-    setTouchEnabled(enabled);
+    DCAST(_touchListener, EventListenerTouchOneByOne*)->setSwallowTouches(enabled);
 }
 
-bool CCTouchMaskLayer::ccTouchBegan(CCTouch* touch, CCEvent* event)
-{
-    return true;
-}
-
-// CCEffect
-CCEffect::CCEffect()
-    : CONST_ACT_TAG(CKeyGen::nextKey())
+// Effect
+Effect::Effect()
+: CONST_ACT_TAG(CKeyGen::nextKey())
 {
 }
 
-CCEffect::~CCEffect()
+Effect::~Effect()
 {
 }
 
-bool CCEffect::initWithPath( const char* path, float delay )
+bool Effect::initWithPath(const char* path, float delay)
 {
-    CCSpriteFrameCache* fc = CCSpriteFrameCache::sharedSpriteFrameCache();
-    CCSpriteFrame* sf = NULL;
+    SpriteFrameCache* fc = SpriteFrameCache::getInstance();
+    SpriteFrame* sf = nullptr;
     bool res = false;
     char sz[256];
-    CCAnimation* pAni = NULL;
+    Animation* pAni = nullptr;
     for (int i = 0; ; ++i)
     {
         sprintf(sz, "%s/%02d.png", path, i);
-        sf = fc->spriteFrameByName(sz);
-        if (sf == NULL)
+        sf = fc->getSpriteFrameByName(sz);
+        if (sf == nullptr)
         {
             if (i == 0)
             {
@@ -606,169 +616,168 @@ bool CCEffect::initWithPath( const char* path, float delay )
         }
         if (!pAni)
         {
-            pAni = CCAnimation::create();
+            pAni = Animation::create();
             res = initWithSpriteFrame(sf);
         }
         pAni->addSpriteFrame(sf);
     }
 
     pAni->setDelayPerUnit(delay);
-    CCAnimationCache::sharedAnimationCache()->addAnimation(pAni, path);
+    AnimationCache::getInstance()->addAnimation(pAni, path);
     m_vecAnis.push_back(path);
 
     return res;
 }
 
-void CCEffect::play( int index /*= 0*/, float speed /*= 1.0f*/, int times /*= 1.0*/, CCObject* target /*= NULL*/, SEL_CallFuncN done /*= NULL*/ )
+void Effect::play(int index /*= 0*/, float speed /*= 1.0f*/, int times /*= 1.0*/, FiniteTimeAction* done /*= nullptr*/)
 {
     if (index >= (int)m_vecAnis.size())
     {
         return;
     }
-    CCAnimation* pAni = CCAnimationCache::sharedAnimationCache()->animationByName(m_vecAnis[index].c_str());
+    Animation* pAni = AnimationCache::getInstance()->getAnimation(m_vecAnis[index]);
 
-    CCActionInterval* actInner = CCRepeat::create(CCAnimate::create(pAni), times);
-    if (target != NULL && done != NULL)
+    ActionInterval* actInner = Repeat::create(Animate::create(pAni), times);
+    if (done != nullptr)
     {
-        actInner = CCSequence::createWithTwoActions(actInner, CCCallFuncN::create(target, done));
+        actInner = Sequence::createWithTwoActions(actInner, done);
     }
 
-    CCAction* act = CCSpeed::create(actInner, speed);
+    Action* act = Speed::create(actInner, speed);
     act->setTag(CONST_ACT_TAG);
     stop();
     runAction(act);
 }
 
-void CCEffect::playRelease( int index, float speed /*= 1.0f*/, int times /*= 1.0*/ )
+void Effect::playRelease(int index, float speed /*= 1.0f*/, int times /*= 1.0*/)
 {
     if (index >= (int)m_vecAnis.size())
     {
         return;
     }
-    CCAnimation* pAni = CCAnimationCache::sharedAnimationCache()->animationByName(m_vecAnis[index].c_str());
+    Animation* pAni = AnimationCache::getInstance()->getAnimation(m_vecAnis[index]);
 
-    CCAction* act = CCSpeed::create(CCSequence::createWithTwoActions(CCRepeat::create(CCAnimate::create(pAni), times), CCRemoveSelf::create()), speed);
+    Action* act = Speed::create(Sequence::createWithTwoActions(Repeat::create(Animate::create(pAni), times), RemoveSelf::create()), speed);
     act->setTag(CONST_ACT_TAG);
     stop();
     runAction(act);
 }
 
-void CCEffect::playForever( int index, float speed /*= 1.0f*/ )
+void Effect::playForever(int index, float speed /*= 1.0f*/)
 {
     if (index >= (int)m_vecAnis.size())
     {
         return;
     }
-    CCAnimation* pAni = CCAnimationCache::sharedAnimationCache()->animationByName(m_vecAnis[index].c_str());
+    Animation* pAni = AnimationCache::getInstance()->getAnimation(m_vecAnis[index]);
 
-    CCAction* act = CCSpeed::create(CCRepeatForever::create(CCAnimate::create(pAni)), speed);
+    Action* act = Speed::create(RepeatForever::create(Animate::create(pAni)), speed);
     act->setTag(CONST_ACT_TAG);
     stop();
     runAction(act);
 }
 
-CCAnimation* CCEffect::addAnimation( const char* path, float delay )
+Animation* Effect::addAnimation(const char* path, float delay)
 {
-    CCSpriteFrameCache* fc = CCSpriteFrameCache::sharedSpriteFrameCache();
-    CCSpriteFrame* sf = NULL;
+    SpriteFrameCache* fc = SpriteFrameCache::getInstance();
+    SpriteFrame* sf = nullptr;
     bool res = false;
     char sz[256];
-    CCAnimation* pAni = NULL;
+    Animation* pAni = nullptr;
     for (int i = 0; ; ++i)
     {
         sprintf(sz, "%s/%02d.png", path, i);
-        sf = fc->spriteFrameByName(sz);
-        if (sf == NULL)
+        sf = fc->getSpriteFrameByName(sz);
+        if (sf == nullptr)
         {
             if (i == 0)
             {
-                return NULL;
+                return nullptr;
             }
             break;
         }
         if (!pAni)
         {
-            pAni = CCAnimation::create();
+            pAni = Animation::create();
         }
         pAni->addSpriteFrame(sf);
     }
 
     pAni->setDelayPerUnit(delay);
-    CCAnimationCache::sharedAnimationCache()->addAnimation(pAni, path);
+    AnimationCache::getInstance()->addAnimation(pAni, path);
     m_vecAnis.push_back(path);
 
     return pAni;
 }
 
-void CCEffect::stop()
+void Effect::stop()
 {
     stopActionByTag(CONST_ACT_TAG);
 }
 
-// CCMenuEx
-CCMenuEx* CCMenuEx::create()
+// MenuEx
+MenuEx* MenuEx::create()
 {
-    return CCMenuEx::create(NULL, NULL);
+    return MenuEx::create(nullptr, nullptr);
 }
 
-CCMenuEx * CCMenuEx::create(CCMenuItem* item, ...)
+MenuEx* MenuEx::create(MenuItem* item, ...)
 {
     va_list args;
-    va_start(args,item);
+    va_start(args, item);
 
-    CCMenuEx *pRet = CCMenuEx::createWithItems(item, args);
+    auto ret = MenuEx::createWithItems(item, args);
 
     va_end(args);
 
-    return pRet;
+    return ret;
 }
 
-CCMenuEx* CCMenuEx::createWithArray(CCArray* pArrayOfItems)
+MenuEx* MenuEx::createWithArray(const Vector<MenuItem*>& arrayOfItems)
 {
-    CCMenuEx *pRet = new CCMenuEx();
-    if (pRet && pRet->initWithArray(pArrayOfItems))
+    auto ret = new MenuEx();
+    if (ret && ret->initWithArray(arrayOfItems))
     {
-        pRet->autorelease();
+        ret->autorelease();
     }
     else
     {
-        CC_SAFE_DELETE(pRet);
+        CC_SAFE_DELETE(ret);
     }
 
-    return pRet;
+    return ret;
 }
 
-CCMenuEx* CCMenuEx::createWithItems(CCMenuItem* item, va_list args)
+MenuEx* MenuEx::createWithItems(MenuItem* item, va_list args)
 {
-    CCArray* pArray = NULL;
-    if( item )
+    Vector<MenuItem*> items;
+    if (item)
     {
-        pArray = CCArray::create(item, NULL);
-        CCMenuItem *i = va_arg(args, CCMenuItem*);
-        while(i)
+        items.pushBack(item);
+        MenuItem *i = va_arg(args, MenuItem*);
+        while (i)
         {
-            pArray->addObject(i);
-            i = va_arg(args, CCMenuItem*);
+            items.pushBack(i);
+            i = va_arg(args, MenuItem*);
         }
     }
 
-    return CCMenuEx::createWithArray(pArray);
+    return MenuEx::createWithArray(items);
 }
 
-CCMenuEx* CCMenuEx::createWithItem(CCMenuItem* item)
+MenuEx* MenuEx::createWithItem(MenuItem* item)
 {
-    return CCMenuEx::create(item, NULL);
+    return MenuEx::create(item, nullptr);
 }
 
-bool CCMenuEx::ccTouchBegan( CCTouch* touch, CCEvent* event )
+bool MenuEx::onTouchBegan(Touch* touch, Event* event)
 {
-    CC_UNUSED_PARAM(event);
-    if (m_eState != kCCMenuStateWaiting || !isVisible() || !isEnabled())
+    if (_state != Menu::State::WAITING || !_visible || !_enabled)
     {
         return false;
     }
 
-    for (CCNode *c = this->m_pParent; c != NULL; c = c->getParent())
+    for (Node *c = this->_parent; c != nullptr; c = c->getParent())
     {
         if (c->isVisible() == false)
         {
@@ -776,88 +785,86 @@ bool CCMenuEx::ccTouchBegan( CCTouch* touch, CCEvent* event )
         }
     }
 
-    m_pSelectedItem = this->itemForTouchEx(touch);
-    if (m_pSelectedItem && m_pSelectedItem->isEnabled())
+    _selectedItem = this->getItemForTouchEx(touch);
+    if (_selectedItem && _selectedItem->isEnabled())
     {
-        m_eState = kCCMenuStateTrackingTouch;
-        m_pSelectedItem->selected();
+        _state = Menu::State::TRACKING_TOUCH;
+        _selectedItem->selected();
 
         return true;
     }
 
-    return m_pSelectedItem != NULL;
+    return _selectedItem != nullptr;
 }
 
-void CCMenuEx::ccTouchEnded( CCTouch* touch, CCEvent* event )
+void MenuEx::onTouchEnded(Touch* touch, Event* event)
 {
-    if (m_eState != kCCMenuStateTrackingTouch)
+    if (_state != Menu::State::TRACKING_TOUCH)
     {
         return;
     }
 
-    CCMenu::ccTouchEnded(touch, event);
+    Menu::onTouchEnded(touch, event);
 }
 
-void CCMenuEx::ccTouchCancelled( CCTouch *touch, CCEvent* event )
+void MenuEx::onTouchCancelled(Touch* touch, Event* event)
 {
-    if (m_eState != kCCMenuStateTrackingTouch)
+    if (_state != Menu::State::TRACKING_TOUCH)
     {
         return;
     }
 
-    CCMenu::ccTouchCancelled(touch, event);
+    Menu::onTouchCancelled(touch, event);
 }
 
-void CCMenuEx::ccTouchMoved( CCTouch* touch, CCEvent* event )
+void MenuEx::onTouchMoved(Touch* touch, Event* event)
 {
-    if (m_eState != kCCMenuStateTrackingTouch)
+    if (_state != Menu::State::TRACKING_TOUCH)
     {
         return;
     }
 
-    CCMenu::ccTouchMoved(touch, event);
+    Menu::onTouchMoved(touch, event);
 }
 
-CCMenuItem* CCMenuEx::itemForTouchEx( CCTouch * touch )
+MenuItem* MenuEx::getItemForTouchEx(Touch* touch)
 {
-    CCPoint touchLocation = touch->getLocation();
+    Point touchLocation = touch->getLocation();
 
-    if (m_pChildren && m_pChildren->count() > 0)
+    if (!_children.empty())
     {
-        CCObject* pObject = NULL;
-        CCARRAY_FOREACH(m_pChildren, pObject)
+        for (auto iter = _children.crbegin(); iter != _children.crend(); ++iter)
         {
-            CCMenuItem* pChild = dynamic_cast<CCMenuItem*>(pObject);
-            if (pChild && pChild->isVisible())
+            MenuItem* child = dynamic_cast<MenuItem*>(*iter);
+            if (child && child->isVisible())
             {
-                CCPoint local = pChild->convertToNodeSpace(touchLocation);
-                CCRect r = pChild->rect();
-                r.origin = CCPointZero;
+                Point local = child->convertToNodeSpace(touchLocation);
+                Rect r = child->rect();
+                r.origin = Point::ZERO;
 
                 if (r.containsPoint(local))
                 {
-                    return pChild;
+                    return child;
                 }
             }
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
-// CCButtonBase
-CCButtonBase::CCButtonBase()
-    : m_pTarget(NULL)
-    , m_iClickRetCode(0)
-    , m_iButtonIndex(0)
+// ButtonBase
+ButtonBase::ButtonBase()
+: m_iClickRetCode(0)
+, m_iButtonIndex(0)
 {
 }
 
-CCButtonBase::~CCButtonBase()
+ButtonBase::~ButtonBase()
 {
 }
 
-void CCButtonBase::onCDBlickDone(CCNode* pNode)
+void ButtonBase::onCDBlickDone(Node* pNode)
 {
     if (m_pBlink)
     {
@@ -865,104 +872,121 @@ void CCButtonBase::onCDBlickDone(CCNode* pNode)
     }
 }
 
-bool CCButtonBase::initWithFile( const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished )
+bool ButtonBase::initWithFile(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished)
 {
-    CCNode* pNormalSprite = NULL;
-    CCNode* pSelectedSprite = NULL;
-    CCNode* pDisabledSprite = NULL;
-    CCNode* pBlinkSprite = NULL;
-    CCNode* pMaskSprite = NULL;
+    Node* pNormalSprite = nullptr;
+    Node* pSelectedSprite = nullptr;
+    Node* pDisabledSprite = nullptr;
+    Node* pBlinkSprite = nullptr;
+    Node* pMaskSprite = nullptr;
 
-    pNormalImage && (pNormalSprite = CCSprite::create(pNormalImage));
-    pSelectedImage && (pSelectedSprite = CCSprite::create(pSelectedImage));
-    pDisabledImage && (pDisabledSprite = CCSprite::create(pDisabledImage));
-    pBlinkSprite && (pBlinkSprite = CCSprite::create(pBlinkImage));
-    pMaskSprite && (pMaskSprite = CCSprite::create(pMaskImage));
+    pNormalImage && (pNormalSprite = Sprite::create(pNormalImage));
+    pSelectedImage && (pSelectedSprite = Sprite::create(pSelectedImage));
+    pDisabledImage && (pDisabledSprite = Sprite::create(pDisabledImage));
+    pBlinkSprite && (pBlinkSprite = Sprite::create(pBlinkImage));
+    pMaskSprite && (pMaskSprite = Sprite::create(pMaskImage));
 
-    return initWithSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    return initWithSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, onClick, onFinished);
 }
 
-bool CCButtonBase::initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished)
+bool ButtonBase::initWithFrameName(const char* pNormalImage, const char* pSelectedImage, const char* pDisabledImage, const char* pBlinkImage, const char* pMaskImage, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished)
 {
-    CCNode* pNormalSprite = NULL;
-    CCNode* pSelectedSprite = NULL;
-    CCNode* pDisabledSprite = NULL;
-    CCNode* pBlinkSprite = NULL;
-    CCNode* pMaskSprite = NULL;
+    Node* pNormalSprite = nullptr;
+    Node* pSelectedSprite = nullptr;
+    Node* pDisabledSprite = nullptr;
+    Node* pBlinkSprite = nullptr;
+    Node* pMaskSprite = nullptr;
 
-    pNormalImage && (pNormalSprite = CCSprite::createWithSpriteFrameName(pNormalImage));
-    pSelectedImage && (pSelectedSprite = CCSprite::createWithSpriteFrameName(pSelectedImage));
-    pDisabledImage && (pDisabledSprite = CCSprite::createWithSpriteFrameName(pDisabledImage));
-    pBlinkSprite && (pBlinkSprite = CCSprite::createWithSpriteFrameName(pBlinkImage));
-    pMaskSprite && (pMaskSprite = CCSprite::createWithSpriteFrameName(pMaskImage));
+    pNormalImage && (pNormalSprite = Sprite::createWithSpriteFrameName(pNormalImage));
+    pSelectedImage && (pSelectedSprite = Sprite::createWithSpriteFrameName(pSelectedImage));
+    pDisabledImage && (pDisabledSprite = Sprite::createWithSpriteFrameName(pDisabledImage));
+    pBlinkSprite && (pBlinkSprite = Sprite::createWithSpriteFrameName(pBlinkImage));
+    pMaskSprite && (pMaskSprite = Sprite::createWithSpriteFrameName(pMaskImage));
 
-    return initWithSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, pTarget, pOnClick, pOnFinished);
+    return initWithSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, pBlinkSprite, pMaskSprite, fCoolDown, onClick, onFinished);
 }
 
-bool CCButtonBase::initWithSprite(CCNode* pNormalSprite, CCNode* pSelectedSprite, CCNode* pDisabledSprite, CCNode* pBlinkSprite, CCNode* pMaskSprite, float fCoolDown, CCObject* pTarget, SEL_MenuHandler pOnClick, SEL_MenuHandler pOnFinished)
+bool ButtonBase::initWithSprite(Node* pNormalSprite, Node* pSelectedSprite, Node* pDisabledSprite, Node* pBlinkSprite, Node* pMaskSprite, float fCoolDown, const ccMenuCallback& onClick, const ccMenuCallback& onFinished)
 {
-    if (!initWithNormalSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, this, menu_selector(CCButtonBase::onClick)))
+    if (!initWithNormalSprite(pNormalSprite, pSelectedSprite, pDisabledSprite, CC_CALLBACK_1(ButtonBase::onClick, this)))
     {
         return false;
     }
 
-    //pNormalSprite->setZOrder((pDisabledSprite != NULL ? pDisabledSprite->getZOrder() : pNormalSprite->getZOrder()) + 1);
-
-    m_pTarget = pTarget;
-    m_pOnClick = pOnClick;
-    m_pOnFinished = pOnFinished;
+    m_onClick = onClick;
+    m_onFinished = onFinished;
     setCoolDown(fCoolDown);
-    CCSize sz = getContentSize();
-    CCPoint oAp = getAnchorPointInPoints();
+    Size sz = getContentSize();
+    Point oAp = getAnchorPointInPoints();
 
     // Create ProgressTimer
-    m_pPt = CCProgressTimer::create((CCSprite*)getNormalImage());
-    addChild(m_pPt);
+    m_pPt = ProgressTimer::create((Sprite*)getNormalImage());
+    addChild(m_pPt, 3);
     m_pPt->setPosition(oAp);
     m_pPt->setVisible(false);
-    m_pPt->setType(kCCProgressTimerTypeRadial);
+    m_pPt->setType(ProgressTimer::Type::RADIAL);
 
     // Create Blink Image
-    if (pBlinkSprite != NULL)
+    if (pBlinkSprite != nullptr)
     {
         m_pBlink = pBlinkSprite;
-        addChild(m_pBlink, 10);
+        addChild(m_pBlink, 2);
         m_pBlink->setPosition(oAp);
         m_pBlink->setVisible(false);
     }
     else
     {
-        m_pBlink = NULL;
+        m_pBlink = nullptr;
     }
 
-    if (pMaskSprite != NULL)
+    if (pMaskSprite != nullptr)
     {
         m_pMask = pMaskSprite;
-        addChild(m_pMask);
+        addChild(m_pMask, 1);
         m_pMask->setPosition(oAp);
         m_pMask->setVisible(false);
     }
     else
     {
-        m_pMask = NULL;
+        m_pMask = nullptr;
     }
 
     // Create Label
-    //m_pLabel = CCLabelTTF::create("5", "", 24, CCSizeMake(sz.width - 8, 32), kCCTextAlignmentRight, kCCVerticalTextAlignmentBottom); //CCLabelBMFont::create("88", "fonts/futura-48.fnt", sz.width - 6, kCCTextAlignmentRight);//, CCSizeMake(getContentSize().width - 6, 16.0), kCCTextAlignmentRight, "", 16.0
+    //m_pLabel = Label::create("5", "", 24, Size(sz.width - 8, 32), kCCTextAlignmentRight, kCCVerticalTextAlignmentBottom); //LabelBMFont::create("88", "fonts/futura-48.fnt", sz.width - 6, kCCTextAlignmentRight);//, Size(getContentSize().width - 6, 16.0), kCCTextAlignmentRight, "", 16.0
     //addChild(m_pLabel);
-    //CCSize szLbl = m_pLabel->getContentSize();
-    //m_pLabel->setPosition(ccp(sz.width - szLbl.width / 2 - 4, szLbl.height / 2));
+    //Size szLbl = m_pLabel->getContentSize();
+    //m_pLabel->setPosition(Point(sz.width - szLbl.width / 2 - 4, szLbl.height / 2));
     //m_pLabel->setColor(ccRED);
 
     return true;
 }
 
-void CCButtonBase::onClick(CCObject* pObject)
+void ButtonBase::activate()
+{
+    if (!isEnabled())
+    {
+        return;
+    }
+
+    MenuItemImage::activate();
+}
+
+void ButtonBase::unselected()
+{
+    MenuItemImage::unselected();
+
+    if (!isEnabled())
+    {
+        updateImagesVisibility();
+    }
+}
+
+void ButtonBase::onClick(Ref* pObject)
 {
     setClickRetCode(0);
-    if (m_pTarget != NULL && m_pOnClick != NULL)
+    if (m_onClick)
     {
-        (m_pTarget->*m_pOnClick)(this);
+        m_onClick(this);
     }
 
     if (getClickRetCode() < 0)
@@ -970,14 +994,14 @@ void CCButtonBase::onClick(CCObject* pObject)
         return;
     }
 
-    coolDown();  // for test
+    //coolDown();  // for test
 }
 
-void CCButtonBase::onCoolDownDone(CCNode* pNode)
+void ButtonBase::onCoolDownDone(Node* pNode)
 {
     if (getCoolDown())
     {
-        if (m_pMask != NULL)
+        if (m_pMask != nullptr)
         {
             m_pMask->setVisible(false);
         }
@@ -985,25 +1009,25 @@ void CCButtonBase::onCoolDownDone(CCNode* pNode)
         m_pPt->setVisible(false);
         this->setEnabled(true);
 
-        if (m_pBlink != NULL)
+        if (m_pBlink != nullptr)
         {
             m_pBlink->setVisible(true);
-            m_pBlink->runAction(CCSequence::create(CCFadeIn::create(0.25f), CCFadeOut::create(0.25f), CCCallFuncN::create(this, callfuncN_selector(CCButtonBase::onCDBlickDone)), NULL));
+            m_pBlink->runAction(Sequence::create(FadeIn::create(0.25f), FadeOut::create(0.25f), CallFuncN::create(CC_CALLBACK_1(ButtonBase::onCDBlickDone, this)), nullptr));
         }
     }
 
-    if (m_pTarget != NULL && m_pOnFinished != NULL)
+    if (m_onFinished)
     {
-        (m_pTarget->*m_pOnFinished)(this);
+        m_onFinished(this);
     }
 }
 
-void CCButtonBase::coolDown(float fFromPercent)
+void ButtonBase::coolDown(float fFromPercent)
 {
     if (getCoolDown())
     {
         float fCoolDownReal = getCoolDown() * (100.0 - fFromPercent) / 100.0;
-        if (m_pMask != NULL)
+        if (m_pMask != nullptr)
         {
             m_pMask->setVisible(true);
         }
@@ -1011,23 +1035,23 @@ void CCButtonBase::coolDown(float fFromPercent)
         m_pPt->setVisible(true);
         this->setEnabled(false);
 
-        if (m_pDisabledImage != NULL)
+        if (_disabledImage != nullptr)
         {
-            m_pDisabledImage->stopAllActions();
-            DCAST(m_pDisabledImage, CCSprite*)->setOpacity(0x50 + (0xFF - 0x50) * fFromPercent / 100.0);
-            m_pDisabledImage->runAction(CCFadeTo::create(fCoolDownReal, 0xFF));
+            _disabledImage->stopAllActions();
+            DCAST(_disabledImage, Sprite*)->setOpacity(0x50 + (0xFF - 0x50) * fFromPercent / 100.0);
+            _disabledImage->runAction(FadeTo::create(fCoolDownReal, 0xFF));
         }
         
 
         //m_pPt->setOpacity(0x7F + (0xFF - 0x7F) * fFromPercent / 100.0);
-        CCProgressFromTo* pPro = CCProgressFromTo::create(fCoolDownReal, fFromPercent, 100.0f);
+        ProgressFromTo* pPro = ProgressFromTo::create(fCoolDownReal, fFromPercent, 100.0f);
 
         m_pPt->stopAllActions();
         m_pPt->runAction(
-            //CCSpawn::createWithTwoActions(
-            //CCFadeTo::create(fCoolDownReal, 0xFF),
-            CCSequence::create(pPro, CCCallFuncN::create(this, callfuncN_selector(CCButtonBase::onCoolDownDone)),
-            NULL));
+            //Spawn::createWithTwoActions(
+            //FadeTo::create(fCoolDownReal, 0xFF),
+            Sequence::create(pPro, CallFuncN::create(CC_CALLBACK_1(ButtonBase::onCoolDownDone, this)),
+            nullptr));
     }
     else
     {
@@ -1035,37 +1059,35 @@ void CCButtonBase::coolDown(float fFromPercent)
     }
 }
 
-float CCButtonBase::getPercentage() const
+float ButtonBase::getPercentage() const
 {
     return m_pPt->getPercentage();
 }
 
-// CCButtonNormal
-CCButtonNormal::CCButtonNormal()
-    : m_fCoolDown(0.0f)
+// ButtonNormal
+ButtonNormal::ButtonNormal()
+: m_fCoolDown(0.0f)
 {
 }
 
-// CCButtonPanel
-CCButtonPanel::CCButtonPanel()
-    : m_iRow(0)
-    , m_iColumn(0)
-    , m_fButtonWidth(0.0f)
-    , m_fButtonHeight(0.0f)
-    , m_fOffsetX(0.0f)
-    , m_fOffsetY(0.0f)
-    , m_fInnerBorderWidth(0.0f)
-    , m_fBorderWidth(0.0f)
-    , m_pInnerMenu(NULL)
-    , m_pBackground(NULL)
-    , m_iOwnerKey(0)
-    , m_ppBtnPos(NULL)
-    , m_pRetain(NULL)
-    , m_iCount(0)
+// ButtonPanel
+ButtonPanel::ButtonPanel()
+: m_iRow(0)
+, m_iColumn(0)
+, m_fButtonWidth(0.0f)
+, m_fButtonHeight(0.0f)
+, m_fHorBorderWidth(0.0f)
+, m_fVerBorderWidth(0.0f)
+, m_pInnerMenu(nullptr)
+, m_pBackground(nullptr)
+, m_iOwnerKey(0)
+, m_ppBtnPos(nullptr)
+, m_pRetain(nullptr)
+, m_iCount(0)
 {
 }
 
-CCButtonPanel::~CCButtonPanel()
+ButtonPanel::~ButtonPanel()
 {
     if (m_ppBtnPos)
     {
@@ -1074,38 +1096,38 @@ CCButtonPanel::~CCButtonPanel()
     CC_SAFE_RELEASE(m_pRetain);
 }
 
-const float CCButtonPanel::CONST_ACTION_DURATION = 0.25;
+const float ButtonPanel::CONST_ACTION_DURATION = 0.25;
 
-bool CCButtonPanel::init( int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fBorderWidth, float fInnerBorderWidth, CCSprite* pBackground, float fOffsetX, float fOffsetY )
+bool ButtonPanel::init(int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fHorBorderWidth, float fVerBorderWidth, Sprite* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY)
 {
     m_iRow = iRow;
     m_iColumn = iColumn;
     m_fButtonWidth = fButtonWidth;
     m_fButtonHeight = fButtonHeight;
-    m_fBorderWidth = fBorderWidth;
-    m_fInnerBorderWidth = fInnerBorderWidth;
-    m_fOffsetX = fOffsetX;
-    m_fOffsetY = fOffsetY;
+    m_fHorBorderWidth = fHorBorderWidth;
+    m_fVerBorderWidth = fVerBorderWidth;
+
+    setAnchorPoint(Point(0.5f, 0.5f));
+    Size oSz = Size(m_fHorBorderWidth * (m_iColumn - 1) + m_fButtonWidth * m_iColumn, m_fVerBorderWidth * (m_iRow - 1) + m_fButtonHeight * m_iRow);
+    setContentSize(oSz);
+
     if (pBackground)
     {
         m_pBackground = pBackground;
         addChild(m_pBackground);
-        m_pBackground->setPosition(ccpAdd(getAnchorPointInPoints(), ccp(fOffsetX, fOffsetY)));
+        m_pBackground->setPosition(getAnchorPointInPoints() + Point(fBackgroundOffsetX, fBackgroundOffsetY));
     }
     else
     {
-        m_pBackground = NULL;
+        m_pBackground = nullptr;
     }
-
-    CCSize oSz = CCSizeMake(m_fBorderWidth * 2 + m_fInnerBorderWidth * (m_iColumn - 1) + m_fButtonWidth * m_iColumn, m_fBorderWidth * 2 + m_fInnerBorderWidth * (m_iRow - 1) + m_fButtonHeight * m_iRow);
-    setContentSize(oSz);
 
     m_iOwnerKey = 0;
 
-    m_pInnerMenu = CCMenuEx::create();
+    m_pInnerMenu = MenuEx::create();
     addChild(m_pInnerMenu);
     m_pInnerMenu->setContentSize(getContentSize());
-    m_pInnerMenu->setPosition(CCPointZero);
+    m_pInnerMenu->setPosition(Point::ZERO);
 
     if (m_ppBtnPos)
     {
@@ -1114,8 +1136,8 @@ bool CCButtonPanel::init( int iRow, int iColumn, float fButtonWidth, float fButt
     CC_SAFE_RELEASE(m_pRetain);
 
     size_t uCount = iRow * iColumn;
-    m_ppBtnPos = new CCButtonBase*[uCount];
-    memset(m_ppBtnPos, 0, sizeof(CCButtonBase*) * uCount);
+    m_ppBtnPos = new ButtonBase*[uCount];
+    memset(m_ppBtnPos, 0, sizeof(ButtonBase*) * uCount);
 
     m_iCount = 0;
 
@@ -1124,11 +1146,11 @@ bool CCButtonPanel::init( int iRow, int iColumn, float fButtonWidth, float fButt
     return true;
 }
 
-void CCButtonPanel::addButton( CCButtonBase* pButton, int iIndex )
+void ButtonPanel::addButton(ButtonBase* pButton, int iIndex)
 {
     CCAssert(iIndex < m_iRow * m_iColumn, "Break Bounds");
     CCAssert(m_iCount <= m_iRow * m_iColumn, "already full");
-    CCButtonBase* pBtn = getButton(iIndex);
+    ButtonBase* pBtn = getButton(iIndex);
     if (pBtn)
     {
         delButton(iIndex);
@@ -1143,32 +1165,32 @@ void CCButtonPanel::addButton( CCButtonBase* pButton, int iIndex )
     ++m_iCount;
 }
 
-void CCButtonPanel::addButton( CCButtonBase* pButton, int iX, int iY )
+void ButtonPanel::addButton(ButtonBase* pButton, int iX, int iY)
 {
     CCAssert(iY < m_iRow && iX < m_iColumn, "Break Bounds");
     addButton(pButton, toIndex(iX, iY));
 }
 
-void CCButtonPanel::delButton( int iIndex )
+void ButtonPanel::delButton(int iIndex)
 {
     --m_iCount;
     m_pInnerMenu->removeChild(m_ppBtnPos[iIndex], true);
-    m_ppBtnPos[iIndex] = NULL;
+    m_ppBtnPos[iIndex] = nullptr;
 }
-void CCButtonPanel::delButton( CCButtonBase* pButton )
+void ButtonPanel::delButton(ButtonBase* pButton)
 {
     int iIndex = getButtonIndex(pButton);
     CCAssert(iIndex >= 0, "button not found");
     delButton(iIndex);
 }
 
-void CCButtonPanel::delButton(int iX, int iY)
+void ButtonPanel::delButton(int iX, int iY)
 {
     CCAssert(iY < m_iRow && iX < m_iColumn, "Break Bounds");
     delButton(toIndex(iX, iY));
 }
 
-int CCButtonPanel::allotSlot( ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/ )
+int ButtonPanel::allotSlot(ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
 {
     bool bY = (eVer == kBottomToTop);
     bool bX = (eHor == kLeftToRight);
@@ -1182,7 +1204,7 @@ int CCButtonPanel::allotSlot( ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONT
     return allotSlot(iStartX, iStartY, iEndX, iEndY, eVer, eHor);
 }
 
-int CCButtonPanel::allotSlot( int iStartX, int iStartY, int iEndX, int iEndY, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor )
+int ButtonPanel::allotSlot(int iStartX, int iStartY, int iEndX, int iEndY, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor)
 {
     bool bY = (eVer == kBottomToTop);
     bool bX = (eHor == kLeftToRight);
@@ -1208,7 +1230,7 @@ int CCButtonPanel::allotSlot( int iStartX, int iStartY, int iEndX, int iEndY, AD
     return -1;
 }
 
-void CCButtonPanel::clearUpSlot( ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/ )
+void ButtonPanel::clearUpSlot(ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
 {
     bool bY = (eVer == kBottomToTop);
     bool bX = (eHor == kLeftToRight);
@@ -1251,18 +1273,32 @@ void CCButtonPanel::clearUpSlot( ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZ
     }
 }
 
-CCButtonBase* CCButtonPanel::getButton(int iX, int iY) const
+ButtonBase* ButtonPanel::getButton(int iX, int iY) const
 {
     return getButton(toIndex(iX, iY));
 }
 
-CCButtonBase* CCButtonPanel::getButton( int iIndex ) const
+ButtonBase* ButtonPanel::getButton(int iIndex) const
 {
     CCAssert(iIndex < m_iRow * m_iColumn, "Break Bounds");
     return m_ppBtnPos[iIndex];
 }
 
-int CCButtonPanel::getButtonIndex(CCButtonBase* pButton) const
+ButtonBase* ButtonPanel::getButton(const function<bool(ButtonBase*)>& match) const
+{
+    int n = m_iRow * m_iColumn;
+    for (int i = 0; i < n; ++i)
+    {
+        if (m_ppBtnPos[i] && match(m_ppBtnPos[i]))
+        {
+            return m_ppBtnPos[i];
+        }
+    }
+
+    return nullptr;
+}
+
+int ButtonPanel::getButtonIndex(ButtonBase* pButton) const
 {
     int n = m_iRow * m_iColumn;
     for (int i = 0; i < n; ++i)
@@ -1276,69 +1312,71 @@ int CCButtonPanel::getButtonIndex(CCButtonBase* pButton) const
     return -1;
 }
 
-bool CCButtonPanel::isFull()
+bool ButtonPanel::isFull()
 {
     return m_iCount == m_iRow * m_iColumn;
 }
 
-int CCButtonPanel::index2Y( int iIndex ) const
+int ButtonPanel::index2Y(int iIndex) const
 {
     return iIndex / m_iColumn;
 }
 
-int CCButtonPanel::index2X( int iIndex ) const
+int ButtonPanel::index2X(int iIndex) const
 {
     return iIndex % m_iColumn;
 }
 
-void CCButtonPanel::retainButton( CCButtonBase* pButton )
+void ButtonPanel::retainButton(ButtonBase* pButton)
 {
     CC_SAFE_RETAIN(pButton);
     CC_SAFE_RELEASE(m_pRetain);
     m_pRetain = pButton;
 }
 
-CCButtonBase* CCButtonPanel::getRetainButton() const
+ButtonBase* ButtonPanel::getRetainButton() const
 {
     return m_pRetain;
 }
 
-int CCButtonPanel::toIndex( int iX, int iY ) const
+int ButtonPanel::toIndex(int iX, int iY) const
 {
     return iY * m_iColumn + iX;
 }
 
-void CCButtonPanel::addButtonEx( CCButtonBase* pButton, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/ )
+void ButtonPanel::addButtonEx(ButtonBase* pButton, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
 {
     addButton(pButton, allotSlot(eVer, eHor));
 }
 
-void CCButtonPanel::moveButton( int iIndexSrc, int iIndexDst )
+void ButtonPanel::moveButton(int iIndexSrc, int iIndexDst)
 {
-    CCButtonBase* pSrc = getButton(iIndexSrc);
+    ButtonBase* pSrc = getButton(iIndexSrc);
     m_ppBtnPos[iIndexDst] = pSrc;
-    m_ppBtnPos[iIndexSrc] = NULL;
+    m_ppBtnPos[iIndexSrc] = nullptr;
     pSrc->setPosition(index2Point(iIndexDst));
 }
 
-CCPoint CCButtonPanel::index2Point( int iIndex )
+Point ButtonPanel::index2Point(int iIndex)
 {
-    const CCSize& roSz = getContentSize();
+    const Size& roSz = getContentSize();
     int iX = index2X(iIndex);
     int iY = index2Y(iIndex);
-    return ccp(iX * (m_fButtonWidth + m_fInnerBorderWidth) - roSz.width / 2 + m_fBorderWidth + m_fButtonWidth / 2, iY * (m_fButtonHeight + m_fInnerBorderWidth) - roSz.height / 2 + m_fBorderWidth + m_fButtonHeight / 2);
+    return Point(
+        m_fButtonWidth * 0.5 + (m_fButtonWidth + m_fHorBorderWidth) * iX,
+        m_fButtonHeight * 0.5 + (m_fButtonHeight + m_fVerBorderWidth) * iY);
 }
 
-void CCButtonPanel::pushAction( const ACTION_NODE& roAct )
+void ButtonPanel::pushAction(const ACTION_NODE& roAct)
 {
     m_lstActs.push_back(roAct);
     if (m_lstActs.size() == 1)
     {
-        onPrevActEnd(NULL);
+        onPrevActEnd(nullptr);
     }
 }
 
-void CCButtonPanel::onPrevActEnd( CCNode* pNode )
+void ButtonPanel::onPrevActEnd(Node* pNode)
 {
     // 动作前半段，上一个动作即将结束，进行一些收尾工作
     CCAssert(!m_lstActs.empty(), "cannot be empty");
@@ -1395,24 +1433,24 @@ void CCButtonPanel::onPrevActEnd( CCNode* pNode )
         addButton(rNode.stAdd.pBtn, rNode.stAdd.iIndex);
         CC_SAFE_RELEASE(rNode.stAdd.pBtn);
         rNode.stAdd.pBtn->setOpacity(0);
-        rNode.stAdd.pBtn->runAction(CCSequence::create(CCFadeIn::create(CONST_ACTION_DURATION), NULL));
+        rNode.stAdd.pBtn->runAction(Sequence::create(FadeIn::create(CONST_ACTION_DURATION), nullptr));
         onPrevActEnd(rNode.stAdd.pBtn);
         break;
 
     case kDel:
         rNode.stDel.pBtn->stopAllActions();
-        rNode.stDel.pBtn->runAction(CCSequence::create(CCFadeOut::create(CONST_ACTION_DURATION), CCCallFuncN::create(this, callfuncN_selector(CCButtonPanel::onPrevActEnd)), NULL));
+        rNode.stDel.pBtn->runAction(Sequence::create(FadeOut::create(CONST_ACTION_DURATION), CallFuncN::create(CC_CALLBACK_1(ButtonPanel::onPrevActEnd, this)), nullptr));
         break;
 
     case kMove:
-        rNode.stMove.pBtn->runAction(CCSequence::create(CCMoveTo::create(CONST_ACTION_DURATION, index2Point(rNode.stMove.iIndexDst)), CCCallFuncN::create(this, callfuncN_selector(CCButtonPanel::onPrevActEnd)), NULL));
+        rNode.stMove.pBtn->runAction(Sequence::create(MoveTo::create(CONST_ACTION_DURATION, index2Point(rNode.stMove.iIndexDst)), CCCallFuncN::create(CC_CALLBACK_1(ButtonPanel::onPrevActEnd, this)), nullptr));
         break;
 
     case kAddEx:
         addButton(rNode.stAddEx.pBtn, allotSlot(rNode.stAddEx.eVer, rNode.stAddEx.eHor));
         CC_SAFE_RELEASE(rNode.stAddEx.pBtn);
         rNode.stAddEx.pBtn->setOpacity(0);
-        rNode.stAddEx.pBtn->runAction(CCSequence::create(CCFadeIn::create(CONST_ACTION_DURATION), NULL));
+        rNode.stAddEx.pBtn->runAction(Sequence::create(FadeIn::create(CONST_ACTION_DURATION), nullptr));
         onPrevActEnd(rNode.stAddEx.pBtn);
         break;
 
@@ -1432,7 +1470,7 @@ void CCButtonPanel::onPrevActEnd( CCNode* pNode )
 
             int iMove = 0;
             m_lstActs.pop_front();
-            CCButtonBase* pBtn;
+            ButtonBase* pBtn;
             int iEmpty = -1;
             int iIndex;
             for (int y = iStartY; bY ? (y <= iEndY) : (y >= iEndY); y += iY)
@@ -1449,12 +1487,12 @@ void CCButtonPanel::onPrevActEnd( CCNode* pNode )
                         {
                             // 遇到按钮后且前面有空槽，移动按钮
                             m_ppBtnPos[iEmpty] = pBtn;
-                            m_ppBtnPos[iIndex] = NULL;
+                            m_ppBtnPos[iIndex] = nullptr;
 
                             m_lstActs.push_front(ACTION_NODE()); // empty action
                             ++iMove;
 
-                            pBtn->runAction(CCSequence::create(CCMoveTo::create(CONST_ACTION_DURATION, index2Point(iEmpty)), CCCallFuncN::create(this, callfuncN_selector(CCButtonPanel::onPrevActEnd)), NULL));
+                            pBtn->runAction(Sequence::create(MoveTo::create(CONST_ACTION_DURATION, index2Point(iEmpty)), CCCallFuncN::create(CC_CALLBACK_1(ButtonPanel::onPrevActEnd, this)), nullptr));
                             // 在前面找一块新空槽
                             iEmpty = allotSlot(index2X(iEmpty), index2Y(iEmpty), x, y, rNode.stClearUp.eVer, rNode.stClearUp.eHor);
                         }
@@ -1472,7 +1510,7 @@ void CCButtonPanel::onPrevActEnd( CCNode* pNode )
 
             if (!iMove && !m_lstActs.empty())
             {
-                onPrevActEnd((CCNode*)(1));
+                onPrevActEnd((Node*)(1));
             }
         }
 
@@ -1483,58 +1521,58 @@ void CCButtonPanel::onPrevActEnd( CCNode* pNode )
     }
 }
 
-void CCButtonPanel::pushAddButtonAction( CCButtonBase* pButton, int iIndex )
+void ButtonPanel::pushAddButtonAction(ButtonBase* pButton, int iIndex)
 {
     CC_SAFE_RETAIN(pButton);
     pushAction(ACTION_NODE(pButton, iIndex));
 }
 
-void CCButtonPanel::pushDelButtonAction( int iIndex, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/, bool bClearUp /*= true*/ )
+void ButtonPanel::pushDelButtonAction(int iIndex, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/, bool bClearUp /*= true*/)
 {
     ACTION_NODE stNode(iIndex, eVer, eHor, bClearUp);
     stNode.stDel.pBtn = getButton(iIndex);
     pushAction(stNode);
 }
 
-void CCButtonPanel::pushMoveButtonAction( int iIndexSrc, int iIndexDst )
+void ButtonPanel::pushMoveButtonAction(int iIndexSrc, int iIndexDst)
 {
     ACTION_NODE stNode(iIndexSrc, iIndexDst);
     stNode.stMove.pBtn = getButton(iIndexSrc);
     pushAction(stNode);
 }
 
-void CCButtonPanel::pushAddButtonExAction( CCButtonBase* pButton, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/ )
+void ButtonPanel::pushAddButtonExAction(ButtonBase* pButton, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
 {
     CC_SAFE_RETAIN(pButton);
     pushAction(ACTION_NODE(pButton, eVer, eHor));
 }
 
-void CCButtonPanel::pushClearUpSlotAction( ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/ )
+void ButtonPanel::pushClearUpSlotAction(ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
 {
     pushAction(ACTION_NODE(eVer, eHor));
 }
 
-int CCButtonPanel::getMaxCount() const
+int ButtonPanel::getMaxCount() const
 {
     return m_iRow * m_iColumn;
 }
 
-int CCButtonPanel::getCount() const
+int ButtonPanel::getCount() const
 {
     return m_iCount;
 }
 
-// CCPopPanel
-CCPopPanel::CCPopPanel()
-    : m_mn(NULL)
+// PopPanel
+PopPanel::PopPanel()
+: m_mn(nullptr)
 {
 }
 
-bool CCPopPanel::initWithSize( const CCSize& size )
+bool PopPanel::initWithSize(const Size& size)
 {
-    setAnchorPoint(ccp(0.5f, 0.5f));
+    setAnchorPoint(Point(0.5f, 0.5f));
     setContentSize(size);
-    m_mn = CCMenuEx::create();
+    m_mn = MenuEx::create();
     addChild(m_mn, 10);
 
     setCascadeOpacityEnabled(true);
@@ -1542,11 +1580,11 @@ bool CCPopPanel::initWithSize( const CCSize& size )
     return true;
 }
 
-bool CCPopPanel::initWithBackground( CCSprite* background )
+bool PopPanel::initWithBackground(Sprite* background)
 {
-    setAnchorPoint(ccp(0.5f, 0.5f));
+    setAnchorPoint(Point(0.5f, 0.5f));
     setContentSize(background->getContentSize());
-    m_mn = CCMenuEx::create();
+    m_mn = MenuEx::create();
     addChild(m_mn, 10);
 
     addChild(background);
@@ -1557,13 +1595,13 @@ bool CCPopPanel::initWithBackground( CCSprite* background )
     return true;
 }
 
-void CCPopPanel::setBackground( CCSprite* background, bool tile )
+void PopPanel::setBackground(Sprite* background, bool tile)
 {
     addChild(background);
     background->setPosition(getAnchorPointInPoints());
 
-    const CCSize& bgSz = background->getContentSize();
-    const CCSize& sz = getContentSize();
+    const Size& bgSz = background->getContentSize();
+    const Size& sz = getContentSize();
     if (tile)
     {
         background->setScaleX(sz.width / bgSz.width);
@@ -1575,48 +1613,63 @@ void CCPopPanel::setBackground( CCSprite* background, bool tile )
     }
 }
 
-void CCPopPanel::addButton( CCMenuItem* mi )
+void PopPanel::addButton(MenuItem* mi)
 {
     m_mn->addChild(mi);
 }
 
-void CCPopPanel::onClickClose( CCObject* obj )
+void PopPanel::onClickClose(Ref* obj)
 {
     hide();
 }
 
-void CCPopPanel::show()
+void PopPanel::show()
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
-    runAction(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height * 0.5)), CCSequence::createWithTwoActions(CCDelayTime::create(0.25f), CCFadeIn::create(0.25f)))));
+    static Size wsz = Director::getInstance()->getVisibleSize();
+    runAction(EaseExponentialOut::create(Spawn::createWithTwoActions(MoveTo::create(0.5f, Point(wsz.width * 0.5, wsz.height * 0.5)), Sequence::createWithTwoActions(DelayTime::create(0.25f), FadeIn::create(0.25f)))));
 }
 
-void CCPopPanel::hide()
+void PopPanel::hide()
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     stopAllActions();
-    runAction(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.5f, ccp(wsz.width * 0.5, wsz.height + getContentSize().height * getScaleY() * 0.5)), CCSequence::createWithTwoActions(CCDelayTime::create(0.25f), CCFadeOut::create(0.25f)))));
+    runAction(EaseExponentialOut::create(Spawn::createWithTwoActions(MoveTo::create(0.5f, Point(wsz.width * 0.5, wsz.height + getContentSize().height * getScaleY() * 0.5)), Sequence::createWithTwoActions(DelayTime::create(0.25f), FadeOut::create(0.25f)))));
 }
 
-// CCUtils
-CCImage* CCUtils::nodeToImage( CCNode* node )
+// Utils
+Image* Utils::nodeToImage(Node* node)
 {
-    CCRenderTexture rt;
-    rt.initWithWidthAndHeight(node->getContentSize().width, node->getContentSize().height, kTexture2DPixelFormat_RGBA8888);
+    static Size rsz;
+    static RenderTexture* rt = nullptr;
+    if (rt != nullptr && !node->getContentSize().equals(rsz))
+    {
+        rt->release();
+        rt = nullptr;
+    }
 
-    CCPoint pos = node->getPosition();
+    if (rt == nullptr)
+    {
+        rsz = node->getContentSize();
+        rt = RenderTexture::create(rsz.width, rsz.height, Texture2D::PixelFormat::RGBA8888);
+        rt->retain();
+        rt->setKeepMatrix(true);
+    }
+    
+    Point pos = node->getPosition();
     node->setPosition(node->getAnchorPointInPoints());
-    rt.begin();
+    //node->setPosition(Point(rsz.width * 0.5, rsz.height * 0.5));
+    rt->beginWithClear(0.0f, 0.0f, 0.0f, 0.0f);
     node->visit();
-    rt.end();
+    rt->end();
+    Director::getInstance()->getRenderer()->render();
     node->setPosition(pos);
 
-    return rt.newCCImage();
+    return rt->newImage();
 }
 
-CCImage* CCUtils::transformImage( CCImage* image, FUNC_TRAN_CCC4 funcTransform )
+Image* Utils::transformImage(Image* image, const FUNC_TRAN& funcTransform)
 {
-    ccColor4B* data = (ccColor4B*)image->getData();
+    Color4B* data = (Color4B*)image->getData();
     
     GLushort w = image->getWidth();
     GLushort h = image->getHeight();
@@ -1633,44 +1686,52 @@ CCImage* CCUtils::transformImage( CCImage* image, FUNC_TRAN_CCC4 funcTransform )
     return image;
 }
 
-bool CCUtils::imageToFile( CCImage* image, const char* file )
+Texture2D* Utils::nodeToTexture(Node* node, const FUNC_TRAN& funcTransform)
 {
-    return image->saveToFile(CCFileUtils::sharedFileUtils()->fullPathForFilename(file).c_str(), false);
-}
+    auto image = nodeToImage(node);
 
-CCTexture2D* CCUtils::nodeToTexture( CCNode* node, FUNC_TRAN_CCC4 funcTransform )
-{
-    CCImage* image = nodeToImage(node);
-    if (funcTransform != NULL)
+    if (funcTransform != nullptr)
     {
         transformImage(image, funcTransform);
     }
 
-    CCTexture2D* ret = new CCTexture2D;
+    auto ret = new Texture2D;
     ret->initWithImage(image);
     delete image;
 
     return ret;
 }
 
-bool CCUtils::nodeToFile( CCNode* node, const char* file, FUNC_TRAN_CCC4 funcTransform /*= NULL*/ )
+bool Utils::nodeToFile(Node* node, const char* file, const FUNC_TRAN& funcTransform /*= nullptr*/)
 {
-    CCImage* image = nodeToImage(node);
-    if (funcTransform != NULL)
+    auto image = nodeToImage(node);
+
+    if (funcTransform != nullptr)
     {
         transformImage(image, funcTransform);
     }
 
-    bool ret = imageToFile(image, file);
+    bool ret = image->saveToFile(FileUtils::getInstance()->fullPathForFilename(file).c_str(), false);
     delete image;
 
     return ret;
 }
 
-void CCUtils::tranGrayscale( ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h )
+void Utils::tranGrayscale(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h)
 {
     GLubyte gray = (c->r + (c->g << 1) + c->b) >> 2;
+    gray = max(0, gray - 100);
     c->r = gray;
     c->g = gray;
     c->b = gray;
+}
+
+void Utils::tranFillColor(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h, Color4B* fill)
+{
+    *c = *fill;
+}
+
+void Utils::tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h, GLushort a)
+{
+    c->a = a;
 }

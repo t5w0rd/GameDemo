@@ -222,9 +222,11 @@ public:
     };
     
 public:
-    CCommandTarget();
-    CCommandTarget(const CPoint& rTargetPoint);
-    CCommandTarget(int iTargetUnit);
+    explicit CCommandTarget();
+    explicit CCommandTarget(int iTargetUnit);
+    explicit CCommandTarget(const CPoint& rTargetPoint);
+
+    bool operator==(const CCommandTarget& rTarget) const;
     
     M_SYNTHESIZE(TARGET_TYPE, m_eTargetType, TargetType);
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oTargetPoint, TargetPoint);
@@ -257,6 +259,7 @@ public:
     inline virtual void onUnitDelPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility) {}
     inline virtual void onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility) {}
     inline virtual void onUnitDelBuffAbility(CUnit* pUnit, CBuffAbility* pAbility) {}
+    inline virtual void onUnitAbilityCD(CUnit* pUnit, CAbility* pAbility) {}
     inline virtual void onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility) {}
     inline virtual void onUnitAddItem(CUnit* pUnit, int iIndex) {}
     inline virtual void onUnitDelItem(CUnit* pUnit, int iIndex) {}
@@ -296,7 +299,7 @@ protected:
     const string CONST_ROOT_ID;
 
 public:
-    CUnit(const char* pRootId);
+    CUnit(CUnitDraw* draw);
     virtual ~CUnit();
     virtual CMultiRefObject* copy();
     virtual void copyData(const CUnit* from);
@@ -360,6 +363,8 @@ public:
     virtual void onAddBuffAbility(CBuffAbility* pAbility);
     virtual void onDelBuffAbility(CBuffAbility* pAbility);
     
+    // 技能CD开始时被通知
+    virtual void onAbilityCD(CAbility* pAbility);  // 以后将区分出onItemCD
     // 技能CD结束时被通知
     virtual void onAbilityReady(CAbility* pAbility);  // 以后将区分出onItemReady
     
@@ -404,7 +409,7 @@ public:
     // 高层攻击函数，用于最初生成攻击数据，一个攻击动作生成的攻击数据，一般调用该函数
     // 攻击动作，可对目标造成动作，如普通攻击、技能等
     // 攻击数据，描述这次攻击的数据体，详见 CAttackData 定义
-    // 内部会自行调用中层、底层攻击函数，对攻击数据进行传递并处理，通常返回处理后的攻击数据，也可以返回 NULL
+    // 内部会自行调用中层、底层攻击函数，对攻击数据进行传递并处理，通常返回处理后的攻击数据，也可以返回 nullptr
     // 内部会根据人物属性对攻击数据进行一次变换，如力量加成等
     // 触发 onAttackTarget，
     void attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
@@ -414,7 +419,7 @@ public:
     
     // 高层伤害函数，攻击者生成的攻击到达目标后，目标将调用该函数，计算自身伤害
     // 内部会对攻击数据进行向下传递
-    // 触发 onAttacked，如果onAttacked返回 NULL，伤害将不会继续向下层函数传递，函数返回false。比如说，闪避成功，伤害无需继续计算
+    // 触发 onAttacked，如果onAttacked返回 nullptr，伤害将不会继续向下层函数传递，函数返回false。比如说，闪避成功，伤害无需继续计算
     // 触发 onDamaged
     // 遍历攻击数据携带的BUFF链，根据附着概率对单位自身进行BUFF附加
     // 根据单位属性，进行攻击数据变换，如抗性对攻击数据的影响
@@ -540,11 +545,12 @@ public:
     M_SYNTHESIZE_BOOL(Revivable);
 
 protected:
-    bool m_bGhost;
+    int m_iGhostOwner;
 
 public:
-    void setGhost(bool bGhost = true);
+    void setGhost(int iGhostOwner);
     bool isGhost() const;
+    int getGhostOwner() const;
 
     M_SYNTHESIZE_READONLY(CForceResource*, m_pResource, Resource);
     void setResource(CForceResource* var);

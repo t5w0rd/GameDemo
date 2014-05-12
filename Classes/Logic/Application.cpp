@@ -11,7 +11,7 @@
 
 
 // CLogicApplication
-CLogicApplication * CLogicApplication::sm_pSharedApplication = NULL;
+CLogicApplication * CLogicApplication::sm_pSharedApplication = nullptr;
 
 CLogicApplication::CLogicApplication()
 : m_lAnimationIntervalMS(0)
@@ -26,7 +26,7 @@ CLogicApplication::CLogicApplication()
 CLogicApplication::~CLogicApplication()
 {
 	assert(this == sm_pSharedApplication);
-	sm_pSharedApplication = NULL;
+	sm_pSharedApplication = nullptr;
 }
 
 int CLogicApplication::run()

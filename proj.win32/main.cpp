@@ -1,6 +1,6 @@
 #include "main.h"
 #include "AppDelegate.h"
-#include "CCEGLView.h"
+#include "cocos2d.h"
 
 USING_NS_CC;
 
@@ -11,26 +11,31 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+
 #define USE_WIN32_CONSOLE
 #ifdef USE_WIN32_CONSOLE
     AllocConsole();
     freopen("CONIN$", "r", stdin);
     freopen("CONOUT$", "w", stdout);
     freopen("CONOUT$", "w", stderr);
-
 #endif
-    
+
+    auto director = Director::getInstance();
+    auto glview = director->getOpenGLView();
+    if (!glview)
+    {
+        glview = GLView::create("GameDemo");
+        director->setOpenGLView(glview);
+
+        auto wsz = Size(1920, 1080);
+        //auto wsz = Size(2048, 1536);
+
+        glview->setDesignResolutionSize(wsz.width, wsz.height, ResolutionPolicy::SHOW_ALL);
+        glview->setFrameSize(wsz.width, wsz.height);
+        glview->setFrameZoomFactor(0.4f);
+    }
+
     // create the application instance
     AppDelegate app;
-    CCEGLView* eglView = CCEGLView::sharedOpenGLView();
-    eglView->setViewName("GameDemo");
-#if 0
-    //eglView->setFrameSize(1024, 768);
-    //eglView->setFrameZoomFactor(0.8f);
-#else
-    //eglView->setFrameSize(2048, 1536);
-    eglView->setFrameSize(1920, 1080);
-    eglView->setFrameZoomFactor(0.4f);
-#endif
-    return CCApplication::sharedApplication()->run();
+    return Application::getInstance()->run();
 }

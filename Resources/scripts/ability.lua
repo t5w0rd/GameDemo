@@ -131,13 +131,15 @@ function OnDyingPas:onUnitDying()
     if me:isDead() then
         return
     end
-    
+
+    me:say("AAAAAAAAAA")
+
     lvl = me:getLevel()
     kill = kill + 1
     atk = me:getAttackAbility()
     atk:setExAttackValue(1.0 + kill / 20.0, kill * 3.9 + 17)
     a, b = atk:getExAttackSpeed()
-    atk:setExAttackSpeed(a + kill / 10, b)
+    atk:setExAttackSpeed(a + kill / 50, b)
     local level = math.ceil(kill / 2)
     if level >= 1 and level <= c then
         if level > learned then
@@ -147,4 +149,49 @@ function OnDyingPas:onUnitDying()
         end
     end
 
+end
+
+loadAnimation("Sprites/VoodooProy/move", "Sprites/VoodooProy/move", 0.1)
+loadAnimation("Sprites/VoodooProy/die", "Sprites/VoodooProy/die", 0.1)
+
+local sp = Sprite:new("VoodooProy")
+sp:prepareFrame(Sprite.kFrmDefault, "default")
+sp:prepareAnimation(Sprite.kAniMove, "move", -1)
+sp:prepareAnimation(Sprite.kAniDie, "die", 0)
+
+local u = Unit:new(sp, "Orb")
+u:setGeometry(16.0, 16.0, 0.5, 0.5, 0, 0);
+u:setFixed()
+
+addTemplateUnit(10001, u)
+
+SummonUnitAct = class(ActiveAbility)
+function SummonUnitAct:ctor(name, cd, castType, id, duration)
+    self:sctor("SummonUnit", name, cd, castType, UnitForce.kSelf)
+    self.id = id
+    self.duration = duration
+end
+
+function SummonUnitAct:onUnitAbilityEffect(projectile, target)
+    local o = self:getOwner()
+    local x, y = self:getAbilityEffectPoint(projectile, target)
+    local u = createUnit(self.id)
+    u:setPosition(x, y)
+    u:setForce(o:getForce())
+    u:setAlly(o:getAlly())
+    u:setLevel(self:getLevel())
+    u:setGhost()
+    u:doAnimation(Sprite.kAniMove, INFINITE)
+
+    u:addBuffAbility(LimitedLifeBuff:new("LimitedLife", "LimitedLife", self.duration))
+
+    a = AttractBuff:new("Attract", "Attract", 1, 10.0)
+    id = addTemplateAbility(a)
+    a = AuraPas:new("AttractAura", 0.5, id, 200, UnitForce.kEnemy, false)
+    u:addPassiveAbility(a)
+
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 15.0, 1.0, false, 0.0, 0.0)
+    id = addTemplateAbility(a)
+    a = AuraPas:new("DamageAura", 1.0, id, 200, UnitForce.kEnemy, false)
+    u:addPassiveAbility(a)
 end

@@ -5,22 +5,21 @@
 #include "ComponentForCC.h"
 
 
-
-// CCEmptySceneLayer
-CCEmptySceneLayer::CCEmptySceneLayer()
+// EmptySceneLayer
+EmptySceneLayer::EmptySceneLayer()
 {
 }
 
-CCEmptySceneLayer::~CCEmptySceneLayer()
+EmptySceneLayer::~EmptySceneLayer()
 {
 }
 
-CCScene* CCEmptySceneLayer::scene()
+Scene* EmptySceneLayer::scene()
 {
     // 'scene' is an autorelease object
-    CCScene* pScene = CCScene::create();
+    Scene* pScene = Scene::create();
 
-    CCEmptySceneLayer* layer = CCEmptySceneLayer::create();
+    EmptySceneLayer* layer = EmptySceneLayer::create();
 
     // add layer as a child to scene
     if (layer != NULL)
@@ -36,18 +35,18 @@ CCScene* CCEmptySceneLayer::scene()
 }
 
 // on "init" you need to initialize your instance
-bool CCEmptySceneLayer::init()
+bool EmptySceneLayer::init()
 {
     //////////////////////////////
     // 1. super init first
-    if (!CCLayerColor::initWithColor(ccc4(255, 255, 255, 255)))
+    if (!LayerColor::initWithColor(Color4B(0, 0, 0, 0)))
     {
         return false;
     }
     
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
-    CCSprite* sp = NULL;
+    Sprite* sp = NULL;
 
     return true;
 }

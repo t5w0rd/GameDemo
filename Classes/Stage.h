@@ -18,8 +18,8 @@ public:
     M_SYNTHESIZE_READONLY(STAGE_STATUS, m_eStatus, Status);
     void setStatus(STAGE_STATUS eStatus);
 
-    M_SYNTHESIZE(CCNode*, m_pNode, Node);
-    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oPosition, Position);
+    M_SYNTHESIZE(Node*, m_pNode, Node);
+    M_SYNTHESIZE_PASS_BY_REF(Point, m_oPosition, Position);
 
     M_SYNTHESIZE_STR(Name);
     M_SYNTHESIZE_STR(Describe);
@@ -32,11 +32,11 @@ public:
     void setGrade(int iGrade);
     
 protected:
-    CCNode* m_apStar[3];
+    Node* m_apStar[3];
 
 public:
-    void setStarNode(int iIndex, CCNode* pNode);
-    CCNode* getStarNode(int iIndex);
+    void setStarNode(int iIndex, Node* pNode);
+    Node* getStarNode(int iIndex);
     void setStarNodesVisible(bool bVisible = true);
 
     virtual void onInit();
@@ -54,7 +54,7 @@ public:
     struct STAGE_NEXT_INFO
     {
         int iIndex;
-        CCNode* pPath;
+        Node* pPath;
     };
     typedef vector<STAGE_NEXT_INFO> VEC_STAGE_NEXT_INFOS;
 
@@ -71,12 +71,11 @@ public:
     M_SYNTHESIZE_STR(PathName);
 
 protected:
-    CCMenu* m_pPanel;
-    CCObject* m_pSender;
-    SEL_MenuHandler m_pHandler;
+    Menu* m_pPanel;
+    ccMenuCallback m_onClickStage;
 
 public:
-    void setPanel(CCMenu* pPanel, CCObject* pSender, SEL_MenuHandler pHandler);
+    void setPanel(Menu* pPanel, const ccMenuCallback& onClickStage);
 
     void addStage(CStage* pStage, const VEC_INDEXES& vecPrev);
     void addStageNextInfos(int iIndex, int iNextIndex);

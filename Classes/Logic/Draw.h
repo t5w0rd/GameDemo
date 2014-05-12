@@ -13,43 +13,18 @@
 #include "Unit.h"
 
 
-class CCallFuncData : public CMultiRefObject
-{
-public:
-    CCallFuncData(CMultiRefObject* pSel, FUNC_CALLFUNC_ND pCallFunc);
-
-    M_SYNTHESIZE(CMultiRefObject*, m_pSelector, Selector);
-    M_SYNTHESIZE(FUNC_CALLFUNC_ND, m_pCallFunc, CallFunc);
-};
-
 class CUnitDraw : public CMultiRefObject
 {
 public:
-    CUnitDraw(const char* pName);
+    CUnitDraw();
     virtual ~CUnitDraw();
-    virtual CMultiRefObject* copy();
+    virtual CUnitDraw* copy() override;
     virtual void copyData(CUnitDraw* from);
-
-    M_SYNTHESIZE_STR(Name);
 
     M_SYNTHESIZE(CUnit*, m_pUnit, Unit);
 
-    enum ANI_ID
-    {
-        kAniMove,
-        kAniDie,
-        kAniAct1,
-        kAniAct2,
-        kAniAct3,
-        kAniAct4,
-        kAniAct5,
-        kAniAct6,
-        kAniAct7,
-        kAniAct8
-    };
-
     // 返回actionTag
-    virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone, float fSpeed = 1.0f);
+    virtual int doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone, float fSpeed = 1.0f);
     virtual void stopAction(int tag);
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
@@ -61,28 +36,22 @@ public:
     virtual void onUnitDying();
     virtual void onUnitTick(float dt);
 
-    enum FRM_ID
-    {
-        kFrmDefault,
-        kFrmPortraitHero,
-        kFrmPortraitSel
-    };
-    
-    virtual void setFrame(FRM_ID id);
-    virtual void setFlipX(bool bFlipX);
+    virtual void setFrame(int id);
+    virtual void setFlippedX(bool bFlipX);
     
     virtual void loadAnimation(int id, const char* pName, int iNotifyFrameIndex, float fDelay);
     virtual void loadFrame(int id, const char* pName);
 
+    virtual void say(const char* words);
 };
 
 class CUnitPath;
 class CUnitDraw2D : public CUnitDraw
 {
 public:
-    CUnitDraw2D(const char* pName);
+    CUnitDraw2D();
     virtual ~CUnitDraw2D();
-    virtual CMultiRefObject* copy();
+    virtual CUnitDraw2D* copy() override;
     virtual void copyData(CUnitDraw* from);
 
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oPosition, Position);
@@ -98,11 +67,11 @@ public:
     M_SYNTHESIZE(float, m_fHeight, Height);
 
     /////////////////////// move //////////////////////////////
-    virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
+    virtual int doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone, float fSpeed = 1.0f);
     virtual void updateMoveTo(const CPoint& rPos);
     
-    virtual void setFlipX(bool bFlipX = true);
-    virtual bool isFlipX() const;
+    virtual void setFlippedX(bool bFlipX = true);
+    virtual bool isFlippedX() const;
 
     struct UNIT_MOVE_PARAMS
     {
@@ -111,10 +80,10 @@ public:
             bool bAutoFlipX_ = true,
             float fMaxOffsetY_ = 0.0f
             //bool bCancelCast_ = true
-           )
+          )
             //: bObstinate(bObstinate_)
-            : bAutoFlipX(bAutoFlipX_)
-            , fMaxOffsetY(fMaxOffsetY_)
+        : bAutoFlipX(bAutoFlipX_)
+        , fMaxOffsetY(fMaxOffsetY_)
             //, bCancelCast(bCancelCast_)
         {}
         //bool bObstinate;
@@ -149,7 +118,7 @@ public:
     void follow(int iTargetUnit);  //, const UNIT_MOVE_PARAMS& roMoveParams = CONST_DEFAULT_MOVE_PARAMS);
     void cmdMoveAlongPath(CUnitPath* pPath, bool bObstinate = true, float fBufArrive = 5.0);
     void stopMove();
-    void onMoveDone(CMultiRefObject* pUnit, CCallFuncData* pData);
+    void onMoveDone();
 
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oLastMoveToTarget, LastMoveToTarget);
     M_SYNTHESIZE_READONLY(CUnitPath*, m_pMovePath, MovePath);
@@ -163,21 +132,22 @@ public:
     // /////////////////////// cast /////////////////////////////
     M_SYNTHESIZE_PASS_BY_REF(CCommandTarget, m_oCastTarget, CastTarget);
     M_SYNTHESIZE(int, m_iCastActionId, CastActionId);
-    M_SYNTHESIZE(int, m_iCastActiveAbilityId, CastActiveAbilityId);
-    int cmdCastSpell(int iActiveAbilityId, bool bObstinate = true);  // 可能是施法失败，施法中，施法追逐中，所以返回类型为int
+    M_SYNTHESIZE(int, m_iCastActiveAbilityId, CastActiveAbilityId);  // 正在进行的施法，包括追逐状态中的技能
+    M_SYNTHESIZE(int, m_iWaitForCastTargetActiveAbilityId, WaitForCastTargetActiveAbilityId);  // 等待目标的技能
+    int cmdCastSpell(const CCommandTarget& rTarget, int iActiveAbilityId, bool bObstinate = true);  // 可能是施法失败，施法中，施法追逐中，所以返回类型为int
     int castSpell(CActiveAbility* pAbility);
-    bool checkCastTargetDistance(CActiveAbility* pAbility, const CPoint& roPos, CUnitDraw2D* td);
+    bool checkCastTargetDistance(CActiveAbility* pAbility, const CPoint& roPos, const CCommandTarget& rTarget, CUnitDraw2D* td /* for fast calc */);
     void moveToCastPosition(CActiveAbility* pAbility, CUnitDraw2D* td);
 
-    void stopCast();
-    void onCastEffect(CMultiRefObject* pDraw, CCallFuncData* pData);
-    void onCastDone(CMultiRefObject* pDraw, CCallFuncData* pData);
+    void stopCast(bool bDefaultFrame = true);
+    void onCastEffect();
+    void onCastDone();
 
     void cmdStop();
     void stop(bool bDefaultFrame = true);
 
     void die();
-    void onDyingDone(CMultiRefObject* pDraw, CCallFuncData* pData);
+    void onDyingDone();
 };
 
 class CUnitPath : public CMultiRefObject
@@ -197,25 +167,25 @@ public:
     VEC_POINTS m_vecPoints;
 };
 
-typedef bool (*FUNC_UNIT_CONDITION)(CUnit* pUnit, void* pParam);
-
 class CUnitGroup : public CMultiRefObject
 {
 public:
     typedef CMultiRefVec<CUnit*> VEC_UNITS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_UNITS, m_vecUnits, Units);
 
+    typedef function<bool(CUnit* pUnit)> FUNC_MATCH;
+
 public:
     CUnitGroup();
-    CUnitGroup(CWorld* pWorld, const CPoint& roPos, float fRadius, int iMaxCount = INFINITE, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
-    CUnitGroup(CWorld* pWorld, int iMaxCount = INFINITE, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
+    CUnitGroup(CWorld* pWorld, const CPoint& roPos, float fRadius, int iMaxCount = INFINITE, const FUNC_MATCH& match = nullptr);
+    CUnitGroup(CWorld* pWorld, int iMaxCount = INFINITE, const FUNC_MATCH& match = nullptr);
 
     CUnit* getUnitByIndex(int iIndex);
     CUnit* getRandomUnit();
-    CUnit* getNearestUnitInRange(const CPoint& roPos, float fRadius, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
+    CUnit* getNearestUnitInRange(const CPoint& roPos, float fRadius, const FUNC_MATCH& match = nullptr);
     void addUnit(CUnit* pUnit);
 
-    static CUnit* getNearestUnitInRange(CWorld* pWorld, const CPoint& roPos, float fRadius, FUNC_UNIT_CONDITION pBoolFunc = NULL, void* pParam = NULL);
+    static CUnit* getNearestUnitInRange(CWorld* pWorld, const CPoint& roPos, float fRadius, const FUNC_MATCH& match = nullptr);
 
     void cleanUnits();
     int getUnitsCount();
@@ -243,12 +213,10 @@ public:
 class CProjectile : public CMultiRefObject
 {
 public:
-    CProjectile(const char* pName);
+    CProjectile();
     virtual ~CProjectile();
     virtual CMultiRefObject* copy();
     virtual void copyData(const CProjectile* from);
-
-    M_SYNTHESIZE_STR(Name);
 
     M_SYNTHESIZE(CWorld*, m_pWorld, World);
 
@@ -265,10 +233,10 @@ public:
         kAniDie
     };
 
-    virtual int doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
-    virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone);
-    virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone);
-    virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
+    virtual int doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone);
+    virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, const FUNC_VOID& onMoveToDone);
+    virtual int doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone);
+    virtual int doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone);
     virtual void stopAction(int tag);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
@@ -285,9 +253,9 @@ public:
 
     virtual void step(float dt);
     virtual void onTick(float dt);
-    void onMoveDone(CMultiRefObject* pProjectile, CCallFuncData* pData);
-    void onEffect(CMultiRefObject* pProjectile, CCallFuncData* pData);
-    void onDyingDone(CMultiRefObject* pProjectile, CCallFuncData* pData);
+    void onMoveDone();
+    void onEffect();
+    void onDyingDone();
 
     // 单位和抛射物非紧密联系，即单位死亡后抛射物不一定会释放，所以必须通过ID引用
     M_SYNTHESIZE(int, m_iSrcUnit, SrcUnit);  // 抛射物所属单位

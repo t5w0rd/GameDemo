@@ -58,8 +58,8 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
         else \
         { \
             delete pRet; \
-            pRet = NULL; \
-            return NULL; \
+            pRet = nullptr; \
+            return nullptr; \
         } \
     }
 
@@ -76,7 +76,7 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
             return pSprite; \
         } \
         CC_SAFE_DELETE(pSprite); \
-        return NULL; \
+        return nullptr; \
     }
 
 #define M_DECLARE_CREATE_WITH_SPRITE_FRAME_NAME_LOGIC(type) \
@@ -92,14 +92,14 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
             return pSprite; \
         } \
         CC_SAFE_DELETE(pSprite); \
-        return NULL; \
+        return nullptr; \
     }
 
 #define M_DECLARE_CREATE_WITH_SPRITE_FRAME_NAME_GUN(type) \
-    static type* createWithSpriteFrameNameAndLogicGun(const char *pszSpriteFrameName, CTank* pTank, CCSprite* pGunSprite)
+    static type* createWithSpriteFrameNameAndLogicGun(const char *pszSpriteFrameName, CTank* pTank, Sprite* pGunSprite)
 
 #define M_IMPLIMENT_CREATE_WITH_SPRITE_FRAME_NAME_GUN(type) \
-    type* type::createWithSpriteFrameNameAndLogicGun(const char *pszSpriteFrameName, CTank* pTank, CCSprite* pGunSprite) \
+    type* type::createWithSpriteFrameNameAndLogicGun(const char *pszSpriteFrameName, CTank* pTank, Sprite* pGunSprite) \
     { \
         type* pSprite = new type(); \
         if (pSprite && pSprite->initWithSpriteFrameNameAndLogicGun(pszSpriteFrameName, pTank, pGunSprite)) \
@@ -108,7 +108,7 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
             return pSprite; \
         } \
         CC_SAFE_DELETE(pSprite); \
-        return NULL; \
+        return nullptr; \
     }
 
 #define M_CREATEWITH_FUNC_PARAM(__WITH__, __TYPE__, __PARAM__, ...) \
@@ -123,8 +123,8 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
         else \
         { \
            delete pRet; \
-           pRet = NULL; \
-           return NULL; \
+           pRet = nullptr; \
+           return nullptr; \
         } \
     }
 
@@ -140,8 +140,8 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
         else \
         { \
             delete pRet; \
-            pRet = NULL; \
-            return NULL; \
+            pRet = nullptr; \
+            return nullptr; \
         } \
     }
 
@@ -153,7 +153,7 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
 #define M_ABILITY_DIS_PATH(name)                                  name "/DISBTN" name ".png"
 #define M_ABILITY_ON_PATH(name)                                   name "/BTN" name "ON.png"
 #define M_CREATE_ABILITY(name, unit, ability, layer)                CCAbilityButtonAdvance::create(M_ABILITY_PATH(name), M_ABILITY_DOWN_PATH(name), M_ABILITY_DIS_PATH(name), M_ABILITY_PATH("white"), "mask/mask.png", (unit), (ability), (layer))
-#define M_CREATE_ABILITY_PAS(name, unit, ability, layer)            CCAbilityButtonAdvance::create(M_ABILITY_PAS_PATH(name), M_ABILITY_PAS_PATH(name), M_ABILITY_DIS_PATH(name), NULL, NULL, (unit), (ability), (layer))
+#define M_CREATE_ABILITY_PAS(name, unit, ability, layer)            CCAbilityButtonAdvance::create(M_ABILITY_PAS_PATH(name), M_ABILITY_PAS_PATH(name), M_ABILITY_DIS_PATH(name), nullptr, nullptr, (unit), (ability), (layer))
 
 #define M_RAND_HIT(probability) (rand() % 1000 < (int)((probability) * 1000))
 
@@ -164,34 +164,16 @@ public: inline virtual void set##funName(const varType& var){ varName = var; }
         return iTypeKey; \
     }
 
-#define M_ABILITY_BUTTON_CANCEL(node) dynamic_cast<CCAbilityButtonBase*>((node))->setClickRetCode(-1)
-
-#define M_DEF_DR(var) CCDirector* var = CCDirector::sharedDirector()
-#define M_DEF_FU(var) CCFileUtils* var = CCFileUtils::sharedFileUtils()
-#define M_DEF_GM(var) CGameManager* var = CGameManager::sharedGameManager()
-#define M_DEF_FC(var) CCSpriteFrameCache* var = CCSpriteFrameCache::sharedSpriteFrameCache()
-#define M_DEF_AC(var) CCAnimationCache* var = CCAnimationCache::sharedAnimationCache()
-#define M_DEF_SM(var) CCAbilityManager* var = CCAbilityManager::sharedAbilityManager()
-#define M_DEF_PM(var) CProjectileManager* var = CProjectileManager::sharedProjectileManager()
-#define M_DEF_UM(var) CUnitManager* var = CUnitManager::sharedUnitManager()
-#define M_DEF_UPM(var) CUnitInfoPatchManager* var = CUnitInfoPatchManager::sharedUnitInfoPatchManager()
-#define M_DEF_TB(var) CTowerBuilder* var = CTowerBuilder::sharedTowerBuilder()
-#define M_DEF_OU(var) COrgUnitInfo* var = COrgUnitInfo::sharedOrgUnitInfo()
-#define M_DEF_OS(var) COrgAbilityInfo* var = COrgAbilityInfo::sharedOrgAbilityInfo()
-#define M_DEF_PI(var) CPlayerInfo* var = CPlayerInfo::sharedPlayerInfo()
-
 #ifndef INFINITE
 #define INFINITE 0xFFFFFFFF
 #endif
-
-#define CONDITION(func) ((FUNC_UNIT_CONDITION)(&func))
 
 template <typename TYPE, typename ASTYPE = TYPE>
 class CInitArray
 {
 public:
     inline CInitArray(int iCount, ...)
-    : m_iCount(iCount)
+: m_iCount(iCount)
     {
         m_pData = new TYPE[iCount];
         va_list argv;
@@ -204,7 +186,7 @@ public:
     }
 
     inline CInitArray(const CInitArray& rArr)
-        : m_iCount(rArr.m_iCount)
+    : m_iCount(rArr.m_iCount)
     {
         m_pData = new TYPE[m_iCount];
         for (int i = 0; i < m_iCount; ++i)
@@ -274,7 +256,7 @@ const char* GBKToUTF8(const char* pGBKStr);
 #define M_SINGLETON(type) \
     inline static type* instance() \
     { \
-        static type* pInst = NULL; \
+        static type* pInst = nullptr; \
         if (!pInst) \
         { \
             pInst = new type; \
@@ -315,6 +297,17 @@ inline void cirDec(int& i, int min, int num)
 
 #define M_SAFE_RETAIN(p) do { if (p) { (p)->retain(); } } while(0)
 #define M_SAFE_RELEASE(p) do { if (p) { (p)->release(); } } while(0)
+
+typedef std::function<void()> FUNC_VOID;
+
+#if defined(__GNUC__) && ((__GNUC__ >= 4) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1)))
+#define M_DEPRECATED_ATTRIBUTE __attribute__((deprecated))
+#elif _MSC_VER >= 1400 //vs 2005 or higher
+#define M_DEPRECATED_ATTRIBUTE __declspec(deprecated) 
+#else
+#define M_DEPRECATED_ATTRIBUTE
+#endif 
+
 
 #endif	/* __COMDEF_H__ */
 

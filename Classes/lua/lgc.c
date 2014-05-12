@@ -828,7 +828,7 @@ static void GCTM (lua_State *L, int propagateerrors) {
       if (status == LUA_ERRRUN) {  /* is there an error object? */
         const char *msg = (ttisstring(L->top - 1))
                             ? svalue(L->top - 1)
-                            : "no message";
+                        : "no message";
         luaO_pushfstring(L, "error in __gc metamethod (%s)", msg);
         status = LUA_ERRGCMM;  /* error in __gc metamethod */
       }
@@ -915,7 +915,7 @@ static void setpause (global_State *g, l_mem estimate) {
   estimate = estimate / PAUSEADJ;  /* adjust 'estimate' */
   threshold = (g->gcpause < MAX_LMEM / estimate)  /* overflow? */
             ? estimate * g->gcpause  /* no overflow */
-            : MAX_LMEM;  /* overflow; truncate to maximum */
+        : MAX_LMEM;  /* overflow; truncate to maximum */
   debt = -cast(l_mem, threshold - gettotalbytes(g));
   luaE_setdebt(g, debt);
 }

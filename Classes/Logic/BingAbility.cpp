@@ -47,7 +47,7 @@ void CIceLanceBuff::onUnitAddAbility()
             t->setAttackValue(m_oAttackValue);
             t->setAttackValue(CAttackValue::kMagical, t->getAttackValue().getValue() * m_iIncreaseTimes);
             CUnit* s = o->getUnit(getSrcUnit());
-            assert(s != NULL);
+            assert(s != nullptr);
             o->damaged(t, s, CUnit::kNoMasked);
             return;
         }
@@ -57,7 +57,7 @@ void CIceLanceBuff::onUnitAddAbility()
     CAttackData* t = new CAttackData;
     t->setAttackValue(m_oAttackValue);
     CUnit* s = o->getUnit(getSrcUnit());
-    assert(s != NULL);
+    assert(s != nullptr);
     o->damaged(t, s, CUnit::kNoMasked);
 }
 
@@ -95,14 +95,14 @@ void CRelievePainBuff::onUnitDelAbility()
     o->setHp(f - f2);
 
     // for cocos2d
-    CUnitDrawForCC* ccd = NULL;
+    CUnitDrawForCC* ccd = nullptr;
     o->getDraw()->dcast(ccd);
 
-    if (ccd != NULL)
+    if (ccd != nullptr)
     {
         char sz[64];
         sprintf(sz, "CallBack -%d", toInt(f2));
-        ccd->addBattleTip(sz, "Comic Book", 18, ccc3(56, 24, 128));
+        ccd->addBattleTip(sz, "Comic Book", 18, Color3B(56, 24, 128));
     }
 
     LOG("%s压不住了,受到%d伤害(实际%d伤害)", o->getName(), toInt(m_fDamageReduce), toInt(f2));
@@ -139,11 +139,11 @@ void CNotKillPas::onUnitChangeHp(float fChanged)
         m_iTimesCount = int(f/0.10);
         //o->setExArmorValue(getExAttackValue());
 
-        CAttackAct* atk = NULL;
+        CAttackAct* atk = nullptr;
         o->getActiveAbility(o->getAttackAbilityId())->dcast(atk);
         CExtraCoeff oPrev = atk->getExAttackValue();
         CExtraCoeff oCurrent = CExtraCoeff(oPrev.getMulriple() + iTimesChange * m_oDeltaExAttackValue.getMulriple()
-            , oPrev.getAddend() + iTimesChange * m_oDeltaExAttackValue.getAddend());
+        , oPrev.getAddend() + iTimesChange * m_oDeltaExAttackValue.getAddend());
         atk->setExAttackValue(oCurrent);
         LOG("Stronger");
     }

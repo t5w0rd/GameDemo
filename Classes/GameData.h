@@ -15,7 +15,7 @@ public:
         string desc;
         string btnNorName;
         string btnDisName;
-        CCPoint pos;
+        Point pos;
         vector<int> prevIndex;
         string script;
         string background;

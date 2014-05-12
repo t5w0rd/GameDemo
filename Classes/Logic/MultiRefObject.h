@@ -163,7 +163,7 @@ inline MULTIREF_ID_TYPE_PTR CMultiRefMap<MULTIREF_ID_TYPE_PTR>::getObject(int id
 template <typename MULTIREF_ID_TYPE_PTR>
 inline MULTIREF_ID_TYPE_PTR CMultiRefMap<MULTIREF_ID_TYPE_PTR>::getObject(const const_iterator it) const
 {
-    return it != this->end() ? it->second : NULL;
+    return it != this->end() ? it->second : nullptr;
 }
 
 template <typename MULTIREF_ID_TYPE_PTR>
@@ -213,13 +213,13 @@ inline void CMultiRefVec<MULTIREF_ID_TYPE_PTR>::delObject(int iIndex)
         return;
     }
     
-    if ((*this)[iIndex] == NULL)
+    if ((*this)[iIndex] == nullptr)
     {
         return;
     }
     
     (*this)[iIndex]->release();
-    (*this)[iIndex] = NULL;
+    (*this)[iIndex] = nullptr;
 }
 
 template <typename MULTIREF_ID_TYPE_PTR>

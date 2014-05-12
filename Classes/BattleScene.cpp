@@ -33,25 +33,25 @@ public:
 
     virtual void onChangeLevel(CLevelExp* pLevel, int iChanged)
     {
-        static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
-        static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
+        static Size wsz = Director::getInstance()->getVisibleSize();
+        static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
         
         CUnit* u = DCAST(pLevel, CUnit*);
         CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
-        d->cmdStop();
+        //d->cmdStop();
         
-        u->setMaxHp(u->getMaxHp() * 1.2);
+        u->setMaxHp(u->getMaxHp() + 200 + rand() % 100);
 
         CBattleWorld* w = DCAST(u->getWorld(), CBattleWorld*);
-        d->setCastTarget(CCommandTarget());
-        d->cmdCastSpell(w->getWarCryAct()->getId());
+        //d->cmdCastSpell(CCommandTarget(), w->getWarCryAct()->getId());
         u->addBuffAbility(new CChangeHpBuff("LevelUpHeal", "LevelUpHeal", 5.0f, false, 0.2f, CExtraCoeff(0.02f, 0.0f)));
         u->addBuffAbility(new CReflectBuff("Reflect", "Reflect", 5.0f));
         CAttackAct* atk = DCAST(u->getActiveAbility(u->getAttackAbilityId()), CAttackAct*);
         atk->getBaseAttack().setValue(atk->getBaseAttack().getValue() + 7.8);
         d->setBaseMoveSpeed(d->getBaseMoveSpeed() + 1.5);
 
-        atk->setExAttackSpeed(CExtraCoeff(atk->getExAttackSpeed().getMulriple() + 0.03, atk->getExAttackSpeed().getAddend()));
+        atk->setExAttackSpeed(CExtraCoeff(atk->getExAttackSpeed().getMulriple() + 0.01, atk->getExAttackSpeed().getAddend()));
+        u->setBaseArmor(CArmorValue(u->getBaseArmor().getType(), u->getBaseArmor().getValue() + 1));
 
         CUserData::instance()->getHeroSelected()->exp = u->getExp();
         CUserData::instance()->save("");
@@ -62,9 +62,9 @@ class CMyAI : public CBaseAI
 {
 public:
     CMyAI()
-        : m_bFirstTick(true)
-        , m_iBaseTag(CKeyGen::nextKey() * 10)
-        , m_iCurTag(m_iBaseTag)
+    : m_bFirstTick(true)
+    , m_iBaseTag(CKeyGen::nextKey() * 10)
+    , m_iCurTag(m_iBaseTag)
     {
     }
 
@@ -102,7 +102,7 @@ public:
 const float CBattleWorld::CONST_MAX_REWARD_RANGE = 400;
 
 CBattleWorld::CBattleWorld()
-    : m_bLuaWorldTickEnabled(true)
+: m_bLuaWorldTickEnabled(true)
 {
     CWorld::getLuaHandle();
 }
@@ -113,14 +113,15 @@ CBattleWorld::~CBattleWorld()
 
 bool CBattleWorld::onInit()
 {
-    static CCSize vs = CCDirector::sharedDirector()->getVisibleSize();
-    static CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
+    static Size vs = Director::getInstance()->getVisibleSize();
+    static Point org = Director::getInstance()->getVisibleOrigin();
 
-    CUnit* u = NULL;
-    CUnitDrawForCC* d = NULL;
-    CAbility* a = NULL;
+    CUnit* u = nullptr;
+    CUnitDrawForCC* d = nullptr;
+    CAbility* a = nullptr;
     int id = 0;
-    CAttackAct* atk = NULL;
+    CAttackAct* atk = nullptr;
+    BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
 
     M_DEF_GC(gc);
 
@@ -134,6 +135,7 @@ bool CBattleWorld::onInit()
     // init hero
     CUserData* udt = CUserData::instance();
     u = m_oULib.copyUnit(udt->getHeroSelected()->id);
+    //u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
@@ -147,12 +149,13 @@ bool CBattleWorld::onInit()
     u->getActiveAbility(u->getAttackAbilityId())->dcast(atk);
     atk->setExAttackValue(CExtraCoeff(1.3f, 0.0f));
 
+    // add abilities
     m_pRebirthPas = new CRebirthPas("Rebirth", "Rebirth", 120.0f);
     u->addPassiveAbility(m_pRebirthPas);
 
     a = new CSpeedBuff("SlowDownBuff", "SlowDown", 8.0f, false, CExtraCoeff(-0.8f, 0.0f), CExtraCoeff(-0.8f, 0.0f));
     id = addTemplateAbility(a);
-    a = new CKnockBackBuff("KnockBackBuff", "KnockBackBuff", 0.5, true, 40);
+    a = new CKnockBackBuff("KnockBackBuff", "KnockBackBuff", 0.5, 40);
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
     a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
@@ -160,11 +163,11 @@ bool CBattleWorld::onInit()
     id = addTemplateAbility(a);
     m_pThunderCapAct = new CBuffMakerAct("", "ThunderCap", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, id);
     m_pThunderCapAct->setCastTargetRadius(150.0f);
-    m_pThunderCapAct->addCastAnimation(CUnitDraw::kAniAct2);
-    m_pThunderCapAct->addEffectSound("sounds/Effect/ThunderCap.mp3");
+    m_pThunderCapAct->addCastAnimation(CSpriteInfo::kAniAct2);
+    m_pThunderCapAct->addEffectSound("sounds/Effects/ThunderCap.mp3");
+    m_pThunderCapAct->setImageName("UI/Ability/ThunderCap.png");
     u->addActiveAbility(m_pThunderCapAct);
 
-    
 #if 1
     a = new CDamageBuff("dmg", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
     id = addTemplateAbility(a);
@@ -183,9 +186,10 @@ bool CBattleWorld::onInit()
     
     m_pHammerThrowAct = new CBuffMakerAct("", "HammerThrow", 12.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);
     m_pHammerThrowAct->setCastRange(400.0f);
-    m_pHammerThrowAct->addCastAnimation(CUnitDraw::kAniAct3);
+    m_pHammerThrowAct->addCastAnimation(CSpriteInfo::kAniAct3);
     m_pHammerThrowAct->setTemplateProjectile(CUnitLibraryForCC::kThorHammer);
-    m_pHammerThrowAct->addEffectSound("sounds/Effect/LightningLink.mp3");
+    m_pHammerThrowAct->addEffectSound("sounds/Effects/LightningLink.mp3");
+    m_pHammerThrowAct->setImageName("UI/Ability/HammerThrow.png");
     u->addActiveAbility(m_pHammerThrowAct);
 
     a = new CSpeedBuff("WarCrySpeedBuff", "WarCrySpeed", 10.0f, false, CExtraCoeff(2.0f, 0.0f), CExtraCoeff(2.0f, 0.0f));
@@ -193,10 +197,13 @@ bool CBattleWorld::onInit()
     a = new CChangeHpBuff("WarCryHealBuff", "WarCryHeal", 10.0f, false, 0.2f, CExtraCoeff(0.02f, 0.0f));
     DCAST(a, CBuffAbility*)->setAppendBuff(id);
     id = addTemplateAbility(a);
-    m_pWarCryAct = new CBuffMakerAct("", "WarCry", 0.0f, CCommandTarget::kNoTarget, CUnitForce::kAlly, 1.0f, id);
+    m_pWarCryAct = new CBuffMakerAct("", "WarCry", 15.0f, CCommandTarget::kNoTarget, CUnitForce::kAlly, 1.0f, id);
     m_pWarCryAct->setCastTargetRadius(200.0f);
-    m_pWarCryAct->addCastAnimation(CUnitDraw::kAniAct5);
-    m_pWarCryAct->addEffectSound("sounds/Effect/LevelUp.mp3");
+    m_pWarCryAct->addCastAnimation(CSpriteInfo::kAniAct5);
+    m_pWarCryAct->addEffectSound("sounds/Effects/LevelUp.mp3");
+    m_pWarCryAct->setImageName("UI/Ability/WarCry.png");
+    u->addActiveAbility(m_pWarCryAct);
+
     u->addActiveAbility(m_pWarCryAct);
 
     m_pDragonStrikeBuff = new CStunBuff("DragonStrikeBuff", "DragonStrikeBuff", 5.0f, false);
@@ -220,77 +227,44 @@ bool CBattleWorld::onInit()
 
     onLuaWorldInit();
     
-    CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
     l->initTargetInfo();
     l->updateTargetInfo(getControlUnit());
 
     l->initResourceInfo();
     l->updateResourceInfo(fr->getGold());
-
+    
     l->initHeroPortrait();
     l->updateHeroPortrait();
 
+    l->initHeroAbilityPanel();
+    l->updateHeroAbilityPanel();
+
     l->initCtrlPanel();
 
-    //runAction(CCSequence::createWithTwoActions(CCDelayTime::create(5.0f), CCSpawn::createWithTwoActions(CCMoveBy::create(2.0f, ccp(500, 500)), CCScaleTo::create(2.0f, 4.0f))));
-    //l->setPosition(ccp());
-
     // DemoTemp
-    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
-    ae->preloadEffect("sounds/Units/Thor/move/00.mp3");
-    ae->preloadEffect("sounds/Units/Thor/move/01.mp3");
-    ae->preloadEffect("sounds/Units/Thor/move/02.mp3");
-    ae->preloadEffect("sounds/Units/Thor/move/03.mp3");
-    ae->preloadEffect("sounds/Units/Thor/die/00.mp3");
-    ae->preloadEffect("sounds/Effect/WaveIncoming.mp3");
-    ae->preloadEffect("sounds/Effect/Fighting.mp3");
-    ae->preloadEffect("sounds/Effect/HammerThrow.mp3");
-    ae->preloadEffect("sounds/Effect/LevelUp.mp3");
-    ae->preloadEffect("sounds/Effect/OpenDoor.mp3");
-    ae->preloadEffect("sounds/Effect/TeslaRay00.mp3");
-    ae->preloadEffect("sounds/Effect/TeslaRay01.mp3");
-    ae->preloadEffect("sounds/Effect/ThunderCap.mp3");
-    ae->preloadEffect("sounds/Effect/ArcaneRay.mp3");
-    ae->preloadEffect("sounds/Effect/UIMove.mp3");
-    ae->preloadEffect("sounds/Effect/ArrowRelease01.mp3");
-    ae->preloadEffect("sounds/Effect/ArrowRelease02.mp3");
-    ae->preloadEffect("sounds/Effect/MageShot.mp3");
-    ae->preloadEffect("sounds/Effect/Monk00.mp3");
-    ae->preloadEffect("sounds/Effect/Monk01.mp3");
-    ae->preloadEffect("sounds/Effect/Monk02.mp3");
-    ae->preloadEffect("sounds/Effect/Hero_Monk_Firedragon.mp3");
-    ae->preloadEffect("sounds/Effect/Sound_GUIButtonCommon.mp3");
-    ae->preloadEffect("sounds/Effect/GUITransitionOpen.mp3");    
+    static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
     
     char sz[1024];
-    sprintf(sz, "sounds/Background/Background%02d.mp3", rand() % 5);
+    sprintf(sz, "sounds/Backgrounds/Background%02d.mp3", rand() % 5);
     ae->playBackgroundMusic(sz, true);
-    ae->playEffect("sounds/Effect/WaveIncoming.mp3");
+    ae->playEffect("sounds/Effects/WaveIncoming.mp3");
 
     return true;
 }
 
 // DemoTemp
-float MAX_MOVE[] = {1.5f, 2.5f, 2.5f, 1.5f};
-int g_moveIndex = 0;
-float g_move = 100.0f;
-float MAX_FIGHT = 8.0f;
-float g_fight = 100.0f;
 int g_fightId = 0;
 float g_fightFree = 0.0f;
 
-void CBattleWorld::onTick( float dt )
+void CBattleWorld::onTick(float dt)
 {
     // DemoTemp
-    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
-    g_move += dt;
-    g_fight += dt;
+    static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
     g_fightFree += dt;
     if (g_fightId != 0 && g_fightFree > 2.0f)
     {
         ae->stopEffect(g_fightId);
         g_fightId = 0;
-        g_fight = 100.0f;
     }
     
     if (isLuaWorldTickEnabled())
@@ -298,7 +272,7 @@ void CBattleWorld::onTick( float dt )
         onLuaWorldTick(dt);
     }
 
-    CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
+    BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
     l->updateTargetInfo();
     l->updateHeroPortrait();
 }
@@ -307,7 +281,7 @@ bool CBattleWorld::onLuaWorldInit()
 {
     // lua
     lua_State* L = getLuaHandle();
-    CCBattleSceneLayer* layer = DCAST(getLayer(), CCBattleSceneLayer*);
+    BattleSceneLayer* layer = DCAST(getLayer(), BattleSceneLayer*);
 
     luaL_insertloader(L, luaModuleLoader4cc);
     luaRegCommFunc(L);
@@ -349,10 +323,10 @@ bool CBattleWorld::onLuaWorldInit()
     return true;
 }
 
-void CBattleWorld::onLuaWorldTick( float dt )
+void CBattleWorld::onLuaWorldTick(float dt)
 {
     lua_State* L = getLuaHandle();
-    CCBattleSceneLayer* layer = DCAST(getLayer(), CCBattleSceneLayer*);
+    BattleSceneLayer* layer = DCAST(getLayer(), BattleSceneLayer*);
 
     lua_getglobal(L, "onWorldTick");
     lua_pushnumber(L, dt);
@@ -370,14 +344,14 @@ void CBattleWorld::onLuaWorldTick( float dt )
     assert(lua_gettop(L) == 0);
 }
 
-CProjectile* CBattleWorld::copyProjectile( int id ) const
+CProjectile* CBattleWorld::copyProjectile(int id) const
 {
     return m_oULib.copyProjectile(id);
 }
 
 void CBattleWorld::onUnitDying(CUnit* pUnit)
 {
-    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
+    static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
 
     CUnitDrawForCC* d = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
     if (pUnit == getHero())
@@ -428,7 +402,7 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
                 CUnitDrawForCC* dd = DCAST(uu->getDraw(), CUnitDrawForCC*);
                 char szTip[64];
                 sprintf(szTip, "+%d Gold", iG);
-                dd->addBattleTip(szTip, "fonts/Comic Book.fnt", 18, ccc3(255, 247, 53));
+                dd->addBattleTip(szTip, "fonts/Comic Book.fnt", 18, Color3B(255, 247, 53));
             }
             M_VEC_NEXT;
         }
@@ -436,157 +410,186 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
 
     if (pUnit == getHero())
     {
-        //setHero(NULL);
+        //setHero(nullptr);
     }
 }
 
-void CBattleWorld::onUnitAttackTarget( CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget )
+void CBattleWorld::onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget)
 {
-    // DemoTemp
-    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
-    if (strcmp(pUnit->getDraw()->getName(), "Soldier") == 0 || strcmp(pUnit->getDraw()->getName(), "Templar") == 0)
+    M_DEF_GC(gc);
+    CSpriteInfo* si = DCAST(pUnit->getDraw(), CUnitDrawForCC*)->getSpriteInfo();
+    if (strcmp(si->getName(), "Soldier") == 0 || strcmp(si->getName(), "Templar") == 0)
     {
-        if (g_fight > MAX_FIGHT)
+        if (!gc->isSoundPlaying(g_fightId))
         {
-            g_fightId = ae->playEffect("sounds/Effect/Fighting.mp3");
-            g_fight = 0.0f;
+            g_fightId = gc->playSound("sounds/Effects/Fighting.mp3", 8.0f);
+            g_fightFree = 0.0f;
         }
-        g_fightFree = 0.0f;
-    }
-
-    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
-    CUnitDraw2D* hd = DCAST(getHero()->getDraw(), CUnitDraw2D*);
-    if (pTarget == getHero() && hd->getCastActionId() == 0)
-    {
-        float dis = hd->getPosition().getDistance(d->getPosition());
-        if (dis < 150 && !getThunderCapAct()->isCoolingDown() && pTarget->isDoingOr(CUnit::kMoving) == false)
-        {
-            hd->setCastTarget(CCommandTarget());
-            hd->cmdCastSpell(getThunderCapAct()->getId());
-            //ae->playEffect("sounds/Effect/ThunderCap.mp3");
-            getLayer()->runAction(CCSequence::createWithTwoActions(CCDelayTime::create(0.4f), CCShake::create(0.2f, 4, 10.0f)));
-        }
-        else if (dis >= 150 && !getHammerThrowAct()->isCoolingDown() && !pTarget->isDoingOr(CUnit::kObstinate))
-        {
-            hd->setCastTarget(pUnit->getId());
-            hd->cmdCastSpell(getHammerThrowAct()->getId());
-        }
-        //DCAST(getHero()->getWorld(), CBattleWorld*)->getLayer()->runAction(CCShake::create(0.8f, 2, 50.0f));
     }
 }
 
-void CBattleWorld::onUnitProjectileEffect( CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget )
+void CBattleWorld::onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget)
 {
+#if 0
     // DemoTemp
     M_DEF_GC(gc);
     if (strcmp(pProjectile->getName(), "ThorHammer") == 0)
     {
-        CCNode* sn = DCAST(pTarget->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
-#if 1
-        CCAnimation* pAni = gc->getAnimation("Effects/Lightning");
-        CCSprite* sp = CCSprite::createWithSpriteFrameName("Effects/Lightning/00.png");
+        Node* sn = DCAST(pTarget->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
 
-        CCAnimation* pAni2 = gc->getAnimation("Effects/Lightning2");
-        CCSprite* sp2 = CCSprite::createWithSpriteFrameName("Effects/Lightning2/00.png");
+        Animation* pAni = gc->getAnimation("Effects/Lightning");
+        Sprite* sp = Sprite::createWithSpriteFrameName("Effects/Lightning/00.png");
 
-        CCAnimation* pAni3 = gc->getAnimation("Effects/Lightning3");
-        CCSprite* sp3 = CCSprite::createWithSpriteFrameName("Effects/Lightning3/00.png");
+        Animation* pAni2 = gc->getAnimation("Effects/Lightning2");
+        Sprite* sp2 = Sprite::createWithSpriteFrameName("Effects/Lightning2/00.png");
 
-        sn->getParent()->runAction(CCShake::create(0.2f, 4, 10.0f));
+        Animation* pAni3 = gc->getAnimation("Effects/Lightning3");
+        Sprite* sp3 = Sprite::createWithSpriteFrameName("Effects/Lightning3/00.png");
+
+        sn->getParent()->runAction(Shake::create(0.2f, 4, 10.0f));
         
         sn->addChild(sp, M_BASE_Z - sn->getPosition().y);
-        sp->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5 - 100.0f));
-        sp->runAction(CCSequence::create(CCAnimate::create(pAni), CCRemoveSelf::create(), NULL));
+        sp->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5 - 100.0f));
+        sp->runAction(Sequence::create(Animate::create(pAni), RemoveSelf::create(), nullptr));
 
         sn->addChild(sp2, M_BASE_Z - sn->getPosition().y);
-        sp2->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp2->getContentSize().height * 0.5 - 100.0f));
-        sp2->runAction(CCSequence::create(CCAnimate::create(pAni2), CCRemoveSelf::create(), NULL));
+        sp2->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, sp2->getContentSize().height * 0.5 - 100.0f));
+        sp2->runAction(Sequence::create(Animate::create(pAni2), RemoveSelf::create(), nullptr));
         
         sn->addChild(sp3, M_BASE_Z - sn->getPosition().y);
-        sp3->setPosition(ccp(sn->getContentSize().width * sn->getAnchorPoint().x, sp3->getContentSize().height * 0.5 - 100.0f));
-        sp3->runAction(CCSequence::create(CCAnimate::create(pAni3), CCRemoveSelf::create(), NULL));
-#else
-        CCEffect* eff = CCEffect::create("Units/KungFu/act8", 0.1f);
-        sn->getParent()->addChild(eff);
-        eff->setPosition(sn->getParent()->convertToNodeSpace(sn->convertToWorldSpaceAR(sn->getAnchorPointInPoints())));
-        eff->playRelease();
-        
-        
+        sp3->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, sp3->getContentSize().height * 0.5 - 100.0f));
+        sp3->runAction(Sequence::create(Animate::create(pAni3), RemoveSelf::create(), nullptr)); 
+    }
 #endif
+}
+
+void CBattleWorld::onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
+{
+    if (pUnit != getHero())
+    {
+        return;
+    }
+    
+    BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
+    l->updateHeroAbilityPanel();
+}
+
+void CBattleWorld::onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
+{
+    if (pUnit != getHero())
+    {
+        return;
+    }
+
+    BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
+    l->updateHeroAbilityPanel();
+}
+
+void CBattleWorld::onUnitAbilityCD(CUnit* pUnit, CAbility* pAbility)
+{
+    if (pUnit != getHero())
+    {
+        return;
+    }
+
+    BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
+    auto btn = l->m_bp->getButton([pAbility](ButtonBase* btn)
+    {
+        return btn->getUserData() == (void*)pAbility->getId();
+    });
+
+    if (btn != nullptr)
+    {
+        btn->coolDown();
+    }
+
+    // 技能目标圈
+    auto a = DCAST(pAbility, CActiveAbility*);
+    if (a != nullptr && a->getCastTargetType() == CCommandTarget::kPointTarget && a->getCastTargetRadius() > 0.0f)
+    {
+        auto sp = DCAST(l->getChildByTag(105), Sprite*);
+        if (sp != nullptr)
+        {
+            sp->setTag(-105);
+            sp->stopAllActions();
+            sp->runAction(Sequence::create(FadeTo::create(0.1f, 255), DelayTime::create(0.1f), Spawn::createWithTwoActions(Sequence::createWithTwoActions(FadeOut::create(0.1f), DelayTime::create(0.2f)), ScaleTo::create(0.3f, sp->getScale() * 1.5f)), RemoveSelf::create(), nullptr));
+        }
     }
 }
 
-void CBattleWorld::onChangeGold( CMultiRefObject* obj )
+void CBattleWorld::onChangeGold(CMultiRefObject* obj)
 {
-    CCBattleSceneLayer* l = DCAST(getLayer(), CCBattleSceneLayer*);
+    BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
     CUnit* hero = getHero();
-    if (hero != NULL)
+    if (hero != nullptr)
     {
         l->updateResourceInfo(hero->getResource()->getGold());
     }
 }
 
-void CBattleWorld::onAniDone( CMultiRefObject* obj, void* data )
+void CBattleWorld::onAniDone(CMultiRefObject* obj, void* data)
 {
     getHero()->resume();
 }
 
-// CCBattleScene
-CCBattleScene::CCBattleScene()
-    : m_pWorld(NULL)
+// BattleScene
+BattleScene::BattleScene()
+: m_pWorld(nullptr)
 {
 }
 
-CCBattleScene::~CCBattleScene()
+BattleScene::~BattleScene()
 {
     M_SAFE_RELEASE(m_pWorld);
 }
 
-bool CCBattleScene::init()
+bool BattleScene::init()
 {
     m_pWorld = new CBattleWorld;
     m_pWorld->retain();
 
-    return CCScene::init();
+    return Scene::init();
 }
 
-// CCBattleSceneLayer
-CCBattleSceneLayer::CCBattleSceneLayer()
-    : m_ctrlLayer(NULL)
-    , m_ctrlLayer2(NULL)
-    , m_iMaxLogs(0)
-    , m_iBaseLogId(CKeyGen::nextKey())
-    , m_iCurLogId(m_iBaseLogId)
-    , m_pTargetAtk(NULL)
-    , m_pTargetDef(NULL)
-    , m_bShowTargetInfo(false)
+// BattleSceneLayer
+BattleSceneLayer::BattleSceneLayer()
+: m_ctrlLayer(nullptr)
+, m_ctrlLayer2(nullptr)
+, m_iMaxLogs(0)
+, m_iBaseLogId(CKeyGen::nextKey())
+, m_iCurLogId(m_iBaseLogId)
+, m_pTargetAtk(nullptr)
+, m_pTargetDef(nullptr)
+, m_bShowTargetInfo(false)
+, m_iTargetInfoUnitId(0)
+, m_bp(nullptr)
 {
-    CCLabelTTF* lbl = CCLabelTTF::create("TestSize", FONT_ARIAL, 20);
-    const CCSize& sz = lbl->getContentSize();
-    static CCSize winSz = CCDirector::sharedDirector()->getVisibleSize();
+    Label* lbl = Label::createWithTTF("TestSize", FONT_ARIAL, 20);
+    const Size& sz = lbl->getContentSize();
+    static Size winSz = Director::getInstance()->getVisibleSize();
     m_iMaxLogs = (winSz.height - 20) / sz.height;
     memset(&m_stTargetInfo, 0xFF, sizeof(m_stTargetInfo));
 }
 
-CCBattleSceneLayer::~CCBattleSceneLayer()
+BattleSceneLayer::~BattleSceneLayer()
 {
-    if (m_ctrlLayer != NULL)
+    if (m_ctrlLayer != nullptr)
     {
-        if (m_ctrlLayer->getParent() != NULL)
+        if (m_ctrlLayer->getParent() != nullptr)
         {
             m_ctrlLayer->removeFromParentAndCleanup(true);
         }
     }
 }
 
-CCScene* CCBattleSceneLayer::scene()
+Scene* BattleSceneLayer::scene()
 {
     // 'scene' is an autorelease object
-    CCBattleScene* pScene = CCBattleScene::create();
+    BattleScene* pScene = BattleScene::create();
 
     CBattleWorld* pWorld = DCAST(pScene->getWorld(), CBattleWorld*);
     // 'layer' is an autorelease object
-    CCBattleSceneLayer* layer = CCBattleSceneLayer::createWithWorld(pWorld);
+    BattleSceneLayer* layer = BattleSceneLayer::createWithWorld(pWorld);
     //pWorld->setLayer(layer);
 
     // add layer as a child to scene
@@ -599,22 +602,23 @@ CCScene* CCBattleSceneLayer::scene()
 }
 
 // on "init" you need to initialize your instance
-bool CCBattleSceneLayer::initWithWorld(CWorldForCC* pWorld)
+bool BattleSceneLayer::initWithWorld(CWorldForCC* pWorld)
 {
     //////////////////////////////
     // 1. super init first
-    if (!CCUnitLayer::initWithWorld(pWorld))
+    if (!UnitLayer::initWithWorld(pWorld))
     {
         return false;
     }
 
-    m_ctrlLayer = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 80, -6);
-    m_ctrlLayer2 = CCTouchMaskLayer::create(ccc4(0, 0, 0, 0), 120, -5);
+    m_ctrlLayer = TouchMaskLayer::create(Color4B(0, 0, 0, 0), 80);
+    m_ctrlLayer2 = TouchMaskLayer::create(Color4B(0, 0, 0, 0), 120);
 
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
 
-    addChild(gc->defaultLoadingLayer(), 100, 100);
+    auto ll = gc->defaultLoadingLayer();
+    addChild(ll, 100, 100);
 
     vector<string> ts;
     ts.push_back("Global0");
@@ -640,53 +644,95 @@ bool CCBattleSceneLayer::initWithWorld(CWorldForCC* pWorld)
     ot.push_back("UI/Button/BtnQuitSel.png");
     ot.push_back("UI/Button/BtnTryAgainNor.png");
     ot.push_back("UI/Button/BtnTryAgainSel.png");
-    gc->loadTexturesAsync(ts, ot, this, callfuncO_selector(CCBattleSceneLayer::onLoadingProgress), callfuncO_selector(CCBattleSceneLayer::onLoadingDone));
+    gc->loadTexturesAsync(ts, ot, CC_CALLBACK_0(BattleSceneLayer::onLoadingProgress, this), nullptr);
 
     return true;
 }
 
-void CCBattleSceneLayer::onLoadingProgress( CCObject* pObj )
+void BattleSceneLayer::onLoadingProgress()
 {
     M_DEF_GC(gc);
+    if (gc->getLoaded() == max(1, gc->getLoadCount() - 1))
+    {
+        gc->preloadSound("sounds/Sprites/Thor/move/00.mp3");
+        gc->preloadSound("sounds/Sprites/Thor/move/01.mp3");
+        gc->preloadSound("sounds/Sprites/Thor/move/02.mp3");
+        gc->preloadSound("sounds/Sprites/Thor/move/03.mp3");
+        gc->preloadSound("sounds/Sprites/Thor/die/00.mp3");
+        gc->preloadSound("sounds/Effects/WaveIncoming.mp3");
+        gc->preloadSound("sounds/Effects/Fighting.mp3");
+        gc->preloadSound("sounds/Effects/HammerThrow.mp3");
+        gc->preloadSound("sounds/Effects/LevelUp.mp3");
+        gc->preloadSound("sounds/Effects/OpenDoor.mp3");
+        gc->preloadSound("sounds/Effects/TeslaRay00.mp3");
+        gc->preloadSound("sounds/Effects/TeslaRay01.mp3");
+        gc->preloadSound("sounds/Effects/ThunderCap.mp3");
+        gc->preloadSound("sounds/Effects/ArcaneRay.mp3");
+        gc->preloadSound("sounds/Effects/UIMove.mp3");
+        gc->preloadSound("sounds/Effects/ArrowRelease00.mp3");
+        gc->preloadSound("sounds/Effects/ArrowRelease01.mp3");
+        gc->preloadSound("sounds/Effects/MageShot.mp3");
+        gc->preloadSound("sounds/Effects/Monk00.mp3");
+        gc->preloadSound("sounds/Effects/Monk01.mp3");
+        gc->preloadSound("sounds/Effects/Monk02.mp3");
+        gc->preloadSound("sounds/Effects/Hero_Monk_Firedragon.mp3");
+        gc->preloadSound("sounds/Effects/Sound_GUIButtonCommon.mp3");
+        gc->preloadSound("sounds/Effects/GUITransitionOpen.mp3");
+    }
+
+    if (gc->getLoaded() < 2)
+    {
+        return;
+    }
+
+    float per = gc->getLoaded() * 100 / gc->getLoadCount();
+    auto pb = DCAST(getChildByTag(100)->getChildByTag(101), ProgressBar*);
+    if (pb == nullptr)
+    {
+        pb = ProgressBar::create(Size(wsz().width * 0.5, 50.0f), Sprite::createWithSpriteFrameName("UI/status/HpBarFill.png"), Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
+        getChildByTag(100)->addChild(pb, 1, 101);
+        pb->setPosition(Point(wsz().width * 0.5, wsz().height * 0.3));
+    }
+    //pb->stopAllActions();
+    //pb->runActionForTimer(EaseExponentialOut::create(pb->setPercentageAction(per, 0.1f, per < 100 ? nullptr : CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onLoadingDone, this)))));
+    pb->setPercentage(per);
+    if (per >= 100)
+    {
+        pb->runAction(Sequence::createWithTwoActions(DelayTime::create(1.0f), CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onLoadingDone, this))));
+    }
 }
 
-void CCBattleSceneLayer::onLoadingDone( CCObject* pObj )
+void BattleSceneLayer::onLoadingDone()
 {
     removeChildByTag(100);
 
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
 
     M_DEF_GC(gc);
 
-    setBackgroundSprite(CCSprite::create(CUserData::instance()->getStageSelected()->background.c_str()));
+    setBackgroundSprite(Sprite::create(CUserData::instance()->getStageSelected()->background.c_str()));
     setBufferEffectParam(1.5f, 0.9f, 20.0f, 0.1f);
-    setPosition(ccp(0, 0));
+    setPosition(Point(0, 0));
 
     /////////////////////////////
     // 3. add your codes below...
-
-    CCMenu* mn = CCMenu::create();
+    
+    Menu* mn = Menu::create();
     m_ctrlLayer->addChild(mn);
-    mn->setTouchPriority(-1);
-    mn->setPosition(CCPointZero);
+    mn->setPosition(Point::ZERO);
+    
+    auto btn = ButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, CC_CALLBACK_1(BattleSceneLayer::onClickFist, this), nullptr);
+    mn->addChild(btn);
+    btn->setPosition(Point(wsz.width * 0.07, wsz.height - btn->getContentSize().height * 0.5 - 400));
 
-    CCButtonPanel* bp = CCButtonPanel::create(1, 1, 132, 132, 0, 0, NULL);
-    CCButtonBase* btn = CCButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, this, menu_selector(CCBattleSceneLayer::onClickFist), NULL);
-    bp->addButton(btn, 0, 0);
-
-    m_ctrlLayer->addChild(bp);
-    bp->setPosition(ccp(wsz.width - btn->getContentSize().width * 0.5 - 50, btn->getContentSize().height * 0.5 + 150));
-
-
-    CCMenuItemSprite* btnPause = CCMenuItemSprite::create(
-        CCSprite::create("UI/Button/BtnPauseNor.png"),
-        CCSprite::create("UI/Button/BtnPauseSel.png"),
-        NULL,
-        this,
-        menu_selector(CCBattleSceneLayer::onClickPause));
+    MenuItemSprite* btnPause = MenuItemSprite::create(
+        Sprite::create("UI/Button/BtnPauseNor.png"),
+        Sprite::create("UI/Button/BtnPauseSel.png"),
+        nullptr,
+        CC_CALLBACK_1(BattleSceneLayer::onClickPause, this));
     mn->addChild(btnPause);
 
-    btnPause->setPosition(ccp(wsz.width - btnPause->getContentSize().width * 0.5 - 50, wsz.height - btnPause->getContentSize().height * 0.5 - 50));
+    btnPause->setPosition(Point(wsz.width - btnPause->getContentSize().width * 0.5 - 50, wsz.height - btnPause->getContentSize().height * 0.5 - 50));
 
     if (getWorld()->init() == false)
     {
@@ -695,159 +741,173 @@ void CCBattleSceneLayer::onLoadingDone( CCObject* pObj )
     setWorldInterval(0.02f);
 }
 
-void CCBattleSceneLayer::ccTouchesEnded( CCSet *pTouches, CCEvent *pEvent )
+void BattleSceneLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event* event)
 {
-    CCSetIterator it = pTouches->begin();
-    CCTouch* pTouch = ((CCTouch*)(*it));
+    Touch* pTouch = touches.front();
 
-    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
+    static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
 
-    CCWinLayer::ccTouchesEnded(pTouches, pEvent);
+    WinLayer::onTouchesEnded(touches, event);
     if (!isClickAction())
     {
         return;
     }
 
-    CCPoint pos = convertTouchToNodeSpace(pTouch);
+    Point pos = convertTouchToNodeSpace(pTouch);
+    CPoint p(pos.x, pos.y);
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* hero = w->getUnit(w->getControlUnit());
-    if (hero == NULL)
+    if (hero == nullptr)
     {
         //return;
     }
 
-    CUnitDraw2D* d = hero ? DCAST(hero->getDraw(), CUnitDraw2D*) : NULL;
-    if (d == NULL)
-    {
-        //return;
-    }
-
-    CPoint p(pos.x, pos.y);
     CUnit* t = CUnitGroup::getNearestUnitInRange(w, p, 50.0f);
-
-    if (d != NULL && t != NULL && hero->isEnemyOf(t))
-    {
-        if (hero != t)
-        {
-            d->setCastTarget(CCommandTarget(t->getId()));
-            d->cmdCastSpell(hero->getAttackAbilityId());
-
-            // DemoTemp
-            if (!w->getHammerThrowAct()->isCoolingDown() && d->getCastActionId() == 0)
-            {
-                d->setCastTarget(CCommandTarget(t->getId()));
-                d->cmdCastSpell(w->getHammerThrowAct()->getId());
-            }
-
-            // DemoTemp
-            if (!hero->isDead() && g_move > MAX_MOVE[g_moveIndex])
-            {
-                int me = rand() % 4;
-                while (me == g_moveIndex) me = rand() % 4;
-                char sz[256];
-                sprintf(sz, "sounds/Units/Thor/move/%02d.mp3", me);
-                ae->playEffect(sz);
-                g_moveIndex = me;
-                g_move = 0.0f;
-            }
-        }
-    }
-    else if (d != NULL)
-    {
-        CCSprite* sp = CCSprite::createWithSpriteFrameName("UI/cmd/Target.png");
-        addChild(sp);
-        sp->setPosition(ccp(p.x, p.y));
-        sp->runAction(CCSequence::create(CCFadeOut::create(0.5f), CCRemoveSelf::create(true), NULL));
-        
-        sp = CCSprite::createWithSpriteFrameName("UI/cmd/Target2.png");
-        addChild(sp);
-        sp->setPosition(ccp(p.x, p.y));
-        sp->runAction(CCSequence::create(CCSpawn::create(CCScaleTo::create(0.5f, 1.5f, 1.5f), CCFadeOut::create(0.5f), NULL), CCRemoveSelf::create(true), NULL));
-
-        d->cmdMove(p);
-        // DemoTemp
-        SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
-
-        if (!hero->isDead() && g_move > MAX_MOVE[g_moveIndex])
-        {
-            int me = rand() % 4;
-            while (me == g_moveIndex) me = rand() % 4;
-            char sz[256];
-            sprintf(sz, "sounds/Units/Thor/move/%02d.mp3", me);
-            ae->playEffect(sz);
-            g_moveIndex = me;
-            g_move = 0.0f;
-        }
-    }
-
-    if (t != NULL)
+    if (t != nullptr)
     {
         showTargetInfo(true);
         updateTargetInfo(t->getId());
     }
+
+    CUnitDrawForCC* d = hero ? DCAST(hero->getDraw(), CUnitDrawForCC*) : nullptr;
+    if (d == nullptr)
+    {
+        return;
+    }
+    
+    int wid = d->getWaitForCastTargetActiveAbilityId();
+    if (wid != 0)
+    {
+        if (d->cmdCastSpell(CCommandTarget(p), wid) >= 0)
+        {
+            // 成功施法，或可以施法开始追逐
+            cancelAbilityWaiting(wid, 10);
+        }
+
+        auto a = hero->getActiveAbility(wid);
+        if (a != nullptr && a->getCastTargetRadius() > 0.0f)
+        {
+            auto sp = DCAST(getChildByTag(105), Sprite*);
+            if (sp == nullptr)
+            {
+                sp = Sprite::createWithSpriteFrameName("UI/cmd/Target5.png");
+                sp->setTag(105);
+                addChild(sp);
+
+                sp->setOpacity(40);
+                sp->runAction(RepeatForever::create(Sequence::create(FadeTo::create(1.0f, 100), FadeTo::create(1.0f, 40), nullptr)));
+            }
+            
+            sp->setPosition(Point(p.x, p.y));
+            sp->setScale(a->getCastTargetRadius() * 2 / sp->getContentSize().width);
+        }
+        
+        return;
+    }
+
+    auto sp = getChildByTag(105);
+    if (sp != nullptr)
+    {
+        sp->setTag(-105);
+        sp->stopAllActions();
+        sp->runAction(Sequence::create(FadeOut::create(0.2f), RemoveSelf::create(), nullptr));
+    }
+    
+    if (t != nullptr && hero->isEnemyOf(t))
+    {
+        if (hero != t)
+        {
+            d->cmdCastSpell(CCommandTarget(t->getId()), hero->getAttackAbilityId());
+            if (!hero->isDead() && d != nullptr)
+            {
+                d->playRandomCtrlSound();
+            }
+        }
+    }
+    else
+    {
+        Sprite* sp = Sprite::createWithSpriteFrameName("UI/cmd/Target3.png");
+        addChild(sp);
+        sp->setPosition(Point(p.x, p.y));
+        sp->runAction(Sequence::create(FadeOut::create(0.5f), RemoveSelf::create(true), nullptr));
+        
+        sp = Sprite::createWithSpriteFrameName("UI/cmd/Target2.png");
+        addChild(sp);
+        sp->setPosition(Point(p.x, p.y));
+        sp->runAction(Sequence::create(Spawn::create(ScaleTo::create(0.5f, 1.5f, 1.5f), FadeOut::create(0.5f), nullptr), RemoveSelf::create(true), nullptr));
+
+        d->cmdMove(p);
+        // DemoTemp
+        SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
+
+        if (!hero->isDead())
+        {
+            d->playRandomCtrlSound();
+        }
+    }
 }
 
-void CCBattleSceneLayer::log( const char* fmt, ... )
+void BattleSceneLayer::log(const char* fmt, ...)
 {
-    static CCSize winSz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size winSz = Director::getInstance()->getVisibleSize();
     char sz[1024];
     va_list argv;
     va_start(argv, fmt);
     vsprintf(sz, fmt, argv);
     va_end(argv);
 
-    CCNode* l = getCtrlLayer();
+    Node* l = getCtrlLayer();
     int curLogId = getCurLogId();
     cirInc(curLogId, getBaseLogId(), getMaxLogs());
     setCurLogId(curLogId);
 
-    CCLabelTTF* lbl = DCAST(l->getChildByTag(getCurLogId()), CCLabelTTF*);
-    if (lbl != NULL)
+    Label* lbl = DCAST(l->getChildByTag(getCurLogId()), Label*);
+    if (lbl != nullptr)
     {
         lbl->removeFromParentAndCleanup(true);
     }
 
-    lbl = CCLabelTTF::create(sz, FONT_ARIAL, 20);
-    lbl->setHorizontalAlignment(kCCTextAlignmentLeft);
-    lbl->setColor(ccc3(79, 0, 255));
+    lbl = Label::createWithTTF(sz, FONT_ARIAL, 20);
+    lbl->setHorizontalAlignment(TextHAlignment::LEFT);
+    lbl->setColor(Color3B(79, 0, 255));
     l->addChild(lbl, 1, getCurLogId());
-    const CCSize& rSz = lbl->getContentSize();
-    lbl->setPosition(ccp(rSz.width * 0.5 + 10, winSz.height + rSz.height * 0.5 - 10));
+    const Size& rSz = lbl->getContentSize();
+    lbl->setPosition(Point(rSz.width * 0.5 + 10, winSz.height + rSz.height * 0.5 - 10));
 
     for (int i = 0, j = getCurLogId(); i < getMaxLogs(); ++i)
     {
-        CCNode* pNode = l->getChildByTag(j);
-        if (pNode != NULL)
+        Node* pNode = l->getChildByTag(j);
+        if (pNode != nullptr)
         {
-            pNode->runAction(CCMoveBy::create(0.1f, ccp(0.0f, -lbl->getContentSize().height)));
+            pNode->runAction(MoveBy::create(0.1f, Point(0.0f, -lbl->getContentSize().height)));
         }
 
         cirDec(j, getBaseLogId(), getMaxLogs());
     }
 }
 
-void CCBattleSceneLayer::initTargetInfo()
+void BattleSceneLayer::initTargetInfo()
 {
-    static CCSize vSz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size vSz = Director::getInstance()->getVisibleSize();
 
     // 初始化目标信息面板
-    CCSprite* pSprite = NULL;
-    CCLabelTTF* pLabel = NULL;
+    Sprite* pSprite = nullptr;
+    Label* pLabel = nullptr;
     
-    m_pTargetInfoPanel = CCSprite::create("UI/TargetInfoPanel.png");
+    m_pTargetInfoPanel = Sprite::create("UI/TargetInfoPanel.png");
     m_ctrlLayer->addChild(m_pTargetInfoPanel);
-    m_pTargetInfoPanel->setPosition(ccp(vSz.width * 0.5, -m_pTargetInfoPanel->getContentSize().height * 0.5));
+    m_pTargetInfoPanel->setPosition(Point(vSz.width * 0.5, -m_pTargetInfoPanel->getContentSize().height * 0.5));
 
     float fFontSize = 28;
     float fBaseY = 46;
 
     // 选择头像
-    pSprite = CCSprite::createWithSpriteFrameName("UI/status/portrait_sel.png");
+    pSprite = Sprite::createWithSpriteFrameName("UI/status/portrait_sel.png");
     m_pTargetInfoPanel->addChild(pSprite, 10);
-    pSprite->setPosition(ccp(56, fBaseY - 2));
+    pSprite->setPosition(Point(56, fBaseY - 2));
 
-    m_pPortraitSel = CCSprite::createWithSpriteFrameName("UI/status/portrait_sel.png");
+    m_pPortraitSel = Sprite::createWithSpriteFrameName("UI/status/portrait_sel.png");
     m_pTargetInfoPanel->addChild(m_pPortraitSel);
     m_pPortraitSel->setPosition(pSprite->getPosition());
 
@@ -855,110 +915,129 @@ void CCBattleSceneLayer::initTargetInfo()
     float fW0 = 0;
     float fW1 = 100;
     float fBaseX = M_FIX_BASE_X(fW0, fW1, 80);
-    m_pNameSel = CCLabelTTF::create("", FONT_COMIC_BOOK, fFontSize);
-    m_pNameSel->setAnchorPoint(ccp(0.0, 0.5));
+    m_pNameSel = Label::createWithTTF("", FONT_COMIC_BOOK, fFontSize);
+    m_pNameSel->setAnchorPoint(Point(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pNameSel);
-    m_pNameSel->setHorizontalAlignment(kCCTextAlignmentLeft);
-    m_pNameSel->setPosition(ccp(fBaseX, fBaseY));
+    m_pNameSel->setHorizontalAlignment(TextHAlignment::LEFT);
+    m_pNameSel->setPosition(Point(fBaseX, fBaseY));
 
     // 等级
     fW0 = fW1;
     fW1 = 52;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 130);
-    pLabel = CCLabelTTF::create("Lv", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    pLabel = Label::createWithTTF("Lv", FONT_COMIC_BOOK, fFontSize, Size(fW1, 32), TextHAlignment::LEFT);
     m_pTargetInfoPanel->addChild(pLabel);
-    pLabel->setPosition(ccp(fBaseX, fBaseY));
+    pLabel->setPosition(Point(fBaseX, fBaseY));
 
     fW0 = fW1;
     fW1 = 32;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetLv = CCLabelTTF::create("12", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_pTargetLv = Label::createWithTTF("12", FONT_COMIC_BOOK, fFontSize, Size(fW1, 32), TextHAlignment::LEFT);
     m_pTargetInfoPanel->addChild(m_pTargetLv);
-    m_pTargetLv->setPosition(ccp(fBaseX, fBaseY));
+    m_pTargetLv->setPosition(Point(fBaseX, fBaseY));
 
     // hp
     fW0 = fW1;
     fW1 = 52;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 84);
-    pSprite = CCSprite::createWithSpriteFrameName("UI/status/HP.png");
+    pSprite = Sprite::createWithSpriteFrameName("UI/status/HP.png");
     m_pTargetInfoPanel->addChild(pSprite);
-    pSprite->setPosition(ccp(fBaseX, fBaseY));
+    pSprite->setPosition(Point(fBaseX, fBaseY));
 
     fW0 = fW1;
     fW1 = 200;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetHp = CCLabelTTF::create("1320/3208", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_pTargetHp = Label::createWithTTF("1320/3208", FONT_COMIC_BOOK, fFontSize, Size(fW1, 32), TextHAlignment::LEFT);
     m_pTargetInfoPanel->addChild(m_pTargetHp);
-    m_pTargetHp->setPosition(ccp(fBaseX, fBaseY));
+    m_pTargetHp->setPosition(Point(fBaseX, fBaseY));
 
     // 攻击
     fW0 = fW1;
     fW1 = 52;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 64);
-    m_pTargetAtkIcon = CCSprite::createWithSpriteFrameName("UI/status/PhysicalAttack.png");
+    m_pTargetAtkIcon = Sprite::createWithSpriteFrameName("UI/status/PhysicalAttack.png");
     m_pTargetInfoPanel->addChild(m_pTargetAtkIcon);
-    m_pTargetAtkIcon->setPosition(ccp(fBaseX, fBaseY));
+    m_pTargetAtkIcon->setPosition(Point(fBaseX, fBaseY));
 
 
     fW0 = fW1;
     fW1 = 0; // 锚点在最左处
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetAtk = CCLabelTTF::create("", FONT_COMIC_BOOK, fFontSize);
-    m_pTargetAtk->setAnchorPoint(ccp(0.0, 0.5));
+    m_pTargetAtk = Label::createWithTTF("", FONT_COMIC_BOOK, fFontSize);
+    m_pTargetAtk->setAnchorPoint(Point(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pTargetAtk);
-    m_pTargetAtk->setHorizontalAlignment(kCCTextAlignmentLeft);
+    m_pTargetAtk->setHorizontalAlignment(TextHAlignment::LEFT);
     m_pTargetAtk->setString("105 - 110");
-    m_pTargetAtk->setPosition(ccp(fBaseX, fBaseY));
+    m_pTargetAtk->setPosition(Point(fBaseX, fBaseY));
     m_pTargetAtk->setString("150 - 110");
 
-    fBaseX += m_pTargetAtk->getTextureRect().size.width;
-    m_pTargetAtkEx = CCLabelTTF::create("", FONT_COMIC_BOOK, fFontSize);
-    m_pTargetAtkEx->setAnchorPoint(ccp(0.0, 0.5));
+    //fBaseX += m_pTargetAtk->getTextureRect().size.width;
+    fBaseX += m_pTargetAtk->getContentSize().width;
+    m_pTargetAtkEx = Label::createWithTTF("", FONT_COMIC_BOOK, fFontSize);
+    m_pTargetAtkEx->setAnchorPoint(Point(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pTargetAtkEx);
-    m_pTargetAtkEx->setHorizontalAlignment(kCCTextAlignmentLeft);
+    m_pTargetAtkEx->setHorizontalAlignment(TextHAlignment::LEFT);
     m_pTargetAtkEx->setString(" +15000");
-    m_pTargetAtkEx->setPosition(ccp(fBaseX, fBaseY));
+    m_pTargetAtkEx->setPosition(Point(fBaseX, fBaseY));
     m_pTargetAtk->setString("151 - 167");
-    m_pTargetAtkEx->setColor(ccc3(40, 220, 40));
+    m_pTargetAtkEx->setColor(Color3B(40, 220, 40));
 
     // 护甲
     fW1 = 52;
-    fBaseX += 260 - m_pTargetAtk->getTextureRect().size.width + fW1 * 0.5;
-    m_pTargetDefIcon = CCSprite::createWithSpriteFrameName("UI/status/HeavyArmor.png");
+    //fBaseX += 260 - m_pTargetAtk->getTextureRect().size.width + fW1 * 0.5;
+    fBaseX += 260 - m_pTargetAtk->getContentSize().width + fW1 * 0.5;
+    m_pTargetDefIcon = Sprite::createWithSpriteFrameName("UI/status/HeavyArmor.png");
     m_pTargetInfoPanel->addChild(m_pTargetDefIcon);
-    m_pTargetDefIcon->setPosition(ccp(fBaseX, fBaseY));
+    m_pTargetDefIcon->setPosition(Point(fBaseX, fBaseY));
 
     fW0 = fW1;
     fW1 = 64;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
-    m_pTargetDef = CCLabelTTF::create("32", FONT_COMIC_BOOK, fFontSize, CCSizeMake(fW1, 32), kCCTextAlignmentLeft);
+    m_pTargetDef = Label::createWithTTF("32", FONT_COMIC_BOOK, fFontSize, Size(fW1, 32), TextHAlignment::LEFT);
     m_pTargetInfoPanel->addChild(m_pTargetDef);
-    m_pTargetDef->setPosition(ccp(fBaseX, fBaseY));
+    m_pTargetDef->setPosition(Point(fBaseX, fBaseY));
+
+    m_iTargetInfoUnitId = 0;
 }
 
-void CCBattleSceneLayer::updateTargetInfo(int id)
+void BattleSceneLayer::updateTargetInfo(int id)
 {
     if (m_bShowTargetInfo == false)
     {
         return;
     }
 
-    static int lastId = 0;
-    if (lastId != id && id != 0)
+    if (m_iTargetInfoUnitId != id && id != 0)
     {
-        lastId = id;
-    }
-
-    CUnit* pUnit = getWorld()->getUnit(lastId);
-    if (!pUnit)
-    {
-        return;
+        m_iTargetInfoUnitId = id;
     }
 
     M_DEF_GC(gc);
-    CCSpriteFrameCache* fc = gc->getfc();
-    CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
-    
+    SpriteFrameCache* fc = gc->getfc();
+
+    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
+    CUnit* pUnit = w->getUnit(m_iTargetInfoUnitId);
+
+    if (!pUnit)
+    {
+        const CCommandTarget& rTarget = DCAST(w->getHero()->getDraw(), CUnitDrawForCC*)->getCastTarget();
+        if (rTarget.getTargetType() == CCommandTarget::kUnitTarget)
+        {
+            m_iTargetInfoUnitId = rTarget.getTargetUnit();
+            pUnit = w->getUnit(m_iTargetInfoUnitId);
+            if (!pUnit)
+            {
+                //showTargetInfo(false);
+                return;
+            }
+        }
+        else
+        {
+            //showTargetInfo(false);
+            return;
+        }
+    }
+
     if (!m_pTargetInfoPanel->isVisible())
     {
         m_pTargetInfoPanel->setVisible(true);
@@ -966,14 +1045,15 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
 
     char szBuf[1024];
 
+    CUnitDrawForCC* d = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
     // 选择头像
-    sprintf(szBuf, "Units/%s/portrait_sel.png", pUnit->getDraw()->getName());
-    CCSpriteFrame* sf = fc->spriteFrameByName(szBuf);
-    if (sf == NULL)
+    sprintf(szBuf, "Sprites/%s/portrait_sel.png", d->getSpriteInfo()->getName());
+    SpriteFrame* sf = fc->getSpriteFrameByName(szBuf);
+    if (sf == nullptr)
     {
-        sf = fc->spriteFrameByName("UI/status/portrait_sel.png");
+        sf = fc->getSpriteFrameByName("UI/status/portrait_sel.png");
     }
-    m_pPortraitSel->setDisplayFrame(sf);
+    m_pPortraitSel->setSpriteFrame(sf);
     m_pNameSel->setString(pUnit->getName());
     
     // 等级
@@ -998,16 +1078,16 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
 
     // 攻击
     CAttackAct* atkAct = DCAST(pUnit->getActiveAbility(pUnit->getAttackAbilityId()), CAttackAct*);
-    if (atkAct != NULL)
+    if (atkAct != nullptr)
     {
         switch (atkAct->getBaseAttack().getType())
         {
         case CAttackValue::kPhysical:
-            m_pTargetAtkIcon->setDisplayFrame(fc->spriteFrameByName("UI/status/PhysicalAttack.png"));
+            m_pTargetAtkIcon->setSpriteFrame(fc->getSpriteFrameByName("UI/status/PhysicalAttack.png"));
             break;
 
         case CAttackValue::kMagical:
-            m_pTargetAtkIcon->setDisplayFrame(fc->spriteFrameByName("UI/status/MagicalAttack.png"));
+            m_pTargetAtkIcon->setSpriteFrame(fc->getSpriteFrameByName("UI/status/MagicalAttack.png"));
             break;
         }
         uint32_t dwAtk0 = 0;
@@ -1033,7 +1113,8 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
             {
                 sprintf(szBuf, " +%u", dwAtkEx);
                 m_pTargetAtkEx->setString(szBuf);
-                m_pTargetAtkEx->setPosition(ccpAdd(m_pTargetAtk->getPosition(), ccp(m_pTargetAtk->getTextureRect().size.width, 0)));
+                //m_pTargetAtkEx->setPosition(m_pTargetAtk->getPosition() + Point(m_pTargetAtk->getTextureRect().size.width, 0));
+                m_pTargetAtkEx->setPosition(m_pTargetAtk->getPosition() + Point(m_pTargetAtk->getContentSize().width, 0));
             }
             else
             {
@@ -1047,11 +1128,11 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
     switch (pUnit->getBaseArmor().getType())
     {
     case CArmorValue::kHeavy:
-        m_pTargetDefIcon->setDisplayFrame(fc->spriteFrameByName("UI/status/HeavyArmor.png"));
+        m_pTargetDefIcon->setSpriteFrame(fc->getSpriteFrameByName("UI/status/HeavyArmor.png"));
         break;
 
     case CArmorValue::kCrystal:
-        m_pTargetDefIcon->setDisplayFrame(fc->spriteFrameByName("UI/status/CrystalArmor.png"));
+        m_pTargetDefIcon->setSpriteFrame(fc->getSpriteFrameByName("UI/status/CrystalArmor.png"));
         break;
     }
 
@@ -1065,11 +1146,12 @@ void CCBattleSceneLayer::updateTargetInfo(int id)
 
     if (pUnit->isDead())
     {
-        showTargetInfo(false);
+        m_iTargetInfoUnitId = 0;
+        //showTargetInfo(false);
     }
 }
 
-void CCBattleSceneLayer::showTargetInfo( bool bShow /*= true*/ )
+void BattleSceneLayer::showTargetInfo(bool bShow /*= true*/)
 {
     if (bShow == m_bShowTargetInfo)
     {
@@ -1077,8 +1159,8 @@ void CCBattleSceneLayer::showTargetInfo( bool bShow /*= true*/ )
     }
 
     m_pTargetInfoPanel->stopAllActions();
-    const CCPoint& from = m_pTargetInfoPanel->getPosition();
-    CCPoint to(from.x, 0.0f);
+    const Point& from = m_pTargetInfoPanel->getPosition();
+    Point to(from.x, 0.0f);
     if (bShow)
     {
         to.y = m_pTargetInfoPanel->getContentSize().height * 0.5;
@@ -1089,66 +1171,59 @@ void CCBattleSceneLayer::showTargetInfo( bool bShow /*= true*/ )
     }
 
     // DemoTemp
-    static SimpleAudioEngine* ae = SimpleAudioEngine::sharedEngine();
-    ae->playEffect("sounds/Effect/UIMove.mp3");
-    m_pTargetInfoPanel->runAction(CCMoveTo::create(to.getDistance(from) * 0.002, to));
+    static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
+    ae->playEffect("sounds/Effects/UIMove.mp3");
+    m_pTargetInfoPanel->runAction(MoveTo::create(to.getDistance(from) * 0.002, to));
 
     m_bShowTargetInfo = bShow;
 }
 
-void CCBattleSceneLayer::initHeroPortrait()
+void BattleSceneLayer::initHeroPortrait()
 {
-    static CCPoint org = CCDirector::sharedDirector()->getVisibleOrigin();
-    static CCSize oSz = CCDirector::sharedDirector()->getVisibleSize();
+    static Point org = Director::getInstance()->getVisibleOrigin();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* hero = w->getHero();
 
     M_DEF_GC(gc);
 
-    CCSpriteFrameCache* fc = gc->getfc();
+    SpriteFrameCache* fc = gc->getfc();
     char sz[1024];
-    sprintf(sz, "Units/%s/portrait_hero.png", hero->getDraw()->getName());
-    CCSpriteFrame* fr = fc->spriteFrameByName(sz);
+    sprintf(sz, "Sprites/%s/portrait_hero.png", DCAST(hero->getDraw(), CUnitDrawForCC*)->getSpriteInfo()->getName());
+    SpriteFrame* fr = fc->getSpriteFrameByName(sz);
     
-    //m_pHeroPortrait = CCSprite::createWithSpriteFrame(fr);
-    //m_ctrlLayer->addChild(m_pHeroPortrait);
-    
-    const CCPoint& pos = m_ctrlLayer->getChildByTag(1000)->getPosition();
-    CCButtonPanel* bp = CCButtonPanel::create(1, 1, 112, 124, 0, 0, NULL);
+    const Point& pos = m_ctrlLayer->getChildByTag(1000)->getPosition();
+    ButtonPanel* bp = ButtonPanel::create(1, 1, 112, 124, 0, 0, nullptr);
     m_ctrlLayer->addChild(bp);
-    CCButtonNormal* btn = CCButtonNormal::createWithFrameName(sz, sz, NULL, NULL, NULL, 0.0f, this, menu_selector(CCBattleSceneLayer::onClickHeroPortrait), NULL);
-    bp->setPosition(ccp(oSz.width * 0.07, pos.y - btn->getContentSize().height * 0.5 - 100));
+    ButtonNormal* btn = ButtonNormal::createWithFrameName(sz, sz, nullptr, nullptr, nullptr, 0.0f, CC_CALLBACK_1(BattleSceneLayer::onClickHeroPortrait, this), nullptr);
+    bp->setPosition(Point(wsz.width * 0.07, pos.y - btn->getContentSize().height * 0.5 - 100));
     bp->addButton(btn, 0, 0);
-    
 
-    //m_pHeroPortrait->setPosition(ccp(oSz.width * 0.07, pos.y - m_pHeroPortrait->getContentSize().height * 0.5 - 100));
-    
-
-    CCSprite* fill = CCSprite::createWithSpriteFrameName("UI/status/HpBarFill.png");
-    CCSprite* border = CCSprite::createWithSpriteFrameName("UI/status/HpBarBorder.png");
-    m_pHeroHpBar = CCProgressBar::create(CCSizeMake(104, 8), fill, border, 0, 0, true);
+    Sprite* fill = Sprite::createWithSpriteFrameName("UI/status/HpBarFill.png");
+    Sprite* border = Sprite::createWithSpriteFrameName("UI/status/HpBarBorder.png");
+    m_pHeroHpBar = ProgressBar::create(Size(104, 8), fill, border, 0, 0, true);
     btn->addChild(m_pHeroHpBar);
     //m_pHeroPortrait->addChild(m_pHeroHpBar);
-    //m_pHeroHpBar->setPosition(ccp(m_pHeroPortrait->getContentSize().width * 0.5, 16));
-    m_pHeroHpBar->setPosition(ccp(btn->getContentSize().width * 0.5, 16));
+    //m_pHeroHpBar->setPosition(Point(m_pHeroPortrait->getContentSize().width * 0.5, 16));
+    m_pHeroHpBar->setPosition(Point(btn->getContentSize().width * 0.5, 16));
     
-    fill = CCSprite::createWithSpriteFrameName("UI/status/ExpBarFill.png");
-    border = CCSprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png");
-    m_pHeroExpBar = CCProgressBar::create(CCSizeMake(104, 8), fill, border, 0, 0, true);
+    fill = Sprite::createWithSpriteFrameName("UI/status/ExpBarFill.png");
+    border = Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png");
+    m_pHeroExpBar = ProgressBar::create(Size(104, 8), fill, border, 0, 0, true);
     //m_pHeroPortrait->addChild(m_pHeroExpBar);
-    //m_pHeroExpBar->setPosition(ccp(m_pHeroPortrait->getContentSize().width * 0.5, 6));
+    //m_pHeroExpBar->setPosition(Point(m_pHeroPortrait->getContentSize().width * 0.5, 6));
     btn->addChild(m_pHeroExpBar);
-    m_pHeroExpBar->setPosition(ccp(btn->getContentSize().width * 0.5, 6));
+    m_pHeroExpBar->setPosition(Point(btn->getContentSize().width * 0.5, 6));
 
-    m_pHeroLevel = CCLabelTTF::create("1", FONT_ARIAL, 24, CCSizeMake(28, 28), kCCTextAlignmentCenter);
+    m_pHeroLevel = Label::createWithTTF("1", FONT_ARIAL, 24, Size(28, 28), TextHAlignment::CENTER);
     //m_pHeroPortrait->addChild(m_pHeroLevel);
     btn->addChild(m_pHeroLevel);
-    m_pHeroLevel->setPosition(ccp(94, 40));
+    m_pHeroLevel->setPosition(Point(94, 40));
     m_stHeroInfo.iLevel = 1;
 }
 
-void CCBattleSceneLayer::updateHeroPortrait()
+void BattleSceneLayer::updateHeroPortrait()
 {
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* hero = w->getHero();
@@ -1176,252 +1251,134 @@ void CCBattleSceneLayer::updateHeroPortrait()
     }
 }
 
-void CCBattleSceneLayer::initResourceInfo()
+ButtonBase* BattleSceneLayer::createAbilityButton(CAbility* ability)
 {
-    static CCSize oSz = CCDirector::sharedDirector()->getVisibleSize();
-    CCSprite* sp = CCSprite::create("UI/WavePanel.png");
-    m_ctrlLayer->addChild(sp);
-    sp->setTag(1000);
-    const CCSize& spSz = sp->getContentSize();
-    sp->setPosition(ccp(spSz.width * 0.5 + 50, oSz.height - spSz.height * 0.5 - 50));
-    m_pGold = CCLabelTTF::create("      ", FONT_COMIC_BOOK, 28, CCSizeMake(100, 48), kCCTextAlignmentLeft);
-    sp->addChild(m_pGold);
-    m_pGold->setPosition(ccp(310, 85));
+    auto image = ability->getImageName();
+    if (image[0] == 0)
+    {
+        return nullptr;
+    }
+
+    auto sp = Sprite::create(image);
+
+    auto orgScale = sp->getScale();
+    sp->setScale(0.95f);
+    auto txSel = Utils::nodeToTexture(sp);
+    sp->setScale(orgScale);
+
+    auto txDis = Utils::nodeToTexture(sp, &Utils::tranGrayscale);
+
+    auto ret = ButtonNormal::create(
+        sp,
+        Sprite::createWithTexture(txSel),
+        Sprite::createWithTexture(txDis),
+        Sprite::create("UI/Ability/AbilityBlink2.png"),
+        Sprite::create("UI/Ability/AbilityMask.png"),
+        ability->getCoolDown(),
+        CC_CALLBACK_1(BattleSceneLayer::onClickAbilityButton, this),
+        nullptr);
+    ret->setUserData((void*)ability->getId());
+        
+    return ret;
 }
 
-void CCBattleSceneLayer::updateResourceInfo( int gold )
+void BattleSceneLayer::initHeroAbilityPanel()
 {
-    char sz[64];
-    sprintf(sz, "%d", gold);
-    m_pGold->setString(sz);
+    m_bp = ButtonPanel::create(4, 1, 144, 136, 0, 0, Sprite::create("UI/Ability/AbilityButtonPanel.png"), -5, 6);
+    m_ctrlLayer->addChild(m_bp);
+    m_bp->setPosition(Point(wsz().width - 100, wsz().height * 0.5));
+    
+    //auto btn = ButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, CC_CALLBACK_1(BattleSceneLayer::onClickFist, this), nullptr);
+    //m_bp->addButtonEx(btn, ButtonPanel::kBottomToTop, ButtonPanel::kRightToLeft);
 }
 
-void CCBattleSceneLayer::onDragonStrikeUpdate( CCNode* pNode )
+void BattleSceneLayer::updateHeroAbilityPanel()
 {
-    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    CUnit* u = w->getHero();
-    if (u == NULL)
+    if (m_bp == nullptr)
     {
         return;
     }
 
-    M_DEF_GC(gc);
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
-    CCEffect* eff = NULL;
-    CCEffect* eff2 = NULL;
-    CCLayerColor* lc = NULL;
-    CCPoint ctrlPos;
-    CCSprite* sp = NULL;
-    
-    CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
-    CCNode* sn = d->getSprite()->getShadow();
+    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
+    CUnit* hero = w->getHero();
 
-    char sz[1024];
-
-    switch (m_dscur)
+    CUnit::MAP_ACTIVE_ABILITYS& as = hero->getActiveAbilitys();
+    M_MAP_FOREACH(as)
     {
-    case 0:  // 慢动作特写
-        sprintf(sz, "sounds/Effect/Monk%02d.mp3", rand() % 3);
-        gc->playSound(sz);
-        eff = (CCEffect*)pNode;
-        CCDirector::sharedDirector()->getScheduler()->setTimeScale(0.2f);
-        eff->runAction(
-            CCSequence::create(
-                CCMoveTo::create(eff->getPosition().getDistance(sn->getPosition()) / 1000, ccp(sn->getPosition().x, eff->getPosition().y)),
-                CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onDragonStrikeUpdate)),
-                NULL));
+        auto id = M_MAP_IT->first;
+        auto a = M_MAP_EACH;
+        M_MAP_NEXT;
 
-        ctrlPos = eff->getPosition();
-        lc = CCLayerColor::create(ccc4(0, 0, 0, 128));
-        lc->setContentSize(CCSizeMake(wsz.width * 10, wsz.height));
-        addChild(lc);
-        lc->setTag(7771);
-        lc->setPosition(ccp(0.0f, wsz.height));
-        lc->setOpacity(0);
-        lc->runAction(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.15f, ccp(0.0f, ctrlPos.y - 0)), CCFadeTo::create(0.15f, 200))));
-
-        lc = CCLayerColor::create(ccc4(0, 0, 0, 128));
-        lc->setContentSize(CCSizeMake(wsz.width * 10, wsz.height));
-        addChild(lc);
-        lc->setTag(7772);
-        lc->setPosition(ccp(0.0f, -wsz.height));
-        lc->setOpacity(0);
-        lc->runAction(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.15f, ccp(0.0f, ctrlPos.y - 200 - wsz.height)), CCFadeTo::create(0.15f, 200))));
-        break;
-
-    case 1:  // Dra
-        eff = (CCEffect*)pNode;
-        eff->playRelease(1);
-        sp = CCSprite::create("UI/Dra.png");
-        addChild(sp, 10000);
-        sp->setPosition(ccpAdd(eff->getPosition(), ccp(200 - eff->getContentSize().width, 0.0f)));
-        sp->setOpacity(0);
-        sp->setScale(8.0f);
-        sp->runAction(
-            CCSequence::create(
-                CCEaseExponentialIn::create(
-                    CCSpawn::create(
-                        CCFadeIn::create(0.08f),
-                        CCScaleTo::create(0.08f, 0.5f),
-                        NULL)),
-                CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onDragonStrikeUpdate)),
-                CCFadeOut::create(0.5f),
-                CCRemoveSelf::create(),
-                NULL));
-        
-        break;
-
-    case 2:  // Shake and Gon
-        eff = (CCEffect*)getChildByTag(77777);
-        M_MAP_FOREACH(w->getUnits())
+        if (m_bp->getButton([id](ButtonBase* btn)
         {
-            CUnit* t = M_MAP_EACH;
-            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-            if (t != NULL && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
-            {
-                CAttackData* ad = new CAttackData;
-                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (50 * w->getHero()->getLevel()));
-                t->damaged(ad, w->getHero(), CUnit::kMaskAll);
-            }
-            M_MAP_NEXT;
-        }
-        runAction(CCShake::create(0.05f, 4, 30.0f));
-        gc->playSound("sounds/Effect/ThunderCap.mp3");
-        eff2 = CCEffect::create("Effects/Wave", 0.02f);
-        eff->addChild(eff2);
-        eff2->setPosition(ccpAdd(eff->getAnchorPointInPoints(), ccp(0.0f, -133.0f)));
-        eff2->playRelease(0, 2.0f);
-
-        sp = CCSprite::create("UI/Gon.png");
-        addChild(sp, 10000);
-        sp->setPosition(ccpAdd(eff->getPosition(), ccp(-50.0f, 0.0f)));
-        sp->setOpacity(0);
-        sp->setScale(8.0f);
-        sp->runAction(
-            CCSequence::create(
-                CCEaseExponentialIn::create(
-                    CCSpawn::create(
-                        CCFadeIn::create(0.08f),
-                        CCScaleTo::create(0.08f, 0.5f),
-                        NULL)),
-                CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onDragonStrikeUpdate)),
-                CCFadeOut::create(0.5f),
-                CCRemoveSelf::create(),
-                NULL));
-        break;
-
-    case 3:  // Shake
-        eff = (CCEffect*)getChildByTag(77777);
-        M_MAP_FOREACH(w->getUnits())
+            return btn->getUserData() == (void*)id;
+        }) == nullptr)
         {
-            CUnit* t = M_MAP_EACH;
-            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-            if (t != NULL && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
+            auto btn = createAbilityButton(a);
+            if (btn != nullptr)
             {
-                CAttackData* ad = new CAttackData;
-                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (100 * w->getHero()->getLevel()));
-                t->damaged(ad, w->getHero(), CUnit::kMaskAll);
+                m_bp->addButtonEx(btn, ButtonPanel::kTopToBottom);
             }
-            M_MAP_NEXT;
         }
-        runAction(CCSequence::createWithTwoActions(CCShake::create(0.05f, 4, 30.0f), CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onDragonStrikeUpdate))));
-        gc->playSound("sounds/Effect/ThunderCap.mp3");
-        eff2 = CCEffect::create("Effects/Wave", 0.02f);
-        eff->addChild(eff2);
-        eff2->setPosition(ccpAdd(eff->getAnchorPointInPoints(), ccp(0.0f, -133.0f)));
-        eff2->playRelease(0, 2.0f);
-        break;
-
-    case 4:  // Strike
-        eff = (CCEffect*)getChildByTag(77777);
-        sp = CCSprite::create("UI/Strike.png");
-        addChild(sp, 10000);
-        sp->setPosition(ccpAdd(eff->getPosition(), ccp(eff->getContentSize().width * 0.5 - 50, 0.0f)));
-        sp->setOpacity(0);
-        sp->setScale(8.0f);
-        sp->runAction(
-            CCSequence::create(
-                CCEaseExponentialIn::create(
-                CCSpawn::create(
-                    CCFadeIn::create(0.2f),
-                    CCScaleTo::create(0.2f, 0.5f),
-                    NULL)),
-                CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onDragonStrikeUpdate)),
-                CCFadeOut::create(0.5f),
-                CCRemoveSelf::create(),
-                NULL));
-        gc->playSound("sounds/Effect/Hero_Monk_Firedragon.mp3");
-        break;
-
-    case 5:  // Shake
-        eff = (CCEffect*)getChildByTag(77777);
-        M_MAP_FOREACH(w->getUnits())
-        {
-            CUnit* t = M_MAP_EACH;
-            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-            if (t != NULL && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
-            {
-                CAttackData* ad = new CAttackData;
-                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (150 * w->getHero()->getLevel()));
-                ad->addAttackBuff(CAttackBuff(w->getDragonStrikeBuff()->getId(), 1));
-                t->damaged(ad, w->getHero(), CUnit::kMaskAll);
-            }
-            M_MAP_NEXT;
-        }
-        runAction(CCShake::create(0.1f, 8, 60.0f));
-        gc->playSound("sounds/Effect/ThunderCap.mp3");
-        eff->runAction(
-            CCSequence::create(
-                CCDelayTime::create(0.05f),
-                CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onDragonStrikeUpdate)),
-                NULL));
-
-        getChildByTag(7771)->runAction(CCSequence::createWithTwoActions(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.5f, ccp(0.0f, wsz.height)), CCFadeTo::create(0.5f, 0))), CCRemoveSelf::create()));
-        getChildByTag(7772)->runAction(CCSequence::createWithTwoActions(CCEaseExponentialOut::create(CCSpawn::createWithTwoActions(CCMoveTo::create(0.5f, ccp(0.0f, -wsz.height)), CCFadeTo::create(0.5f, 0))), CCRemoveSelf::create()));
-        break;
-
-    case 6:
-        setMoveEnabled(true);
-        eff = CCEffect::create("Effects/Wave", 0.1f);
-        getChildByTag(77777)->addChild(eff);
-        eff->setPosition(ccpAdd(getChildByTag(77777)->getAnchorPointInPoints(), ccp(0.0f, -133.0f)));
-        eff->playRelease();
-        CCDirector::sharedDirector()->getScheduler()->setTimeScale(1.0f);
-        break;
     }
-    ++m_dscur;
+
+    int n = m_bp->getCount();
+    for (int i = 0; i < n; ++i)
+    {
+        auto btn = m_bp->getButton(i);
+        if (btn != nullptr && hero->getActiveAbility((int)btn->getUserData()) == nullptr)
+        {
+            m_bp->delButton(i);
+        }
+    }
 }
 
-void CCBattleSceneLayer::onClickFist( CCObject* pNode )
+void BattleSceneLayer::cancelAbilityWaiting(int abilityId, int cancelTag)
+{
+    auto btn = m_bp->getButton([abilityId](ButtonBase* b)
+    {
+        return (int)b->getUserData() == abilityId;
+    });
+
+    if (btn != nullptr)
+    {
+        btn->removeChildByTag(10);
+    }
+
+    auto d = DCAST(DCAST(getWorld(), CBattleWorld*)->getHero()->getDraw(), CUnitDrawForCC*);
+    d->setWaitForCastTargetActiveAbilityId(0);
+}
+
+void BattleSceneLayer::onClickFist(Ref* btn)
 {
     M_DEF_GC(gc);
-    gc->playSound("sounds/Effect/Sound_GUIButtonCommon.mp3");
+    gc->playSound("sounds/Effects/Sound_GUIButtonCommon.mp3");
     // DragonStrike
-    DCAST(pNode, CCButtonNormal*)->coolDown();
+    DCAST(btn, ButtonNormal*)->coolDown();
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* u = w->getHero();
     CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
     setMoveEnabled(false);
-    CCNode* sp = d->getSprite();
-    CCEffect* eff = CCEffect::create("Units/KungFu/move", 0.03f);
-    eff->addAnimation("Units/KungFu/act8", 0.05f);
+    Node* sp = d->getSprite();
+    Effect* eff = Effect::create("Sprites/KungFu/move", 0.03f);
+    eff->addAnimation("Sprites/KungFu/act8", 0.05f);
     addChild(eff, M_BASE_Z - d->getPosition().y, 77777);
-    eff->setPosition(ccp(getContentSize().width * getScale() + 100, d->getPosition().y + 150.0f));
+    eff->setPosition(Point(getContentSize().width * getScale() + 100, d->getPosition().y + 150.0f));
     eff->playForever();
-    eff->setFlipX(true);
+    eff->setFlippedX(true);
     m_dscur = 0;
     eff->runAction(
-        CCSequence::create(
-        CCMoveTo::create(eff->getPosition().getDistance(sp->getPosition()) * 0.9 / 1000, ccpAdd(ccp((sp->getPositionX() * 0.9 + eff->getPositionX() * 0.1), sp->getPositionY()), ccp(0.0f, 133.0f))),
-        CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onDragonStrikeUpdate)),
-        NULL));
+        Sequence::create(
+        MoveTo::create(eff->getPosition().getDistance(sp->getPosition()) * 0.9 / 1000, Point((sp->getPositionX() * 0.9 + eff->getPositionX() * 0.1), sp->getPositionY()) + Point(0.0f, 133.0f)),
+        CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onDragonStrikeUpdate, this)),
+        nullptr));
 
 }
 
-void CCBattleSceneLayer::onClickHeroPortrait( CCObject* pNode )
+void BattleSceneLayer::onClickHeroPortrait(Ref* btn)
 {
     M_DEF_GC(gc);
-    gc->playSound("sounds/Effect/Sound_GUIButtonCommon.mp3");
+    gc->playSound("sounds/Effects/Sound_GUIButtonCommon.mp3");
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     if (w->getHero())
@@ -1431,93 +1388,398 @@ void CCBattleSceneLayer::onClickHeroPortrait( CCObject* pNode )
     }
 }
 
-void CCBattleSceneLayer::onClickPause( CCObject* obj )
+void BattleSceneLayer::onClickAbilityButton(Ref* mi)
+{
+    M_DEF_GC(gc);
+    gc->playSound("sounds/Effects/Sound_GUIButtonCommon.mp3");
+
+    auto btn = DCAST(mi, ButtonBase*);
+    auto w = DCAST(getWorld(), CBattleWorld*);
+    auto u = w->getHero();
+    auto d = DCAST(u->getDraw(), CUnitDrawForCC*);
+    auto id = (int)btn->getUserData();
+    auto a = u->getActiveAbility(id);
+    bool cancelCurButton = false;
+
+    auto sp = getChildByTag(105);
+    if (sp != nullptr)
+    {
+        sp->setTag(-105);
+        sp->stopAllActions();
+        sp->runAction(Sequence::create(FadeOut::create(0.2f), RemoveSelf::create(), nullptr));
+    }
+
+    auto wid = d->getWaitForCastTargetActiveAbilityId();
+    if (wid != 0)
+    {
+        // 有等待确认点目标的技能
+        cancelAbilityWaiting(wid, 10);
+        cancelCurButton = (wid == id);
+    }
+
+    if (u->isDead())
+    {
+        btn->setClickRetCode(-1);
+        return;
+    }
+
+    if (a == nullptr)
+    {
+        updateHeroAbilityPanel();
+        btn->setClickRetCode(-1);
+        return;
+    }
+
+    if (a->isCoolingDown())
+    {
+        btn->setClickRetCode(-1);
+        return;
+    }
+
+    switch (a->getCastTargetType())
+    {
+    case CCommandTarget::kNoTarget:
+        //d->say("Taste my spear!");
+        if (d->cmdCastSpell(CCommandTarget(), id) < 0)
+        {
+            btn->setClickRetCode(-1);
+            return;
+        }
+        break;
+
+    case CCommandTarget::kUnitTarget:
+        if (w->getUnit(m_iTargetInfoUnitId) == nullptr)
+        {
+            btn->setClickRetCode(-1);
+            return;
+        }
+
+        if (d->cmdCastSpell(CCommandTarget(m_iTargetInfoUnitId), id) < 0)
+        {
+            auto t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), a->getCastRange() + d->getHostilityRange(), bind(&CUnitGroup::isLivingEnemyOf, placeholders::_1, DCAST(u, CUnitForce*)));
+            if (t != nullptr)
+            {
+                if (d->cmdCastSpell(CCommandTarget(t->getId()), id) < 0)
+                {
+                    btn->setClickRetCode(-1);
+                    return;
+                }
+            }
+        }
+        break;
+
+    case CCommandTarget::kPointTarget:
+        if (cancelCurButton == false && d->getWaitForCastTargetActiveAbilityId() == 0)
+        {
+            auto sp = Sprite::create("UI/Ability/AbilityCancel.png");
+            btn->addChild(sp, 10, 10);
+            sp->setPosition(Point(btn->getAnchorPointInPoints().x, sp->getContentSize().height * 0.5));
+
+            d->setWaitForCastTargetActiveAbilityId(id);
+        }
+        break;
+    }
+}
+
+void BattleSceneLayer::initResourceInfo()
+{
+    static Size oSz = Director::getInstance()->getVisibleSize();
+    Sprite* sp = Sprite::create("UI/WavePanel.png");
+    m_ctrlLayer->addChild(sp);
+    sp->setTag(1000);
+    const Size& spSz = sp->getContentSize();
+    sp->setPosition(Point(spSz.width * 0.5 + 50, oSz.height - spSz.height * 0.5 - 50));
+    m_pGold = Label::createWithTTF("      ", FONT_COMIC_BOOK, 28, Size(100, 48), TextHAlignment::LEFT);
+    sp->addChild(m_pGold);
+    m_pGold->setPosition(Point(310, 85));
+}
+
+void BattleSceneLayer::updateResourceInfo(int gold)
+{
+    char sz[64];
+    sprintf(sz, "%d", gold);
+    m_pGold->setString(sz);
+}
+
+void BattleSceneLayer::onDragonStrikeUpdate(Node* pNode)
+{
+    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
+    CUnit* u = w->getHero();
+    if (u == nullptr)
+    {
+        return;
+    }
+
+    M_DEF_GC(gc);
+    static Size wsz = Director::getInstance()->getVisibleSize();
+    Effect* eff = nullptr;
+    Effect* eff2 = nullptr;
+    LayerColor* lc = nullptr;
+    Point ctrlPos;
+    Sprite* sp = nullptr;
+    
+    CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
+    Node* sn = d->getSprite()->getShadow();
+
+    char sz[1024];
+
+    switch (m_dscur)
+    {
+    case 0:  // 慢动作特写
+        sprintf(sz, "sounds/Effects/Monk%02d.mp3", rand() % 3);
+        gc->playSound(sz);
+        eff = (Effect*)pNode;
+        Director::getInstance()->getScheduler()->setTimeScale(0.2f);
+        eff->runAction(
+            Sequence::create(
+                MoveTo::create(eff->getPosition().getDistance(sn->getPosition()) / 1000, Point(sn->getPosition().x, eff->getPosition().y)),
+                CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onDragonStrikeUpdate, this)),
+                nullptr));
+
+        ctrlPos = eff->getPosition();
+        lc = LayerColor::create(Color4B(0, 0, 0, 128));
+        lc->setContentSize(Size(wsz.width * 10, wsz.height));
+        addChild(lc);
+        lc->setTag(7771);
+        lc->setPosition(Point(0.0f, wsz.height));
+        lc->setOpacity(0);
+        lc->runAction(EaseExponentialOut::create(Spawn::createWithTwoActions(MoveTo::create(0.15f, Point(0.0f, ctrlPos.y - 0)), FadeTo::create(0.15f, 200))));
+
+        lc = LayerColor::create(Color4B(0, 0, 0, 128));
+        lc->setContentSize(Size(wsz.width * 10, wsz.height));
+        addChild(lc);
+        lc->setTag(7772);
+        lc->setPosition(Point(0.0f, -wsz.height));
+        lc->setOpacity(0);
+        lc->runAction(EaseExponentialOut::create(Spawn::createWithTwoActions(MoveTo::create(0.15f, Point(0.0f, ctrlPos.y - 200 - wsz.height)), FadeTo::create(0.15f, 200))));
+        break;
+
+    case 1:  // Dra
+        eff = (Effect*)pNode;
+        eff->playRelease(1);
+        sp = Sprite::create("UI/Dra.png");
+        addChild(sp, 10000);
+        sp->setPosition(eff->getPosition() + Point(200 - eff->getContentSize().width, 0.0f));
+        sp->setOpacity(0);
+        sp->setScale(8.0f);
+        sp->runAction(
+            Sequence::create(
+                EaseExponentialIn::create(
+                    Spawn::create(
+                        FadeIn::create(0.08f),
+                        ScaleTo::create(0.08f, 0.5f),
+                        nullptr)),
+                CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onDragonStrikeUpdate, this)),
+                FadeOut::create(0.5f),
+                RemoveSelf::create(),
+                nullptr));
+        
+        break;
+
+    case 2:  // Shake and Gon
+        eff = (Effect*)getChildByTag(77777);
+        M_MAP_FOREACH(w->getUnits())
+        {
+            CUnit* t = M_MAP_EACH;
+            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+            if (t != nullptr && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
+            {
+                CAttackData* ad = new CAttackData;
+                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (50 * w->getHero()->getLevel()));
+                t->damaged(ad, w->getHero(), CUnit::kMaskAll);
+            }
+            M_MAP_NEXT;
+        }
+        runAction(Shake::create(0.05f, 4, 30.0f));
+        gc->playSound("sounds/Effects/ThunderCap.mp3");
+        eff2 = Effect::create("Effects/Wave", 0.02f);
+        eff->addChild(eff2);
+        eff2->setPosition(eff->getAnchorPointInPoints() + Point(0.0f, -133.0f));
+        eff2->playRelease(0, 2.0f);
+
+        sp = Sprite::create("UI/Gon.png");
+        addChild(sp, 10000);
+        sp->setPosition(eff->getPosition() + Point(-50.0f, 0.0f));
+        sp->setOpacity(0);
+        sp->setScale(8.0f);
+        sp->runAction(
+            Sequence::create(
+                EaseExponentialIn::create(
+                    Spawn::create(
+                        FadeIn::create(0.08f),
+                        ScaleTo::create(0.08f, 0.5f),
+                        nullptr)),
+                CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onDragonStrikeUpdate, this)),
+                FadeOut::create(0.5f),
+                RemoveSelf::create(),
+                nullptr));
+        break;
+
+    case 3:  // Shake
+        eff = (Effect*)getChildByTag(77777);
+        M_MAP_FOREACH(w->getUnits())
+        {
+            CUnit* t = M_MAP_EACH;
+            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+            if (t != nullptr && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
+            {
+                CAttackData* ad = new CAttackData;
+                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (100 * w->getHero()->getLevel()));
+                t->damaged(ad, w->getHero(), CUnit::kMaskAll);
+            }
+            M_MAP_NEXT;
+        }
+        runAction(Sequence::createWithTwoActions(Shake::create(0.05f, 4, 30.0f), CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onDragonStrikeUpdate, this))));
+        gc->playSound("sounds/Effects/ThunderCap.mp3");
+        eff2 = Effect::create("Effects/Wave", 0.02f);
+        eff->addChild(eff2);
+        eff2->setPosition(eff->getAnchorPointInPoints() + Point(0.0f, -133.0f));
+        eff2->playRelease(0, 2.0f);
+        break;
+
+    case 4:  // Strike
+        eff = (Effect*)getChildByTag(77777);
+        sp = Sprite::create("UI/Strike.png");
+        addChild(sp, 10000);
+        sp->setPosition(eff->getPosition() + Point(eff->getContentSize().width * 0.5 - 50, 0.0f));
+        sp->setOpacity(0);
+        sp->setScale(8.0f);
+        sp->runAction(
+            Sequence::create(
+                EaseExponentialIn::create(
+                Spawn::create(
+                    FadeIn::create(0.2f),
+                    ScaleTo::create(0.2f, 0.5f),
+                    nullptr)),
+                CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onDragonStrikeUpdate, this)),
+                FadeOut::create(0.5f),
+                RemoveSelf::create(),
+                nullptr));
+        gc->playSound("sounds/Effects/Hero_Monk_Firedragon.mp3");
+        break;
+
+    case 5:  // Shake
+        eff = (Effect*)getChildByTag(77777);
+        M_MAP_FOREACH(w->getUnits())
+        {
+            CUnit* t = M_MAP_EACH;
+            CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+            if (t != nullptr && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
+            {
+                CAttackData* ad = new CAttackData;
+                ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (150 * w->getHero()->getLevel()));
+                ad->addAttackBuff(CAttackBuff(w->getDragonStrikeBuff()->getId(), 1));
+                t->damaged(ad, w->getHero(), CUnit::kMaskAll);
+            }
+            M_MAP_NEXT;
+        }
+        runAction(Shake::create(0.1f, 8, 60.0f));
+        gc->playSound("sounds/Effects/ThunderCap.mp3");
+        eff->runAction(
+            Sequence::create(
+                DelayTime::create(0.05f),
+                CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onDragonStrikeUpdate, this)),
+                nullptr));
+
+        getChildByTag(7771)->runAction(Sequence::createWithTwoActions(EaseExponentialOut::create(Spawn::createWithTwoActions(MoveTo::create(0.5f, Point(0.0f, wsz.height)), FadeTo::create(0.5f, 0))), RemoveSelf::create()));
+        getChildByTag(7772)->runAction(Sequence::createWithTwoActions(EaseExponentialOut::create(Spawn::createWithTwoActions(MoveTo::create(0.5f, Point(0.0f, -wsz.height)), FadeTo::create(0.5f, 0))), RemoveSelf::create()));
+        break;
+
+    case 6:
+        setMoveEnabled(true);
+        eff = Effect::create("Effects/Wave", 0.1f);
+        getChildByTag(77777)->addChild(eff);
+        eff->setPosition(getChildByTag(77777)->getAnchorPointInPoints() + Point(0.0f, -133.0f));
+        eff->playRelease();
+        Director::getInstance()->getScheduler()->setTimeScale(1.0f);
+        break;
+    }
+    ++m_dscur;
+}
+
+void BattleSceneLayer::onClickPause(Ref* obj)
 {
     //getWorld()->shutdown();
-    //CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
+    //Director::getInstance()->replaceScene(BattleSceneLayer::scene());
     showCtrlPanel();
 }
 
-void CCBattleSceneLayer::initCtrlPanel()
+void BattleSceneLayer::initCtrlPanel()
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
 
     // 布置pannel
-    m_panel = CCPopPanel::create(CCSprite::create("UI/PanelSmall.png"));
-    m_panel->getMenu()->setTouchPriority(-10);
-    m_panel->getMenu()->setPosition(CCPointZero);
+    m_panel = PopPanel::create(Sprite::create("UI/PanelSmall.png"));
+    //m_panel->getMenu()->setTouchPriority(-10);
+    m_panel->getMenu()->setPosition(Point::ZERO);
 
     m_ctrlLayer2->addChild(m_panel);
-    CCSize psz = m_panel->getContentSize();
+    Size psz = m_panel->getContentSize();
 
-    CCSprite* sp = CCSprite::create("UI/Chain.png");
+    Sprite* sp = Sprite::create("UI/Chain.png");
     m_panel->addChild(sp, -1);
-    sp->setPosition(ccp(psz.width * 0.2, psz.height + sp->getContentSize().height * 0.2));
+    sp->setPosition(Point(psz.width * 0.2, psz.height + sp->getContentSize().height * 0.2));
 
-    sp = CCSprite::create("UI/Chain.png");
+    sp = Sprite::create("UI/Chain.png");
     m_panel->addChild(sp, -1);
-    sp->setPosition(ccp(psz.width * 0.8, psz.height + sp->getContentSize().height * 0.2));
+    sp->setPosition(Point(psz.width * 0.8, psz.height + sp->getContentSize().height * 0.2));
 
-    sp = CCSprite::create("UI/Title.png");
+    sp = Sprite::create("UI/Title.png");
     m_panel->addChild(sp, 1, 2);
-    sp->setPosition(ccp(psz.width * 0.5, psz.height));
+    sp->setPosition(Point(psz.width * 0.5, psz.height));
 
-    CCLabelTTF* lbl = CCLabelTTF::create("OPTIONS", FONT_YIKES, 72);
-    lbl->setColor(ccc3(80, 60, 50));
+    Label* lbl = Label::createWithTTF("OPTIONS", FONT_YIKES, 72);
+    lbl->setColor(Color3B(80, 60, 50));
     sp->addChild(lbl, 1, 2);
-    lbl->setPosition(ccpAdd(sp->getAnchorPointInPoints(), ccp(0.0f, 20)));
-
-    CCMenuItemSprite* btnClose = CCMenuItemSprite::create(
-        CCSprite::create("UI/Button/BtnCloseNor.png"),
-        CCSprite::create("UI/Button/BtnCloseSel.png"),
-        NULL,
-        this,
-        menu_selector(CCBattleSceneLayer::onCloseCtrlPanel));
+    lbl->setPosition(sp->getAnchorPointInPoints() + Point(0.0f, 20));
+    
+    MenuItemSprite* btnClose = MenuItemSprite::create(
+        Sprite::create("UI/Button/BtnCloseNor.png"),
+        Sprite::create("UI/Button/BtnCloseSel.png"),
+        nullptr,
+        CC_CALLBACK_1(BattleSceneLayer::onCloseCtrlPanel, this));
     m_panel->addButton(btnClose);
-    btnClose->setPosition(ccp(psz.width - btnClose->getContentSize().width * 0.5 - 50, psz.height - btnClose->getContentSize().height * 0.5 - 50));
+    btnClose->setPosition(Point(psz.width - btnClose->getContentSize().width * 0.5 - 50, psz.height - btnClose->getContentSize().height * 0.5 - 50));
 
-    CCMenuItemSprite* btnResume = CCMenuItemSprite::create(
-        CCSprite::create("UI/Button/BtnResumeNor.png"),
-        CCSprite::create("UI/Button/BtnResumeSel.png"),
-        NULL,
-        this,
-        menu_selector(CCBattleSceneLayer::onClickResume));
+    MenuItemSprite* btnResume = MenuItemSprite::create(
+        Sprite::create("UI/Button/BtnResumeNor.png"),
+        Sprite::create("UI/Button/BtnResumeSel.png"),
+        nullptr,
+        CC_CALLBACK_1(BattleSceneLayer::onClickResume, this));
     m_panel->addButton(btnResume);
     btnResume->setTag(1);
-    btnResume->setPosition(ccp(psz.width * 0.5, psz.height * 0.5 + btnResume->getContentSize().height + 20));
+    btnResume->setPosition(Point(psz.width * 0.5, psz.height * 0.5 + btnResume->getContentSize().height + 20));
     
-    CCMenuItemSprite* btnRestart = CCMenuItemSprite::create(
-        CCSprite::create("UI/Button/BtnRestartNor.png"),
-        CCSprite::create("UI/Button/BtnRestartSel.png"),
-        NULL,
-        this,
-        menu_selector(CCBattleSceneLayer::onClickRestart));
+    MenuItemSprite* btnRestart = MenuItemSprite::create(
+        Sprite::create("UI/Button/BtnRestartNor.png"),
+        Sprite::create("UI/Button/BtnRestartSel.png"),
+        nullptr,
+        CC_CALLBACK_1(BattleSceneLayer::onClickRestart, this));
     m_panel->addButton(btnRestart);
     btnRestart->setTag(2);
-    btnRestart->setPosition(ccpAdd(ccp(0.0f, -20 - btnRestart->getContentSize().height), btnResume->getPosition()));
+    btnRestart->setPosition(Point(0.0f, -20 - btnRestart->getContentSize().height) + btnResume->getPosition());
 
-    CCMenuItemSprite* btnQuit = CCMenuItemSprite::create(
-        CCSprite::create("UI/Button/BtnQuitNor.png"),
-        CCSprite::create("UI/Button/BtnQuitSel.png"),
-        NULL,
-        this,
-        menu_selector(CCBattleSceneLayer::onClickQuit));
+    MenuItemSprite* btnQuit = MenuItemSprite::create(
+        Sprite::create("UI/Button/BtnQuitNor.png"),
+        Sprite::create("UI/Button/BtnQuitSel.png"),
+        nullptr,
+        CC_CALLBACK_1(BattleSceneLayer::onClickQuit, this));
     m_panel->addButton(btnQuit);
     btnQuit->setTag(3);
-    btnQuit->setPosition(ccpAdd(ccp(0.0f, -20 - btnQuit->getContentSize().height), btnRestart->getPosition()));
+    btnQuit->setPosition(Point(0.0f, -20 - btnQuit->getContentSize().height) + btnRestart->getPosition());
 
     // panel缩放
     m_panel->setScale(min(wsz.width * 0.6 / psz.width, wsz.height * 0.6 / psz.height));
     psz = psz * m_panel->getScale();
-    m_panel->setPosition(ccp(wsz.width * 0.5, wsz.height + psz.height * 0.5));
+    m_panel->setPosition(Point(wsz.width * 0.5, wsz.height + psz.height * 0.5));
 }
 
-void CCBattleSceneLayer::showCtrlPanel()
+void BattleSceneLayer::showCtrlPanel()
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
     // 弹出panel
-    gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
+    gc->playSound("sounds/Effects/GUITransitionOpen.mp3");
     m_panel->show();
 
     m_ctrlLayer2->setMaskEnabled(true);
@@ -1526,11 +1788,11 @@ void CCBattleSceneLayer::showCtrlPanel()
     m_ctrlLayer->onExit();
 }
 
-void CCBattleSceneLayer::onCloseCtrlPanel( CCObject* obj )
+void BattleSceneLayer::onCloseCtrlPanel(Ref* obj)
 {
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
-    gc->playSound("sounds/Effect/GUITransitionOpen.mp3");
+    gc->playSound("sounds/Effects/GUITransitionOpen.mp3");
     m_panel->hide();
 
     m_ctrlLayer2->setMaskEnabled(false);
@@ -1539,36 +1801,37 @@ void CCBattleSceneLayer::onCloseCtrlPanel( CCObject* obj )
     m_ctrlLayer->onEnter();
 }
 
-void CCBattleSceneLayer::onClickResume( CCObject* obj )
+void BattleSceneLayer::onClickResume(Ref* obj)
 {
-    onCloseCtrlPanel(NULL);
+    onCloseCtrlPanel(nullptr);
 }
 
-void CCBattleSceneLayer::onClickRestart( CCObject* obj )
+void BattleSceneLayer::onClickRestart(Ref* obj)
 {
     getWorld()->shutdown();
-    CCDirector::sharedDirector()->replaceScene(CCBattleSceneLayer::scene());
+    Director::getInstance()->replaceScene(BattleSceneLayer::scene());
 }
 
-void CCBattleSceneLayer::onClickQuit( CCObject* obj )
+void BattleSceneLayer::onClickQuit(Ref* obj)
 {
     getWorld()->shutdown();
-    CCDirector::sharedDirector()->replaceScene(CCStageSceneLayer::scene());
+    Director::getInstance()->replaceScene(StageSceneLayer::scene());
 }
 
-void CCBattleSceneLayer::onClickSound( CCObject* obj )
+void BattleSceneLayer::onClickSound(Ref* obj)
 {
 }
 
-void CCBattleSceneLayer::onClickMusic( CCObject* obj )
+void BattleSceneLayer::onClickMusic(Ref* obj)
 {
 }
 
-void CCBattleSceneLayer::endWithVictory( int grade )
+void BattleSceneLayer::endWithVictory(int grade)
 {
-    CCDirector::sharedDirector()->getScheduler()->setTimeScale(1.0f);
-    static CCSize wsz = CCDirector::sharedDirector()->getVisibleSize();
+    Director::getInstance()->getScheduler()->setTimeScale(1.0f);
+    static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
+    gc->playSound("sounds/Effects/Sound_QuestCompleted.mp3");
 
     CUserData::instance()->newGrades(CUserData::instance()->m_stageSel, grade);
     CUserData::instance()->save("");
@@ -1577,53 +1840,56 @@ void CCBattleSceneLayer::endWithVictory( int grade )
     w->setLuaWorldTickEnabled(false);
 
     m_ctrlLayer2->setMaskEnabled(true);
-    CCSprite* sp = CCSprite::create("UI/VictoryBadge.png");
+    Sprite* sp = Sprite::create("UI/VictoryBadge.png");
     sp->setUserData((void*)grade);
     
     m_ctrlLayer2->addChild(sp);
-    sp->setPosition(ccp(wsz.width * 0.5, wsz.height * 0.6));
+    sp->setPosition(Point(wsz.width * 0.5, wsz.height * 0.6));
     float scale = m_panel->getScale();
     sp->setScale(scale * 0.2);
     
-    sp->runAction(CCSequence::create(CCScaleTo::create(0.2f, scale * 1.2), CCScaleTo::create(0.1f, scale * 1.0), CCDelayTime::create(1.0f), CCCallFuncN::create(this, callfuncN_selector(CCBattleSceneLayer::onShowVictoryDone)), NULL));
+    sp->runAction(Sequence::create(ScaleTo::create(0.2f, scale * 1.2), ScaleTo::create(0.1f, scale * 1.0), DelayTime::create(1.0f), CallFuncN::create(CC_CALLBACK_1(BattleSceneLayer::onShowVictoryDone, this)), nullptr));
 }
 
-void CCBattleSceneLayer::endWithDefeat()
+void BattleSceneLayer::endWithDefeat()
 {
-    CCDirector::sharedDirector()->getScheduler()->setTimeScale(1.0f);
+    M_DEF_GC(gc);
+    gc->playSound("sounds/Effects/Sound_QuestFailed.mp3");
+
+    Director::getInstance()->getScheduler()->setTimeScale(1.0f);
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     w->setLuaWorldTickEnabled(false);
 
-    CCLabelTTF* lbl = DCAST(m_panel->getChildByTag(2)->getChildByTag(2), CCLabelTTF*);
+    Label* lbl = DCAST(m_panel->getChildByTag(2)->getChildByTag(2), Label*);
     lbl->setString("DEFEATS");
 
-    CCMenuItemSprite* btn = DCAST(m_panel->getMenu()->getChildByTag(2), CCMenuItemSprite*);
-    btn->setNormalImage(CCSprite::create("UI/Button/BtnTryAgainNor.png"));
-    btn->setSelectedImage(CCSprite::create("UI/Button/BtnTryAgainSel.png"));
+    MenuItemSprite* btn = DCAST(m_panel->getMenu()->getChildByTag(2), MenuItemSprite*);
+    btn->setNormalImage(Sprite::create("UI/Button/BtnTryAgainNor.png"));
+    btn->setSelectedImage(Sprite::create("UI/Button/BtnTryAgainSel.png"));
 
-    //btn = DCAST(m_panel->getMenu()->getChildByTag(1), CCMenuItemSprite*);
+    //btn = DCAST(m_panel->getMenu()->getChildByTag(1), MenuItemSprite*);
     //btn->setVisible(false);
 
     showCtrlPanel();
 }
 
-void CCBattleSceneLayer::onShowVictoryDone( CCNode* node )
+void BattleSceneLayer::onShowVictoryDone(Node* node)
 {
     int grade = (int)node->getUserData();
 
     for (int i = 0; i < 3; ++i)
     {
-        CCSprite* sp = CCSprite::createWithSpriteFrameName(i < grade ? "UI/Stage/Star.png" : "UI/Stage/Unstar.png");
+        Sprite* sp = Sprite::createWithSpriteFrameName(i < grade ? "UI/Stage/Star.png" : "UI/Stage/Unstar.png");
         node->getParent()->addChild(sp, 10 - i);
         sp->setScale(node->getScale() * 3);
-        const CCSize ndSz = node->getContentSize() * node->getScale();
-        const CCSize spSz = sp->getContentSize() * sp->getScale();
+        const Size ndSz = node->getContentSize() * node->getScale();
+        const Size spSz = sp->getContentSize() * sp->getScale();
         float bx = spSz.width + 0;
         float by = ndSz.height * 0.5 + spSz.height * 0.5 + 0;
-        sp->setPosition(ccpAdd(node->getPosition(), ccp(0.0f, -by)));
-        sp->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5f, ccpAdd(node->getPosition(), ccp(bx * (i - 1), -by)))));
+        sp->setPosition(node->getPosition() + Point(0.0f, -by));
+        sp->runAction(EaseExponentialOut::create(MoveTo::create(0.5f, node->getPosition() + Point(bx * (i - 1), -by))));
     }
 
-    node->runAction(CCSequence::create(CCDelayTime::create(5.0f), CCCallFuncO::create(this, callfuncO_selector(CCBattleSceneLayer::onClickQuit), NULL), NULL));
+    node->runAction(Sequence::create(DelayTime::create(5.0f), CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onClickQuit, this, nullptr)), nullptr));
 }
 

@@ -2,44 +2,44 @@
 #define __UNPACK_SCENE_H__
 
 
-class CCUnpackScene : public CCScene
+class UnpackScene : public Scene
 {
 public:
-    CCUnpackScene();
-    virtual ~CCUnpackScene();
+    UnpackScene();
+    virtual ~UnpackScene();
     
     virtual bool init();
-    CREATE_FUNC(CCUnpackScene);
+    CREATE_FUNC(UnpackScene);
 
 };
 
-class CCSpriteFrameCacheEx;
-class CCUnpackSceneLayer : public CCLayerColor
+class SpriteFrameCacheEx;
+class UnpackSceneLayer : public LayerColor
 {
 public:
-    CCUnpackSceneLayer();
-    virtual ~CCUnpackSceneLayer();
+    UnpackSceneLayer();
+    virtual ~UnpackSceneLayer();
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene();
+    static cocos2d::Scene* scene();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(CCUnpackSceneLayer);
+    CREATE_FUNC(UnpackSceneLayer);
 
-    void onLabelPrev(CCObject*);
-    void onLabelNext(CCObject*);
-    void onLabelSave(CCObject*);
+    void onLabelPrev(Ref*);
+    void onLabelNext(Ref*);
+    void onLabelSave(Ref*);
 
     void updateSprite();
 
-    bool saveToPng(const char* name, const char* path, CCSpriteFrameCache* fc);
+    bool saveToPng(const char* name, const char* path, SpriteFrameCache* fc);
     void scheduleSave(float ft);
 
-    CCSpriteFrameCacheEx* m_fc;
-    CCArray* m_arr;
-    CCSprite* m_sp;
+    SpriteFrameCacheEx* m_fc;
+    vector<string> m_arr;
+    Sprite* m_sp;
     unsigned int m_cur;
 
 };

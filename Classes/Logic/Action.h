@@ -55,7 +55,7 @@ protected:
 class CCallFunc : public CFiniteTimeAction
 {
 public:
-    CCallFunc(CMultiRefObject* pSel, FUNC_CALLFUNC_ND pCallFunc, void* pData = NULL);
+    CCallFunc(CMultiRefObject* pSel, FUNC_CALLFUNC_ND pCallFunc, void* pData = nullptr);
     virtual ~CCallFunc();
     
     virtual void update(float fTimePercent);

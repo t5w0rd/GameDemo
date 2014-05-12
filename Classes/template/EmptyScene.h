@@ -2,19 +2,19 @@
 #define __EMPTY_SCENE_H__
 
 
-class CCEmptySceneLayer : public CCLayerColor
+class EmptySceneLayer : public LayerColor
 {
 public:
-    CCEmptySceneLayer();
-    virtual ~CCEmptySceneLayer();
+    EmptySceneLayer();
+    virtual ~EmptySceneLayer();
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene();
+    static cocos2d::Scene* scene();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(CCEmptySceneLayer);
+    CREATE_FUNC(EmptySceneLayer);
 
 };
 

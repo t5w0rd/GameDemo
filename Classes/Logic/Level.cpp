@@ -17,7 +17,7 @@ CLevelExp::CLevelExp()
 , m_iExp(0)
 , m_iBaseExp(0)
 , m_iMaxExp(1)
-, m_pUpdate(NULL)
+, m_pUpdate(nullptr)
 {
 }
 
@@ -120,7 +120,7 @@ void CLevelExp::setLevelUpdate(CLevelUpdate* pUpdate)
         return;
     }
 
-    if (pUpdate == NULL)
+    if (pUpdate == nullptr)
     {
         delete m_pUpdate;
     }

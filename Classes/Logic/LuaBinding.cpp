@@ -1,7 +1,7 @@
-/* 
+/*
  * File:   LuaBinding.cpp
  * Author: thunderliu
- * 
+ *
  * Created on 2014年3月2日, 上午11:48
  */
 
@@ -17,12 +17,12 @@
 void luaL_insertloader(lua_State *L, lua_CFunction loader)
 {
     if (!loader) return;
-    
+
     // stack content after the invoking of the function
     // get loader table
     lua_getglobal(L, "package");                                  /* L: package */
     lua_getfield(L, -1, "searchers");                               /* L: package, loaders */
-    
+
     // insert loader into index 2
     lua_pushcfunction(L, loader);                                   /* L: package, loaders, func */
     int n = lua_rawlen(L, -2) + 1;
@@ -33,10 +33,10 @@ void luaL_insertloader(lua_State *L, lua_CFunction loader)
         lua_rawseti(L, -3, i);                                    /* L: package, loaders, func */
     }
     lua_rawseti(L, -2, 2);                                        /* L: package, loaders */
-    
+
     // set loaders into package
     lua_setfield(L, -2, "loaders");                               /* L: package */
-    
+
     lua_pop(L, 1);
 }
 
@@ -44,7 +44,7 @@ void luaL_addpath(lua_State *L, const char* pPath)
 {
     lua_getglobal(L, "package");
     lua_getfield(L, -1, "path");
-    const char* cur_path =  lua_tostring(L, -1);
+    const char* cur_path = lua_tostring(L, -1);
     lua_pushfstring(L, "%s;%s/?.lua", cur_path, pPath);
     lua_setfield(L, -3, "path");
     lua_pop(L, 2);
@@ -70,7 +70,7 @@ int obj_sctor(lua_State* L)
     int self = 1;
     int n = lua_gettop(L) + 1;
     assert(n > self);
-    
+
     lua_getfield(L, self, "_cur");
     lua_getfield(L, -1, "super");
     lua_setfield(L, self, "_cur");
@@ -83,9 +83,18 @@ int obj_sctor(lua_State* L)
     {
         lua_pushvalue(L, argv);
     }
-    lua_call(L, n - self, 0);
+
+    if (lua_pcall(L, n - self, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
     lua_pop(L, 1);
-    
+
     return 0;
 }
 
@@ -99,13 +108,13 @@ int class_type_new(lua_State* L)
     int class_type = 1;
     int n = lua_gettop(L) + 1;
     assert(n >= class_type);
-    
+
     lua_newtable(L);
     int obj = lua_gettop(L);
-    
+
     lua_pushvalue(L, class_type);
     lua_setmetatable(L, obj);
-    
+
     lua_pushvalue(L, obj);
     lua_setfield(L, obj, "_cur");
 
@@ -115,21 +124,29 @@ int class_type_new(lua_State* L)
     {
         lua_pushvalue(L, argv);
     }
-    lua_call(L, n - class_type, 0);
+
+    if (lua_pcall(L, n - class_type, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
 
     lua_pushnil(L);
     lua_setfield(L, obj, "_cur");
-    
+
     return 1;
 }
 
 int g_class(lua_State* L)
 {
     int super = lua_gettop(L);
-    
+
     lua_newtable(L);
     int t = lua_gettop(L);
-    
+
     if (super)
     {
         lua_pushvalue(L, super);
@@ -137,10 +154,10 @@ int g_class(lua_State* L)
         lua_pushvalue(L, super);
         lua_setmetatable(L, t);
     }
-    
+
     lua_pushvalue(L, t);
     lua_setfield(L, t, "__index");
-    
+
     lua_getfield(L, t, "sctor");
     if (lua_isnil(L, -1))
     {
@@ -156,10 +173,10 @@ int g_class(lua_State* L)
         lua_setfield(L, t, "ctor");
     }
     lua_pop(L, 1);
-    
+
     lua_pushcfunction(L, class_type_new);
     lua_setfield(L, t, "new");
-    
+
     return 1;
 }
 
@@ -187,18 +204,18 @@ CUnit* luaL_tounitptr(lua_State* L, int idx)
         lua_getglobal(L, "_world");
         CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
         lua_pop(L, 1);
-        
+
         return w->getUnit(lua_tointeger(L, idx));
     }
 
-    return NULL;
+    return nullptr;
 }
 
 CAbility* luaL_toabilityptr(lua_State* L, int idx)
 {
     if (lua_istable(L, idx) == false)
     {
-        return NULL;
+        return nullptr;
     }
 
     lua_getfield(L, idx, "_p");
@@ -231,13 +248,13 @@ int luaL_toabilityid(lua_State* L, int idx)
 }
 
 luaL_Reg mrobj_funcs[] = {
-    {"getId", mrobj_getId},
-    {NULL, NULL}
+    { "getId", mrobj_getId },
+    { nullptr, nullptr }
 };
 
 int mrobj_getId(lua_State* L)
 {
-    CMultiRefObject* _p = NULL;
+    CMultiRefObject* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushinteger(L, _p->getId());
@@ -246,86 +263,98 @@ int mrobj_getId(lua_State* L)
 }
 
 luaL_Reg unit_funcs[] = {
-    {"ctor", unit_ctor},
-    {"setMaxHp", unit_setMaxHp},
-    {"getMaxHp", unit_getMaxHp},
-    {"setExMaxHp", unit_setExMaxHp},
-    {"getExMaxHp", unit_getExMaxHp},
-    {"getRealMaxHp", unit_getRealMaxHp},
-    {"setHp", unit_setHp},
-    {"getHp", unit_getHp},
-    {"isDead", unit_isDead},
-    {"setForceByIndex", unit_setForceByIndex},
-    {"setAlly", unit_setAlly},
-    {"setBaseArmor", unit_setBaseArmor},
-    {"getBaseArmor", unit_getBaseArmor},
-    {"getRealArmorValue", unit_getRealArmorValue},
-    {"setExArmorValue", unit_setExArmorValue},
-    {"getExArmorValue", unit_getExArmorValue},
-    {"suspend", unit_suspend},
-    {"isSuspended", unit_isSuspended},
-    {"resume", unit_resume},
-    {"getBuffStackSize", unit_getBuffStackSize},
-    {"attack", unit_attack},
-    {"damaged", unit_damaged},
-    {"attackLow", unit_attackLow},
-    {"damagedLow", unit_damagedLow},
-    {"getLevel", unit_getLevel},
-    {"addExp", unit_addExp},
-    {"setRewardGold", unit_setRewardGold},
-    {"getRewardGold", unit_getRewardGold},
-    {"setRewardExp", unit_setRewardExp},
-    {"getRewardExp", unit_getRewardExp},
-    {"setAI", unit_setAI},
+    { "ctor", unit_ctor },
+    { "setMaxHp", unit_setMaxHp },
+    { "getMaxHp", unit_getMaxHp },
+    { "setExMaxHp", unit_setExMaxHp },
+    { "getExMaxHp", unit_getExMaxHp },
+    { "getRealMaxHp", unit_getRealMaxHp },
+    { "setHp", unit_setHp },
+    { "getHp", unit_getHp },
+    { "isDead", unit_isDead },
+    { "setForceByIndex", unit_setForceByIndex },
+    { "setForce", unit_setForce },
+    { "getForce", unit_getForce },
+    { "setAlly", unit_setAlly },
+    { "getAlly", unit_getAlly },
+    { "setBaseArmor", unit_setBaseArmor },
+    { "getBaseArmor", unit_getBaseArmor },
+    { "getRealArmorValue", unit_getRealArmorValue },
+    { "setExArmorValue", unit_setExArmorValue },
+    { "getExArmorValue", unit_getExArmorValue },
+    { "suspend", unit_suspend },
+    { "isSuspended", unit_isSuspended },
+    { "resume", unit_resume },
+    { "getBuffStackSize", unit_getBuffStackSize },
+    { "attack", unit_attack },
+    { "damaged", unit_damaged },
+    { "attackLow", unit_attackLow },
+    { "damagedLow", unit_damagedLow },
+    { "setLevel", unit_setLevel },
+    { "getLevel", unit_getLevel },
+    { "setMaxLevel", unit_setMaxLevel },
+    { "getMaxLevel", unit_getMaxLevel },
+    { "addExp", unit_addExp },
+    { "setRewardGold", unit_setRewardGold },
+    { "getRewardGold", unit_getRewardGold },
+    { "setRewardExp", unit_setRewardExp },
+    { "getRewardExp", unit_getRewardExp },
+    { "setAI", unit_setAI },
+    { "say", unit_say },
+    { "setGhost", unit_setGhost },
 
-    {"startDoing", unit_startDoing},
-    {"endDoing", unit_endDoing},
-    {"isDoingOr", unit_isDoingOr},
-    {"isDoingAnd", unit_isDoingAnd},
-    {"isDoingNothing", unit_isDoingNothing},
+    { "startDoing", unit_startDoing },
+    { "endDoing", unit_endDoing },
+    { "isDoingOr", unit_isDoingOr },
+    { "isDoingAnd", unit_isDoingAnd },
+    { "isDoingNothing", unit_isDoingNothing },
 
-    {"addActiveAbility", unit_addActiveAbility},
-    {"addPassiveAbility", unit_addPassiveAbility},
-    {"addBuffAbility", unit_addBuffAbility},
-    {"getAttackAbility", unit_getAttackAbility},
-    {"getActiveAbility", unit_getActiveAbility},
-    {"getBuffAbility", unit_getBuffAbility},
+    { "addActiveAbility", unit_addActiveAbility },
+    { "addPassiveAbility", unit_addPassiveAbility },
+    { "addBuffAbility", unit_addBuffAbility },
+    { "getAttackAbility", unit_getAttackAbility },
+    { "getActiveAbility", unit_getActiveAbility },
+    { "getBuffAbility", unit_getBuffAbility },
 
-    {"setBaseMoveSpeed", unit2d_setBaseMoveSpeed},
-    {"getRealMoveSpeed", unit2d_getRealMoveSpeed},
-    {"setExMoveSpeed", unit2d_setExMoveSpeed},
-    {"getExMoveSpeed", unit2d_getExMoveSpeed},
-    {"setPosition", unit2d_setPosition},
-    {"getPosition", unit2d_getPosition},
-    {"getNearestEnemyInRange", unit2d_getNearestEnemyInRange},
-    {"move", unit2d_move},
-    {"moveAlongPath", unit2d_moveAlongPath},
-    {"setCastTarget", unit2d_setCastTarget},
-    {"getCastTarget", unit2d_getCastTarget},
-    {"castSpell", unit2d_castSpell},
-    {"stop", unit2d_stop},
-    {"setHostilityRange", unit2d_setHostilityRange},
-    {"getHostilityRange", unit2d_getHostilityRange},
-    {"setFixed", unit2d_setFixed},
-    {"isFixed", unit2d_isFixed},
-    {"isDoingCastingAction", unit2d_isDoingCastingAction},
-    {"getDistance", unit2d_getDistance},
-    {"getTouchDistance", unit2d_getTouchDistance},
-    {"getAttackingTarget", unit2d_getAttackingTarget},
-    
-    {NULL, NULL}
+    { "setBaseMoveSpeed", unit2d_setBaseMoveSpeed },
+    { "getRealMoveSpeed", unit2d_getRealMoveSpeed },
+    { "setExMoveSpeed", unit2d_setExMoveSpeed },
+    { "getExMoveSpeed", unit2d_getExMoveSpeed },
+    { "setPosition", unit2d_setPosition },
+    { "getPosition", unit2d_getPosition },
+    { "getNearestEnemyInRange", unit2d_getNearestEnemyInRange },
+    { "move", unit2d_move },
+    { "moveAlongPath", unit2d_moveAlongPath },
+    { "setCastTarget", unit2d_setCastTarget },
+    { "getCastTarget", unit2d_getCastTarget },
+    { "castSpellWithoutTarget", unit2d_castSpellWithoutTarget },
+    { "castSpellWithTargetUnit", unit2d_castSpellWithTargetUnit },
+    { "castSpellWithTargetPoint", unit2d_castSpellWithTargetPoint },
+    { "stop", unit2d_stop },
+    { "setHostilityRange", unit2d_setHostilityRange },
+    { "getHostilityRange", unit2d_getHostilityRange },
+    { "setFixed", unit2d_setFixed },
+    { "isFixed", unit2d_isFixed },
+    { "isDoingCastingAction", unit2d_isDoingCastingAction },
+    { "getDistance", unit2d_getDistance },
+    { "getTouchDistance", unit2d_getTouchDistance },
+    { "getAttackingTarget", unit2d_getAttackingTarget },
+    { "doAnimation", unit2d_doAnimation },
+
+    { nullptr, nullptr }
 };
 
 int unit_ctor(lua_State* L)
 {
     const char* root = lua_tostring(L, 2);
     const char* name = lua_tostring(L, 3);
-    
-    CUnit* u = new CUnit(root);
-    CUnitDraw* d = new CUnitDraw(root);
-    u->setDraw(d);
+
+    assert(false);
+
+    CUnitDraw* d = new CUnitDraw;
+    CUnit* u = new CUnit(d);
     u->setName(name);
-    
+
     lua_pushlightuserdata(L, u);
     lua_setfield(L, 1, "_p");
 
@@ -334,24 +363,24 @@ int unit_ctor(lua_State* L)
     lua_pop(L, 1);
 
     w->addUnit(u);
-    
+
     return 0;
 }
 
 int unit_setMaxHp(lua_State* L)
 {
     float n = lua_tonumber(L, 2);
-    
+
     CUnit* u = luaL_tounitptr(L);
     u->setMaxHp(n);
-    
+
     return 0;
 }
 
 int unit_getMaxHp(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    
+
     lua_pushnumber(L, u->getMaxHp());
 
     return 1;
@@ -362,7 +391,7 @@ int unit_setExMaxHp(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
     float exA = lua_tonumber(L, 2);
     float exB = lua_tonumber(L, 3);
-    
+
     u->setExMaxHp(CExtraCoeff(exA, exB));
 
     return 0;
@@ -371,12 +400,12 @@ int unit_setExMaxHp(lua_State* L)
 int unit_getExMaxHp(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    
+
     const CExtraCoeff& ex = u->getExMaxHp();
-    
+
     lua_pushnumber(L, ex.getMulriple());
     lua_pushnumber(L, ex.getAddend());
-    
+
     return 2;
 }
 
@@ -419,12 +448,31 @@ int unit_isDead(lua_State* L)
 
 int unit_setForceByIndex(lua_State* L)
 {
-    int n = lua_tonumber(L, 2);
-    
     CUnit* u = luaL_tounitptr(L);
+    int n = lua_tonumber(L, 2);
+
     u->setForceByIndex(n);
-    
+
     return 0;
+}
+
+int unit_setForce(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    unsigned int n = lua_tounsigned(L, 2);
+
+    u->setForce(n);
+
+    return 0;
+}
+
+int unit_getForce(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushunsigned(L, u->getForce());
+
+    return 1;
 }
 
 int unit_setAlly(lua_State* L)
@@ -437,14 +485,23 @@ int unit_setAlly(lua_State* L)
     return 0;
 }
 
+int unit_getAlly(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushunsigned(L, u->getAlly());
+
+    return 1;
+}
+
 int unit_setBaseArmor(lua_State* L)
 {
     int armorType = lua_tointeger(L, 2);
     float armorValue = lua_tonumber(L, 3);
-    
+
     CUnit* u = luaL_tounitptr(L);
     u->setBaseArmor(CArmorValue(armorType, armorValue));
-    
+
     return 0;
 }
 
@@ -452,10 +509,10 @@ int unit_getBaseArmor(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     const CArmorValue& av = u->getBaseArmor();
-    
+
     lua_pushinteger(L, av.getType());
     lua_pushnumber(L, av.getValue());
-    
+
     return 2;
 }
 
@@ -539,11 +596,11 @@ int unit_getBuffStackSize(lua_State* L)
 int unit_attack(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CAttackData* ad = NULL;
+    CAttackData* ad = nullptr;
     luaL_toobjptr(L, 2, ad);
     CUnit* t = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
-    
+
     u->attack(ad, t, mask);
 
     return 0;
@@ -552,7 +609,7 @@ int unit_attack(lua_State* L)
 int unit_damaged(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CAttackData* ad = NULL;
+    CAttackData* ad = nullptr;
     luaL_toobjptr(L, 2, ad);
     CUnit* s = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
@@ -565,7 +622,7 @@ int unit_damaged(lua_State* L)
 int unit_attackLow(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CAttackData* ad = NULL;
+    CAttackData* ad = nullptr;
     luaL_toobjptr(L, 2, ad);
     CUnit* t = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
@@ -583,8 +640,18 @@ int unit_damagedLow(lua_State* L)
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
 
     u->damagedLow(dmg, s, mask);
-    
+
     return 0;
+}
+
+int unit_setLevel(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int l = lua_tointeger(L, 2);
+
+    u->setLevel(l);
+
+    return 1;
 }
 
 int unit_getLevel(lua_State* L)
@@ -592,6 +659,25 @@ int unit_getLevel(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
 
     lua_pushinteger(L, u->getLevel());
+
+    return 1;
+}
+
+int unit_setMaxLevel(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int l = lua_tointeger(L, 2);
+
+    u->setMaxLevel(l);
+
+    return 1;
+}
+
+int unit_getMaxLevel(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushinteger(L, u->getMaxLevel());
 
     return 1;
 }
@@ -610,7 +696,7 @@ int unit_setRewardGold(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     int gold = lua_tointeger(L, 2);
-    
+
     u->setRewardGold(gold);
 
     return 0;
@@ -647,10 +733,31 @@ int unit_getRewardExp(lua_State* L)
 int unit_setAI(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CUnitAI* ai = NULL;
+    CUnitAI* ai = nullptr;
     luaL_toobjptr(L, 2, ai);
-    
+
     u->setAI(ai);
+
+    return 0;
+}
+
+int unit_say(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    const char* s = lua_tostring(L, 2);
+
+    CUnitDraw* d = u->getDraw();
+    d->say(s);
+
+    return 0;
+}
+
+int unit_setGhost(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    bool ghost = lua_gettop(L) < 2 ? true : lua_toboolean(L, 2) != 0;
+
+    u->setGhost(ghost);
 
     return 0;
 }
@@ -717,7 +824,7 @@ int unit_addActiveAbility(lua_State* L)
         int id = lua_tointeger(L, 2);
         u->addActiveAbility(id);
     }
-    
+
     return 0;
 }
 
@@ -734,7 +841,7 @@ int unit_addPassiveAbility(lua_State* L)
         int id = lua_tointeger(L, 2);
         u->addPassiveAbility(id);
     }
-    
+
     return 0;
 }
 
@@ -760,16 +867,16 @@ int unit_addBuffAbility(lua_State* L)
         }
         u->addBuffAbility(id, src);
     }
-    
+
     return 0;
 }
 
 int unit_getAttackAbility(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     u->getActiveAbility(u->getAttackAbilityId())->dcast(_p);
-    if (_p == NULL)
+    if (_p == nullptr)
     {
         lua_pushnil(L);
     }
@@ -777,7 +884,7 @@ int unit_getAttackAbility(lua_State* L)
     {
         luaL_pushobjptr(L, "AttackAct", _p);
     }
-    
+
     return 1;
 }
 
@@ -787,7 +894,7 @@ int unit_getActiveAbility(lua_State* L)
     const char* name = lua_tostring(L, 2);
 
     CActiveAbility* _p = u->getActiveAbility(name);
-    if (_p == NULL)
+    if (_p == nullptr)
     {
         lua_pushnil(L);
     }
@@ -805,7 +912,7 @@ int unit_getBuffAbility(lua_State* L)
     const char* name = lua_tostring(L, 2);
 
     CBuffAbility* _p = u->getBuffAbility(name);
-    if (_p == NULL)
+    if (_p == nullptr)
     {
         lua_pushnil(L);
     }
@@ -819,12 +926,12 @@ int unit_getBuffAbility(lua_State* L)
 
 int unit2d_setBaseMoveSpeed(lua_State* L)
 {
-    float n = lua_tonumber(L, 2);
-    
     CUnit* u = luaL_tounitptr(L);
+    float n = lua_tonumber(L, 2);
+
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     d->setBaseMoveSpeed(n);
-    
+
     return 0;
 }
 
@@ -832,20 +939,21 @@ int unit2d_getRealMoveSpeed(lua_State* L)
 {
     CUnit* _p = luaL_tounitptr(L);
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+
     lua_pushnumber(L, d->getRealMoveSpeed());
-    
+
     return 1;
 }
 
 int unit2d_setExMoveSpeed(lua_State* L)
 {
-    float a = lua_tonumber(L, 2);
-    float b = lua_tonumber(L, 2);
-    
     CUnit* _p = luaL_tounitptr(L);
+    float a = lua_tonumber(L, 2);
+    float b = lua_tonumber(L, 3);
+
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     d->setExMoveSpeed(CExtraCoeff(a, b));
-    
+
     return 0;
 }
 
@@ -854,21 +962,21 @@ int unit2d_getExMoveSpeed(lua_State* L)
     CUnit* _p = luaL_tounitptr(L);
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     CExtraCoeff& ex = d->getExMoveSpeed();
-    
+
     lua_pushnumber(L, ex.getMulriple());
     lua_pushnumber(L, ex.getAddend());
-    
+
     return 2;
 }
 
 int unit2d_setPosition(lua_State* L)
 {
-    CPoint p(lua_tonumber(L, 2), lua_tonumber(L, 3));
-    
     CUnit* _p = luaL_tounitptr(L);
+    CPoint p(lua_tonumber(L, 2), lua_tonumber(L, 3));
+
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     d->setPosition(p);
-    
+
     return 0;
 }
 
@@ -877,14 +985,14 @@ int unit2d_getPosition(lua_State* L)
     CUnit* _p = luaL_tounitptr(L);
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     CPoint& p = d->getPosition();
-    
+
     lua_pushnumber(L, p.x);
     lua_pushnumber(L, p.y);
-    
+
     return 2;
 }
 
-int unit2d_getNearestEnemyInRange( lua_State* L )
+int unit2d_getNearestEnemyInRange(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     float r = lua_tonumber(L, 2);
@@ -892,7 +1000,7 @@ int unit2d_getNearestEnemyInRange( lua_State* L )
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    CUnit* _p = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), r, (FUNC_UNIT_CONDITION)&CUnitGroup::isLivingEnemyOf, DCAST(u, CUnitForce*));
+    CUnit* _p = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), r, bind(&CUnitGroup::isLivingEnemyOf, placeholders::_1, DCAST(u, CUnitForce*)));
     lua_pop(L, 1);
 
     luaL_pushobjptr(L, "Unit", _p);
@@ -916,7 +1024,7 @@ int unit2d_move(lua_State* L)
 int unit2d_moveAlongPath(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CUnitPath* up = NULL;
+    CUnitPath* up = nullptr;
     luaL_toobjptr(L, 2, up);
     bool ob = lua_gettop(L) < 3 ? true : (lua_toboolean(L, 3) != 0);
     float ba = lua_gettop(L) < 4 ? 5.0f : lua_tonumber(L, 4);
@@ -940,15 +1048,7 @@ int unit2d_setCastTarget(lua_State* L)
         break;
 
     case 2:
-        if (lua_istable(L, 2))
-        {
-            CUnit* t = luaL_tounitptr(L, 2);
-            d->setCastTarget(CCommandTarget(t->getId()));
-        }
-        else
-        {
-            d->setCastTarget(CCommandTarget(lua_tointeger(L, 2)));
-        }
+        d->setCastTarget(CCommandTarget(luaL_tounitid(L, 2)));
         break;
 
     case 3:
@@ -964,36 +1064,70 @@ int unit2d_getCastTarget(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-    lua_pushinteger(L, d->getCastTarget().getTargetType());
-    lua_pushinteger(L, d->getCastTarget().getTargetUnit());
-    lua_pushnumber(L, d->getCastTarget().getTargetPoint().x);
-    lua_pushnumber(L, d->getCastTarget().getTargetPoint().y);
+    const CCommandTarget& rTarget = d->getCastTarget();
 
-    return 4;
+    lua_newtable(L);
+    int t = lua_gettop(L);
+    lua_pushinteger(L, rTarget.getTargetType());
+    lua_setfield(L, t, "type");
+    switch (rTarget.getTargetType())
+    {
+    case CCommandTarget::kNoTarget:
+        break;
+
+    case CCommandTarget::kUnitTarget:
+        lua_pushinteger(L, rTarget.getTargetUnit());
+        lua_setfield(L, t, "unit");
+        break;
+
+    case CCommandTarget::kPointTarget:
+        lua_pushnumber(L, rTarget.getTargetPoint().x);
+        lua_setfield(L, t, "x");
+        lua_pushnumber(L, rTarget.getTargetPoint().y);
+        lua_setfield(L, t, "y");
+        break;
+    }
+
+    return 1;
 }
 
-int unit2d_castSpell(lua_State* L)
+int unit2d_castSpellWithoutTarget(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    int id = 0;
-
-    if (lua_istable(L, 2))
-    {
-        CActiveAbility* a = NULL;
-        luaL_toobjptr(L, 2, a);
-        if (a != NULL)
-        {
-            id = a->getId();
-        }
-    }
-    else
-    {
-        id = lua_tointeger(L, 2);
-    }
+    int id = luaL_toabilityid(L, 2);
     bool ob = lua_gettop(L) < 3 ? true : (lua_toboolean(L, 3) != 0);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-    int res = d->cmdCastSpell(id, ob);
+    int res = d->cmdCastSpell(CCommandTarget(), id, ob);
+
+    lua_pushinteger(L, res);
+
+    return 1;
+}
+
+int unit2d_castSpellWithTargetUnit(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int t = luaL_tounitid(L, 2);
+    int id = luaL_toabilityid(L, 3);
+    bool ob = lua_gettop(L) < 4 ? true : (lua_toboolean(L, 4) != 0);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    int res = d->cmdCastSpell(CCommandTarget(t), id, ob);
+
+    lua_pushinteger(L, res);
+
+    return 1;
+}
+
+int unit2d_castSpellWithTargetPoint(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int id = luaL_toabilityid(L, 4);
+    bool ob = lua_gettop(L) < 5 ? true : (lua_toboolean(L, 5) != 0);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    int res = d->cmdCastSpell(CCommandTarget(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3))), id, ob);
 
     lua_pushinteger(L, res);
 
@@ -1017,7 +1151,7 @@ int unit2d_setHostilityRange(lua_State* L)
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     d->setHostilityRange(h);
-    
+
     return 0;
 }
 
@@ -1026,9 +1160,9 @@ int unit2d_getHostilityRange(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-    
+
     lua_pushnumber(L, d->getHostilityRange());
-    
+
     return 1;
 }
 
@@ -1039,7 +1173,7 @@ int unit2d_setFixed(lua_State* L)
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     d->setFixed(fx);
-    
+
     return 0;
 }
 
@@ -1048,9 +1182,9 @@ int unit2d_isFixed(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-    
+
     lua_pushboolean(L, d->isFixed());
-    
+
     return 1;
 }
 
@@ -1099,7 +1233,7 @@ int unit2d_getAttackingTarget(lua_State* L)
     if (_p->getAttackAbilityId() != 0 && _p->getAttackAbilityId() == d->getCastActiveAbilityId() && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
     {
         CUnit* t = _p->getUnit(d->getCastTarget().getTargetUnit());
-        if (t != NULL)
+        if (t != nullptr)
         {
             luaL_pushobjptr(L, "Unit", t);
 
@@ -1112,11 +1246,24 @@ int unit2d_getAttackingTarget(lua_State* L)
     return 1;
 }
 
+int unit2d_doAnimation(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    int id = lua_tointeger(L, 2);
+    int iRepeatTimes = lua_tointeger(L, 3);
+    float fSpeed = lua_gettop(L) < 4 ? 1.0f : lua_tonumber(L, 4);
+
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    d->doAnimation(id, nullptr, iRepeatTimes, nullptr, fSpeed);
+
+    return 0;
+}
+
 luaL_Reg UnitPath_funcs[] = {
-    {"ctor", UnitPath_ctor},
-    {"addPoint", UnitPath_addPoint},
-    {"getFirstPoint", UnitPath_getFirstPoint},
-    {NULL, NULL}
+    { "ctor", UnitPath_ctor },
+    { "addPoint", UnitPath_addPoint },
+    { "getFirstPoint", UnitPath_getFirstPoint },
+    { nullptr, nullptr }
 };
 
 int UnitPath_ctor(lua_State* L)
@@ -1127,13 +1274,13 @@ int UnitPath_ctor(lua_State* L)
     CUnitPath* _p = new CUnitPath;
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
-    
+
     return 0;
 }
 
 int UnitPath_addPoint(lua_State* L)
 {
-    CUnitPath* _p = NULL;
+    CUnitPath* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
@@ -1145,11 +1292,11 @@ int UnitPath_addPoint(lua_State* L)
 
 int UnitPath_getFirstPoint(lua_State* L)
 {
-    CUnitPath* _p = NULL;
+    CUnitPath* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     const CPoint* p = _p->getCurTargetPoint(0);
-    if (p != NULL)
+    if (p != nullptr)
     {
         lua_pushnumber(L, p->x);
         lua_pushnumber(L, p->y);
@@ -1164,18 +1311,18 @@ int UnitPath_getFirstPoint(lua_State* L)
 }
 
 luaL_Reg UnitAI_funcs[] = {
-    {"ctor", UnitAI_ctor},
-    {"onUnitChangeHp", UnitAI_onUnitChangeHp},
-    {"onUnitTick", UnitAI_onUnitTick},
-    {"onUnitDamagedDone", UnitAI_onUnitDamagedDone},
-    {"onUnitDamageTargetDone", UnitAI_onUnitDamageTargetDone},
-    {"onUnitAddBuffAbility", UnitAI_onUnitAddBuffAbility},
-    {"onUnitDelBuffAbility", UnitAI_onUnitDelBuffAbility},
-    {"onUnitAbilityReady", UnitAI_onUnitAbilityReady},
-    {NULL, NULL}
+    { "ctor", UnitAI_ctor },
+    { "onUnitChangeHp", UnitAI_onUnitChangeHp },
+    { "onUnitTick", UnitAI_onUnitTick },
+    { "onUnitDamagedDone", UnitAI_onUnitDamagedDone },
+    { "onUnitDamageTargetDone", UnitAI_onUnitDamageTargetDone },
+    { "onUnitAddBuffAbility", UnitAI_onUnitAddBuffAbility },
+    { "onUnitDelBuffAbility", UnitAI_onUnitDelBuffAbility },
+    { "onUnitAbilityReady", UnitAI_onUnitAbilityReady },
+    { nullptr, nullptr }
 };
 
-int UnitAI_ctor( lua_State* L )
+int UnitAI_ctor(lua_State* L)
 {
     CUnitAI* _p = new CUnitAI;
     _p->setScriptHandler(luaL_setregistry(L, 1));
@@ -1221,39 +1368,39 @@ int UnitAI_onUnitAbilityReady(lua_State* L)
 }
 
 luaL_Reg projectile_funcs[] = {
-    {"setSrcUnit", projectile_setSrcUnit},
-    {"setFromUnit", projectile_setFromUnit},
-    {"setToUnit", projectile_setToUnit},
-    {"setFromPoint", projectile_setFromPoint},
-    {"setToPoint", projectile_setToPoint},
-    {"setFromToType", projectile_setFromToType},
-    {"setFireType", projectile_setFireType},
-    {"setPenaltyFlags", projectile_setPenaltyFlags},
-    {"fire", projectile_fire},
-    {"die", projectile_die},
-    {"setPosition", projectile_setPosition},
-    {"getPosition", projectile_getPosition},
-    {"setHeight", projectile_setHeight},
-    {"getHeight", projectile_getHeight},
-    {"setMoveSpeed", projectile_setMoveSpeed},
-    {"getMoveSpeed", projectile_getMoveSpeed},
-    {"setMaxHeightDelta", projectile_setMaxHeightDelta},
-    {"getMaxHeightDelta", projectile_getMaxHeightDelta},
-    {"setVisible", projectile_setVisible},
-    {"addFireSound", projectile_addFireSound},
-    {"addEffectSound", projectile_addEffectSound},
-    {"setAttackData", projectile_setAttackData},
-    {"getAttackData", projectile_getAttackData},
-    {"setSrcAbility", projectile_setSrcAbility},
-    {"setContactLeft", projectile_setContactLeft},
-    {"getContactLeft", projectile_getContactLeft},
-    {"decContactLeft", projectile_decContactLeft},
-    {NULL, NULL}
+    { "setSrcUnit", projectile_setSrcUnit },
+    { "setFromUnit", projectile_setFromUnit },
+    { "setToUnit", projectile_setToUnit },
+    { "setFromPoint", projectile_setFromPoint },
+    { "setToPoint", projectile_setToPoint },
+    { "setFromToType", projectile_setFromToType },
+    { "setFireType", projectile_setFireType },
+    { "setPenaltyFlags", projectile_setPenaltyFlags },
+    { "fire", projectile_fire },
+    { "die", projectile_die },
+    { "setPosition", projectile_setPosition },
+    { "getPosition", projectile_getPosition },
+    { "setHeight", projectile_setHeight },
+    { "getHeight", projectile_getHeight },
+    { "setMoveSpeed", projectile_setMoveSpeed },
+    { "getMoveSpeed", projectile_getMoveSpeed },
+    { "setMaxHeightDelta", projectile_setMaxHeightDelta },
+    { "getMaxHeightDelta", projectile_getMaxHeightDelta },
+    { "setVisible", projectile_setVisible },
+    { "addFireSound", projectile_addFireSound },
+    { "addEffectSound", projectile_addEffectSound },
+    { "setAttackData", projectile_setAttackData },
+    { "getAttackData", projectile_getAttackData },
+    { "setSrcAbility", projectile_setSrcAbility },
+    { "setContactLeft", projectile_setContactLeft },
+    { "getContactLeft", projectile_getContactLeft },
+    { "decContactLeft", projectile_decContactLeft },
+    { nullptr, nullptr }
 };
 
 int projectile_setSrcUnit(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setSrcUnit(luaL_tounitid(L, 2));
@@ -1263,7 +1410,7 @@ int projectile_setSrcUnit(lua_State* L)
 
 int projectile_setFromUnit(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setFromUnit(luaL_tounitid(L, 2));
@@ -1273,7 +1420,7 @@ int projectile_setFromUnit(lua_State* L)
 
 int projectile_setToUnit(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setToUnit(luaL_tounitid(L, 2));
@@ -1283,7 +1430,7 @@ int projectile_setToUnit(lua_State* L)
 
 int projectile_setFromPoint(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setFromPoint(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3)));
@@ -1293,7 +1440,7 @@ int projectile_setFromPoint(lua_State* L)
 
 int projectile_setToPoint(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setToPoint(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3)));
@@ -1303,7 +1450,7 @@ int projectile_setToPoint(lua_State* L)
 
 int projectile_setFromToType(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setFromToType((CProjectile::FROM_TO_TYPE)lua_tointeger(L, 2));
@@ -1313,7 +1460,7 @@ int projectile_setFromToType(lua_State* L)
 
 int projectile_setFireType(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setFireType((CProjectile::FIRE_TYPE)lua_tointeger(L, 2));
@@ -1323,7 +1470,7 @@ int projectile_setFireType(lua_State* L)
 
 int projectile_setPenaltyFlags(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setPenaltyFlags(lua_tounsigned(L, 2));
@@ -1333,7 +1480,7 @@ int projectile_setPenaltyFlags(lua_State* L)
 
 int projectile_fire(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->fire();
@@ -1343,7 +1490,7 @@ int projectile_fire(lua_State* L)
 
 int projectile_die(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->die();
@@ -1353,7 +1500,7 @@ int projectile_die(lua_State* L)
 
 int projectile_redirect(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->redirect();
@@ -1363,7 +1510,7 @@ int projectile_redirect(lua_State* L)
 
 int projectile_setPosition(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setPosition(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3)));
@@ -1373,7 +1520,7 @@ int projectile_setPosition(lua_State* L)
 
 int projectile_getPosition(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     const CPoint& p = _p->getPosition();
@@ -1385,7 +1532,7 @@ int projectile_getPosition(lua_State* L)
 
 int projectile_setHeight(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setHeight(lua_tonumber(L, 2));
@@ -1395,7 +1542,7 @@ int projectile_setHeight(lua_State* L)
 
 int projectile_getHeight(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getHeight());
@@ -1405,7 +1552,7 @@ int projectile_getHeight(lua_State* L)
 
 int projectile_setMoveSpeed(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setMoveSpeed(lua_tonumber(L, 2));
@@ -1415,7 +1562,7 @@ int projectile_setMoveSpeed(lua_State* L)
 
 int projectile_getMoveSpeed(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getMoveSpeed());
@@ -1425,7 +1572,7 @@ int projectile_getMoveSpeed(lua_State* L)
 
 int projectile_setMaxHeightDelta(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setMaxHeightDelta(lua_tonumber(L, 2));
@@ -1435,7 +1582,7 @@ int projectile_setMaxHeightDelta(lua_State* L)
 
 int projectile_getMaxHeightDelta(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getMaxHeightDelta());
@@ -1445,7 +1592,7 @@ int projectile_getMaxHeightDelta(lua_State* L)
 
 int projectile_setVisible(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->setVisible(lua_toboolean(L, 2) != 0);
@@ -1455,7 +1602,7 @@ int projectile_setVisible(lua_State* L)
 
 int projectile_addFireSound(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->addFireSound(lua_tostring(L, 2));
@@ -1465,7 +1612,7 @@ int projectile_addFireSound(lua_State* L)
 
 int projectile_addEffectSound(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     _p->addEffectSound(lua_tostring(L, 2));
@@ -1475,9 +1622,9 @@ int projectile_addEffectSound(lua_State* L)
 
 int projectile_setAttackData(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
-    CAttackData* ad = NULL;
+    CAttackData* ad = nullptr;
     luaL_toobjptr(L, 2, ad);
 
     _p->setAttackData(ad);
@@ -1487,7 +1634,7 @@ int projectile_setAttackData(lua_State* L)
 
 int projectile_getAttackData(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     luaL_pushobjptr(L, "AttackData", _p->getAttackData());
@@ -1497,7 +1644,7 @@ int projectile_getAttackData(lua_State* L)
 
 int projectile_setSrcAbility(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     CAbility* a = luaL_toabilityptr(L, 2);
 
@@ -1508,7 +1655,7 @@ int projectile_setSrcAbility(lua_State* L)
 
 int projectile_setContactLeft(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     int left = lua_tointeger(L, 2);
 
@@ -1519,7 +1666,7 @@ int projectile_setContactLeft(lua_State* L)
 
 int projectile_getContactLeft(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushinteger(L, _p->getContactLeft());
@@ -1529,7 +1676,7 @@ int projectile_getContactLeft(lua_State* L)
 
 int projectile_decContactLeft(lua_State* L)
 {
-    CProjectile* _p = NULL;
+    CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     int dec = lua_gettop(L) > 1 ? lua_tointeger(L, 2) : 1;
 
@@ -1539,37 +1686,38 @@ int projectile_decContactLeft(lua_State* L)
 }
 
 luaL_Reg ability_funcs[] = {
-    {"ctor", ability_ctor},
-    {"onUnitAddAbility", ability_onUnitAddAbility},
-    {"onUnitDelAbility", ability_onUnitDelAbility},
-    {"onUnitAbilityReady", ability_onUnitAbilityReady},
-    {"onUnitRevive", ability_onUnitRevive},
-    {"onUnitDying", ability_onUnitDying},
-    {"onUnitDead", ability_onUnitDead},
-    {"onUnitChangeHp", ability_onUnitChangeHp},
-    {"onUnitTick", ability_onUnitTick},
-    {"onUnitInterval", ability_onUnitInterval},
-    {"onUnitAttackTarget", ability_onUnitAttackTarget},
-    {"onUnitAttacked", ability_onUnitAttacked},
-    {"onUnitDamaged", ability_onUnitDamaged},
-    {"onUnitDamagedDone", ability_onUnitDamagedDone},
-    {"onUnitDamageTargetDone", ability_onUnitDamageTargetDone},
-    {"onUnitProjectileEffect", ability_onUnitProjectileEffect},
-    {"copy", ability_copy},
-    {"setTriggerFlags", ability_setTriggerFlags},
-    {"getName", ability_getName},
-    {"getOwner", ability_getOwner},
-    {"setInterval", ability_setInterval},
-    {"getInterval", ability_getInterval},
-    {"setCoolDown", ability_setCoolDown},
-    {"getCoolDown", ability_getCoolDown},
-    {"isCoolingDown", ability_isCoolingDown},
-    {"resetCD", ability_resetCD},
-    {"coolDown", ability_coolDown},
-    {"setLevel", ability_setLevel},
-    {"getLevel", ability_getLevel},
-    {"addEffectSound", ability_addEffectSound},
-    {NULL, NULL}
+    { "ctor", ability_ctor },
+    { "onUnitAddAbility", ability_onUnitAddAbility },
+    { "onUnitDelAbility", ability_onUnitDelAbility },
+    { "onUnitAbilityReady", ability_onUnitAbilityReady },
+    { "onUnitRevive", ability_onUnitRevive },
+    { "onUnitDying", ability_onUnitDying },
+    { "onUnitDead", ability_onUnitDead },
+    { "onUnitChangeHp", ability_onUnitChangeHp },
+    { "onUnitTick", ability_onUnitTick },
+    { "onUnitInterval", ability_onUnitInterval },
+    { "onUnitAttackTarget", ability_onUnitAttackTarget },
+    { "onUnitAttacked", ability_onUnitAttacked },
+    { "onUnitDamaged", ability_onUnitDamaged },
+    { "onUnitDamagedDone", ability_onUnitDamagedDone },
+    { "onUnitDamageTargetDone", ability_onUnitDamageTargetDone },
+    { "onUnitProjectileEffect", ability_onUnitProjectileEffect },
+    { "copy", ability_copy },
+    { "setTriggerFlags", ability_setTriggerFlags },
+    { "getName", ability_getName },
+    { "getOwner", ability_getOwner },
+    { "setInterval", ability_setInterval },
+    { "getInterval", ability_getInterval },
+    { "setCoolDown", ability_setCoolDown },
+    { "getCoolDown", ability_getCoolDown },
+    { "isCoolingDown", ability_isCoolingDown },
+    { "resetCD", ability_resetCD },
+    { "coolDown", ability_coolDown },
+    { "setLevel", ability_setLevel },
+    { "getLevel", ability_getLevel },
+    { "addEffectSound", ability_addEffectSound },
+    { "setImageName", ability_setImageName },
+    { nullptr, nullptr }
 };
 
 int ability_ctor(lua_State* L)
@@ -1630,7 +1778,7 @@ int ability_onUnitAttackTarget(lua_State* L)
 int ability_onUnitAttacked(lua_State* L)
 {
     lua_pushboolean(L, true);
-    
+
     return 1;
 }
 
@@ -1661,14 +1809,14 @@ int ability_onUnitAbilityEffect(lua_State* L)
 
 int ability_copy(lua_State* L)
 {
-    CAbility* _p = NULL;
+    CAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
-    
-    CAbility* _p_ = NULL;
+
+    CAbility* _p_ = nullptr;
     _p->copy()->dcast(_p_);
-    
+
     luaL_getregistery(L, _p_->getScriptHandler());
-    
+
     return 1;
 }
 
@@ -1695,9 +1843,9 @@ int ability_getOwner(lua_State* L)
 {
     CAbility* _p = luaL_toabilityptr(L, 1);
     CUnit* u = _p->getOwner();
-    
+
     luaL_pushobjptr(L, "Unit", u);
-    
+
     return 1;
 }
 
@@ -1705,9 +1853,9 @@ int ability_setInterval(lua_State* L)
 {
     CAbility* _p = luaL_toabilityptr(L, 1);
     float fInterval = lua_tonumber(L, 2);
-    
+
     _p->setInterval(fInterval);
-    
+
     return 0;
 }
 
@@ -1770,18 +1918,18 @@ int ability_setLevel(lua_State* L)
 {
     CAbility* _p = luaL_toabilityptr(L, 1);
     int lvl = lua_tointeger(L, 2);
-    
+
     _p->setLevel(lvl);
-    
+
     return 0;
 }
 
 int ability_getLevel(lua_State* L)
 {
     CAbility* _p = luaL_toabilityptr(L, 1);
-    
+
     lua_pushinteger(L, _p->getLevel());
-    
+
     return 1;
 }
 
@@ -1795,23 +1943,34 @@ int ability_addEffectSound(lua_State* L)
     return 0;
 }
 
+int ability_setImageName(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    const char* image = lua_tostring(L, 2);
+
+    _p->setImageName(image);
+
+    return 0;
+}
+
 luaL_Reg ActiveAbility_funcs[] = {
-    {"ctor", ActiveAbility_ctor},
-    {"checkConditions", ActiveAbility_checkConditions},
-    {"onUnitCastAbility", ActiveAbility_onUnitCastAbility},
-    {"setEffectiveTypeFlags", ActiveAbility_setEffectiveTypeFlags},
-    {"getEffectiveTypeFlags", ActiveAbility_getEffectiveTypeFlags},
-    {"setCastRange", ActiveAbility_setCastRange},
-    {"getCastRange", ActiveAbility_getCastRange},
-    {"setCastMinRange", ActiveAbility_setCastMinRange},
-    {"getCastMinRange", ActiveAbility_getCastMinRange},
-    {"setCastTargetRadius", ActiveAbility_setCastTargetRadius},
-    {"getCastTargetRadius", ActiveAbility_getCastTargetRadius},
-    {"setTemplateProjectile", ActiveAbility_setTemplateProjectile},
-    {"setCastHorizontal", ActiveAbility_setCastHorizontal},
-    {"isCastHorizontal", ActiveAbility_isCastHorizontal},
-    {"addCastAnimation", ActiveAbility_addCastAnimation},
-    {NULL, NULL}
+    { "ctor", ActiveAbility_ctor },
+    { "checkConditions", ActiveAbility_checkConditions },
+    { "onUnitCastAbility", ActiveAbility_onUnitCastAbility },
+    { "setEffectiveTypeFlags", ActiveAbility_setEffectiveTypeFlags },
+    { "getEffectiveTypeFlags", ActiveAbility_getEffectiveTypeFlags },
+    { "setCastRange", ActiveAbility_setCastRange },
+    { "getCastRange", ActiveAbility_getCastRange },
+    { "setCastMinRange", ActiveAbility_setCastMinRange },
+    { "getCastMinRange", ActiveAbility_getCastMinRange },
+    { "setCastTargetRadius", ActiveAbility_setCastTargetRadius },
+    { "getCastTargetRadius", ActiveAbility_getCastTargetRadius },
+    { "setTemplateProjectile", ActiveAbility_setTemplateProjectile },
+    { "setCastHorizontal", ActiveAbility_setCastHorizontal },
+    { "isCastHorizontal", ActiveAbility_isCastHorizontal },
+    { "addCastAnimation", ActiveAbility_addCastAnimation },
+    { "getAbilityEffectPoint", ActiveAbility_getAbilityEffectPoint },
+    { nullptr, nullptr }
 };
 
 int ActiveAbility_ctor(lua_State* L)
@@ -1846,7 +2005,7 @@ int ActiveAbility_onUnitCastAbility(lua_State* L)
 
 int ActiveAbility_setEffectiveTypeFlags(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     unsigned int eff = lua_tounsigned(L, 2);
 
@@ -1857,7 +2016,7 @@ int ActiveAbility_setEffectiveTypeFlags(lua_State* L)
 
 int ActiveAbility_getEffectiveTypeFlags(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushunsigned(L, _p->getEffectiveTypeFlags());
@@ -1867,7 +2026,7 @@ int ActiveAbility_getEffectiveTypeFlags(lua_State* L)
 
 int ActiveAbility_setCastRange(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     float range = lua_tonumber(L, 2);
 
@@ -1878,7 +2037,7 @@ int ActiveAbility_setCastRange(lua_State* L)
 
 int ActiveAbility_getCastRange(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getCastRange());
@@ -1888,7 +2047,7 @@ int ActiveAbility_getCastRange(lua_State* L)
 
 int ActiveAbility_setCastMinRange(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     float range = lua_tonumber(L, 2);
 
@@ -1899,7 +2058,7 @@ int ActiveAbility_setCastMinRange(lua_State* L)
 
 int ActiveAbility_getCastMinRange(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getCastMinRange());
@@ -1909,7 +2068,7 @@ int ActiveAbility_getCastMinRange(lua_State* L)
 
 int ActiveAbility_setCastTargetRadius(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     float radius = lua_tonumber(L, 2);
 
@@ -1920,7 +2079,7 @@ int ActiveAbility_setCastTargetRadius(lua_State* L)
 
 int ActiveAbility_getCastTargetRadius(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getCastTargetRadius());
@@ -1930,7 +2089,7 @@ int ActiveAbility_getCastTargetRadius(lua_State* L)
 
 int ActiveAbility_setTemplateProjectile(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     int proj = lua_tointeger(L, 2);
 
@@ -1941,7 +2100,7 @@ int ActiveAbility_setTemplateProjectile(lua_State* L)
 
 int ActiveAbility_setCastHorizontal(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     bool hor = lua_toboolean(L, 2) != 0;
 
@@ -1952,7 +2111,7 @@ int ActiveAbility_setCastHorizontal(lua_State* L)
 
 int ActiveAbility_isCastHorizontal(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushboolean(L, _p->isCastHorizontal());
@@ -1962,13 +2121,32 @@ int ActiveAbility_isCastHorizontal(lua_State* L)
 
 int ActiveAbility_addCastAnimation(lua_State* L)
 {
-    CActiveAbility* _p = NULL;
+    CActiveAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     int id = lua_tointeger(L, 2);
 
     _p->addCastAnimation(id);
 
     return 0;
+}
+
+int ActiveAbility_getAbilityEffectPoint(lua_State* L)
+{
+    CActiveAbility* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    CProjectile* proj = nullptr;
+    luaL_toobjptr(L, 2, proj);
+
+    CUnit* target = nullptr;
+    luaL_toobjptr(L, 3, target);
+
+    const CPoint& p = _p->getAbilityEffectPoint(proj, target);
+
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+
+    return 2;
 }
 
 int PassiveAbility_ctor(lua_State* L)
@@ -1988,10 +2166,10 @@ int PassiveAbility_ctor(lua_State* L)
 }
 
 luaL_Reg BuffAbility_funcs[] = {
-    {"ctor", BuffAbility_ctor},
-    {"getSrcUnit", BuffAbility_getSrcUnit},
-    {"setAppendBuff", BuffAbility_setAppendBuff},
-    {NULL, NULL}
+    { "ctor", BuffAbility_ctor },
+    { "getSrcUnit", BuffAbility_getSrcUnit },
+    { "setAppendBuff", BuffAbility_setAppendBuff },
+    { nullptr, nullptr }
 };
 
 int BuffAbility_ctor(lua_State* L)
@@ -2013,11 +2191,11 @@ int BuffAbility_ctor(lua_State* L)
 
 int BuffAbility_getSrcUnit(lua_State* L)
 {
-    CBuffAbility* _p = NULL;
+    CBuffAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     CUnit* s = _p->getOwner()->getUnit(_p->getSrcUnit());
-    if (s == NULL)
+    if (s == nullptr)
     {
         lua_pushnil(L);
     }
@@ -2025,13 +2203,13 @@ int BuffAbility_getSrcUnit(lua_State* L)
     {
         luaL_pushobjptr(L, "Unit", s);
     }
-    
+
     return 1;
 }
 
 int BuffAbility_setAppendBuff(lua_State* L)
 {
-    CBuffAbility* _p = NULL;
+    CBuffAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     int id = lua_tointeger(L, 2);
 
@@ -2041,19 +2219,19 @@ int BuffAbility_setAppendBuff(lua_State* L)
 }
 
 luaL_Reg AttackAct_funcs[] = {
-    {"ctor", AttackAct_ctor},
-    {"setBaseAttack", AttackAct_setBaseAttack},
-    {"getBaseAttack", AttackAct_getBaseAttack},
-    {"getRealAttackValue", AttackAct_getRealAttackValue},
-    {"setExAttackValue", AttackAct_setExAttackValue},
-    {"getExAttackValue", AttackAct_getExAttackValue},
-    {"setBaseAttackInterval", AttackAct_setBaseAttackInterval},
-    {"getBaseAttackInterval", AttackAct_getBaseAttackInterval},
-    {"getRealAttackInterval", AttackAct_getRealAttackInterval},
-    {"getRealAttackSpeed", AttackAct_getRealAttackSpeed},
-    {"setExAttackSpeed", AttackAct_setExAttackSpeed},
-    {"getExAttackSpeed", AttackAct_getExAttackSpeed},
-    {NULL, NULL}
+    { "ctor", AttackAct_ctor },
+    { "setBaseAttack", AttackAct_setBaseAttack },
+    { "getBaseAttack", AttackAct_getBaseAttack },
+    { "getRealAttackValue", AttackAct_getRealAttackValue },
+    { "setExAttackValue", AttackAct_setExAttackValue },
+    { "getExAttackValue", AttackAct_getExAttackValue },
+    { "setBaseAttackInterval", AttackAct_setBaseAttackInterval },
+    { "getBaseAttackInterval", AttackAct_getBaseAttackInterval },
+    { "getRealAttackInterval", AttackAct_getRealAttackInterval },
+    { "getRealAttackSpeed", AttackAct_getRealAttackSpeed },
+    { "setExAttackSpeed", AttackAct_setExAttackSpeed },
+    { "getExAttackSpeed", AttackAct_getExAttackSpeed },
+    { nullptr, nullptr }
 };
 
 int AttackAct_ctor(lua_State* L)
@@ -2090,7 +2268,7 @@ int AttackAct_ctor(lua_State* L)
 
 int AttackAct_setBaseAttack(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     int type = lua_tointeger(L, 2);
     float value = lua_tonumber(L, 3);
@@ -2102,7 +2280,7 @@ int AttackAct_setBaseAttack(lua_State* L)
 
 int AttackAct_getBaseAttack(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     const CAttackValue& av = _p->getBaseAttack();
@@ -2114,7 +2292,7 @@ int AttackAct_getBaseAttack(lua_State* L)
 
 int AttackAct_getRealAttackValue(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     bool rnd = (lua_gettop(L) < 2) || (lua_toboolean(L, 2) != 0);
 
@@ -2125,7 +2303,7 @@ int AttackAct_getRealAttackValue(lua_State* L)
 
 int AttackAct_setExAttackValue(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     float exA = lua_tonumber(L, 2);
     float exB = lua_tonumber(L, 3);
@@ -2137,11 +2315,11 @@ int AttackAct_setExAttackValue(lua_State* L)
 
 int AttackAct_getExAttackValue(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     const CExtraCoeff& ex = _p->getExAttackValue();
-    
+
     lua_pushnumber(L, ex.getMulriple());
     lua_pushnumber(L, ex.getAddend());
 
@@ -2150,7 +2328,7 @@ int AttackAct_getExAttackValue(lua_State* L)
 
 int AttackAct_setBaseAttackInterval(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     float cd = lua_tonumber(L, 2);
 
@@ -2161,7 +2339,7 @@ int AttackAct_setBaseAttackInterval(lua_State* L)
 
 int AttackAct_getBaseAttackInterval(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getBaseAttackInterval());
@@ -2171,7 +2349,7 @@ int AttackAct_getBaseAttackInterval(lua_State* L)
 
 int AttackAct_getRealAttackInterval(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getRealAttackInterval());
@@ -2181,7 +2359,7 @@ int AttackAct_getRealAttackInterval(lua_State* L)
 
 int AttackAct_getRealAttackSpeed(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getRealAttackSpeed());
@@ -2191,7 +2369,7 @@ int AttackAct_getRealAttackSpeed(lua_State* L)
 
 int AttackAct_setExAttackSpeed(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
     float exA = lua_tonumber(L, 2);
     float exB = lua_tonumber(L, 3);
@@ -2203,7 +2381,7 @@ int AttackAct_setExAttackSpeed(lua_State* L)
 
 int AttackAct_getExAttackSpeed(lua_State* L)
 {
-    CAttackAct* _p = NULL;
+    CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
 
     const CExtraCoeff& ex = _p->getExAttackSpeed();
@@ -2237,8 +2415,9 @@ int AuraPas_ctor(lua_State* L)
     int buff = lua_tointeger(L, 4);
     float range = lua_tonumber(L, 5);
     unsigned int effect = lua_tounsigned(L, 6);
+    bool effectFixed = lua_toboolean(L, 7) != 0;
 
-    CAuraPas* _p = new CAuraPas("Aura", name, interval, buff, range, effect);
+    CAuraPas* _p = new CAuraPas("Aura", name, interval, buff, range, effect, effectFixed);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -2452,17 +2631,30 @@ int KnockBackBuff_ctor(lua_State* L)
     const char* root = lua_tostring(L, 2);
     const char* name = lua_tostring(L, 3);
     float duration = lua_tonumber(L, 4);
-    bool stackable = lua_toboolean(L, 5) != 0;
-    float distance = lua_tonumber(L, 6);
+    float distance = lua_tonumber(L, 5);
 
-    CKnockBackBuff* _p = new CKnockBackBuff(root, name, duration, stackable, distance);
+    CKnockBackBuff* _p = new CKnockBackBuff(root, name, duration, distance);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
     return 0;
 }
 
-int ReflectBuff_ctor( lua_State* L )
+int AttractBuff_ctor(lua_State* L)
+{
+    const char* root = lua_tostring(L, 2);
+    const char* name = lua_tostring(L, 3);
+    float duration = lua_tonumber(L, 4);
+    float distance = lua_tonumber(L, 5);
+
+    CAttractBuff* _p = new CAttractBuff(root, name, duration, distance);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int ReflectBuff_ctor(lua_State* L)
 {
     const char* root = lua_tostring(L, 2);
     const char* name = lua_tostring(L, 3);
@@ -2489,15 +2681,15 @@ int LimitedLifeBuff_ctor(lua_State* L)
 }
 
 luaL_Reg AttackData_funcs[] = {
-    {"ctor", AttackData_ctor},
-    {"setAttack", AttackData_setAttack},
-    {"getAttack", AttackData_getAttack},
-    {"setAttackType", AttackData_setAttackType},
-    {"getAttackType", AttackData_getAttackType},
-    {"setAttackValue", AttackData_setAttackValue},
-    {"getAttackValue", AttackData_getAttackValue},
-    {"addAttackBuff", AttackData_addAttackBuff},
-    {NULL, NULL}
+    { "ctor", AttackData_ctor },
+    { "setAttack", AttackData_setAttack },
+    { "getAttack", AttackData_getAttack },
+    { "setAttackType", AttackData_setAttackType },
+    { "getAttackType", AttackData_getAttackType },
+    { "setAttackValue", AttackData_setAttackValue },
+    { "getAttackValue", AttackData_getAttackValue },
+    { "addAttackBuff", AttackData_addAttackBuff },
+    { nullptr, nullptr }
 };
 
 int AttackData_ctor(lua_State* L)
@@ -2516,21 +2708,21 @@ int AttackData_setAttack(lua_State* L)
 {
     int type = lua_tointeger(L, 2);
     float value = lua_tonumber(L, 3);
-    
-    CAttackData* _p = NULL;
+
+    CAttackData* _p = nullptr;
     luaL_toobjptr(L, 1, _p)->setAttackValue(type, value);
-    
+
     return 0;
 }
 
 int AttackData_getAttack(lua_State* L)
 {
-    CAttackData* _p = NULL;
+    CAttackData* _p = nullptr;
     const CAttackValue& av = luaL_toobjptr(L, 1, _p)->getAttackValue();
-    
+
     lua_pushinteger(L, av.getType());
     lua_pushinteger(L, av.getValue());
-    
+
     return 2;
 }
 
@@ -2538,7 +2730,7 @@ int AttackData_setAttackType(lua_State* L)
 {
     int type = lua_tointeger(L, 2);
 
-    CAttackData* _p = NULL;
+    CAttackData* _p = nullptr;
     luaL_toobjptr(L, 1, _p)->getAttackValue().setType(type);
 
     return 0;
@@ -2546,7 +2738,7 @@ int AttackData_setAttackType(lua_State* L)
 
 int AttackData_getAttackType(lua_State* L)
 {
-    CAttackData* _p = NULL;
+    CAttackData* _p = nullptr;
     int type = luaL_toobjptr(L, 1, _p)->getAttackValue().getType();
 
     lua_pushnumber(L, type);
@@ -2558,7 +2750,7 @@ int AttackData_setAttackValue(lua_State* L)
 {
     float value = lua_tonumber(L, 2);
 
-    CAttackData* _p = NULL;
+    CAttackData* _p = nullptr;
     luaL_toobjptr(L, 1, _p)->getAttackValue().setValue(value);
 
     return 0;
@@ -2566,7 +2758,7 @@ int AttackData_setAttackValue(lua_State* L)
 
 int AttackData_getAttackValue(lua_State* L)
 {
-    CAttackData* _p = NULL;
+    CAttackData* _p = nullptr;
     float value = luaL_toobjptr(L, 1, _p)->getAttackValue().getValue();
 
     lua_pushnumber(L, value);
@@ -2579,18 +2771,18 @@ int AttackData_addAttackBuff(lua_State* L)
     int buff = lua_tointeger(L, 2);
     int level = lua_tointeger(L, 3);
 
-    CAttackData* _p = NULL;
+    CAttackData* _p = nullptr;
     luaL_toobjptr(L, 1, _p)->addAttackBuff(CAttackBuff(buff, level));
 
     return 0;
 }
 
-int g_onWorldInit( lua_State* L )
+int g_onWorldInit(lua_State* L)
 {
     return 0;
 }
 
-int g_onWorldTick( lua_State* L )
+int g_onWorldTick(lua_State* L)
 {
     return 0;
 }
@@ -2626,8 +2818,8 @@ int g_getControlUnit(lua_State* L)
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
     CUnit* _p = w->getUnit(w->getControlUnit());
     lua_pop(L, 1);
-    
-    if (_p != NULL)
+
+    if (_p != nullptr)
     {
         luaL_pushobjptr(L, "Unit", _p);
     }
@@ -2635,7 +2827,7 @@ int g_getControlUnit(lua_State* L)
     {
         lua_pushnil(L);
     }
-    
+
     return 1;
 }
 
@@ -2648,7 +2840,7 @@ int g_getUnit(lua_State* L)
     CUnit* _p = w->getUnit(id);
     lua_pop(L, 1);
 
-    if (_p != NULL)
+    if (_p != nullptr)
     {
         luaL_pushobjptr(L, "Unit", _p);
     }
@@ -2682,13 +2874,27 @@ int g_getUnits(lua_State* L)
         {
             continue;
         }
+
         if (lua_isfunction(L, matchfunc))
         {
             lua_pushvalue(L, matchfunc);
             luaL_pushobjptr(L, "Unit", u);
             lua_pushvalue(L, matchparam);
-            lua_call(L, 2, 1);
-            bool res = lua_toboolean(L, -1) != 0;
+
+            bool res = false;
+            if (lua_pcall(L, 2, 1, 0) != LUA_OK)
+            {
+                const char* err = lua_tostring(L, -1);
+                lua_getglobal(L, "log");
+                lua_pushvalue(L, -2);
+                lua_call(L, 1, 0);
+                lua_pop(L, 1);
+            }
+            else
+            {
+                res = lua_toboolean(L, -1) != 0;
+            }
+
             lua_pop(L, 1);
             if (res == false)
             {
@@ -2720,7 +2926,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_register(L, "getControlUnit", g_getControlUnit);
     lua_register(L, "getUnit", g_getUnit);
     lua_register(L, "getUnits", g_getUnits);
-    
+
     // TODO: reg global classes
     lua_getglobal(L, "class");
     lua_call(L, 0, 1);  // ret a class
@@ -2757,7 +2963,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     int ability = lua_gettop(L);
     luaL_setfuncs(L, ability_funcs, 0);
     lua_setglobal(L, "Ability");
-    
+
     lua_getglobal(L, "class");
     lua_getglobal(L, "Ability");
     lua_call(L, 1, 1);  // ret a class
@@ -2771,7 +2977,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_call(L, 1, 1);  // ret a class
     luaL_setfuncs(L, BuffAbility_funcs, 0);
     lua_setglobal(L, "BuffAbility");
-    
+
     lua_getglobal(L, "class");
     lua_getglobal(L, "ActiveAbility");
     lua_call(L, 1, 1);  // ret a class
@@ -2794,6 +3000,7 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     M_LUA_BIND_CLASS_EX(L, TransitiveLinkBuff, BuffAbility);
     M_LUA_BIND_CLASS_EX(L, SplashPas, PassiveAbility);
     M_LUA_BIND_CLASS_EX(L, KnockBackBuff, BuffAbility);
+    M_LUA_BIND_CLASS_EX(L, AttractBuff, BuffAbility);
     M_LUA_BIND_CLASS_EX(L, ReflectBuff, BuffAbility);
     M_LUA_BIND_CLASS_EX(L, LimitedLifeBuff, BuffAbility);
 
@@ -2802,6 +3009,6 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     int AttackData = lua_gettop(L);
     luaL_setfuncs(L, AttackData_funcs, 0);
     lua_setglobal(L, "AttackData");
-    
+
     return 0;
 }

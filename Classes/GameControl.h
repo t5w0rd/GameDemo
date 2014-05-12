@@ -4,27 +4,27 @@
 #include <cocos2d.h>
 
 
-typedef CCScene* (*SCENE_CREATOR)(void);
+typedef Scene* (*SCENE_CREATOR)(void);
 
-class CCGameControler : public cocos2d::CCObject
+class GameControler : public cocos2d::Ref
 {
 public:
-    CCGameControler(void);
-    virtual ~CCGameControler(void);
+    GameControler(void);
+    virtual ~GameControler(void);
 
     virtual bool init();
-    CREATE_FUNC(CCGameControler);
+    CREATE_FUNC(GameControler);
 
     CC_SINGLETON(GameControler);
 
     void loadFrames(const char* pPath);
-    CCAnimation* loadAnimation(const char* pPath, const char* pName, float fDelay);
+    Animation* loadAnimation(const char* pPath, const char* pName, float fDelay);
 
-    CCSpriteFrame* getFrame(const char* pName);
-    CCAnimation* getAnimation(const char* pName);
+    SpriteFrame* getFrame(const char* pName);
+    Animation* getAnimation(const char* pName);
 
-    M_SYNTHESIZE_READONLY(CCSpriteFrameCache*, m_fc, fc);
-    M_SYNTHESIZE_READONLY(CCAnimationCache*, m_ac, ac);
+    M_SYNTHESIZE_READONLY(SpriteFrameCache*, m_fc, fc);
+    M_SYNTHESIZE_READONLY(AnimationCache*, m_ac, ac);
     M_SYNTHESIZE_READONLY(SimpleAudioEngine*, m_ae, ae);
 
     virtual void step(float dt);
@@ -46,26 +46,34 @@ protected:
     SCENE_CREATOR m_sceneCreator;
 
 public:
-    static CCLayer* defaultLoadingLayer();
-    void replaceSceneWithLoading(SCENE_CREATOR sceneCreator, CCLayer* loading = NULL);
-    void onReplaceScene(CCNode* node);
+    static Layer* defaultLoadingLayer();
+    void replaceSceneWithLoading(SCENE_CREATOR sceneCreator, Layer* loading = nullptr);
+    void onReplaceScene(Node* node);
 
     M_SYNTHESIZE_READONLY(int, m_loadCount, LoadCount);
     M_SYNTHESIZE_READONLY(int, m_loaded, Loaded);
 
 protected:
     vector<string> m_loadFrames;
-    CCObject* m_loadingTarget;
-    SEL_CallFuncO m_loadingProgressing;
-    SEL_CallFuncO m_loadingDone;
+    FUNC_VOID m_onLoadingProgressing;
+    FUNC_VOID m_onLoadingDone;
 
 public:
-    void loadTexturesAsync(const vector<string>& frames, const vector<string>& otherTextures, CCObject* target, SEL_CallFuncO loadingProgressing, SEL_CallFuncO loadingDone);
+    void loadTexturesAsync(const vector<string>& frames, const vector<string>& otherTextures, const FUNC_VOID& onLoadingProgressing, const FUNC_VOID& onLoadingDone);
     void addTexturesLoadedToFramesCache();
 
 protected:
-    void onLoadingProgressing(CCObject* obj);
+    void onLoadingProgressing(Ref* obj);
 };
+
+
+
+////////////// Inline //////////////////////
+inline GameControler& gc()
+{
+    M_DEF_GC(gc);
+    return *gc;
+}
 
 
 #endif  /* __GAMECONTROL_H__ */

@@ -71,7 +71,7 @@ public:
     
     // 调用完之后
     virtual bool use();
-    virtual bool checkConditions();
+    virtual bool checkConditions(const CCommandTarget& rTarget);
     virtual void onUnitUseItem();
     
     // 外部调用

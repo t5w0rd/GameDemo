@@ -9,68 +9,134 @@
 #include "ComponentForCC.h"
 
 
-// CCActionSprite
-
-void CCActionSprite::onMoveToDone(CCNode*, void* pCallFuncData)
+// ActionSprite
+void ActionSprite::onMoveToDone(Node*, const FUNC_VOID& callFunc)
 {
-    if (pCallFuncData == NULL)
+    if (!callFunc)
     {
         return;
     }
 
-    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
-    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
+    callFunc();
 }
 
-void CCActionSprite::onNotifyFrame(CCNode*, void* pCallFuncData)
+void ActionSprite::onNotifyFrame(Node*, const FUNC_VOID& callFunc)
 {
-    if (pCallFuncData == NULL)
+    if (!callFunc)
     {
         return;
     }
 
-    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
-    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
+    callFunc();
 }
 
-void CCActionSprite::onAnimationDone(CCNode*, void* pCallFuncData)
+void ActionSprite::onAnimationDone(Node*, const FUNC_VOID& callFunc)
 {
-    if (pCallFuncData == NULL)
+    if (!callFunc)
     {
         return;
     }
 
-    CCallFuncData* pCd = (CCallFuncData*)pCallFuncData;
-    (pCd->getSelector()->*pCd->getCallFunc())(pCd->getSelector(), pCd);
+    callFunc();
 }
 
-// CCUnitSprite
-CCUnitSprite::CCUnitSprite()
-    : m_pDraw(NULL)
-    , m_pShadow(NULL)
+// CSpriteInfo
+CSpriteInfo::CSpriteInfo(const char* pName)
+: m_sName(pName)
+{
+    setDbgClassName("CSpriteInfo");
+}
+
+void CSpriteInfo::prepareAnimation(int id, const char* pName, int iNotifyFrameIndex, const char* pSound)
+{
+    M_DEF_GC(gc);
+
+    char szName[256];
+    sprintf(szName, "Sprites/%s/%s", getName(), pName);
+    Animation* pAni = gc->getAnimation(szName);
+    if (pAni == nullptr)
+    {
+        return;
+    }
+
+    ANI_INFO stAi = {};
+    stAi.iNotifyFrameIndex = iNotifyFrameIndex;
+    stAi.pAni = pAni;
+    if (pSound != nullptr)
+    {
+        stAi.vecSounds.push_back(pSound);
+        gc->preloadSound(pSound);
+    }
+    m_mapAniInfos.insert(make_pair(id, stAi));
+}
+
+const CSpriteInfo::ANI_INFO* CSpriteInfo::getAnimationInfo(int id) const
+{
+    auto it = m_mapAniInfos.find(id);
+    assert(it != m_mapAniInfos.end());
+
+    return &it->second;
+}
+
+void CSpriteInfo::addAnimationSound(int id, const char* sound)
+{
+    auto it = m_mapAniInfos.find(id);
+    assert(it != m_mapAniInfos.end());
+    it->second.vecSounds.push_back(sound);
+}
+
+void CSpriteInfo::prepareFrame(int id, const char* pName, const char* pFrameName)
+{
+    M_DEF_GC(gc);
+
+    char szName[256];
+    sprintf(szName, "Sprites/%s/%s", pFrameName != nullptr ? pFrameName : getName(), pName);
+    SpriteFrame* pSf = gc->getFrame(szName);
+    if (pSf == nullptr)
+    {
+        return;
+    }
+
+    FRM_INFO stFi = {};
+    stFi.pSf = pSf;
+    m_mapFrmInfos.insert(make_pair(id, stFi));
+}
+
+const CSpriteInfo::FRM_INFO* CSpriteInfo::getFrameInfo(int id) const
+{
+    auto it = m_mapFrmInfos.find(id);
+    assert(it != m_mapFrmInfos.end());
+
+    return &it->second;
+}
+
+// UnitSprite
+UnitSprite::UnitSprite()
+: m_pDraw(nullptr)
+, m_pShadow(nullptr)
 {
 }
 
-CCUnitSprite::~CCUnitSprite()
+UnitSprite::~UnitSprite()
 {
     CC_SAFE_RELEASE(m_pShadow);
 }
 
-bool CCUnitSprite::initWithDraw(CUnitDrawForCC* pDraw)
+bool UnitSprite::initWithDraw(CUnitDrawForCC* pDraw)
 {
-    assert(pDraw != NULL);
+    assert(pDraw != nullptr);
 
     setDraw(pDraw);
 
-    CCSpriteFrame* sf = pDraw->getFrameInfo(CUnitDraw::kFrmDefault)->pSf;
+    SpriteFrame* sf = pDraw->getSpriteInfo()->getFrameInfo(CSpriteInfo::kFrmDefault)->pSf;
 
     return initWithSpriteFrame(sf);
 }
 
-CCNode* CCUnitSprite::createShadow()
+Node* UnitSprite::createShadow()
 {
-    assert(m_pShadow == NULL);
-    m_pShadow = CCNode::create();
+    assert(m_pShadow == nullptr);
+    m_pShadow = Node::create();
     m_pShadow->retain();
 
     m_pShadow->setAnchorPoint(getAnchorPoint());
@@ -80,93 +146,93 @@ CCNode* CCUnitSprite::createShadow()
     return m_pShadow;
 }
 
-void CCUnitSprite::setPosition(const CCPoint& roPos)
+void UnitSprite::setPosition(const Point& roPos)
 {
-    CCSprite::setPosition(roPos);
+    Sprite::setPosition(roPos);
     m_pShadow->setPosition(roPos);
-    CCNode* layer = getParent();
+    Node* layer = getParent();
     {
-        if (layer != NULL)
+        if (layer != nullptr)
         {
             CUnitDraw2D* d = DCAST(getDraw(), CUnitDraw2D*);
             int z = M_BASE_Z + d->getHeight() - roPos.y;
-            setZOrder(z);
-            getShadow()->setZOrder(z);
+            setLocalZOrder(z);
+            getShadow()->setLocalZOrder(z + 1);
             //layer->reorderChild(this, z);
             //layer->reorderChild(getShadow(), z);
         }
     }
 }
 
-void CCUnitSprite::draw()
+void UnitSprite::draw(Renderer *renderer, const kmMat4& transform, bool transformUpdated)
 {
-    CCSprite::draw();
-    if (!CCDirector::sharedDirector()->isDisplayStats())
+    Sprite::draw(renderer, transform, transformUpdated);
+    if (!Director::getInstance()->isDisplayStats())
     {
         return;
     }
 #if 1
-    const CCPoint& p = getAnchorPoint();
+    const Point& p = getAnchorPoint();
     //oPos = pDr->convertToGL(oPos);
-    //ccDrawLine(ccp(0, oPos.y), ccp(800, oPos.y));
+    //ccDrawLine(Point(0, oPos.y), Point(800, oPos.y));
     CUnitDrawForCC* d = getDraw();
     float w = d->getHalfOfWidth() * 2;
     float h = d->getHalfOfHeight() * 2;
-    const CCSize& sz = getContentSize();
-    ccDrawColor4B(255, 255, 255, 255);
-    ccDrawRect(ccp(0, 0), ccp(sz.width, sz.height));
-    ccDrawColor4B(255, 0, 0, 255);
-    ccDrawLine(ccp((sz.width - w) * 0.5, p.y * sz.height), ccp((sz.width + w) * 0.5, p.y * sz.height));  // Hor
-    ccDrawLine(ccp((isFlipX() ? (1.0f - p.x) : p.x) * sz.width, p.y * sz.height), ccp((isFlipX() ? (1.0f - p.x) : p.x) * sz.width, p.y * sz.height + h));  // Ver
+    const Size& sz = getContentSize();
+    DrawPrimitives::setDrawColor4B(255, 255, 255, 255);
+    DrawPrimitives::drawRect(Point(0, 0), Point(sz.width, sz.height));
+    DrawPrimitives::setDrawColor4B(255, 0, 0, 255);
+    DrawPrimitives::drawLine(Point((sz.width - w) * 0.5, p.y * sz.height), Point((sz.width + w) * 0.5, p.y * sz.height));  // Hor
+    DrawPrimitives::drawLine(Point((isFlippedX() ? (1.0f - p.x) : p.x) * sz.width, p.y * sz.height), Point((isFlippedX() ? (1.0f - p.x) : p.x) * sz.width, p.y * sz.height + h));  // Ver
 #endif
 }
 
 // CUnitDrawForCC
-CUnitDrawForCC::CUnitDrawForCC(const char* pName)
-    : CUnitDraw2D(pName)
-    , m_pSprite(NULL)
-    , m_oAnchorPoint(0.5f, 0.5f)
-    , m_iMaxTips(6)
-    , m_iBaseTipId(CKeyGen::nextKey() * m_iMaxTips)
-    , m_iCurTipId(m_iBaseTipId)
+CUnitDrawForCC::CUnitDrawForCC(CSpriteInfo* si)
+: m_si(si)
+, m_pSprite(nullptr)
+, m_oAnchorPoint(0.5f, 0.5f)
+, m_iMaxTips(6)
+, m_iBaseTipId(CKeyGen::nextKey() * m_iMaxTips)
+, m_iCurTipId(m_iBaseTipId)
+, m_lastCtrlSoundPlayedId(-1)
+, m_lastCtrlSoundPlayedIndex(-1)
 {
+    M_SAFE_RETAIN(m_si);
     setDbgClassName("CUnitDrawForCC");
 }
 
 CUnitDrawForCC::~CUnitDrawForCC()
 {
+    M_SAFE_RELEASE(m_si);
     CC_SAFE_RELEASE(m_pSprite);
 }
 
-CMultiRefObject* CUnitDrawForCC::copy()
+CUnitDrawForCC* CUnitDrawForCC::copy()
 {
-    CUnitDrawForCC* ret = new CUnitDrawForCC(getName());
+    CUnitDrawForCC* ret = new CUnitDrawForCC(m_si);
     ret->copyData(this);
     return ret;
 }
 
-void CUnitDrawForCC::copyData( CUnitDraw* from )
+void CUnitDrawForCC::copyData(CUnitDraw* from)
 {
     CUnitDraw2D::copyData(from);
     CUnitDrawForCC* d = DCAST(from, CUnitDrawForCC*);
-    m_mapAniInfos = d->m_mapAniInfos;
-    m_mapFrmInfos = d->m_mapFrmInfos;
     m_oAnchorPoint = d->m_oAnchorPoint;
+    m_vecCtrlSounds = d->m_vecCtrlSounds;
 }
 
-int CUnitDrawForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed /*= 1.0f*/)
+int CUnitDrawForCC::doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone, float fSpeed /*= 1.0f*/)
 {
-    CCPoint ccPos(rPos.x, rPos.y + getHeight());
+    Point ccPos(rPos.x, rPos.y + getHeight());
 
-    CCActionInterval* act = CCMoveTo::create(fDuration, ccPos);
-    act = CCSequenceEx::createWithTwoActions(
+    ActionInterval* act = MoveTo::create(fDuration, ccPos);
+    act = SequenceEx::createWithTwoActions(
         act,
-        CCCallFuncNMultiObj::create(
-            getSprite(),
-            callfuncND_selector(CCUnitSprite::onMoveToDone),
-            pOnMoveToDone));
+        CallFuncN::create(CC_CALLBACK_1(UnitSprite::onMoveToDone, getSprite(), onMoveToDone)));
 
-    CCSpeed* spd = CCSpeed::create(act, fSpeed);
+    Speed* spd = Speed::create(act, fSpeed);
     int tag = CKeyGen::nextKey();
     spd->setTag(tag);
 
@@ -175,44 +241,39 @@ int CUnitDrawForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData*
     return tag;
 }
 
-void CUnitDrawForCC::updateMoveTo( const CPoint& rPos )
+void CUnitDrawForCC::updateMoveTo(const CPoint& rPos)
 {
-    CCSpeed* spd = DCAST(getAction(getMoveToActionId()), CCSpeed*);
-    CCSequenceEx* seq = DCAST(spd->getInnerAction(), CCSequenceEx*);
-    CCMoveTo* mt = DCAST(seq->getActionOne(), CCMoveTo*);
-    //mt->set
+    Speed* spd = DCAST(getAction(getMoveToActionId()), Speed*);
+    SequenceEx* seq = DCAST(spd->getInnerAction(), SequenceEx*);
+    MoveTo* mt = DCAST(seq->getActionOne(), MoveTo*);
+    
     return;
 }
 
-int CUnitDrawForCC::doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone, float fSpeed /*= 1.0f*/)
+int CUnitDrawForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone, float fSpeed /*= 1.0f*/)
 {
-    ANI_INFO* pAniInfo = getAnimationInfo(id);
-    assert(pAniInfo != NULL);
+    const CSpriteInfo::ANI_INFO* pAniInfo = m_si->getAnimationInfo(id);
+    assert(pAniInfo != nullptr);
 
-    CCActionInterval* act = CCNotifyAnimate::create(
+    ActionInterval* act = NotifyAnimate::create(
         pAniInfo->pAni,
         pAniInfo->iNotifyFrameIndex,
-        getSprite(),
-        callfuncND_selector(CCUnitSprite::onNotifyFrame),
-        pOnNotifyFrame,
-        pAniInfo->vecSounds.empty() ? NULL : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
+        CC_CALLBACK_1(UnitSprite::onNotifyFrame, getSprite(), onNotifyFrame),
+        pAniInfo->vecSounds.empty() ? nullptr : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
 
     if (iRepeatTimes == INFINITE)
     {
-        act = CCRepeatForever::create(act);
+        act = RepeatForever::create(act);
     }
     else
     {
-        act = CCRepeat::create(act, iRepeatTimes);
-        act = CCSequence::createWithTwoActions(
+        act = Repeat::create(act, iRepeatTimes);
+        act = Sequence::createWithTwoActions(
             act,
-            CCCallFuncNMultiObj::create(
-            getSprite(),
-            callfuncND_selector(CCUnitSprite::onAnimationDone),
-            pOnAnimationDone));
+            CallFuncN::create(CC_CALLBACK_1(UnitSprite::onAnimationDone, getSprite(), onAnimationDone)));
     }
 
-    CCSpeed* spd = CCSpeed::create(act, fSpeed);
+    Speed* spd = Speed::create(act, fSpeed);
     int tag = CKeyGen::nextKey();
     spd->setTag(tag);
 
@@ -223,6 +284,11 @@ int CUnitDrawForCC::doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iR
 
 void CUnitDrawForCC::stopAction(int tag)
 {
+    if (tag == 0)
+    {
+        return;
+    }
+
     getSprite()->stopActionByTag(tag);
 }
 
@@ -233,8 +299,8 @@ void CUnitDrawForCC::setActionSpeed(int tag, float fSpeed)
         return;
     }
 
-    CCSpeed* spd = DCAST(getSprite()->getActionByTag(tag), CCSpeed*);
-    if (spd == NULL)
+    Speed* spd = DCAST(getSprite()->getActionByTag(tag), Speed*);
+    if (spd == nullptr)
     {
         return;
     }
@@ -244,7 +310,7 @@ void CUnitDrawForCC::setActionSpeed(int tag, float fSpeed)
 
 bool CUnitDrawForCC::isDoingAction(int id)
 {
-    return id != 0 && getSprite()->getActionByTag(id) != NULL;
+    return id != 0 && getSprite()->getActionByTag(id) != nullptr;
 }
 
 void CUnitDrawForCC::stopAllActions()
@@ -252,7 +318,7 @@ void CUnitDrawForCC::stopAllActions()
     getSprite()->stopAllActions();
 }
 
-CCAction* CUnitDrawForCC::getAction(int id)
+Action* CUnitDrawForCC::getAction(int id)
 {
     return getSprite()->getActionByTag(id);
 }
@@ -262,87 +328,32 @@ void CUnitDrawForCC::setVisible(bool bVisible /*= true*/)
     getSprite()->setVisible(bVisible);
 }
 
-void CUnitDrawForCC::setFrame(FRM_ID id)
+void CUnitDrawForCC::setFrame(int id)
 {
-    CCSpriteFrame* sf = getFrameInfo(CUnitDraw::kFrmDefault)->pSf;
-    if (sf == NULL)
+    SpriteFrame* sf = m_si->getFrameInfo(CSpriteInfo::kFrmDefault)->pSf;
+    if (sf == nullptr)
     {
         return;
     }
 
-    getSprite()->setDisplayFrame(sf);
+    getSprite()->setSpriteFrame(sf);
 }
 
-void CUnitDrawForCC::setFlipX(bool bFlipX)
+void CUnitDrawForCC::setFlippedX(bool bFlipX)
 {
-    getSprite()->setFlipX(bFlipX);
+    getSprite()->setFlippedX(bFlipX);
 }
 
-bool CUnitDrawForCC::isFlipX() const
+bool CUnitDrawForCC::isFlippedX() const
 {
-    return getSprite()->isFlipX();
+    return getSprite()->isFlippedX();
 }
 
-void CUnitDrawForCC::prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex, const char* pSound)
+UnitSprite* CUnitDrawForCC::createSprite()
 {
-    M_DEF_GC(gc);
-
-    char szName[256];
-    sprintf(szName, "Units/%s/%s", getName(), pName);
-    CCAnimation* pAni = gc->getAnimation(szName);
-    if (pAni == NULL)
-    {
-        return;
-    }
-
-    ANI_INFO stAi = {};
-    stAi.iNotifyFrameIndex = iNotifyFrameIndex;
-    stAi.pAni = pAni;
-    if (pSound != NULL)
-    {
-        stAi.vecSounds.push_back(pSound);
-        gc->preloadSound(pSound);
-    }
-    m_mapAniInfos.insert(make_pair(id, stAi));
-}
-
-CUnitDrawForCC::ANI_INFO* CUnitDrawForCC::getAnimationInfo(ANI_ID id)
-{
-    auto it = m_mapAniInfos.find(id);
-    assert(it != m_mapAniInfos.end());
-    
-    return &it->second;
-}
-
-void CUnitDrawForCC::addAnimationSound( ANI_ID id, const char* sound )
-{
-    auto it = m_mapAniInfos.find(id);
-    assert(it != m_mapAniInfos.end());
-    it->second.vecSounds.push_back(sound);
-}
-
-void CUnitDrawForCC::prepareFrame(FRM_ID id, const char* pName)
-{
-    M_DEF_GC(gc);
-
-    char szName[256];
-    sprintf(szName, "Units/%s/%s", getName(), pName);
-    CCSpriteFrame* pSf = gc->getFrame(szName);
-    if (pSf == NULL)
-    {
-        return;
-    }
-
-    FRM_INFO stFi = {};
-    stFi.pSf = pSf;
-    m_mapFrmInfos.insert(make_pair(id, stFi));
-}
-
-CCUnitSprite* CUnitDrawForCC::createSprite()
-{
-    assert(m_pSprite == NULL);
-    m_pSprite = CCUnitSprite::createWithDraw(this);
-    assert(m_pSprite != NULL);
+    assert(m_pSprite == nullptr);
+    m_pSprite = UnitSprite::createWithDraw(this);
+    assert(m_pSprite != nullptr);
 
     m_pSprite->retain();
 
@@ -355,13 +366,13 @@ CCUnitSprite* CUnitDrawForCC::createSprite()
 
 void CUnitDrawForCC::setPosition(const CPoint& p)
 {
-    CCUnitSprite* sp = DCAST(getSprite(), CCUnitSprite*);
-    sp->setPosition(ccp(p.x, p.y + getHeight()));
+    UnitSprite* sp = DCAST(getSprite(), UnitSprite*);
+    sp->setPosition(Point(p.x, p.y + getHeight()));
 }
 
 CPoint& CUnitDrawForCC::getPosition()
 {
-    const CCPoint& p = getSprite()->getPosition();
+    const Point& p = getSprite()->getPosition();
     m_oPosition.x = p.x;
     m_oPosition.y = p.y - getHeight();
     return m_oPosition;
@@ -371,53 +382,45 @@ void CUnitDrawForCC::setHeight(float fHeight)
 {
     const CPoint& p = getPosition();
     CUnitDraw2D::setHeight(fHeight);
-    getSprite()->setPosition(ccp(p.x, p.y + getHeight()));
+    getSprite()->setPosition(Point(p.x, p.y + getHeight()));
 }
 
-CUnitDrawForCC::FRM_INFO* CUnitDrawForCC::getFrameInfo(FRM_ID id)
-{
-    auto it = m_mapFrmInfos.find(id);
-    assert(it != m_mapFrmInfos.end());
-
-    return &it->second;
-}
-
-void CUnitDrawForCC::setGeometry(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CPoint& firePoint)
+void CUnitDrawForCC::setGeometry(float fHalfOfWidth, float fHalfOfHeight, const Point& anchorPoint, const CPoint& firePoint)
 {
     setHalfOfWidth(fHalfOfWidth);
     setHalfOfHeight(fHalfOfHeight);
     setAnchorPoint(anchorPoint);
     setFirePoint(firePoint);
-    if (getSprite() != NULL)
+    if (getSprite() != nullptr)
     {
         getSprite()->setAnchorPoint(getAnchorPoint());
     }
 }
 
-void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFontSize, ccColor3B color)
+void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFontSize, Color3B color)
 {
     //return;
-    if (pFont == NULL || pFont[0] == 0)
+    if (pFont == nullptr || pFont[0] == 0)
     {
         pFont = "fonts/Comic Book.fnt";
     }
 
-    CCNode* l = getSprite()->getParent();
+    Node* l = getSprite()->getParent();
     const CPoint& up = getPosition();
-    CCPoint p(up.x, up.y + getHalfOfHeight() * 2 + 30.0f);
+    Point p(up.x, up.y + getHalfOfHeight() * 2 + 30.0f);
     int curTipId = getCurTipId();
     cirInc(curTipId, getBaseTipId(), getMaxTips());
     setCurTipId(curTipId);
     
-    //CCLabelTTF* lbl = DCAST(l->getChildByTag(getCurTipId()), CCLabelTTF*);
-    CCLabelBMFont* lbl = DCAST(l->getChildByTag(getCurTipId()), CCLabelBMFont*);
-    if (lbl != NULL)
+    //Label* lbl = DCAST(l->getChildByTag(getCurTipId()), Label*);
+    Label* lbl = DCAST(l->getChildByTag(getCurTipId()), Label*);
+    if (lbl != nullptr)
     {
         lbl->removeFromParentAndCleanup(true);
     }
 
-    //lbl = CCLabelTTF::create(pTip, pFont, fFontSize);
-    lbl = CCLabelBMFont::create(pTip, pFont);
+    //lbl = Label::create(pTip, pFont, fFontSize);
+    lbl = Label::createWithBMFont(pFont, pTip);
     float scale = fFontSize / 32;
     lbl->setScale(scale);
     lbl->setColor(color);
@@ -427,85 +430,141 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
 
 #if 0
 
-    lbl->runAction(CCSequence::create(
+    lbl->runAction(Sequence::create(
 
-        CCSpawn::create(
-        //CCMoveBy::create(0.1f, ccp(0.0f, lbl->getContentSize().height)),
-        CCFadeInOutScale4::create(
+        Spawn::create(
+        //MoveBy::create(0.1f, Point(0.0f, lbl->getContentSize().height)),
+        FadeInOutScale4::create(
         0.5f, 1.2f, 0.8f,
         0.1f, 0.1f, 2.0f, 0.2f),
-        NULL),
-        CCRemoveSelf::create(),
-        NULL));
+        nullptr),
+        RemoveSelf::create(),
+        nullptr));
 
 #else
 
-    lbl->runAction(CCSequence::create(
-        CCSpawn::create(
-        //CCMoveBy::create(0.1f, ccp(0.0f, lbl->getContentSize().height)),
-            CCFadeInOutScale4::create(
+    lbl->runAction(Sequence::create(
+        Spawn::create(
+        //MoveBy::create(0.1f, Point(0.0f, lbl->getContentSize().height)),
+            FadeInOutScale4::create(
                 0.5f * scale, 2.0f * scale, scale, 0.8f * scale,
                 0.1f, 0.1f, 0.3f, 0.2f),
-            CCSequence::create(CCDelayTime::create(0.5f), CCMoveBy::create(0.2f, ccp(0.0f, lbl->getContentSize().height * 2)), NULL),
-            NULL),
-        CCRemoveSelf::create(),
-        NULL));
+            Sequence::create(DelayTime::create(0.5f), MoveBy::create(0.2f, Point(0.0f, lbl->getContentSize().height * 2)), nullptr),
+            nullptr),
+        RemoveSelf::create(),
+        nullptr));
 #endif
 
     for (int i = 0, j = getCurTipId(); i < getMaxTips(); ++i)
     {
-        CCNode* pNode = l->getChildByTag(j);
-        if (pNode != NULL)
+        Node* pNode = l->getChildByTag(j);
+        if (pNode != nullptr)
         {
-            pNode->runAction(CCMoveBy::create(0.1f, ccp(0.0f, lbl->getContentSize().height)));
+            pNode->runAction(MoveBy::create(0.1f, Point(0.0f, lbl->getContentSize().height)));
         }
 
         cirDec(j, getBaseTipId(), getMaxTips());
     }
 }
 
-void CUnitDrawForCC::addCtrlSound( const char* sounds, float duration )
+void CUnitDrawForCC::addCtrlSound(const char* sound, float duration)
 {
-
+    CTRL_SOUND cs;
+    cs.sound = sound;
+    cs.duration = duration;
+    m_vecCtrlSounds.push_back(cs);
 }
 
 void CUnitDrawForCC::playRandomCtrlSound()
 {
+    if (m_vecCtrlSounds.empty())
+    {
+        return;
+    }
 
+    M_DEF_GC(gc);
+    if (m_lastCtrlSoundPlayedId != -1 && gc->isSoundPlaying(m_lastCtrlSoundPlayedId))
+    {
+        return;
+    }
+
+    auto n = m_vecCtrlSounds.size();
+    m_lastCtrlSoundPlayedIndex =
+        (n == 1 || m_lastCtrlSoundPlayedIndex == -1) ?
+        (rand() % n) :
+        ((rand() % (n - 1) + m_lastCtrlSoundPlayedIndex + 1) % n);
+
+    auto sd = m_vecCtrlSounds[m_lastCtrlSoundPlayedIndex];
+    m_lastCtrlSoundPlayedId = gc->playSound(sd.sound.c_str(), sd.duration);
 }
 
-// CCUnitLayer
-CCUnitLayer::CCUnitLayer()
-    : m_pWorld(NULL)
-    , m_fWorldInterval(0.0f)
+void CUnitDrawForCC::say(const char* words)
+{
+    M_DEF_GC(gc);
+    gc->playSound("sounds/Effects/Sound_NotificationSecondLevel.mp3");
+
+    auto nd = getSprite()->getShadow();
+
+    nd->removeChildByTag(getId());
+    auto sp = Scale9Sprite::create("UI/TalkBubble2.png");
+    sp->setTag(getId());
+    nd->addChild(sp);
+    
+    sp->setInsetLeft(53);
+    sp->setInsetRight(21);
+    sp->setInsetTop(21);
+    sp->setInsetBottom(33);
+
+    auto lbl = Label::createWithBMFont(
+        "fonts/Comic Book.fnt",
+        words);
+    sp->addChild(lbl);
+    lbl->setMaxLineWidth(400);
+    lbl->setColor(Color3B::BLACK);
+
+    sp->setContentSize(lbl->getContentSize() + Size(50, 50));
+    Point lblp = sp->getAnchorPointInPoints() + Point(1, 6);
+    sp->setAnchorPoint(Point(36 / sp->getContentSize().width, 1 / sp->getContentSize().height));
+    lbl->setPosition(lblp);
+    
+    sp->setPosition(nd->getAnchorPointInPoints() + Point(0, getHalfOfHeight() * 2.5 + 20));
+    float sc = 0.8f;
+    sp->setScale(sc);
+    sp->runAction(Sequence::create(FadeInOutScale4::create(0, sc * 1.2, sc, sc * 0.5, 0.06f, 0.06f, strlen(words) / 10 + 2, 0.06f), RemoveSelf::create(), nullptr));
+}
+
+// UnitLayer
+UnitLayer::UnitLayer()
+: m_pWorld(nullptr)
+, m_fWorldInterval(0.0f)
 {
 }
 
-bool CCUnitLayer::initWithWorld(CWorldForCC* pWorld)
+bool UnitLayer::initWithWorld(CWorldForCC* pWorld)
 {
-    assert(pWorld != NULL);
+    assert(pWorld != nullptr);
 
     pWorld->setLayer(this);
 
-    return CCWinLayer::init();
+    return WinLayer::init();
 }
 
-void CCUnitLayer::onEnter()
+void UnitLayer::onEnter()
 {
-    CCWinLayer::onEnter();
+    WinLayer::onEnter();
     if (m_fWorldInterval != 0.0)
     {
-        schedule(schedule_selector(CCUnitLayer::onWorldInterval), m_fWorldInterval);
+        schedule(schedule_selector(UnitLayer::onWorldInterval), m_fWorldInterval);
     }
 }
 
-void CCUnitLayer::onExit()
+void UnitLayer::onExit()
 {
-    unschedule(schedule_selector(CCUnitLayer::onWorldInterval));
-    CCWinLayer::onExit();
+    unschedule(schedule_selector(UnitLayer::onWorldInterval));
+    WinLayer::onExit();
 }
 
-void CCUnitLayer::setWorldInterval(float fInterval)
+void UnitLayer::setWorldInterval(float fInterval)
 {
     if (m_fWorldInterval == fInterval)
     {
@@ -514,18 +573,18 @@ void CCUnitLayer::setWorldInterval(float fInterval)
     m_fWorldInterval = fInterval;
     if (fInterval != 0)
     {
-        schedule(schedule_selector(CCUnitLayer::onWorldInterval), m_fWorldInterval);
+        schedule(schedule_selector(UnitLayer::onWorldInterval), m_fWorldInterval);
     }
     else
     {
-        unschedule(schedule_selector(CCUnitLayer::onWorldInterval));
+        unschedule(schedule_selector(UnitLayer::onWorldInterval));
     }
 }
 
-void CCUnitLayer::onWorldInterval(float dt)
+void UnitLayer::onWorldInterval(float dt)
 {
     CWorld* w = getWorld();
-    if (w == NULL)
+    if (w == nullptr)
     {
         setWorldInterval(0);
         return;
@@ -536,7 +595,7 @@ void CCUnitLayer::onWorldInterval(float dt)
 
 // CWorldForCC
 CWorldForCC::CWorldForCC()
-    : m_pLayer(NULL)
+: m_pLayer(nullptr)
 {
     setDbgClassName("CWorldForCC");;
 }
@@ -548,15 +607,15 @@ CWorldForCC::~CWorldForCC()
 
 void CWorldForCC::onAddUnit(CUnit* pUnit)
 {
-    CCLayer* pLayer = getLayer();
-    if (pLayer == NULL)
+    Layer* pLayer = getLayer();
+    if (pLayer == nullptr)
     {
         pLayer = createLayer();
     }
 
     CUnitDrawForCC* pDraw = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
-    CCUnitSprite* pSprite = pDraw->getSprite();
-    if (pSprite == NULL)
+    UnitSprite* pSprite = pDraw->getSprite();
+    if (pSprite == nullptr)
     {
         pSprite = pDraw->createSprite();
         if (!pUnit->isGhost())
@@ -572,8 +631,8 @@ void CWorldForCC::onAddUnit(CUnit* pUnit)
 void CWorldForCC::onDelUnit(CUnit* pUnit)
 {
     CUnitDrawForCC* pDraw = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
-    CCUnitSprite* pSprite = pDraw->getSprite();
-    CCLayer* pLayer = getLayer();
+    UnitSprite* pSprite = pDraw->getSprite();
+    Layer* pLayer = getLayer();
 
     pLayer->removeChild(pSprite->getShadow(), true);
     pLayer->removeChild(pSprite, true);
@@ -582,15 +641,15 @@ void CWorldForCC::onDelUnit(CUnit* pUnit)
 
 void CWorldForCC::onAddProjectile(CProjectile* pProjectile)
 {
-    CCLayer* pLayer = getLayer();
-    if (pLayer == NULL)
+    Layer* pLayer = getLayer();
+    if (pLayer == nullptr)
     {
         pLayer = createLayer();
     }
 
     CProjectileForCC* pProjectileForCC = DCAST(pProjectile, CProjectileForCC*);
-    CCProjectileSprite* pSprite = pProjectileForCC->getSprite();
-    if (pSprite == NULL)
+    ProjectileSprite* pSprite = pProjectileForCC->getSprite();
+    if (pSprite == nullptr)
     {
         pSprite = pProjectileForCC->createSprite();
     }
@@ -601,8 +660,8 @@ void CWorldForCC::onAddProjectile(CProjectile* pProjectile)
 void CWorldForCC::onDelProjectile(CProjectile* pProjectile)
 {
     CProjectileForCC* pProjectileForCC = DCAST(pProjectile, CProjectileForCC*);
-    CCProjectileSprite* pSprite = pProjectileForCC->getSprite();
-    CCLayer* pLayer = getLayer();
+    ProjectileSprite* pSprite = pProjectileForCC->getSprite();
+    Layer* pLayer = getLayer();
 
     pLayer->removeChild(pSprite, true);
 }
@@ -616,17 +675,17 @@ void CWorldForCC::onAddNormalAttributes(CUnit* pUnit)
 void CWorldForCC::onDelNormalAttributes(CUnit *pUnit)
 {
     pUnit->delSystemAbility("ShowStatus");
-    pUnit->setAI(NULL);
+    pUnit->setAI(nullptr);
 }
 
-void CWorldForCC::setLayer(CCUnitLayer* pLayer)
+void CWorldForCC::setLayer(UnitLayer* pLayer)
 {
     if (pLayer == m_pLayer)
     {
         return;
     }
 
-    if (pLayer != NULL)
+    if (pLayer != nullptr)
     {
         pLayer->retain();
         pLayer->setWorld(this);
@@ -635,11 +694,11 @@ void CWorldForCC::setLayer(CCUnitLayer* pLayer)
     m_pLayer = pLayer;
 }
 
-CCLayer* CWorldForCC::createLayer()
+Layer* CWorldForCC::createLayer()
 {
-    assert(m_pLayer == NULL);
-    m_pLayer = CCUnitLayer::createWithWorld(this);
-    assert(m_pLayer != NULL);
+    assert(m_pLayer == nullptr);
+    m_pLayer = UnitLayer::createWithWorld(this);
+    assert(m_pLayer != nullptr);
 
     m_pLayer->retain();
 
@@ -653,15 +712,15 @@ void CWorldForCC::shutdown()
 }
 
 // CUnitPathForCC
-CUnitPathForCC::CUnitPathForCC( const char* pFileName )
+CUnitPathForCC::CUnitPathForCC(const char* pFileName)
 {
     addPoints(pFileName);
 }
 
-void CUnitPathForCC::addPoints( const char* pFileName )
+void CUnitPathForCC::addPoints(const char* pFileName)
 {
     M_DEF_FU(pFu);
-    CCGameFile* pFile = CCGameFile::create(pFileName, "rb");
+    GameFile* pFile = GameFile::create(pFileName, "rb");
     if (!pFile)
     {
         return;
@@ -683,9 +742,9 @@ void CUnitPathForCC::addPoints( const char* pFileName )
     }
 }
 
-void CUnitPathForCC::saveAsFile( const char* pFileName )
+void CUnitPathForCC::saveAsFile(const char* pFileName)
 {
-    string sFullName = CCFileUtils::sharedFileUtils()->fullPathForFilename(pFileName);
+    string sFullName = FileUtils::getInstance()->fullPathForFilename(pFileName);
     FILE* pFile = fopen(sFullName.c_str(), "wb");
     fwrite("PTH", 1, 4, pFile);
     for (CUnitPath::VEC_POINTS::iterator it = m_vecPoints.begin(); it != m_vecPoints.end(); ++it)
@@ -696,59 +755,59 @@ void CUnitPathForCC::saveAsFile( const char* pFileName )
     fclose(pFile);
 }
 
-// CCProjectileSprite
-CCProjectileSprite::CCProjectileSprite()
-    : m_pProjectile(NULL)
+// ProjectileSprite
+ProjectileSprite::ProjectileSprite()
+: m_pProjectile(nullptr)
 {
 }
 
-bool CCProjectileSprite::initWithProjectile(CProjectileForCC* pProjectile)
+bool ProjectileSprite::initWithProjectile(CProjectileForCC* pProjectile)
 {
-    assert(pProjectile != NULL);
+    assert(pProjectile != nullptr);
 
     setProjectile(pProjectile);
 
-    CCSpriteFrame* sf = pProjectile->getFrameInfo(CProjectileForCC::kFrmDefault)->pSf;
+    SpriteFrame* sf = pProjectile->getSpriteInfo()->getFrameInfo(CSpriteInfo::kFrmDefault)->pSf;
 
     return initWithSpriteFrame(sf);
 }
 
-void CCProjectileSprite::setPosition(const CCPoint& roPos)
+void ProjectileSprite::setPosition(const Point& roPos)
 {
-    CCSprite::setPosition(roPos);
+    Sprite::setPosition(roPos);
     CProjectile* d = DCAST(getProjectile(), CProjectile*);
     int z = M_BASE_Z + d->getHeight() - roPos.y;
-    setZOrder(z);
+    setLocalZOrder(z);
 }
 
 // CProjectileForCC
-CProjectileForCC::CProjectileForCC(const char* pName)
-    : CProjectile(pName)
-    , m_pSprite(NULL)
-    , m_oAnchorPoint(0.5f, 0.5f)
+CProjectileForCC::CProjectileForCC(CSpriteInfo* si)
+: m_si(si)
+, m_pSprite(nullptr)
+, m_oAnchorPoint(0.5f, 0.5f)
 {
-    memset(&m_stFrmInfo, 0, sizeof(m_stFrmInfo));
+    M_SAFE_RETAIN(m_si);
+    setDbgClassName("CProjectileForCC");
 }
 
 CProjectileForCC::~CProjectileForCC()
 {
+    M_SAFE_RELEASE(m_si);
     CC_SAFE_RELEASE(m_pSprite);
 }
 
-CMultiRefObject* CProjectileForCC::copy()
+CProjectileForCC* CProjectileForCC::copy()
 {
-    CProjectileForCC* ret = new CProjectileForCC(getName());
+    CProjectileForCC* ret = new CProjectileForCC(m_si);
     ret->copyData(this);
 
     return ret;
 }
 
-void CProjectileForCC::copyData( const CProjectile* from )
+void CProjectileForCC::copyData(const CProjectile* from)
 {
     CProjectile::copyData(from);
     const CProjectileForCC* p = DCAST(from, const CProjectileForCC*);
-    m_mapAniInfos = p->m_mapAniInfos;
-    m_stFrmInfo = p->m_stFrmInfo;
     // 如果需要复制位置、高度、AttackData等，应在这里添加代码
 }
 
@@ -759,13 +818,13 @@ float CProjectileForCC::getRadius() const
 
 void CProjectileForCC::setPosition(const CPoint& p)
 {
-    CCProjectileSprite* sp = DCAST(getSprite(), CCProjectileSprite*);
-    sp->setPosition(ccp(p.x, p.y + getHeight()));
+    ProjectileSprite* sp = DCAST(getSprite(), ProjectileSprite*);
+    sp->setPosition(Point(p.x, p.y + getHeight()));
 }
 
 CPoint& CProjectileForCC::getPosition()
 {
-    const CCPoint& p = getSprite()->getPosition();
+    const Point& p = getSprite()->getPosition();
     m_oPosition.x = p.x;
     m_oPosition.y = p.y - getHeight();
     return m_oPosition;
@@ -775,42 +834,37 @@ void CProjectileForCC::setHeight(float fHeight)
 {
     const CPoint& p = getPosition();
     CProjectile::setHeight(fHeight);
-    getSprite()->setPosition(ccp(p.x, p.y + getHeight()));
+    getSprite()->setPosition(Point(p.x, p.y + getHeight()));
 }
 
-int CProjectileForCC::doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone)
+int CProjectileForCC::doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone)
 {
-    ANI_INFO* pAniInfo = getAnimationInfo(id);
-    assert(pAniInfo != NULL);
+    const CSpriteInfo::ANI_INFO* pAniInfo = m_si->getAnimationInfo(id);
+    assert(pAniInfo != nullptr);
 
     CUnitDrawForCC* d = DCAST(pFromUnit->getDraw(), CUnitDrawForCC*);
-    assert(d != NULL);
+    assert(d != nullptr);
 
     CUnitDrawForCC* td = DCAST(pToUnit->getDraw(), CUnitDrawForCC*);
-    assert(td != NULL);
+    assert(td != nullptr);
 
-    CCActionInterval* act = CCLink::createWithDrawToDraw(
+    ActionInterval* act = LinkAnimate::createWithDrawToDraw(
         pAniInfo->pAni,
         pAniInfo->iNotifyFrameIndex,
-        getSprite(),
-        callfuncND_selector(CCProjectileSprite::onNotifyFrame),
-        pOnNotifyFrame,
+        CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame),
         d,
         td);
 
     if (iRepeatTimes == INFINITE)
     {
-        act = CCRepeatForever::create(act);
+        act = RepeatForever::create(act);
     }
     else
     {
-        act = CCRepeat::create(act, iRepeatTimes);
-        act = CCSequence::createWithTwoActions(
+        act = Repeat::create(act, iRepeatTimes);
+        act = Sequence::createWithTwoActions(
             act,
-            CCCallFuncNMultiObj::create(
-                getSprite(),
-                callfuncND_selector(CCProjectileSprite::onAnimationDone),
-                pOnAnimationDone));
+            CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onAnimationDone, getSprite(), onAnimationDone)));
     }
 
     int tag = CKeyGen::nextKey();
@@ -821,18 +875,15 @@ int CProjectileForCC::doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID 
     return tag;
 }
 
-int CProjectileForCC::doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone)
+int CProjectileForCC::doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, const FUNC_VOID& onMoveToDone)
 {
     CUnitDrawForCC* d = DCAST(pToUnit->getDraw(), CUnitDrawForCC*);
-    assert(d != NULL);
+    assert(d != nullptr);
 
-    CCActionInterval* act = CCMoveToNode::createWithDraw(fDuration, d, true, fMaxHeightDelta);
-    act = CCSequence::createWithTwoActions(
+    ActionInterval* act = MoveToNode::createWithDraw(fDuration, d, true, fMaxHeightDelta);
+    act = Sequence::createWithTwoActions(
         act,
-        CCCallFuncNMultiObj::create(
-            getSprite(),
-            callfuncND_selector(CCProjectileSprite::onMoveToDone),
-            pOnMoveToDone));
+        CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onMoveToDone, getSprite(), onMoveToDone)));
 
     int tag = CKeyGen::nextKey();
     act->setTag(tag);
@@ -842,17 +893,14 @@ int CProjectileForCC::doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMax
     return tag;
 }
 
-int CProjectileForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone)
+int CProjectileForCC::doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone)
 {
-    CCPoint ccPos(rPos.x, rPos.y + getHeight());
+    Point ccPos(rPos.x, rPos.y + getHeight());
 
-    CCActionInterval* act = CCMoveTo::create(fDuration, ccPos);
-    act = CCSequence::createWithTwoActions(
+    ActionInterval* act = MoveTo::create(fDuration, ccPos);
+    act = Sequence::createWithTwoActions(
         act,
-        CCCallFuncNMultiObj::create(
-            getSprite(),
-            callfuncND_selector(CCProjectileSprite::onMoveToDone),
-            pOnMoveToDone));
+        CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onMoveToDone, getSprite(), onMoveToDone)));
 
     int tag = CKeyGen::nextKey();
     act->setTag(tag);
@@ -863,31 +911,27 @@ int CProjectileForCC::doMoveTo(const CPoint& rPos, float fDuration, CCallFuncDat
     return tag;
 }
 
-int CProjectileForCC::doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone)
+int CProjectileForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone)
 {
-    ANI_INFO* pAniInfo = getAnimationInfo(id);
-    assert(pAniInfo != NULL);
+    const CSpriteInfo::ANI_INFO* pAniInfo = m_si->getAnimationInfo(id);
+    assert(pAniInfo != nullptr);
 
-    CCActionInterval* act = CCNotifyAnimate::create(
+    ActionInterval* act = NotifyAnimate::create(
         pAniInfo->pAni,
         pAniInfo->iNotifyFrameIndex,
-        getSprite(),
-        callfuncND_selector(CCProjectileSprite::onNotifyFrame),
-        pOnNotifyFrame);
+        CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame),
+        pAniInfo->vecSounds.empty() ? nullptr : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
 
     if (iRepeatTimes == INFINITE)
     {
-        act = CCRepeatForever::create(act);
+        act = RepeatForever::create(act);
     }
     else
     {
-        act = CCRepeat::create(act, iRepeatTimes);
-        act = CCSequence::createWithTwoActions(
+        act = Repeat::create(act, iRepeatTimes);
+        act = Sequence::createWithTwoActions(
             act,
-            CCCallFuncNMultiObj::create(
-            getSprite(),
-            callfuncND_selector(CCProjectileSprite::onAnimationDone),
-            pOnAnimationDone));
+            CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onAnimationDone, getSprite(), onAnimationDone)));
     }
 
     int tag = CKeyGen::nextKey();
@@ -905,7 +949,7 @@ void CProjectileForCC::stopAction(int tag)
 
 bool CProjectileForCC::isDoingAction(int id)
 {
-    return getSprite()->getActionByTag(id) != NULL;
+    return getSprite()->getActionByTag(id) != nullptr;
 }
 
 void CProjectileForCC::stopAllActions()
@@ -918,57 +962,11 @@ void CProjectileForCC::setVisible(bool bVisible /*= true*/)
     getSprite()->setVisible(bVisible);
 }
 
-void CProjectileForCC::prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex)
+ProjectileSprite* CProjectileForCC::createSprite()
 {
-    M_DEF_GC(gc);
-
-    char szName[256];
-    sprintf(szName, "Units/%s/%s", getName(), pName);
-    CCAnimation* pAni = gc->getAnimation(szName);
-    if (pAni == NULL)
-    {
-        return;
-    }
-
-    ANI_INFO stAi = {};
-    stAi.iNotifyFrameIndex = iNotifyFrameIndex;
-    stAi.pAni = pAni;
-    m_mapAniInfos.insert(make_pair(id, stAi));
-}
-
-CProjectileForCC::ANI_INFO* CProjectileForCC::getAnimationInfo(ANI_ID id)
-{
-    auto it = m_mapAniInfos.find(id);
-    assert(it != m_mapAniInfos.end());
-
-    return &it->second;
-}
-
-void CProjectileForCC::prepareFrame(FRM_ID id, const char* pName, const char* pFrmName)
-{
-    M_DEF_GC(gc);
-
-    char szName[256];
-    sprintf(szName, "Units/%s/%s", pFrmName == NULL ? getName() : pFrmName, pName);
-    CCSpriteFrame* pSf = gc->getFrame(szName);
-    if (pSf == NULL)
-    {
-        return;
-    }
-
-    m_stFrmInfo.pSf = pSf;
-}
-
-CProjectileForCC::FRM_INFO* CProjectileForCC::getFrameInfo(FRM_ID id)
-{
-    return &m_stFrmInfo;
-}
-
-CCProjectileSprite* CProjectileForCC::createSprite()
-{
-    assert(m_pSprite == NULL);
-    m_pSprite = CCProjectileSprite::createWithProjectile(this);
-    assert(m_pSprite != NULL);
+    assert(m_pSprite == nullptr);
+    m_pSprite = ProjectileSprite::createWithProjectile(this);
+    assert(m_pSprite != nullptr);
 
     m_pSprite->retain();
 

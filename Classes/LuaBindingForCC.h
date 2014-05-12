@@ -9,6 +9,7 @@ bool luaL_loadscript4cc(lua_State *L, const char* name, string& err);
 
 int unit4cc_ctor(lua_State* L);
 int unit4cc_addBattleTip(lua_State* L);
+int unit4cc_setGeometry(lua_State* L);
 
 int UnitPath4CC_addPoints(lua_State* L);
 
@@ -16,11 +17,12 @@ CUnitDrawForCC* luaL_tospriteptr(lua_State* L, int idx = 1);
 int sprite4cc_ctor(lua_State* L);
 int sprite4cc_prepareFrame(lua_State* L);
 int sprite4cc_prepareAnimation(lua_State* L);
-int sprite4cc_setGeometry(lua_State* L);
 
 int g_log(lua_State* L);
 int g_loadFrames(lua_State* L);
 int g_loadAnimation(lua_State* L);
+int g_addTemplateUnit(lua_State* L);
+int g_addTemplateProjectile(lua_State* L);
 int g_createUnit(lua_State* L);
 int g_createProjectile(lua_State* L);
 int g_showDebug(lua_State* L);

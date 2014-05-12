@@ -705,7 +705,7 @@ void luaK_indexed (FuncState *fs, expdesc *t, expdesc *k) {
   t->u.ind.t = t->u.info;
   t->u.ind.idx = luaK_exp2RK(fs, k);
   t->u.ind.vt = (t->k == VUPVAL) ? VUPVAL
-                                 : check_exp(vkisinreg(t->k), VLOCAL);
+                             : check_exp(vkisinreg(t->k), VLOCAL);
   t->k = VINDEXED;
 }
 

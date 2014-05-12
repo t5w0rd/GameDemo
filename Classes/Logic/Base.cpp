@@ -28,7 +28,7 @@ int CKeyGen::nextKey()
     static int iKey = 0;
     if (!iKey)
     {
-        srand(time(NULL));
+        srand(time(nullptr));
         iKey = 1000 + rand() % 9000;
     }
     

@@ -25,6 +25,12 @@ function logf(...)
     log(string.format(table.unpack({...})))
 end
 
+function Unit:sayf(self, ...)
+    self:say(string.format(table.unpack({...})))
+end
+
+INFINITE = -1
+
 CommandTarget = {}
 CommandTarget.kNoTarget = 0
 CommandTarget.kUnitTarget = 1
@@ -49,18 +55,18 @@ ArmorValue.kWall = 2
 ArmorValue.kHero = 3
 ArmorValue.kHoly = 4
 
-Unit.kAniMove = 0
-Unit.kAniDie = 1
-Unit.kAniAct1 = 2
-Unit.kAniAct2 = 3
-Unit.kAniAct3 = 4
-Unit.kAniAct4 = 5
-Unit.kAniAct5 = 6
-Unit.kAniAct6 = 7
-Unit.kAniAct7 = 8
-Unit.kAniAct8 = 9
+Sprite.kAniMove = 0
+Sprite.kAniDie = 1
+Sprite.kAniAct1 = 2
+Sprite.kAniAct2 = 3
+Sprite.kAniAct3 = 4
+Sprite.kAniAct4 = 5
+Sprite.kAniAct5 = 6
+Sprite.kAniAct6 = 7
+Sprite.kAniAct7 = 8
+Sprite.kAniAct8 = 9
 
-Unit.kFrmDefault = 0
+Sprite.kFrmDefault = 0
 
 Unit.kDying = 2 ^ 16
 Unit.kMoving = 2 ^ 17

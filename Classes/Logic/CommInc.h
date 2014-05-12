@@ -24,6 +24,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <functional>
 using namespace std;
 
 extern "C"

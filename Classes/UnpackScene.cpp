@@ -5,44 +5,42 @@
 #include "ComponentForCC.h"
 
 
-// CCUnpackScene
-CCUnpackScene::CCUnpackScene()
+// UnpackScene
+UnpackScene::UnpackScene()
 {
 }
 
-CCUnpackScene::~CCUnpackScene()
+UnpackScene::~UnpackScene()
 {
 }
 
-bool CCUnpackScene::init()
+bool UnpackScene::init()
 {
-    return CCScene::init();
+    return Scene::init();
 }
 
 
-// CCUnpackSceneLayer
-CCUnpackSceneLayer::CCUnpackSceneLayer()
-    : m_fc(NULL)
-    , m_arr(NULL)
-    , m_sp(NULL)
+// UnpackSceneLayer
+UnpackSceneLayer::UnpackSceneLayer()
+: m_fc(nullptr)
+, m_sp(nullptr)
 {
 }
 
-CCUnpackSceneLayer::~CCUnpackSceneLayer()
+UnpackSceneLayer::~UnpackSceneLayer()
 {
     CC_SAFE_RELEASE(m_fc);
-    CC_SAFE_RELEASE(m_arr);
 }
 
-CCScene* CCUnpackSceneLayer::scene()
+Scene* UnpackSceneLayer::scene()
 {
     // 'scene' is an autorelease object
-    CCUnpackScene* pScene = CCUnpackScene::create();
+    UnpackScene* pScene = UnpackScene::create();
 
-    CCUnpackSceneLayer* layer = CCUnpackSceneLayer::create();
+    UnpackSceneLayer* layer = UnpackSceneLayer::create();
 
     // add layer as a child to scene
-    if (layer != NULL)
+    if (layer != nullptr)
     {
         pScene->addChild(layer);
     }
@@ -56,37 +54,37 @@ CCScene* CCUnpackSceneLayer::scene()
 #define PLIST_SAVE_NAME ("Unpack/Global0")
 
 // on "init" you need to initialize your instance
-bool CCUnpackSceneLayer::init()
+bool UnpackSceneLayer::init()
 {
     //////////////////////////////
     // 1. super init first
-    if (!CCLayerColor::initWithColor(ccc4(64, 64, 64, 255)))
+    if (!LayerColor::initWithColor(Color4B(64, 64, 64, 255)))
     {
         return false;
     }
 
-    //CCDirector::sharedDirector()->setDisplayStats(false);
+    //Director::getInstance()->setDisplayStats(false);
 
     FILE* out = stdout;
 
-    CCSize sz = CCDirector::sharedDirector()->getVisibleSize();
+    Size sz = Director::getInstance()->getVisibleSize();
     fprintf(out, "%d x %d\n", (int)sz.width, (int)sz.height);
 
-    CCMenu* mn = CCMenu::create();
+    Menu* mn = Menu::create();
     addChild(mn);
-    mn->setPosition(CCPointZero);
+    mn->setPosition(Point::ZERO);
     
-    CCMenuItemLabel* lbl = CCMenuItemLabel::create(CCLabelTTF::create("Prev", "", 32), this, menu_selector(CCUnpackSceneLayer::onLabelPrev));
+    MenuItemLabel* lbl = MenuItemLabel::create(Label::createWithTTF("Prev", "", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelPrev, this));
     mn->addChild(lbl);
-    lbl->setPosition(ccp(sz.width * 0.3, sz.height * 0.95));
-    lbl = CCMenuItemLabel::create(CCLabelTTF::create("Next", "", 32), this, menu_selector(CCUnpackSceneLayer::onLabelNext));
+    lbl->setPosition(Point(sz.width * 0.3, sz.height * 0.95));
+    lbl = MenuItemLabel::create(Label::createWithTTF("Next", "", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelNext, this));
     mn->addChild(lbl);
-    lbl->setPosition(ccp(sz.width * 0.7, sz.height * 0.95));
-    lbl = CCMenuItemLabel::create(CCLabelTTF::create("SaveAll", "", 32), this, menu_selector(CCUnpackSceneLayer::onLabelSave));
+    lbl->setPosition(Point(sz.width * 0.7, sz.height * 0.95));
+    lbl = MenuItemLabel::create(Label::createWithTTF("SaveAll", "", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelSave, this));
     mn->addChild(lbl);
-    lbl->setPosition(ccp(sz.width * 0.5, sz.height * 0.95));
+    lbl->setPosition(Point(sz.width * 0.5, sz.height * 0.95));
 
-    m_fc = new CCSpriteFrameCacheEx;
+    m_fc = new SpriteFrameCacheEx;
     m_fc->init();
     m_fc->autorelease();
     CC_SAFE_RETAIN(m_fc);
@@ -94,21 +92,20 @@ bool CCUnpackSceneLayer::init()
     m_fc->addSpriteFramesWithFile(PLIST_FILE_NAME);
 
     fprintf(out, "LoadedFileNames:\n");
-    SET_STR* set = m_fc->getLoadedFileNames();
+    std::set<std::string>* set = m_fc->getLoadedFileNames();
     for (auto it = set->begin(); it != set->end(); ++it)
     {
         fprintf(out, "%s\n", it->c_str());
     }
     fprintf(out, "\n");
 
-    CCDictionary* d = m_fc->getSpriteFrames();
-    if (d->count() == 0)
+    Map<std::string, SpriteFrame*>* d = m_fc->getSpriteFrames();
+    if (d->size() == 0)
     {
         return false;
     }
-    m_arr = d->allKeys();
-    CC_SAFE_RETAIN(m_arr);
-    fprintf(out, "Keys(%d):\n", m_arr->count());
+    m_arr = d->keys();
+    fprintf(out, "Keys(%d):\n", m_arr.size());
     /*
     for (unsigned int i = 0; i < m_arr->count(); ++i)
     {
@@ -118,7 +115,7 @@ bool CCUnpackSceneLayer::init()
     */
     fprintf(out, "\n");
     
-    m_sp = CCSprite::create();
+    m_sp = Sprite::create();
     addChild(m_sp);
     
     m_cur = 0;
@@ -127,7 +124,7 @@ bool CCUnpackSceneLayer::init()
     return true;
 }
 
-void CCUnpackSceneLayer::onLabelPrev( CCObject* )
+void UnpackSceneLayer::onLabelPrev(Ref*)
 {
     if (m_cur > 0)
     {
@@ -135,15 +132,15 @@ void CCUnpackSceneLayer::onLabelPrev( CCObject* )
     }
     else
     {
-        m_cur = m_arr->count() - 1;
+        m_cur = m_arr.size() - 1;
     }
 
     updateSprite();
 }
 
-void CCUnpackSceneLayer::onLabelNext( CCObject* )
+void UnpackSceneLayer::onLabelNext(Ref*)
 {
-    if (m_cur < m_arr->count() - 1)
+    if (m_cur < m_arr.size() - 1)
     {
         ++m_cur;
     }
@@ -174,7 +171,7 @@ void GetAllFileName(const char* path, vector<string>& rFileNames)
 void MakeDir(const char* name)
 {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-    CreateDirectoryA(name, NULL);
+    CreateDirectoryA(name, nullptr);
 #else
 #include <sys/stat.h>
     mkdir(name, S_IRWXU | S_IRWXG | S_IRWXO);
@@ -185,7 +182,7 @@ void MakeDir(const char* name)
 int preparePath(const char* name)
 {
     char sz[128];
-    for (const char* p = strchr(name, '/'); p != NULL; p = strchr(p + 1, '/'))
+    for (const char* p = strchr(name, '/'); p != nullptr; p = strchr(p + 1, '/'))
     {
         size_t len = p - name;
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
@@ -205,42 +202,41 @@ int preparePath(const char* name)
     return 0;
 }
 
-void CCUnpackSceneLayer::updateSprite()
+void UnpackSceneLayer::updateSprite()
 {
-    CCString* s = DCAST(m_arr->objectAtIndex(m_cur), CCString*);
-    m_sp->setDisplayFrame(m_fc->spriteFrameByName(s->getCString()));
-    CCSize sz = m_sp->getContentSize();
-    m_sp->setPosition(ccp(sz.width * 0.5, sz.height * 0.5));
+    string& s = m_arr[m_cur];
+    m_sp->setSpriteFrame(m_fc->getSpriteFrameByName(s));
+    Size sz = m_sp->getContentSize();
+    m_sp->setPosition(Point(sz.width * 0.5, sz.height * 0.5));
 }
 
-void CCUnpackSceneLayer::onLabelSave( CCObject* )
+void UnpackSceneLayer::onLabelSave(Ref*)
 {
     vector<string> files;
-    GetAllFileName(CCFileUtils::sharedFileUtils()->fullPathForFilename("Unpack").c_str(), files);
+    GetAllFileName(FileUtils::getInstance()->fullPathForFilename("Unpack").c_str(), files);
     
-    for (auto it = files.begin(); it != files.end(); ++it)
+    for_each(files.begin(), files.end(), [this](string& file)
     {
         char tmp[256];
-        CCSpriteFrameCacheEx fc;
+        SpriteFrameCacheEx fc;
         fc.init();
 
-        sprintf(tmp, "Unpack/%s.plist", it->c_str());
+        sprintf(tmp, "Unpack/%s.plist", file.c_str());
         fc.addSpriteFramesWithFile(tmp);
 
-        CCDictionary* d = fc.getSpriteFrames();
-        CCLOG("%s has %d Frame(s)", it->c_str(), d->count());
-        CCDictElement* e = NULL;
+        Map<std::string, SpriteFrame*>* d = fc.getSpriteFrames();
+        CCLOG("%s has %d Frame(s)", file.c_str(), d->size());
         int f = 1;
-        CCDICT_FOREACH(d, e)
+        for (auto it = d->begin(); it != d->end(); ++it)
         {
-            const char* name = e->getStrKey();
-            sprintf(tmp, "Unpack/%s", it->c_str());
-            CCLOG("%02d%% Saving(%d/%d) %s ..", f * 100 / d->count(), f, d->count(), name);
-            saveToPng(name, tmp, &fc);
+            const char* name = it->first.c_str();
+            sprintf(tmp, "Unpack/%s", file.c_str());
+            CCLOG("%02d%% Saving(%d/%d) %s ..", f * 100 / d->size(), f, d->size(), name);
+            this->saveToPng(name, tmp, &fc);
             ++f;
         }
-        CCLOG("%d Frame(s) Unpacked", (int)d->count());
-    }
+        CCLOG("%d Frame(s) Unpacked", (int)d->size());
+    });
     CCLOG("Done. %d File(s) Unpacked", (int)files.size());
 
     m_cur = 0;
@@ -249,20 +245,20 @@ void CCUnpackSceneLayer::onLabelSave( CCObject* )
 #include <Psapi.h>
 #pragma comment(lib, "Psapi.lib")
 #endif
-bool CCUnpackSceneLayer::saveToPng( const char* name, const char* path, CCSpriteFrameCache* fc )
+bool UnpackSceneLayer::saveToPng(const char* name, const char* path, SpriteFrameCache* fc)
 {
-    m_sp->setDisplayFrame(fc->spriteFrameByName(name));
-    CCSize sz = m_sp->getContentSize();
-    m_sp->setPosition(ccp(sz.width * 0.5, sz.height * 0.5));
-    CCRenderTexture rt;
-    rt.initWithWidthAndHeight(sz.width, sz.height, kTexture2DPixelFormat_RGBA8888);
+    m_sp->setSpriteFrame(fc->getSpriteFrameByName(name));
+    Size sz = m_sp->getContentSize();
+    m_sp->setPosition(Point(sz.width * 0.5, sz.height * 0.5));
+    RenderTexture rt;
+    rt.initWithWidthAndHeight(sz.width, sz.height, Texture2D::PixelFormat::RGBA8888);
 
     rt.begin();
     m_sp->visit();
     rt.end();
 
     char full[256];
-    if (path != NULL)
+    if (path != nullptr)
     {
         sprintf(full, "%s/%s", path, name);
     }
@@ -272,7 +268,7 @@ bool CCUnpackSceneLayer::saveToPng( const char* name, const char* path, CCSprite
     }
     
     preparePath(full);
-    CCImage* img = rt.newCCImage();
+    Image* img = rt.newImage();
     bool res = img->saveToFile(full, false);
     delete img;
 
@@ -283,7 +279,7 @@ bool CCUnpackSceneLayer::saveToPng( const char* name, const char* path, CCSprite
     if (pmc.WorkingSetSize > 0x20000000)
     {
         // 512MB
-        CCPoolManager::sharedPoolManager()->pop();
+        PoolManager::getInstance()->getCurrentPool()->clear();
     }
 #else
     static int rc = 0;
@@ -293,7 +289,7 @@ bool CCUnpackSceneLayer::saveToPng( const char* name, const char* path, CCSprite
     }
     else
     {
-        CCPoolManager::sharedPoolManager()->pop();
+        PoolManager::getInstance()->getCurrentPool()->clear();
         rc = 0;
     }
 #endif

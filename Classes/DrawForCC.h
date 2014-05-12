@@ -5,119 +5,161 @@
 #include "ComponentForCC.h"
 
 
-class CUnitDrawForCC;
-
-class CCActionSprite : public CCSprite
+class ActionSprite : public Sprite
 {
 public:
-    virtual void onMoveToDone(CCNode*, void* pCallFuncData);
-    virtual void onNotifyFrame(CCNode*, void* pCallFuncData);
-    virtual void onAnimationDone(CCNode*, void* pCallFuncData);
+    virtual void onMoveToDone(Node*, const FUNC_VOID& callFunc);
+    virtual void onNotifyFrame(Node*, const FUNC_VOID& callFunc);
+    virtual void onAnimationDone(Node*, const FUNC_VOID& callFunc);
 };
 
-class CCUnitSprite : public CCActionSprite
+class CSpriteInfo : public CMultiRefObject
 {
 public:
-    CCUnitSprite();
-    virtual ~CCUnitSprite();
+    CSpriteInfo(const char* pName);
+
+    M_SYNTHESIZE_STR(Name);
+
+    enum ANI_ID
+    {
+        kAniMove,
+        kAniDie,
+        kAniAct1,
+        kAniAct2,
+        kAniAct3,
+        kAniAct4,
+        kAniAct5,
+        kAniAct6,
+        kAniAct7,
+        kAniAct8
+    };
+
+    struct ANI_INFO
+    {
+        int iNotifyFrameIndex;
+        Animation* pAni;
+        vector<string> vecSounds;
+    };
+
+    typedef map<int, ANI_INFO> MAP_ANI_INFOS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ANI_INFOS, m_mapAniInfos, AnimationInfos);
+
+    void prepareAnimation(int id, const char* pName, int iNotifyFrameIndex, const char* pSound = nullptr);
+    const ANI_INFO* getAnimationInfo(int id) const;
+    void addAnimationSound(int id, const char* sound);
+
+    enum FRM_ID
+    {
+        kFrmDefault,
+        kFrmPortraitHero,
+        kFrmPortraitSel
+    };
+
+    struct FRM_INFO
+    {
+        SpriteFrame* pSf;
+    };
+
+    typedef map<int, FRM_INFO> MAP_FRM_INFOS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_FRM_INFOS, m_mapFrmInfos, FrameInfos);
+
+    void prepareFrame(int id, const char* pName, const char* pFrameName = nullptr);
+    const FRM_INFO* getFrameInfo(int id) const;
+};
+
+class CUnitDrawForCC;
+
+class UnitSprite : public ActionSprite
+{
+public:
+    UnitSprite();
+    virtual ~UnitSprite();
 
     virtual bool initWithDraw(CUnitDrawForCC* pDraw);
-    M_CREATEWITH_FUNC_PARAM(Draw, CCUnitSprite, (CUnitDrawForCC* pDraw), pDraw);
+    M_CREATEWITH_FUNC_PARAM(Draw, UnitSprite, (CUnitDrawForCC* pDraw), pDraw);
 
     M_SYNTHESIZE(CUnitDrawForCC*, m_pDraw, Draw);
 
-    M_SYNTHESIZE(CCNode*, m_pShadow, Shadow);
-    CCNode* createShadow();
-    virtual void setPosition(const CCPoint& roPos);
-    virtual void draw();
+    M_SYNTHESIZE(Node*, m_pShadow, Shadow);
+    Node* createShadow();
+    virtual void setPosition(const Point& roPos) override;
+    virtual void draw(Renderer *renderer, const kmMat4& transform, bool transformUpdated) override;
 
 };
 
 class CUnitDrawForCC : public CUnitDraw2D
 {
 public:
-    CUnitDrawForCC(const char* pName);
+    CUnitDrawForCC(CSpriteInfo* si);
     virtual ~CUnitDrawForCC();
-    virtual CMultiRefObject* copy();
+    virtual CUnitDrawForCC* copy() override;
     virtual void copyData(CUnitDraw* from);
 
+    M_SYNTHESIZE_READONLY(CSpriteInfo*, m_si, SpriteInfo);
+
     // ·µ»ØactionTag
-    virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone, float fSpeed = 1.0f);
+    virtual int doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone, float fSpeed = 1.0f);
     virtual void updateMoveTo(const CPoint& rPos);
-    virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone, float fSpeed = 1.0f);
+    virtual int doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone, float fSpeed = 1.0f);
     virtual void stopAction(int tag);
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
-    virtual CCAction* getAction(int id);
+    virtual Action* getAction(int id);
 
     virtual void setVisible(bool bVisible = true);
 
-    virtual void setFrame(FRM_ID id);
+    virtual void setFrame(int id);
 
-    virtual void setFlipX(bool bFlipX = true);
-    virtual bool isFlipX() const;
+    virtual void setFlippedX(bool bFlipX = true);
+    virtual bool isFlippedX() const;
     
-    struct ANI_INFO
-    {
-        int iNotifyFrameIndex;
-        CCAnimation* pAni;
-        vector<string> vecSounds;
-    };
-
-    typedef map<ANI_ID, ANI_INFO> MAP_ANI_INFOS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ANI_INFOS, m_mapAniInfos, AnimationInfos);
-    
-    void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex, const char* pSound = NULL);
-
-    ANI_INFO* getAnimationInfo(ANI_ID id);
-    void addAnimationSound(ANI_ID id, const char* sound);
-
-    struct FRM_INFO
-    {
-        CCSpriteFrame* pSf;
-    };
-    
-    typedef map<FRM_ID, FRM_INFO> MAP_FRM_INFOS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_FRM_INFOS, m_mapFrmInfos, FrameInfos);
-
-    void prepareFrame(FRM_ID id, const char* pName);
-
-    FRM_INFO* getFrameInfo(FRM_ID id);
-
-    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
-    M_SYNTHESIZE_READONLY(CCUnitSprite*, m_pSprite, Sprite);
-    CCUnitSprite* createSprite();
+    M_SYNTHESIZE_PASS_BY_REF(Point, m_oAnchorPoint, AnchorPoint);
+    M_SYNTHESIZE_READONLY(UnitSprite*, m_pSprite, Sprite);
+    UnitSprite* createSprite();
 
     virtual void setPosition(const CPoint& p);
     virtual CPoint& getPosition();
     virtual void setHeight(float fHeight);
 
-    void setGeometry(float fHalfOfWidth, float fHalfOfHeight, const CCPoint& anchorPoint, const CPoint& firePoint);
+    void setGeometry(float fHalfOfWidth, float fHalfOfHeight, const Point& anchorPoint, const CPoint& firePoint);
 
     M_SYNTHESIZE(int, m_iMaxTips, MaxTips);
     M_SYNTHESIZE(int, m_iBaseTipId, BaseTipId);
     M_SYNTHESIZE(int, m_iCurTipId, CurTipId);
-    void addBattleTip(const char* pTip, const char* pFont, float fFontSize, ccColor3B color);
+    void addBattleTip(const char* pTip, const char* pFont, float fFontSize, Color3B color);
     
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(vector<string>, m_vecCtrlSounds, CtrlSounds);
-    void addCtrlSound(const char* sounds, float duration);
+    struct CTRL_SOUND
+    {
+        string sound;
+        float duration;
+    };
+    typedef vector<CTRL_SOUND> VEC_CTRL_SOUNDS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_CTRL_SOUNDS, m_vecCtrlSounds, CtrlSounds);
+    void addCtrlSound(const char* sound, float duration);
     void playRandomCtrlSound();
+
+protected:
+    int m_lastCtrlSoundPlayedId;
+    int m_lastCtrlSoundPlayedIndex;
+
+public:
+    virtual void say(const char* words);
 };
 
 class CWorldForCC;
 
-class CCUnitLayer : public CCWinLayer
+class UnitLayer : public WinLayer
 {
 public:
-    CCUnitLayer();
+    UnitLayer();
     virtual bool initWithWorld(CWorldForCC* pWorld);
-    M_CREATEWITH_FUNC_PARAM(World, CCUnitLayer, (CWorldForCC* pWorld), pWorld);
+    M_CREATEWITH_FUNC_PARAM(World, UnitLayer, (CWorldForCC* pWorld), pWorld);
 
     M_SYNTHESIZE(CWorldForCC*, m_pWorld, World);
 
-    virtual void onEnter();
-    virtual void onExit();
+    virtual void onEnter() override;
+    virtual void onExit() override;
 
     M_SYNTHESIZE_READONLY(float, m_fWorldInterval, WorldInterval);
     virtual void setWorldInterval(float fInterval);
@@ -131,16 +173,16 @@ public:
     CWorldForCC();
     virtual ~CWorldForCC();
 
-    virtual void onAddUnit(CUnit* pUnit);
-    virtual void onDelUnit(CUnit* pUnit);
-    virtual void onAddProjectile(CProjectile* pProjectile);
-    virtual void onDelProjectile(CProjectile* pProjectile);
-    virtual void onAddNormalAttributes(CUnit* pUnit);
-    virtual void onDelNormalAttributes(CUnit* pUnit);
+    virtual void onAddUnit(CUnit* pUnit) override;
+    virtual void onDelUnit(CUnit* pUnit) override;
+    virtual void onAddProjectile(CProjectile* pProjectile) override;
+    virtual void onDelProjectile(CProjectile* pProjectile) override;
+    virtual void onAddNormalAttributes(CUnit* pUnit) override;
+    virtual void onDelNormalAttributes(CUnit* pUnit) override;
 
-    M_SYNTHESIZE_READONLY(CCUnitLayer*, m_pLayer, Layer);
-    virtual void setLayer(CCUnitLayer* pLayer);
-    CCLayer* createLayer();
+    M_SYNTHESIZE_READONLY(UnitLayer*, m_pLayer, Layer);
+    virtual void setLayer(UnitLayer* pLayer);
+    Layer* createLayer();
 
     virtual void shutdown();
 };
@@ -156,26 +198,28 @@ public:
 
 class CProjectileForCC;
 
-class CCProjectileSprite : public CCActionSprite
+class ProjectileSprite : public ActionSprite
 {
 public:
-    CCProjectileSprite();
+    ProjectileSprite();
 
     virtual bool initWithProjectile(CProjectileForCC* pProjectile);
-    M_CREATEWITH_FUNC_PARAM(Projectile, CCProjectileSprite, (CProjectileForCC* pProjectile), pProjectile);
+    M_CREATEWITH_FUNC_PARAM(Projectile, ProjectileSprite, (CProjectileForCC* pProjectile), pProjectile);
 
     M_SYNTHESIZE(CProjectileForCC*, m_pProjectile, Projectile);
 
-    virtual void setPosition(const CCPoint& roPos);
+    virtual void setPosition(const Point& roPos) override;
 };
 
 class CProjectileForCC : public CProjectile
 {
 public:
-    CProjectileForCC(const char* pName);
+    CProjectileForCC(CSpriteInfo* si);
     virtual ~CProjectileForCC();
-    virtual CMultiRefObject* copy();
+    virtual CProjectileForCC* copy();
     virtual void copyData(const CProjectile* from);
+
+    M_SYNTHESIZE(CSpriteInfo*, m_si, SpriteInfo);
 
     virtual float getRadius() const;
 
@@ -183,50 +227,23 @@ public:
     virtual CPoint& getPosition();
     virtual void setHeight(float fHeight);
 
-    virtual int doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
-    virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, CCallFuncData* pOnMoveToDone);
-    virtual int doMoveTo(const CPoint& rPos, float fDuration, CCallFuncData* pOnMoveToDone);
-    virtual int doAnimation(ANI_ID id, CCallFuncData* pOnNotifyFrame, int iRepeatTimes, CCallFuncData* pOnAnimationDone);
+    virtual int doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone);
+    virtual int doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMaxHeightDelta, float fDuration, const FUNC_VOID& onMoveToDone);
+    virtual int doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone);
+    virtual int doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone);
     virtual void stopAction(int tag);
     virtual bool isDoingAction(int id);
     virtual void stopAllActions();
 
     virtual void setVisible(bool bVisible = true);
 
-    struct ANI_INFO
-    {
-        int iNotifyFrameIndex;
-        CCAnimation* pAni;
-    };
-
-    typedef map<ANI_ID, ANI_INFO> MAP_ANI_INFOS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ANI_INFOS, m_mapAniInfos, AnimationInfos);
-
-    void prepareAnimation(ANI_ID id, const char* pName, int iNotifyFrameIndex);
-
-    ANI_INFO* getAnimationInfo(ANI_ID id);
-    
-    struct FRM_INFO
-    {
-        CCSpriteFrame* pSf;
-    };
-
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(FRM_INFO, m_stFrmInfo, FrameInfo);
-
-    void prepareFrame(FRM_ID id, const char* pName, const char* pFrmName = NULL);
-
-    FRM_INFO* getFrameInfo(FRM_ID id);
-
-    M_SYNTHESIZE_PASS_BY_REF(CCPoint, m_oAnchorPoint, AnchorPoint);
-    M_SYNTHESIZE_READONLY(CCProjectileSprite*, m_pSprite, Sprite);
-    CCProjectileSprite* createSprite();
+    M_SYNTHESIZE_PASS_BY_REF(Point, m_oAnchorPoint, AnchorPoint);
+    M_SYNTHESIZE_READONLY(ProjectileSprite*, m_pSprite, Sprite);
+    ProjectileSprite* createSprite();
 
     virtual void playFireSound();
     virtual void playEffectSound();
 
-protected:
-    string m_sFrmName;
-    
 };
 
 

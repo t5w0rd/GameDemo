@@ -1,72 +1,72 @@
 #ifndef __MainMenu_SCENE_H__
 #define __MainMenu_SCENE_H__
 
-class CCMainMenuScene : public CCScene
+class MainMenuScene : public Scene
 {
 public:
-    CCMainMenuScene();
-    virtual ~CCMainMenuScene();
+    MainMenuScene();
+    virtual ~MainMenuScene();
 
     virtual bool init();
-    CREATE_FUNC(CCMainMenuScene);
+    CREATE_FUNC(MainMenuScene);
 
 };
 
-class CCSelectArchiveLayer;
+class SelectArchiveLayer;
 
-class CCMainMenuSceneLayer : public CCLayer
+class MainMenuSceneLayer : public Layer
 {
 public:
-    CCMainMenuSceneLayer();
-    virtual ~CCMainMenuSceneLayer();
+    MainMenuSceneLayer();
+    virtual ~MainMenuSceneLayer();
 
     virtual bool init();
     virtual void onEnter();
-    static cocos2d::CCScene* scene();
-    CREATE_FUNC(CCMainMenuSceneLayer);
+    static cocos2d::Scene* scene();
+    CREATE_FUNC(MainMenuSceneLayer);
 
-    void CCMenuItemStartCallback(CCObject* sender);
-    void CCMenuItemLogoCallback(CCObject* sender);
+    void MenuItemStartCallback(Ref* sender);
+    void MenuItemLogoCallback(Ref* sender);
     void CCCallSelectArchiveLayer();
     void CCRunStartAction();
 private:
-    CCMenuItemImage *m_pItemStart;
+    MenuItemImage *m_pItemStart;
 };
 
-class CCSelectArchiveLayer : public CCLayer
+class SelectArchiveLayer : public Layer
 {
 public:
-    CCSelectArchiveLayer();
-    virtual ~CCSelectArchiveLayer();
+    SelectArchiveLayer();
+    virtual ~SelectArchiveLayer();
 
     virtual bool init();
     virtual void onEnter();
-    CREATE_FUNC(CCSelectArchiveLayer);
+    CREATE_FUNC(SelectArchiveLayer);
 
-    void CCMenuItemCallback1(CCObject* sender);
-    void CCMenuItemCallback2(CCObject* sender);
-    void CCMenuItemCallback3(CCObject* sender);
-    void CCMenuItemCloseCallback(CCObject* sender);
-    void CCMenuItemDeleteCallback(CCObject* sender);
+    void MenuItemCallback1(Ref* sender);
+    void MenuItemCallback2(Ref* sender);
+    void MenuItemCallback3(Ref* sender);
+    void MenuItemCloseCallback(Ref* sender);
+    void MenuItemDeleteCallback(Ref* sender);
 
 private:
-    CCMenuItemImage* m_pItem1;
-    CCMenuItemImage* m_pItem2;
-    CCMenuItemImage* m_pItem3;
-    CCLabelTTF* m_pLabel1;
-    CCLabelTTF* m_pLabel2;
-    CCLabelTTF* m_pLabel3;
+    MenuItemImage* m_pItem1;
+    MenuItemImage* m_pItem2;
+    MenuItemImage* m_pItem3;
+    Label* m_pLabel1;
+    Label* m_pLabel2;
+    Label* m_pLabel3;
 };
 /*
-class CCSaveFile : public CCObject
+class SaveFile : public Ref
 {
 public:
-    CCSaveFile();
-    virtual ~CCSaveFile();
+    SaveFile();
+    virtual ~SaveFile();
 
-    CREATE_FUNC(CCSaveFile);
+    CREATE_FUNC(SaveFile);
     virtual bool init(const char* pFileName, const char* pMode);
-    M_CREATE_FUNC_PARAM(CCSaveFile, (const char* pFileName, const char* pMode), pFileName, pMode);
+    M_CREATE_FUNC_PARAM(SaveFile, (const char* pFileName, const char* pMode), pFileName, pMode);
     void readSaveFile();
     void updateSaveFile(const char* name, const char* value);
     //void addSaveData(const char* name, const char* value);

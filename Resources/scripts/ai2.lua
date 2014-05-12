@@ -30,13 +30,13 @@ end
 
 function LuaSimpleAI:trySkill(unit, skill, castTarget)
     if skill and not skill:isCoolingDown() and not unit:isDoingCastingAction() then
-        if  castTarget then
-            unit:setCastTarget(castTarget)
+        if castTarget then
+            --logf("castTarget %d", castTarget)
+            unit:castSpellWithTargetUnit(castTarget, skill)
         else
-            unit:setCastTarget()
+            unit:castSpellWithoutTarget(skill)
         end
-        unit:castSpell(skill)
-        --log(string.format("%s", skill:getName()))
+        --unit:sayf("Taste my %s!", skill:getName())
     end
 end
 
@@ -83,8 +83,7 @@ end
 function LuaAIWarrior:onUnitDamagedDone(unit, dmg, src)
     a = unit:getActiveAbility("ThunderCap")
     if a and not a:isCoolingDown() and src and unit:getDistance(src) < 100 then
-        unit:setCastTarget()
-        unit:castSpell(a)
+        unit:castSpellWithoutTarget(a)
     end
 end
 

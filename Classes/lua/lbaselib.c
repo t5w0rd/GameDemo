@@ -69,7 +69,7 @@ static int luaB_tonumber (lua_State *L) {
       lua_Number n = 0;
       do {
         int digit = (isdigit((unsigned char)*s)) ? *s - '0'
-                       : toupper((unsigned char)*s) - 'A' + 10;
+                   : toupper((unsigned char)*s) - 'A' + 10;
         if (digit >= base) break;  /* invalid numeral; force a fail */
         n = n * (lua_Number)base + (lua_Number)digit;
         s++;

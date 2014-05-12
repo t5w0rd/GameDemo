@@ -2,7 +2,6 @@
 
 #include "MainMenuScene.h"
 #include "GameControl.h"
-#include "platform/CCFileUtils.h"
 #include "ComponentForCC.h"
 #include "HeroRoomScene.h"
 #include "StageScene.h"
@@ -10,264 +9,226 @@
 #include "UserData.h"
 
 
-CCMainMenuScene::CCMainMenuScene()
+MainMenuScene::MainMenuScene()
 {
 }
-CCMainMenuScene::~CCMainMenuScene()
+MainMenuScene::~MainMenuScene()
 {
 }
-bool CCMainMenuScene::init()
+bool MainMenuScene::init()
 {
-    return CCScene::init();
+    return Scene::init();
 }
 
 
 //Layer
-CCMainMenuSceneLayer::CCMainMenuSceneLayer()
+MainMenuSceneLayer::MainMenuSceneLayer()
 {
 
 }
 
-CCMainMenuSceneLayer::~CCMainMenuSceneLayer()
+MainMenuSceneLayer::~MainMenuSceneLayer()
 {
 
 }
 
-CCScene* CCMainMenuSceneLayer::scene()
+Scene* MainMenuSceneLayer::scene()
 {
-    CCMainMenuScene *pScene = CCMainMenuScene::create();
-    CCMainMenuSceneLayer *pLayer = CCMainMenuSceneLayer::create();
-    if (pLayer != NULL)
+    MainMenuScene *pScene = MainMenuScene::create();
+    MainMenuSceneLayer *pLayer = MainMenuSceneLayer::create();
+    if (pLayer != nullptr)
     {
         pScene->addChild(pLayer);
     }
     return pScene;
 }
 
-void tranBlink(ccColor4B* c, GLushort x, GLushort y, GLushort w, GLushort h)
+bool MainMenuSceneLayer::init()
 {
-    static int ly = -1;
-    static int status = 0;
-    static int c1 = 0;
-
-    if (y != ly)
-    {
-        ly = y;
-        status = 0;
-        c1 = 0;
-    }
-
-    if (c->a == 0)
-    {
-        if (status == 2 && c1 < 60)
-        {
-            c->a = c->r = c->g = c->b = 255;
-        }
-
-        if (status == 1 || status == 3)
-        {
-            ++status;
-        }
-    }
-    else
-    {
-        c->a = c->r = c->g = c->b = 0;
-        if (status == 0 || status == 2)
-        {
-            ++status;
-        }
-
-        if (status == 1)
-        {
-            ++c1;
-        }
-    }
-}
-
-bool CCMainMenuSceneLayer::init()
-{
-    if (!CCLayer::init())
+    if (!Layer::init())
     {
         return false;
     }
-    CCSprite* pSprite = CCSprite::create("backgrounds/MainMenuBackground.png");
-    static CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-    CCSize orgSize = pSprite->getContentSize();
-    pSprite->setScale(max(winSize.width/orgSize.width, winSize.height/orgSize.height));
-    addChild(pSprite);
-    pSprite->setAnchorPoint(ccp(0,0));
-    pSprite->setPosition(ccp(0,0));
-    pSprite->setZOrder(1);
 
-    CCMenu* pMenu = CCMenu::create();
-    CCMenu* pMenu2 = CCMenu::create();
-    m_pItemStart = CCMenuItemImage::create("UI/mainmenu/menu_startchain_0001.png"
-        , "UI/mainmenu/menu_startchain_0002.png"
-        , this
-        , menu_selector(CCMainMenuSceneLayer::CCMenuItemStartCallback));
-    addChild(pMenu);
-    addChild(pMenu2);
-    pMenu->setPosition(0,0);
-    pMenu2->setPosition(0,0);
-    pMenu->setZOrder(2);
-    pMenu2->setZOrder(3);
-    m_pItemStart->setPosition(winSize.width/2,winSize.height * 3/4);
+    Sprite* pSprite = Sprite::create("backgrounds/MainMenuBackground.png");
+    static Size wsz = Director::getInstance()->getWinSize();
+    Size orgSize = pSprite->getContentSize();
+    pSprite->setScale(max(wsz.width/orgSize.width, wsz.height/orgSize.height));
+    addChild(pSprite);
+    pSprite->setAnchorPoint(Point::ZERO);
+    pSprite->setPosition(Point::ZERO);
+
     
-    CCMenuItemImage* pItemLogo = CCMenuItemImage::create("UI/mainmenu/logo.png", NULL, this, menu_selector(CCMainMenuSceneLayer::CCMenuItemLogoCallback));
-    pItemLogo->setPosition(winSize.width/2, winSize.height * 3/4);
+    m_pItemStart = MenuItemImage::create(
+        "UI/mainmenu/menu_startchain_0001.png",
+        "UI/mainmenu/menu_startchain_0002.png",
+        CC_CALLBACK_1(MainMenuSceneLayer::MenuItemStartCallback, this));
+
+    m_pItemStart->setPosition(wsz.width/2,wsz.height * 3/4);
     
-    pMenu2->addChild(pItemLogo);
+    MenuItemImage* pItemLogo = MenuItemImage::create("UI/mainmenu/logo.png", "", CC_CALLBACK_1(MainMenuSceneLayer::MenuItemLogoCallback, this));
+    pItemLogo->setPosition(wsz.width/2, wsz.height * 3/4);
+    
+    
+    Menu* pMenu = Menu::create();
+    addChild(pMenu, 1);
+    pMenu->setPosition(Point::ZERO);
     pMenu->addChild(m_pItemStart);
+
+    Menu* pMenu2 = Menu::create();
+    addChild(pMenu2, 2);
+    pMenu2->setPosition(Point::ZERO);
+    pMenu2->addChild(pItemLogo);
 
     return true;
 }
 
-void CCMainMenuSceneLayer::CCMenuItemLogoCallback(CCObject* sender)
+void MainMenuSceneLayer::MenuItemLogoCallback(Ref* sender)
 {
-    CCLog("Touch Logo");
+    CCLOG("Touch Logo");
 }
-void CCMainMenuSceneLayer::onEnter()
+void MainMenuSceneLayer::onEnter()
 {
-    CCLayer::onEnter();
+    Layer::onEnter();
     CCRunStartAction();
 }
 
-void CCMainMenuSceneLayer::CCRunStartAction()
+void MainMenuSceneLayer::CCRunStartAction()
 {
-    CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-    m_pItemStart->runAction(CCEaseExponentialOut::create(CCMoveTo::create(0.5, ccp(winSize.width/2, winSize.height/2))));
+    Size wsz = Director::getInstance()->getWinSize();
+    m_pItemStart->runAction(EaseExponentialOut::create(MoveTo::create(0.5, Point(wsz.width/2, wsz.height/2))));
     m_pItemStart->setEnabled(true);
 }
 
-void CCMainMenuSceneLayer::CCMenuItemStartCallback(CCObject* sender)
+void MainMenuSceneLayer::MenuItemStartCallback(Ref* sender)
 {
-    CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-    CCSprite* pSprite = (CCSprite*)sender;
-    pSprite->runAction(CCSequence::createWithTwoActions(CCEaseElasticIn::create(CCMoveTo::create(2, ccp(winSize.width/2 , winSize.height *3/4)))
-        , CCCallFunc::create(this, callfunc_selector(CCMainMenuSceneLayer::CCCallSelectArchiveLayer))));
+    Size wsz = Director::getInstance()->getWinSize();
+    Sprite* pSprite = (Sprite*)sender;
+    pSprite->runAction(
+        Sequence::createWithTwoActions(EaseElasticIn::create(MoveTo::create(2, Point(wsz.width/2 , wsz.height *3/4))),
+        CallFunc::create(CC_CALLBACK_0(MainMenuSceneLayer::CCCallSelectArchiveLayer, this))));
 }
 
-void CCMainMenuSceneLayer::CCCallSelectArchiveLayer()
+void MainMenuSceneLayer::CCCallSelectArchiveLayer()
 {
-    CCSelectArchiveLayer *pSelectLayer = CCSelectArchiveLayer::create();
-    addChild(pSelectLayer);
-    pSelectLayer->setPosition(0,0);
-    pSelectLayer->setZOrder(3);
+    SelectArchiveLayer *pSelectLayer = SelectArchiveLayer::create();
+    addChild(pSelectLayer, 3);
+    pSelectLayer->setPosition(Point::ZERO);
     m_pItemStart->setEnabled(false);
 }
 
 
-CCSelectArchiveLayer::CCSelectArchiveLayer()
+SelectArchiveLayer::SelectArchiveLayer()
 {
-
 }
 
-CCSelectArchiveLayer::~CCSelectArchiveLayer()
+SelectArchiveLayer::~SelectArchiveLayer()
 {
-
 }
 
-bool CCSelectArchiveLayer::init()
+bool SelectArchiveLayer::init()
 {
-    if(!CCLayer::init())
+    if (!Layer::init())
     {
         return false;
     }
-    CCSprite* pSprite = CCSprite::create("UI/mainmenu/mainmenu_saveslot_bg.png");
-    CCSize winSize = CCDirector::sharedDirector()->getWinSize();
-    //CCSize orgSize = pSprite->getContentSize();
-    addChild(pSprite);
-    pSprite->setPosition(ccp(winSize.width/2,winSize.height/2));
 
-    CCMenu* pMenu = CCMenu::create();
-    m_pItem1 = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_0001.png"
-        , "UI/mainmenu/mainmenu_saveslot_0002.png"
-        , this
-        , menu_selector(CCSelectArchiveLayer::CCMenuItemCallback1));
-    m_pItem2 = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_0001.png"
-        , "UI/mainmenu/mainmenu_saveslot_0002.png"
-        , this, menu_selector(CCSelectArchiveLayer::CCMenuItemCallback2));
-    m_pItem3 = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_0001.png"
-        , "UI/mainmenu/mainmenu_saveslot_0002.png"
-        , this
-        , menu_selector(CCSelectArchiveLayer::CCMenuItemCallback3));
+    Sprite* pSprite = Sprite::create("UI/mainmenu/mainmenu_saveslot_bg.png");
+    Size wsz = Director::getInstance()->getWinSize();
+    //Size orgSize = pSprite->getContentSize();
+    addChild(pSprite);
+    pSprite->setPosition(Point(wsz.width/2,wsz.height/2));
+
+    Menu* pMenu = Menu::create();
+    m_pItem1 = MenuItemImage::create(
+        "UI/mainmenu/mainmenu_saveslot_0001.png",
+        "UI/mainmenu/mainmenu_saveslot_0002.png",
+        CC_CALLBACK_1(SelectArchiveLayer::MenuItemCallback1, this));
+    m_pItem2 = MenuItemImage::create(
+        "UI/mainmenu/mainmenu_saveslot_0001.png",
+        "UI/mainmenu/mainmenu_saveslot_0002.png",
+        CC_CALLBACK_1(SelectArchiveLayer::MenuItemCallback2, this));
+    m_pItem3 = MenuItemImage::create(
+        "UI/mainmenu/mainmenu_saveslot_0001.png",
+        "UI/mainmenu/mainmenu_saveslot_0002.png",
+        CC_CALLBACK_1(SelectArchiveLayer::MenuItemCallback3, this));
 
     pMenu->addChild(m_pItem1);
-    m_pItem1->setPosition(winSize.width/2, winSize.height/2 + 200);
-    m_pLabel1 = CCLabelTTF::create("Hello World", "Arial", 48);
+    m_pItem1->setPosition(wsz.width/2, wsz.height/2 + 200);
+    m_pLabel1 = Label::createWithTTF("Hello World", FONT_ARIAL, 48);
     m_pItem1->addChild(m_pLabel1);
-    m_pLabel1->setPosition(ccp(m_pItem1->getContentSize().width/2, m_pItem1->getContentSize().height/2));
+    m_pLabel1->setPosition(Point(m_pItem1->getContentSize().width/2, m_pItem1->getContentSize().height/2));
     pMenu->addChild(m_pItem2);
-    m_pItem2->setPosition(winSize.width/2, winSize.height/2);
-    m_pLabel2 = CCLabelTTF::create("Goodbye World", "Arial", 48);
+    m_pItem2->setPosition(wsz.width/2, wsz.height/2);
+    m_pLabel2 = Label::createWithTTF("Goodbye World", FONT_ARIAL, 48);
     m_pItem2->addChild(m_pLabel2);
-    m_pLabel2->setPosition(ccp(m_pItem2->getContentSize().width/2, m_pItem2->getContentSize().height/2));
+    m_pLabel2->setPosition(Point(m_pItem2->getContentSize().width/2, m_pItem2->getContentSize().height/2));
     pMenu->addChild(m_pItem3);
-    m_pItem3->setPosition(winSize.width/2, winSize.height/2 - 200);
-    m_pLabel3 = CCLabelTTF::create("Hello Goodbye", "Arial", 48);
+    m_pItem3->setPosition(wsz.width/2, wsz.height/2 - 200);
+    m_pLabel3 = Label::createWithTTF("Hello Goodbye", FONT_ARIAL, 48);
     m_pItem3->addChild(m_pLabel3);
-    m_pLabel3->setPosition(ccp(m_pItem3->getContentSize().width/2, m_pItem3->getContentSize().height/2));
+    m_pLabel3->setPosition(Point(m_pItem3->getContentSize().width/2, m_pItem3->getContentSize().height/2));
 
     addChild(pMenu);
-    pMenu->setPosition(0, 0);
+    pMenu->setPosition(Point::ZERO);
 
-    CCMenuItemImage* pItemClose = CCMenuItemImage::create("UI/mainmenu/mainmenu_saveslot_close_0001.png"
-        , "UI/mainmenu/mainmenu_saveslot_close_0002.png"
-        , this
-        , menu_selector(CCSelectArchiveLayer::CCMenuItemCloseCallback));
-    pItemClose->setPosition(winSize.width/2, winSize.height/2 - pSprite->getContentSize().height/2 - pItemClose->getContentSize().height/2);
+    MenuItemImage* pItemClose = MenuItemImage::create(
+        "UI/mainmenu/mainmenu_saveslot_close_0001.png",
+        "UI/mainmenu/mainmenu_saveslot_close_0002.png",
+        CC_CALLBACK_1(SelectArchiveLayer::MenuItemCloseCallback, this));
+    pItemClose->setPosition(wsz.width/2, wsz.height/2 - pSprite->getContentSize().height/2 - pItemClose->getContentSize().height/2);
     pMenu->addChild(pItemClose);
-    //CCMenuItemImage* 
+    //MenuItemImage* 
 
     return true;
 }
 
-void CCSelectArchiveLayer::CCMenuItemCallback1(CCObject* sender)
+void SelectArchiveLayer::MenuItemCallback1(Ref* sender)
 {
     CUserData* udt = CUserData::instance();
     udt->load("");
     CUserData::HERO_INFO* hi = udt->getHeroSelected();
 
     M_DEF_GC(gc);
-    gc->replaceSceneWithLoading(hi == NULL ? &CCHeroRoomSceneLayer::scene : &CCStageSceneLayer::scene);
+    gc->replaceSceneWithLoading(hi == nullptr ? &HeroRoomSceneLayer::scene : &StageSceneLayer::scene);
 }
 
-void CCSelectArchiveLayer::CCMenuItemCallback2(CCObject* sender)
+void SelectArchiveLayer::MenuItemCallback2(Ref* sender)
 {
 
 }
 
-void CCSelectArchiveLayer::CCMenuItemCallback3(CCObject* sender)
+void SelectArchiveLayer::MenuItemCallback3(Ref* sender)
 {
 
 }
 
-void CCSelectArchiveLayer::CCMenuItemCloseCallback(CCObject* sender)
+void SelectArchiveLayer::MenuItemCloseCallback(Ref* sender)
 {
-    CCNode* pNode = getParent();
-    CCMainMenuSceneLayer* pMainLayer = (CCMainMenuSceneLayer*)pNode;
+    Node* pNode = getParent();
+    MainMenuSceneLayer* pMainLayer = (MainMenuSceneLayer*)pNode;
     pMainLayer->CCRunStartAction();
     removeFromParent();
 }
 
-void CCSelectArchiveLayer::onEnter()
+void SelectArchiveLayer::onEnter()
 {
-    CCLayer::onEnter();
-   string path = CCFileUtils::sharedFileUtils()->getWritablePath() + "save00";
-   CCLog("path = %s", path.c_str());
-   if(CCFileUtils::sharedFileUtils()->isFileExist(path))
+    Layer::onEnter();
+   string path = FileUtils::getInstance()->getWritablePath() + "save00";
+   CCLOG("path = %s", path.c_str());
+   if(FileUtils::getInstance()->isFileExist(path))
    {
-       unsigned long len = 0;
-       unsigned char* data = CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &len);
-       CCLog("%ld",len);
-       m_pLabel1->setString((const char*)data);
+       Data data = FileUtils::getInstance()->getDataFromFile(path);
+       CCLOG("%ld", data.getSize());
+       m_pLabel1->setString((const char*)data.getBytes());
    }
    else
    {
-       CCLog("File not Exist");
+       CCLOG("File not Exist");
        FILE* file = fopen(path.c_str(), "wb"); 
 
-       if (file) { 
+       if (file)
+       { 
            fwrite("input sth", sizeof(unsigned char), 10, file);
            fclose(file);  
        }
@@ -276,21 +237,21 @@ void CCSelectArchiveLayer::onEnter()
 }
 /*
 
-CCSaveFile::CCSaveFile()
+SaveFile::SaveFile()
 {
 
 }
 
-CCSaveFile::~CCSaveFile()
+SaveFile::~SaveFile()
 {
 
 }
 
-bool CCSaveFile::init(const char* pFileName, const char* pMode)
+bool SaveFile::init(const char* pFileName, const char* pMode)
 {
-    string path = CCFileUtils::sharedFileUtils()->getWritablePath() + pFileName;
+    string path = FileUtils::getInstance()->getWritablePath() + pFileName;
     unsigned long len = 0;
-    unsigned char* data = CCFileUtils::sharedFileUtils()->getFileData(path.c_str(), "rb", &len);
+    unsigned char* data = FileUtils::getInstance()->getFileData(path.c_str(), "rb", &len);
 
 }
 */

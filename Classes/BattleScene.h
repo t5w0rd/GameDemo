@@ -8,7 +8,7 @@
 
 
 class CStunBuff;
-class CCHeroRoomSceneLayer;
+class HeroRoomSceneLayer;
 
 class CBattleWorld : public CWorldForCC
 {
@@ -27,9 +27,12 @@ public:
     
     virtual CProjectile* copyProjectile(int id) const;
 
-    virtual void onUnitDying(CUnit* pUnit);
-    virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget);
-    virtual void onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget);
+    virtual void onUnitDying(CUnit* pUnit) override;
+    virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget) override;
+    virtual void onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget) override;
+    virtual void onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) override;
+    virtual void onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) override;
+    virtual void onUnitAbilityCD(CUnit* pUnit, CAbility* pAbility) override;
 
     void onChangeGold(CMultiRefObject* obj);
 
@@ -48,41 +51,41 @@ public:
     
 };
 
-class CCBattleScene : public CCScene
+class BattleScene : public Scene
 {
 public:
-    CCBattleScene();
-    virtual ~CCBattleScene();
+    BattleScene();
+    virtual ~BattleScene();
     
     virtual bool init();
-    CREATE_FUNC(CCBattleScene);
+    CREATE_FUNC(BattleScene);
 
     M_SYNTHESIZE(CWorldForCC*, m_pWorld, World);
 
 };
 
-class CCProgressBar;
-class CCBattleSceneLayer : public CCUnitLayer
+class ProgressBar;
+class BattleSceneLayer : public UnitLayer
 {
 public:
-    CCBattleSceneLayer();
-    virtual ~CCBattleSceneLayer();
+    BattleSceneLayer();
+    virtual ~BattleSceneLayer();
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool initWithWorld(CWorldForCC* pWorld);
-    M_CREATEWITH_FUNC_PARAM(World, CCBattleSceneLayer, (CWorldForCC* pWorld), pWorld);
+    M_CREATEWITH_FUNC_PARAM(World, BattleSceneLayer, (CWorldForCC* pWorld), pWorld);
 
-    void onLoadingProgress(CCObject* pObj);
-    void onLoadingDone(CCObject* pObj);
+    void onLoadingProgress();
+    void onLoadingDone();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene();
+    static cocos2d::Scene* scene();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(CCBattleSceneLayer);
+    CREATE_FUNC(BattleSceneLayer);
 
-    virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
-    M_SYNTHESIZE(CCTouchMaskLayer*, m_ctrlLayer, CtrlLayer);
-    M_SYNTHESIZE(CCTouchMaskLayer*, m_ctrlLayer2, CtrlLayer2);
+    virtual void onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event* event) override;
+    M_SYNTHESIZE(TouchMaskLayer*, m_ctrlLayer, CtrlLayer);
+    M_SYNTHESIZE(TouchMaskLayer*, m_ctrlLayer2, CtrlLayer2);
 
     M_SYNTHESIZE(int, m_iMaxLogs, MaxLogs);
     M_SYNTHESIZE(int, m_iBaseLogId, BaseLogId);
@@ -102,26 +105,27 @@ public:
 
         TARGET_INFO() { memset(this, 0, sizeof(TARGET_INFO)); }
     };
-    CCSprite* m_pTargetInfoPanel;
-    CCLabelTTF* m_pTargetLv;
-    CCLabelTTF* m_pTargetHp;
-    CCLabelTTF* m_pTargetAtk;
-    CCLabelTTF* m_pTargetAtkEx;
-    CCSprite* m_pTargetAtkIcon;
-    CCLabelTTF* m_pTargetDef;
-    CCSprite* m_pTargetDefIcon;
+    Sprite* m_pTargetInfoPanel;
+    Label* m_pTargetLv;
+    Label* m_pTargetHp;
+    Label* m_pTargetAtk;
+    Label* m_pTargetAtkEx;
+    Sprite* m_pTargetAtkIcon;
+    Label* m_pTargetDef;
+    Sprite* m_pTargetDefIcon;
     TARGET_INFO m_stTargetInfo;
     bool m_bShowTargetInfo;
-    CCSprite* m_pPortraitSel;
-    CCLabelTTF* m_pNameSel;
+    Sprite* m_pPortraitSel;
+    Label* m_pNameSel;
+    int m_iTargetInfoUnitId;
     void initTargetInfo();
     void updateTargetInfo(int id = 0);
     void showTargetInfo(bool bShow = true);
 
-    //CCSprite* m_pHeroPortrait;
-    CCProgressBar* m_pHeroHpBar;
-    CCProgressBar* m_pHeroExpBar;
-    CCLabelTTF* m_pHeroLevel;
+    //Sprite* m_pHeroPortrait;
+    ProgressBar* m_pHeroHpBar;
+    ProgressBar* m_pHeroExpBar;
+    Label* m_pHeroLevel;
     struct HERO_INFO
     {
         float fHpPer;
@@ -130,36 +134,43 @@ public:
         HERO_INFO() { memset(this, 0, sizeof(HERO_INFO)); }
     };
     HERO_INFO m_stHeroInfo;
+    ButtonPanel* m_bp;
     void initHeroPortrait();
     void updateHeroPortrait();
 
+    ButtonBase* createAbilityButton(CAbility* ability);
+    void initHeroAbilityPanel();
+    void updateHeroAbilityPanel();
+    void cancelAbilityWaiting(int abilityId, int cancelTag);
+
+    void onClickFist(Ref* btn);
+    void onClickHeroPortrait(Ref* btn);
+    void onClickAbilityButton(Ref* btn);
+
     // Gold
-    CCLabelTTF* m_pGold;
+    Label* m_pGold;
     void initResourceInfo();
     void updateResourceInfo(int gold);
 
     int m_dscur;
-    void onDragonStrikeUpdate(CCNode* pNode);
+    void onDragonStrikeUpdate(Node* pNode);
 
-    void onClickFist(CCObject* pNode);
-    void onClickHeroPortrait(CCObject* pNode);
+    void onClickPause(Ref* obj);
 
-    void onClickPause(CCObject* obj);
-
-    M_SYNTHESIZE(CCPopPanel*, m_panel, CtrlPanel)
+    M_SYNTHESIZE(PopPanel*, m_panel, CtrlPanel)
     void initCtrlPanel();
     void showCtrlPanel();
-    void onCloseCtrlPanel(CCObject* obj);
-    void onClickResume(CCObject* obj);
-    void onClickRestart(CCObject* obj);
-    void onClickQuit(CCObject* obj);
-    void onClickSound(CCObject* obj);
-    void onClickMusic(CCObject* obj);
+    void onCloseCtrlPanel(Ref* obj);
+    void onClickResume(Ref* obj);
+    void onClickRestart(Ref* obj);
+    void onClickQuit(Ref* obj);
+    void onClickSound(Ref* obj);
+    void onClickMusic(Ref* obj);
 
     void endWithVictory(int grade);
     void endWithDefeat();
 
-    void onShowVictoryDone(CCNode* node);
+    void onShowVictoryDone(Node* node);
     
 };
 

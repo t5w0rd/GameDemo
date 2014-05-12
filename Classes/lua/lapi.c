@@ -153,7 +153,7 @@ LUA_API const lua_Number *lua_version (lua_State *L) {
 LUA_API int lua_absindex (lua_State *L, int idx) {
   return (idx > 0 || ispseudo(idx))
          ? idx
-         : cast_int(L->top - L->ci->func + idx);
+     : cast_int(L->top - L->ci->func + idx);
 }
 
 

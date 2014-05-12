@@ -7,14 +7,17 @@
     <Filter Include="Classes">
       <UniqueIdentifier>{bb6c862e-70e9-49d9-81b7-3829a6f50471}</UniqueIdentifier>
     </Filter>
+    <Filter Include="resource">
+      <UniqueIdentifier>{715254bc-d70b-4ec5-bf29-467dd3ace079}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Classes\Logic">
-      <UniqueIdentifier>{4913f8c7-f3a0-44f3-81dd-531a146dd3c9}</UniqueIdentifier>
+      <UniqueIdentifier>{2486fbbc-3235-4695-a62f-4bf8c7bbdcdb}</UniqueIdentifier>
     </Filter>
     <Filter Include="Classes\lua">
-      <UniqueIdentifier>{3cdfe9fa-f4f9-4e03-a013-fe4a3a68e464}</UniqueIdentifier>
+      <UniqueIdentifier>{5ddf1531-dcd7-43fc-9149-77eb50dbb54f}</UniqueIdentifier>
     </Filter>
     <Filter Include="scripts">
-      <UniqueIdentifier>{c6f28fba-278c-4261-af6a-b8955e41c598}</UniqueIdentifier>
+      <UniqueIdentifier>{ac0318c3-3082-4a12-ac4d-fc663ca1216e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -24,46 +27,52 @@
     <ClCompile Include="..\Classes\AppDelegate.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\BattleScene.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Action.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Application.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Base.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Draw.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Item.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Level.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Unit.cpp">
-      <Filter>Classes\Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameControl.cpp">
+    <ClCompile Include="..\Classes\AbilityForCC.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\ActionForCC.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\Logic\Ability.cpp">
-      <Filter>Classes\Logic</Filter>
+    <ClCompile Include="..\Classes\BattleScene.cpp">
+      <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\ComponentForCC.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\AbilityForCC.cpp">
+    <ClCompile Include="..\Classes\DrawForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameControl.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\GameData.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\HeroRoomScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LogoScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\LuaBindingForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\MainMenuScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Stage.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\StageScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\UnitLibraryForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\UnpackScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\UserData.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
     <ClCompile Include="..\Classes\lua\lapi.c">
@@ -162,40 +171,40 @@
     <ClCompile Include="..\Classes\lua\lzio.c">
       <Filter>Classes\lua</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Ability.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Action.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Application.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Base.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\BingAbility.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Draw.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Item.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Level.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
     <ClCompile Include="..\Classes\Logic\LuaBinding.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\LuaBindingForCC.cpp">
-      <Filter>Classes</Filter>
+    <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp">
+      <Filter>Classes\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\LogoScene.cpp">
-      <Filter>Classes</Filter>
+    <ClCompile Include="..\Classes\Logic\Unit.cpp">
+      <Filter>Classes\Logic</Filter>
     </ClCompile>
-    <ClCompile Include="..\Classes\MainMenuScene.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\DrawForCC.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\UnitLibraryForCC.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\HeroRoomScene.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\UserData.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\Stage.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\StageScene.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\GameData.cpp">
-      <Filter>Classes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Classes\UnpackScene.cpp">
+    <ClCompile Include="..\Classes\EmptyScene.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -206,56 +215,59 @@
     <ClInclude Include="..\Classes\AppDelegate.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\BattleScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Action.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Application.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Base.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\CommDef.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\CommInc.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Draw.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Item.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Level.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\MultiRefObject.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Unit.h">
-      <Filter>Classes\Logic</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\CommHeader.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameControl.h">
+    <ClInclude Include="..\Classes\AbilityForCC.h">
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\ActionForCC.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\Logic\Ability.h">
-      <Filter>Classes\Logic</Filter>
+    <ClInclude Include="..\Classes\BattleScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\CommHeader.h">
+      <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\ComponentForCC.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\AbilityForCC.h">
+    <ClInclude Include="..\Classes\DrawForCC.h">
       <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameControl.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\GameData.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\HeroRoomScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\LogoScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\LuaBindingForCC.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\MainMenuScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Stage.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\StageScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\UnitLibraryForCC.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\UnpackScene.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\UserData.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\lua\lua.hpp">
+      <Filter>Classes\lua</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\lua\lapi.h">
       <Filter>Classes\lua</Filter>
@@ -314,9 +326,6 @@
     <ClInclude Include="..\Classes\lua\lua.h">
       <Filter>Classes\lua</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\lua\lua.hpp">
-      <Filter>Classes\lua</Filter>
-    </ClInclude>
     <ClInclude Include="..\Classes\lua\luaconf.h">
       <Filter>Classes\lua</Filter>
     </ClInclude>
@@ -332,42 +341,53 @@
     <ClInclude Include="..\Classes\lua\lzio.h">
       <Filter>Classes\lua</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Ability.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Action.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Application.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Base.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\BingAbility.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\CommDef.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\CommInc.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Draw.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Item.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Level.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
     <ClInclude Include="..\Classes\Logic\LuaBinding.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\LuaBindingForCC.h">
+    <ClInclude Include="..\Classes\Logic\MultiRefObject.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Unit.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\EmptyScene.h">
       <Filter>Classes</Filter>
     </ClInclude>
-    <ClInclude Include="..\Classes\LogoScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\MainMenuScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\DrawForCC.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\UnitLibraryForCC.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\HeroRoomScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\UserData.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\Stage.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\StageScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\GameData.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Classes\UnpackScene.h">
-      <Filter>Classes</Filter>
-    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="game.rc">
+      <Filter>resource</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\scripts\ability.lua">
@@ -376,10 +396,28 @@
     <None Include="..\Resources\scripts\ai.lua">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\Resources\scripts\ai2.lua">
+      <Filter>scripts</Filter>
+    </None>
     <None Include="..\Resources\scripts\common.lua">
       <Filter>scripts</Filter>
     </None>
     <None Include="..\Resources\scripts\Stage00.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Stage01.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Stage02.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Stage03.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Stage04.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Stage05.lua">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

@@ -4,55 +4,55 @@
 #include "UserData.h"
 
 
-class CCEffect;
-class CCProgressBar;
+class Effect;
+class ProgressBar;
 
-class CCHeroRoomSceneLayer : public CCLayerColor
+class HeroRoomSceneLayer : public LayerColor
 {
 public:
-    CCHeroRoomSceneLayer();
-    virtual ~CCHeroRoomSceneLayer();
+    HeroRoomSceneLayer();
+    virtual ~HeroRoomSceneLayer();
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
 
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::CCScene* scene();
+    static cocos2d::Scene* scene();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(CCHeroRoomSceneLayer);
+    CREATE_FUNC(HeroRoomSceneLayer);
 
-    void onClickHeroPortrait(CCObject* pNode);
-    void onClickButtonDone(CCObject* pNode);
-    void onHideDone(CCNode* pNode);
-    void onScaleDone(CCNode* pNode);
-    void onAct5Done(CCNode* pNode);
+    void onClickHeroPortrait(Ref* pNode);
+    void onClickButtonDone(Ref* pNode);
+    void onHideDone(Node* pNode);
+    void onScaleDone(Node* pNode);
+    void onAct5Done(Node* pNode);
 
 public:
-    CCSprite* m_selSmall;
-    CCSprite* m_selBig;
-    CCSprite* m_panel;
-    CCEffect* m_eff;
-    CCSprite* m_attackIcon;
-    CCSprite* m_armorIcon;
-    CCProgressBar* m_hpBar;
-    CCProgressBar* m_attackBar;
-    CCProgressBar* m_armorBar;
-    CCProgressBar* m_attackSpeedBar;
-    CCProgressBar* m_moveSpeedBar;
-    CCLabelTTF* m_hpLbl;
-    CCLabelTTF* m_attackLbl;
-    CCLabelTTF* m_armorLbl;
-    CCLabelTTF* m_attackSpeedLbl;
-    CCLabelTTF* m_moveSpeedLbl;
+    Sprite* m_selSmall;
+    Sprite* m_selBig;
+    Sprite* m_panel;
+    Effect* m_eff;
+    Sprite* m_attackIcon;
+    Sprite* m_armorIcon;
+    ProgressBar* m_hpBar;
+    ProgressBar* m_attackBar;
+    ProgressBar* m_armorBar;
+    ProgressBar* m_attackSpeedBar;
+    ProgressBar* m_moveSpeedBar;
+    Label* m_hpLbl;
+    Label* m_attackLbl;
+    Label* m_armorLbl;
+    Label* m_attackSpeedLbl;
+    Label* m_moveSpeedLbl;
 
     CUserData::HERO_INFO m_heroInfos[3];
     CUserData::HERO_INFO m_maxVal;
 
-    CCLabelTTF* m_name;
-    CCLabelTTF* m_desc;
+    Label* m_name;
+    Label* m_desc;
 
-    CCSprite* m_blinkSmall;
-    CCSprite* m_blinkBig;
+    Sprite* m_blinkSmall;
+    Sprite* m_blinkBig;
 
     M_SYNTHESIZE(int, m_selIndex, SelectIndex);
 };

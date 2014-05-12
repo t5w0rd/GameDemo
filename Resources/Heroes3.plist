@@ -4,7 +4,7 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>Units/Alien/act1/08.png</key>
+            <key>Sprites/Alien/act1/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{784,1684},{114,70}}</string>
@@ -17,7 +17,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act1/09.png</key>
+            <key>Sprites/Alien/act1/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1972,770},{110,74}}</string>
@@ -30,7 +30,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act3/04.png</key>
+            <key>Sprites/Alien/act3/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1490,1994},{52,66}}</string>
@@ -43,7 +43,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act3/05.png</key>
+            <key>Sprites/Alien/act3/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1670,828},{52,68}}</string>
@@ -56,7 +56,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act3/06.png</key>
+            <key>Sprites/Alien/act3/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1420,1994},{52,68}}</string>
@@ -69,7 +69,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act3/08.png</key>
+            <key>Sprites/Alien/act3/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1712,1658},{66,112}}</string>
@@ -82,7 +82,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act3/09.png</key>
+            <key>Sprites/Alien/act3/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1598,1648},{76,112}}</string>
@@ -95,7 +95,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act3/10.png</key>
+            <key>Sprites/Alien/act3/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1558,1994},{52,66}}</string>
@@ -108,7 +108,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/02.png</key>
+            <key>Sprites/Alien/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1848,1072},{72,122}}</string>
@@ -121,7 +121,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/03.png</key>
+            <key>Sprites/Alien/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,1106},{72,122}}</string>
@@ -134,7 +134,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/04.png</key>
+            <key>Sprites/Alien/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{378,1052},{86,120}}</string>
@@ -147,7 +147,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/05.png</key>
+            <key>Sprites/Alien/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{252,1056},{86,120}}</string>
@@ -160,7 +160,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/06.png</key>
+            <key>Sprites/Alien/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1968,1308},{78,120}}</string>
@@ -173,7 +173,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/07.png</key>
+            <key>Sprites/Alien/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{752,1040},{78,120}}</string>
@@ -186,7 +186,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/08.png</key>
+            <key>Sprites/Alien/act5/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{626,1096},{78,120}}</string>
@@ -199,7 +199,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/09.png</key>
+            <key>Sprites/Alien/act5/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{500,1126},{78,120}}</string>
@@ -212,7 +212,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/10.png</key>
+            <key>Sprites/Alien/act5/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{374,1140},{78,120}}</string>
@@ -225,7 +225,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/act5/11.png</key>
+            <key>Sprites/Alien/act5/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1248,1044},{78,120}}</string>
@@ -238,7 +238,7 @@
                 <key>sourceSize</key>
                 <string>{336,224}</string>
             </dict>
-            <key>Units/Alien/portrait_hero.png</key>
+            <key>Sprites/Alien/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{402,426},{112,124}}</string>
@@ -251,7 +251,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Alric/act2/01.png</key>
+            <key>Sprites/Alric/act2/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1626,1994},{52,66}}</string>
@@ -264,7 +264,7 @@
                 <key>sourceSize</key>
                 <string>{164,180}</string>
             </dict>
-            <key>Units/Alric/act2/02.png</key>
+            <key>Sprites/Alric/act2/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1694,1994},{52,64}}</string>
@@ -277,7 +277,7 @@
                 <key>sourceSize</key>
                 <string>{164,180}</string>
             </dict>
-            <key>Units/Alric/act3/08.png</key>
+            <key>Sprites/Alric/act3/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1484,1468},{112,84}}</string>
@@ -290,7 +290,7 @@
                 <key>sourceSize</key>
                 <string>{164,180}</string>
             </dict>
-            <key>Units/Alric/act5/06.png</key>
+            <key>Sprites/Alric/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{120,1438},{98,116}}</string>
@@ -303,7 +303,7 @@
                 <key>sourceSize</key>
                 <string>{164,180}</string>
             </dict>
-            <key>Units/Alric/portrait_hero.png</key>
+            <key>Sprites/Alric/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{266,430},{112,124}}</string>
@@ -316,7 +316,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Artillery/act1/05.png</key>
+            <key>Sprites/Artillery/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1864,604},{126,76}}</string>
@@ -329,7 +329,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act1/07.png</key>
+            <key>Sprites/Artillery/act1/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1088,134},{130,80}}</string>
@@ -342,7 +342,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act1/08.png</key>
+            <key>Sprites/Artillery/act1/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1616,380},{128,68}}</string>
@@ -355,7 +355,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act1/09.png</key>
+            <key>Sprites/Artillery/act1/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{632,816},{124,68}}</string>
@@ -368,7 +368,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act2/10.png</key>
+            <key>Sprites/Artillery/act2/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1852,682},{76,126}}</string>
@@ -381,7 +381,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act2/11.png</key>
+            <key>Sprites/Artillery/act2/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1880,340},{76,128}}</string>
@@ -394,7 +394,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/02.png</key>
+            <key>Sprites/Artillery/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{670,324},{68,126}}</string>
@@ -407,7 +407,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/03.png</key>
+            <key>Sprites/Artillery/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{536,364},{68,126}}</string>
@@ -420,7 +420,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/04.png</key>
+            <key>Sprites/Artillery/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{506,856},{68,124}}</string>
@@ -433,7 +433,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/05.png</key>
+            <key>Sprites/Artillery/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{380,874},{68,124}}</string>
@@ -446,7 +446,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/06.png</key>
+            <key>Sprites/Artillery/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{254,878},{68,124}}</string>
@@ -459,7 +459,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/07.png</key>
+            <key>Sprites/Artillery/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{128,880},{68,124}}</string>
@@ -472,7 +472,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/08.png</key>
+            <key>Sprites/Artillery/act5/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1554,630},{68,124}}</string>
@@ -485,7 +485,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/09.png</key>
+            <key>Sprites/Artillery/act5/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1420,676},{68,124}}</string>
@@ -498,7 +498,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/10.png</key>
+            <key>Sprites/Artillery/act5/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1294,686},{68,124}}</string>
@@ -511,7 +511,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/11.png</key>
+            <key>Sprites/Artillery/act5/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1546,700},{68,124}}</string>
@@ -524,7 +524,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/12.png</key>
+            <key>Sprites/Artillery/act5/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1420,746},{68,124}}</string>
@@ -537,7 +537,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/act5/13.png</key>
+            <key>Sprites/Artillery/act5/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1518,1074},{68,122}}</string>
@@ -550,7 +550,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Units/Artillery/portrait_hero.png</key>
+            <key>Sprites/Artillery/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{134,538},{112,124}}</string>
@@ -563,7 +563,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/BeastMaster/act1/02.png</key>
+            <key>Sprites/BeastMaster/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1544},{116,78}}</string>
@@ -576,7 +576,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act1/03.png</key>
+            <key>Sprites/BeastMaster/act1/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{896,714},{124,78}}</string>
@@ -589,7 +589,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act1/05.png</key>
+            <key>Sprites/BeastMaster/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1964,1430},{114,82}}</string>
@@ -602,7 +602,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act1/06.png</key>
+            <key>Sprites/BeastMaster/act1/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{618,1916},{114,84}}</string>
@@ -615,7 +615,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act2/07.png</key>
+            <key>Sprites/BeastMaster/act2/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1972,1102},{74,102}}</string>
@@ -628,7 +628,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act2/09.png</key>
+            <key>Sprites/BeastMaster/act2/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1746,442},{126,100}}</string>
@@ -641,7 +641,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/00.png</key>
+            <key>Sprites/BeastMaster/act5/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1270,876},{82,122}}</string>
@@ -654,7 +654,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/01.png</key>
+            <key>Sprites/BeastMaster/act5/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1394,928},{82,122}}</string>
@@ -667,7 +667,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/02.png</key>
+            <key>Sprites/BeastMaster/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1270,960},{82,122}}</string>
@@ -680,7 +680,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/03.png</key>
+            <key>Sprites/BeastMaster/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1518,990},{82,122}}</string>
@@ -693,7 +693,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/04.png</key>
+            <key>Sprites/BeastMaster/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{126,1058},{84,120}}</string>
@@ -706,7 +706,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/05.png</key>
+            <key>Sprites/BeastMaster/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1066},{84,120}}</string>
@@ -719,7 +719,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/06.png</key>
+            <key>Sprites/BeastMaster/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1126,1048},{78,120}}</string>
@@ -732,7 +732,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/07.png</key>
+            <key>Sprites/BeastMaster/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1000,1076},{78,120}}</string>
@@ -745,7 +745,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/08.png</key>
+            <key>Sprites/BeastMaster/act5/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{874,1092},{78,120}}</string>
@@ -758,7 +758,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/09.png</key>
+            <key>Sprites/BeastMaster/act5/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{748,1120},{78,120}}</string>
@@ -771,7 +771,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/10.png</key>
+            <key>Sprites/BeastMaster/act5/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{878,1008},{82,120}}</string>
@@ -784,7 +784,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/act5/11.png</key>
+            <key>Sprites/BeastMaster/act5/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1004,904},{84,120}}</string>
@@ -797,7 +797,7 @@
                 <key>sourceSize</key>
                 <string>{248,160}</string>
             </dict>
-            <key>Units/BeastMaster/portrait_hero.png</key>
+            <key>Sprites/BeastMaster/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,618},{112,124}}</string>
@@ -810,7 +810,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Crabman/act1/00.png</key>
+            <key>Sprites/Crabman/act1/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{758,828},{122,106}}</string>
@@ -823,7 +823,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act1/02.png</key>
+            <key>Sprites/Crabman/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1486,290},{128,106}}</string>
@@ -836,7 +836,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act1/05.png</key>
+            <key>Sprites/Crabman/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,1180},{120,108}}</string>
@@ -849,7 +849,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act1/06.png</key>
+            <key>Sprites/Crabman/act1/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1244,1194},{118,108}}</string>
@@ -862,7 +862,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act1/07.png</key>
+            <key>Sprites/Crabman/act1/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{136,112},{132,98}}</string>
@@ -875,7 +875,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act2/00.png</key>
+            <key>Sprites/Crabman/act2/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1082,216},{128,104}}</string>
@@ -888,7 +888,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act2/02.png</key>
+            <key>Sprites/Crabman/act2/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{632,886},{122,106}}</string>
@@ -901,7 +901,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act2/03.png</key>
+            <key>Sprites/Crabman/act2/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1224,2},{130,104}}</string>
@@ -914,7 +914,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act2/05.png</key>
+            <key>Sprites/Crabman/act2/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1938,1750},{110,108}}</string>
@@ -927,7 +927,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act2/11.png</key>
+            <key>Sprites/Crabman/act2/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{960,1914},{112,98}}</string>
@@ -940,7 +940,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act2/12.png</key>
+            <key>Sprites/Crabman/act2/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{380,768},{124,104}}</string>
@@ -953,7 +953,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/00.png</key>
+            <key>Sprites/Crabman/act3/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,960},{122,104}}</string>
@@ -966,7 +966,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/03.png</key>
+            <key>Sprites/Crabman/act3/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1050,418},{124,110}}</string>
@@ -979,7 +979,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/04.png</key>
+            <key>Sprites/Crabman/act3/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{916,514},{124,110}}</string>
@@ -992,7 +992,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/08.png</key>
+            <key>Sprites/Crabman/act3/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{682,90},{132,122}}</string>
@@ -1005,7 +1005,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/09.png</key>
+            <key>Sprites/Crabman/act3/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1294,756},{118,122}}</string>
@@ -1018,7 +1018,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/13.png</key>
+            <key>Sprites/Crabman/act3/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1752,160},{118,128}}</string>
@@ -1031,7 +1031,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/21.png</key>
+            <key>Sprites/Crabman/act3/21.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1220},{116,112}}</string>
@@ -1044,7 +1044,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act3/22.png</key>
+            <key>Sprites/Crabman/act3/22.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1848,760},{122,104}}</string>
@@ -1057,7 +1057,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act4/09.png</key>
+            <key>Sprites/Crabman/act4/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1488,180},{128,108}}</string>
@@ -1070,7 +1070,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act4/10.png</key>
+            <key>Sprites/Crabman/act4/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{506,926},{122,106}}</string>
@@ -1083,7 +1083,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/act5/13.png</key>
+            <key>Sprites/Crabman/act5/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{954,84},{132,128}}</string>
@@ -1096,7 +1096,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/default.png</key>
+            <key>Sprites/Crabman/default.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{882,904},{120,102}}</string>
@@ -1109,7 +1109,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/move/00.png</key>
+            <key>Sprites/Crabman/move/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{756,936},{120,102}}</string>
@@ -1122,7 +1122,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/move/01.png</key>
+            <key>Sprites/Crabman/move/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{380,944},{122,106}}</string>
@@ -1135,7 +1135,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/move/02.png</key>
+            <key>Sprites/Crabman/move/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,818},{122,104}}</string>
@@ -1148,7 +1148,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/move/03.png</key>
+            <key>Sprites/Crabman/move/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1542,886},{122,102}}</string>
@@ -1161,7 +1161,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/move/04.png</key>
+            <key>Sprites/Crabman/move/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,924},{122,102}}</string>
@@ -1174,7 +1174,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/move/05.png</key>
+            <key>Sprites/Crabman/move/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{890,794},{122,108}}</string>
@@ -1187,7 +1187,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/move/06.png</key>
+            <key>Sprites/Crabman/move/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{644,622},{124,106}}</string>
@@ -1200,7 +1200,7 @@
                 <key>sourceSize</key>
                 <string>{564,224}</string>
             </dict>
-            <key>Units/Crabman/portrait_hero.png</key>
+            <key>Sprites/Crabman/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{798,324},{112,124}}</string>
@@ -1213,7 +1213,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Dragon/portrait_hero.png</key>
+            <key>Sprites/Dragon/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{664,394},{112,124}}</string>
@@ -1226,7 +1226,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Elemental/act3/07.png</key>
+            <key>Sprites/Elemental/act3/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1294,1700},{84,110}}</string>
@@ -1239,7 +1239,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act3/08.png</key>
+            <key>Sprites/Elemental/act3/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1720,1882},{90,110}}</string>
@@ -1252,7 +1252,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act3/09.png</key>
+            <key>Sprites/Elemental/act3/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{538,1684},{90,114}}</string>
@@ -1265,7 +1265,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act3/10.png</key>
+            <key>Sprites/Elemental/act3/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{442,1684},{94,114}}</string>
@@ -1278,7 +1278,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act3/13.png</key>
+            <key>Sprites/Elemental/act3/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1812,1882},{86,110}}</string>
@@ -1291,7 +1291,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act3/14.png</key>
+            <key>Sprites/Elemental/act3/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1900,1882},{86,110}}</string>
@@ -1304,7 +1304,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act3/15.png</key>
+            <key>Sprites/Elemental/act3/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1294,1812},{84,108}}</string>
@@ -1317,7 +1317,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/04.png</key>
+            <key>Sprites/Elemental/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1168,682},{80,124}}</string>
@@ -1330,7 +1330,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/05.png</key>
+            <key>Sprites/Elemental/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1032,710},{80,124}}</string>
@@ -1343,7 +1343,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/06.png</key>
+            <key>Sprites/Elemental/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{638,730},{84,124}}</string>
@@ -1356,7 +1356,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/07.png</key>
+            <key>Sprites/Elemental/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{506,770},{84,124}}</string>
@@ -1369,7 +1369,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/08.png</key>
+            <key>Sprites/Elemental/act5/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1042,622},{86,124}}</string>
@@ -1382,7 +1382,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/09.png</key>
+            <key>Sprites/Elemental/act5/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{906,626},{86,124}}</string>
@@ -1395,7 +1395,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/10.png</key>
+            <key>Sprites/Elemental/act5/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1428,592},{82,124}}</string>
@@ -1408,7 +1408,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/12.png</key>
+            <key>Sprites/Elemental/act5/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{770,662},{86,124}}</string>
@@ -1421,7 +1421,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/14.png</key>
+            <key>Sprites/Elemental/act5/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1126,962},{84,120}}</string>
@@ -1434,7 +1434,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/act5/15.png</key>
+            <key>Sprites/Elemental/act5/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1102,1798},{84,112}}</string>
@@ -1447,7 +1447,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/move/01.png</key>
+            <key>Sprites/Elemental/move/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1228,1908},{64,92}}</string>
@@ -1460,7 +1460,7 @@
                 <key>sourceSize</key>
                 <string>{120,144}</string>
             </dict>
-            <key>Units/Elemental/portrait_hero.png</key>
+            <key>Sprites/Elemental/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{528,434},{112,124}}</string>
@@ -1473,7 +1473,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Frost/act1/04.png</key>
+            <key>Sprites/Frost/act1/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1642,1140},{116,80}}</string>
@@ -1486,7 +1486,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Units/Frost/act1/05.png</key>
+            <key>Sprites/Frost/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1712,1496},{112,82}}</string>
@@ -1499,7 +1499,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Units/Frost/act5/12.png</key>
+            <key>Sprites/Frost/act5/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1444},{98,116}}</string>
@@ -1512,7 +1512,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Units/Frost/portrait_hero.png</key>
+            <key>Sprites/Frost/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{392,540},{112,124}}</string>
@@ -1525,7 +1525,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Giant/act1/00.png</key>
+            <key>Sprites/Giant/act1/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{118,1684},{108,114}}</string>
@@ -1538,7 +1538,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act1/01.png</key>
+            <key>Sprites/Giant/act1/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{482,1278},{108,116}}</string>
@@ -1551,7 +1551,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act1/02.png</key>
+            <key>Sprites/Giant/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1490,1258},{106,118}}</string>
@@ -1564,7 +1564,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act1/03.png</key>
+            <key>Sprites/Giant/act1/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{226,1916},{114,108}}</string>
@@ -1577,7 +1577,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act1/04.png</key>
+            <key>Sprites/Giant/act1/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{240,1268},{116,108}}</string>
@@ -1590,7 +1590,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act1/05.png</key>
+            <key>Sprites/Giant/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1060,1478},{108,106}}</string>
@@ -1603,7 +1603,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act1/06.png</key>
+            <key>Sprites/Giant/act1/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1276,1478},{102,106}}</string>
@@ -1616,7 +1616,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act2/00.png</key>
+            <key>Sprites/Giant/act2/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1188,1798},{104,108}}</string>
@@ -1629,7 +1629,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act2/02.png</key>
+            <key>Sprites/Giant/act2/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{122,1212},{114,116}}</string>
@@ -1642,7 +1642,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act3/02.png</key>
+            <key>Sprites/Giant/act3/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{228,1684},{114,106}}</string>
@@ -1655,7 +1655,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act3/03.png</key>
+            <key>Sprites/Giant/act3/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,510},{130,106}}</string>
@@ -1668,7 +1668,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act3/11.png</key>
+            <key>Sprites/Giant/act3/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{618,1250},{118,118}}</string>
@@ -1681,7 +1681,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act3/12.png</key>
+            <key>Sprites/Giant/act3/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1484,1366},{118,100}}</string>
@@ -1694,7 +1694,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act3/13.png</key>
+            <key>Sprites/Giant/act3/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1940,1546},{106,100}}</string>
@@ -1707,7 +1707,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act4/00.png</key>
+            <key>Sprites/Giant/act4/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1170,1478},{104,106}}</string>
@@ -1720,7 +1720,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act4/01.png</key>
+            <key>Sprites/Giant/act4/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1364,1270},{104,118}}</string>
@@ -1733,7 +1733,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act4/02.png</key>
+            <key>Sprites/Giant/act4/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1844,1434},{96,118}}</string>
@@ -1746,7 +1746,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act4/11.png</key>
+            <key>Sprites/Giant/act4/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1118,1198},{118,108}}</string>
@@ -1759,7 +1759,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/act5/12.png</key>
+            <key>Sprites/Giant/act5/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1090,2},{130,132}}</string>
@@ -1772,7 +1772,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/default.png</key>
+            <key>Sprites/Giant/default.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{992,1216},{118,108}}</string>
@@ -1785,7 +1785,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/die/01.png</key>
+            <key>Sprites/Giant/die/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{816,90},{132,116}}</string>
@@ -1798,7 +1798,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/die/04.png</key>
+            <key>Sprites/Giant/die/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1516,1882},{100,110}}</string>
@@ -1811,7 +1811,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/die/05.png</key>
+            <key>Sprites/Giant/die/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1610,1258},{112,116}}</string>
@@ -1824,7 +1824,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/die/06.png</key>
+            <key>Sprites/Giant/die/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{136,304},{130,122}}</string>
@@ -1837,7 +1837,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/00.png</key>
+            <key>Sprites/Giant/move/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,112},{132,100}}</string>
@@ -1850,7 +1850,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/01.png</key>
+            <key>Sprites/Giant/move/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{254,772},{124,104}}</string>
@@ -1863,7 +1863,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/02.png</key>
+            <key>Sprites/Giant/move/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{116,1800},{114,110}}</string>
@@ -1876,7 +1876,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/03.png</key>
+            <key>Sprites/Giant/move/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{916,1684},{102,112}}</string>
@@ -1889,7 +1889,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/04.png</key>
+            <key>Sprites/Giant/move/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{414,1586},{96,114}}</string>
@@ -1902,7 +1902,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/09.png</key>
+            <key>Sprites/Giant/move/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{950,1472},{108,112}}</string>
@@ -1915,7 +1915,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/10.png</key>
+            <key>Sprites/Giant/move/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{364,1220},{116,112}}</string>
@@ -1928,7 +1928,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/11.png</key>
+            <key>Sprites/Giant/move/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,702},{122,114}}</string>
@@ -1941,7 +1941,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/move/12.png</key>
+            <key>Sprites/Giant/move/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1356,188},{128,108}}</string>
@@ -1954,7 +1954,7 @@
                 <key>sourceSize</key>
                 <string>{232,176}</string>
             </dict>
-            <key>Units/Giant/portrait_hero.png</key>
+            <key>Sprites/Giant/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{260,544},{112,124}}</string>
@@ -1967,7 +1967,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/KungFu/act1/12.png</key>
+            <key>Sprites/KungFu/act1/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1672,700},{50,62}}</string>
@@ -1980,7 +1980,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act3/09.png</key>
+            <key>Sprites/KungFu/act3/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{358,1334},{116,100}}</string>
@@ -1993,7 +1993,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act3/10.png</key>
+            <key>Sprites/KungFu/act3/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1844,1328},{118,104}}</string>
@@ -2006,7 +2006,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act3/11.png</key>
+            <key>Sprites/KungFu/act3/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{336,1684},{114,104}}</string>
@@ -2019,7 +2019,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act4/12.png</key>
+            <key>Sprites/KungFu/act4/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{222,1628},{94,54}}</string>
@@ -2032,7 +2032,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act5/02.png</key>
+            <key>Sprites/KungFu/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1992,652},{54,116}}</string>
@@ -2045,7 +2045,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act5/03.png</key>
+            <key>Sprites/KungFu/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1666,898},{56,116}}</string>
@@ -2058,7 +2058,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act5/04.png</key>
+            <key>Sprites/KungFu/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{356,1528},{56,116}}</string>
@@ -2071,7 +2071,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act5/05.png</key>
+            <key>Sprites/KungFu/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{592,1522},{62,114}}</string>
@@ -2084,7 +2084,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act6/11.png</key>
+            <key>Sprites/KungFu/act6/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{120,1628},{100,54}}</string>
@@ -2097,7 +2097,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/act8/07.png</key>
+            <key>Sprites/KungFu/act8/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{244,1208},{118,58}}</string>
@@ -2110,7 +2110,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Units/KungFu/portrait_hero.png</key>
+            <key>Sprites/KungFu/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{128,652},{112,124}}</string>
@@ -2123,7 +2123,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Lumberjack/act1/00.png</key>
+            <key>Sprites/Lumberjack/act1/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{134,428},{130,108}}</string>
@@ -2136,7 +2136,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act1/07.png</key>
+            <key>Sprites/Lumberjack/act1/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1220,194},{128,106}}</string>
@@ -2149,7 +2149,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act1/08.png</key>
+            <key>Sprites/Lumberjack/act1/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{336,1800},{114,102}}</string>
@@ -2162,7 +2162,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act1/09.png</key>
+            <key>Sprites/Lumberjack/act1/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{336,1916},{114,102}}</string>
@@ -2175,7 +2175,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act1/10.png</key>
+            <key>Sprites/Lumberjack/act1/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{850,1916},{112,108}}</string>
@@ -2188,7 +2188,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act1/11.png</key>
+            <key>Sprites/Lumberjack/act1/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1826,1684},{110,110}}</string>
@@ -2201,7 +2201,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act1/12.png</key>
+            <key>Sprites/Lumberjack/act1/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1848,866},{122,104}}</string>
@@ -2214,7 +2214,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/01.png</key>
+            <key>Sprites/Lumberjack/act2/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1546,770},{122,114}}</string>
@@ -2227,7 +2227,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/02.png</key>
+            <key>Sprites/Lumberjack/act2/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1800},{114,112}}</string>
@@ -2240,7 +2240,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/03.png</key>
+            <key>Sprites/Lumberjack/act2/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{906,1800},{106,112}}</string>
@@ -2253,7 +2253,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/04.png</key>
+            <key>Sprites/Lumberjack/act2/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1618,1882},{100,110}}</string>
@@ -2266,7 +2266,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/08.png</key>
+            <key>Sprites/Lumberjack/act2/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{780,552},{124,108}}</string>
@@ -2279,7 +2279,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/10.png</key>
+            <key>Sprites/Lumberjack/act2/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{512,662},{124,106}}</string>
@@ -2292,7 +2292,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/11.png</key>
+            <key>Sprites/Lumberjack/act2/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{120,1328},{116,108}}</string>
@@ -2305,7 +2305,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/12.png</key>
+            <key>Sprites/Lumberjack/act2/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1406,1882},{110,108}}</string>
@@ -2318,7 +2318,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/14.png</key>
+            <key>Sprites/Lumberjack/act2/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1380,1562},{102,106}}</string>
@@ -2331,7 +2331,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act2/15.png</key>
+            <key>Sprites/Lumberjack/act2/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{866,1232},{118,108}}</string>
@@ -2344,7 +2344,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act3/01.png</key>
+            <key>Sprites/Lumberjack/act3/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,2},{134,108}}</string>
@@ -2357,7 +2357,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act3/02.png</key>
+            <key>Sprites/Lumberjack/act3/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{274,110},{132,106}}</string>
@@ -2370,7 +2370,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act3/03.png</key>
+            <key>Sprites/Lumberjack/act3/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{680,214},{132,108}}</string>
@@ -2383,7 +2383,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act3/04.png</key>
+            <key>Sprites/Lumberjack/act3/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1620,176},{128,114}}</string>
@@ -2396,7 +2396,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/act5/00.png</key>
+            <key>Sprites/Lumberjack/act5/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{816,208},{132,114}}</string>
@@ -2409,7 +2409,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/die/12.png</key>
+            <key>Sprites/Lumberjack/die/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1210,398},{128,90}}</string>
@@ -2422,7 +2422,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Units/Lumberjack/portrait_hero.png</key>
+            <key>Sprites/Lumberjack/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,732},{112,124}}</string>
@@ -2435,7 +2435,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Mage/act5/03.png</key>
+            <key>Sprites/Mage/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1624},{58,116}}</string>
@@ -2448,7 +2448,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/04.png</key>
+            <key>Sprites/Mage/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{238,1570},{56,116}}</string>
@@ -2461,7 +2461,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/05.png</key>
+            <key>Sprites/Mage/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{718,1370},{58,116}}</string>
@@ -2474,7 +2474,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/06.png</key>
+            <key>Sprites/Mage/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{836,1412},{58,116}}</string>
@@ -2487,7 +2487,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/07.png</key>
+            <key>Sprites/Mage/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{718,1430},{58,116}}</string>
@@ -2500,7 +2500,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/08.png</key>
+            <key>Sprites/Mage/act5/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{594,1462},{58,116}}</string>
@@ -2513,7 +2513,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/09.png</key>
+            <key>Sprites/Mage/act5/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{474,1480},{58,116}}</string>
@@ -2526,7 +2526,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/10.png</key>
+            <key>Sprites/Mage/act5/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{786,1800},{58,114}}</string>
@@ -2539,7 +2539,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/11.png</key>
+            <key>Sprites/Mage/act5/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{846,1800},{58,114}}</string>
@@ -2552,7 +2552,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/act5/12.png</key>
+            <key>Sprites/Mage/act5/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{856,1684},{58,114}}</string>
@@ -2565,7 +2565,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/die/03.png</key>
+            <key>Sprites/Mage/die/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{538,1540},{52,44}}</string>
@@ -2578,7 +2578,7 @@
                 <key>sourceSize</key>
                 <string>{120,152}</string>
             </dict>
-            <key>Units/Mage/portrait_hero.png</key>
+            <key>Sprites/Mage/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{924,400},{112,124}}</string>
@@ -2591,7 +2591,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Malik/act1/01.png</key>
+            <key>Sprites/Malik/act1/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1826,1532},{112,76}}</string>
@@ -2604,7 +2604,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act1/02.png</key>
+            <key>Sprites/Malik/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{630,1800},{114,76}}</string>
@@ -2617,7 +2617,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act3/02.png</key>
+            <key>Sprites/Malik/act3/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1848,972},{98,122}}</string>
@@ -2630,7 +2630,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act3/07.png</key>
+            <key>Sprites/Malik/act3/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1736,544},{78,126}}</string>
@@ -2643,7 +2643,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act4/01.png</key>
+            <key>Sprites/Malik/act4/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1294,1922},{110,78}}</string>
@@ -2656,7 +2656,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act4/02.png</key>
+            <key>Sprites/Malik/act4/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1712,1580},{112,76}}</string>
@@ -2669,7 +2669,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act4/03.png</key>
+            <key>Sprites/Malik/act4/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{704,1916},{114,76}}</string>
@@ -2682,7 +2682,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act4/04.png</key>
+            <key>Sprites/Malik/act4/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{708,1800},{114,76}}</string>
@@ -2695,7 +2695,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act4/08.png</key>
+            <key>Sprites/Malik/act4/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1418,816},{122,110}}</string>
@@ -2708,7 +2708,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act4/09.png</key>
+            <key>Sprites/Malik/act4/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{254,948},{122,106}}</string>
@@ -2721,7 +2721,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act4/10.png</key>
+            <key>Sprites/Malik/act4/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1394,1012},{122,70}}</string>
@@ -2734,7 +2734,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/act5/14.png</key>
+            <key>Sprites/Malik/act5/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1916},{110,114}}</string>
@@ -2747,7 +2747,7 @@
                 <key>sourceSize</key>
                 <string>{192,200}</string>
             </dict>
-            <key>Units/Malik/portrait_hero.png</key>
+            <key>Sprites/Malik/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{790,438},{112,124}}</string>
@@ -2760,7 +2760,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Matchstick/act2/05.png</key>
+            <key>Sprites/Matchstick/act2/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{318,1628},{94,54}}</string>
@@ -2773,7 +2773,7 @@
                 <key>sourceSize</key>
                 <string>{128,128}</string>
             </dict>
-            <key>Units/Matchstick/act3/01.png</key>
+            <key>Sprites/Matchstick/act3/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1826,1994},{62,52}}</string>
@@ -2786,7 +2786,7 @@
                 <key>sourceSize</key>
                 <string>{128,128}</string>
             </dict>
-            <key>Units/Matchstick/act3/07.png</key>
+            <key>Sprites/Matchstick/act3/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{244,1144},{62,118}}</string>
@@ -2799,7 +2799,7 @@
                 <key>sourceSize</key>
                 <string>{128,128}</string>
             </dict>
-            <key>Units/Matchstick/act5/02.png</key>
+            <key>Sprites/Matchstick/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{622,1176},{72,120}}</string>
@@ -2812,7 +2812,7 @@
                 <key>sourceSize</key>
                 <string>{128,128}</string>
             </dict>
-            <key>Units/Matchstick/act5/07.png</key>
+            <key>Sprites/Matchstick/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,1290},{106,118}}</string>
@@ -2825,7 +2825,7 @@
                 <key>sourceSize</key>
                 <string>{128,128}</string>
             </dict>
-            <key>Units/Minotaur/act1/01.png</key>
+            <key>Sprites/Minotaur/act1/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1212,302},{94,128}}</string>
@@ -2838,7 +2838,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act1/02.png</key>
+            <key>Sprites/Minotaur/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1882,160},{88,128}}</string>
@@ -2851,7 +2851,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act1/05.png</key>
+            <key>Sprites/Minotaur/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1684},{114,114}}</string>
@@ -2864,7 +2864,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act1/06.png</key>
+            <key>Sprites/Minotaur/act1/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1846,1220},{106,120}}</string>
@@ -2877,7 +2877,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act1/07.png</key>
+            <key>Sprites/Minotaur/act1/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{738,1260},{118,108}}</string>
@@ -2890,7 +2890,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act3/00.png</key>
+            <key>Sprites/Minotaur/act3/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1080,322},{94,128}}</string>
@@ -2903,7 +2903,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act3/01.png</key>
+            <key>Sprites/Minotaur/act3/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1882,250},{88,128}}</string>
@@ -2916,7 +2916,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act3/02.png</key>
+            <key>Sprites/Minotaur/act3/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1340,406},{104,126}}</string>
@@ -2929,7 +2929,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act3/11.png</key>
+            <key>Sprites/Minotaur/act3/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1370,1156},{112,118}}</string>
@@ -2942,7 +2942,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act4/03.png</key>
+            <key>Sprites/Minotaur/act4/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{546,108},{122,132}}</string>
@@ -2955,7 +2955,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act6/03.png</key>
+            <key>Sprites/Minotaur/act6/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{404,296},{128,130}}</string>
@@ -2968,7 +2968,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act6/06.png</key>
+            <key>Sprites/Minotaur/act6/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{270,300},{128,130}}</string>
@@ -2981,7 +2981,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/act6/07.png</key>
+            <key>Sprites/Minotaur/act6/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,386},{130,122}}</string>
@@ -2994,7 +2994,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/die/05.png</key>
+            <key>Sprites/Minotaur/die/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{128,950},{122,106}}</string>
@@ -3007,7 +3007,7 @@
                 <key>sourceSize</key>
                 <string>{280,220}</string>
             </dict>
-            <key>Units/Minotaur/portrait_hero.png</key>
+            <key>Sprites/Minotaur/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{654,508},{112,124}}</string>
@@ -3020,7 +3020,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Mirage/act1/00.png</key>
+            <key>Sprites/Mirage/act1/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2002,588},{44,62}}</string>
@@ -3033,7 +3033,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act2/18.png</key>
+            <key>Sprites/Mirage/act2/18.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{474,1540},{44,62}}</string>
@@ -3046,7 +3046,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act3/12.png</key>
+            <key>Sprites/Mirage/act3/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1890,1994},{62,52}}</string>
@@ -3059,7 +3059,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act3/13.png</key>
+            <key>Sprites/Mirage/act3/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1672,764},{62,50}}</string>
@@ -3072,7 +3072,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act3/22.png</key>
+            <key>Sprites/Mirage/act3/22.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1228,2002},{44,62}}</string>
@@ -3085,7 +3085,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act4/02.png</key>
+            <key>Sprites/Mirage/act4/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1760,1994},{52,64}}</string>
@@ -3098,7 +3098,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act5/03.png</key>
+            <key>Sprites/Mirage/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{996,1156},{58,120}}</string>
@@ -3111,7 +3111,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act5/04.png</key>
+            <key>Sprites/Mirage/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{870,1172},{58,120}}</string>
@@ -3124,7 +3124,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act5/05.png</key>
+            <key>Sprites/Mirage/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{744,1200},{58,120}}</string>
@@ -3137,7 +3137,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/act5/14.png</key>
+            <key>Sprites/Mirage/act5/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1292,2002},{44,62}}</string>
@@ -3150,7 +3150,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/default.png</key>
+            <key>Sprites/Mirage/default.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1356,2002},{44,62}}</string>
@@ -3163,7 +3163,7 @@
                 <key>sourceSize</key>
                 <string>{384,144}</string>
             </dict>
-            <key>Units/Mirage/portrait_hero.png</key>
+            <key>Sprites/Mirage/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{518,548},{112,124}}</string>
@@ -3176,7 +3176,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Oni/act1/00.png</key>
+            <key>Sprites/Oni/act1/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1380,1450},{102,110}}</string>
@@ -3189,7 +3189,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act1/02.png</key>
+            <key>Sprites/Oni/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{114,1916},{110,114}}</string>
@@ -3202,7 +3202,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act1/08.png</key>
+            <key>Sprites/Oni/act1/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{818,2},{86,134}}</string>
@@ -3215,7 +3215,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act1/09.png</key>
+            <key>Sprites/Oni/act1/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1158,764},{122,110}}</string>
@@ -3228,7 +3228,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/01.png</key>
+            <key>Sprites/Oni/act2/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1604,1376},{100,118}}</string>
@@ -3241,7 +3241,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/03.png</key>
+            <key>Sprites/Oni/act2/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1334},{116,108}}</string>
@@ -3254,7 +3254,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/04.png</key>
+            <key>Sprites/Oni/act2/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{228,1800},{114,106}}</string>
@@ -3267,7 +3267,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/05.png</key>
+            <key>Sprites/Oni/act2/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{440,1800},{114,102}}</string>
@@ -3280,7 +3280,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/06.png</key>
+            <key>Sprites/Oni/act2/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{600,1370},{116,90}}</string>
@@ -3293,7 +3293,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/19.png</key>
+            <key>Sprites/Oni/act2/19.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1616,292},{128,86}}</string>
@@ -3306,7 +3306,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/20.png</key>
+            <key>Sprites/Oni/act2/20.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1608,450},{126,100}}</string>
@@ -3319,7 +3319,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act2/23.png</key>
+            <key>Sprites/Oni/act2/23.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1480,398},{126,104}}</string>
@@ -3332,7 +3332,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act3/02.png</key>
+            <key>Sprites/Oni/act3/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1940,1648},{100,106}}</string>
@@ -3345,7 +3345,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act3/05.png</key>
+            <key>Sprites/Oni/act3/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{630,1684},{78,114}}</string>
@@ -3358,7 +3358,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act3/06.png</key>
+            <key>Sprites/Oni/act3/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1148,1912},{78,112}}</string>
@@ -3371,7 +3371,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act3/30.png</key>
+            <key>Sprites/Oni/act3/30.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1022,792},{110,122}}</string>
@@ -3384,7 +3384,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/00.png</key>
+            <key>Sprites/Oni/act5/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{136,212},{90,132}}</string>
@@ -3397,7 +3397,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/01.png</key>
+            <key>Sprites/Oni/act5/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,214},{84,132}}</string>
@@ -3410,7 +3410,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/02.png</key>
+            <key>Sprites/Oni/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1488,94},{84,130}}</string>
@@ -3423,7 +3423,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/03.png</key>
+            <key>Sprites/Oni/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,300},{84,132}}</string>
@@ -3436,7 +3436,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/04.png</key>
+            <key>Sprites/Oni/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1356,102},{84,130}}</string>
@@ -3449,7 +3449,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/05.png</key>
+            <key>Sprites/Oni/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1224,108},{84,130}}</string>
@@ -3462,7 +3462,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/06.png</key>
+            <key>Sprites/Oni/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1620,2},{86,130}}</string>
@@ -3475,7 +3475,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/07.png</key>
+            <key>Sprites/Oni/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1752,2},{86,130}}</string>
@@ -3488,7 +3488,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/08.png</key>
+            <key>Sprites/Oni/act5/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1884,2},{86,130}}</string>
@@ -3501,7 +3501,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/09.png</key>
+            <key>Sprites/Oni/act5/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1750,280},{88,128}}</string>
@@ -3514,7 +3514,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/10.png</key>
+            <key>Sprites/Oni/act5/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1488,2},{90,130}}</string>
@@ -3527,7 +3527,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/12.png</key>
+            <key>Sprites/Oni/act5/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1356,2},{98,130}}</string>
@@ -3540,7 +3540,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/13.png</key>
+            <key>Sprites/Oni/act5/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,1028},{76,122}}</string>
@@ -3553,7 +3553,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/14.png</key>
+            <key>Sprites/Oni/act5/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1014,1798},{86,112}}</string>
@@ -3566,7 +3566,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/act5/15.png</key>
+            <key>Sprites/Oni/act5/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1020,1684},{86,112}}</string>
@@ -3579,7 +3579,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/default.png</key>
+            <key>Sprites/Oni/default.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{864,1586},{96,106}}</string>
@@ -3592,7 +3592,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/die/01.png</key>
+            <key>Sprites/Oni/die/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1972,882},{108,74}}</string>
@@ -3605,7 +3605,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/die/02.png</key>
+            <key>Sprites/Oni/die/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1598,1796},{108,84}}</string>
@@ -3618,7 +3618,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/die/11.png</key>
+            <key>Sprites/Oni/die/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1708,1796},{108,84}}</string>
@@ -3631,7 +3631,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/die/16.png</key>
+            <key>Sprites/Oni/die/16.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1972,992},{108,74}}</string>
@@ -3644,7 +3644,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/die/19.png</key>
+            <key>Sprites/Oni/die/19.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1988,1862},{108,58}}</string>
@@ -3657,7 +3657,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/move/00.png</key>
+            <key>Sprites/Oni/move/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{642,1586},{96,110}}</string>
@@ -3670,7 +3670,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/move/05.png</key>
+            <key>Sprites/Oni/move/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{972,1586},{96,106}}</string>
@@ -3683,7 +3683,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/portrait_hero.png</key>
+            <key>Sprites/Oni/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{386,654},{112,124}}</string>
@@ -3696,7 +3696,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Oni/stand/00.png</key>
+            <key>Sprites/Oni/stand/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{864,1586},{96,106}}</string>
@@ -3709,7 +3709,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/stand/03.png</key>
+            <key>Sprites/Oni/stand/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1188,1586},{96,104}}</string>
@@ -3722,7 +3722,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Oni/stand/04.png</key>
+            <key>Sprites/Oni/stand/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1080,1586},{96,106}}</string>
@@ -3735,7 +3735,7 @@
                 <key>sourceSize</key>
                 <string>{256,224}</string>
             </dict>
-            <key>Units/Pirate/act2/05.png</key>
+            <key>Sprites/Pirate/act2/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1972,1206},{100,74}}</string>
@@ -3748,7 +3748,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Units/Pirate/act2/07.png</key>
+            <key>Sprites/Pirate/act2/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{950,214},{130,80}}</string>
@@ -3761,7 +3761,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Units/Pirate/act2/08.png</key>
+            <key>Sprites/Pirate/act2/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{954,2},{134,80}}</string>
@@ -3774,7 +3774,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Units/Pirate/act2/10.png</key>
+            <key>Sprites/Pirate/act2/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{404,218},{132,76}}</string>
@@ -3787,7 +3787,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Units/Pirate/act5/01.png</key>
+            <key>Sprites/Pirate/act5/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1752,90},{68,130}}</string>
@@ -3800,7 +3800,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Units/Pirate/act5/02.png</key>
+            <key>Sprites/Pirate/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1884,90},{68,130}}</string>
@@ -3813,7 +3813,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Units/Pirate/die/03.png</key>
+            <key>Sprites/Pirate/die/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1598,1726},{68,110}}</string>
@@ -3826,7 +3826,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Units/Pirate/portrait_hero.png</key>
+            <key>Sprites/Pirate/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{254,658},{112,124}}</string>
@@ -3839,7 +3839,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Priest/act2/13.png</key>
+            <key>Sprites/Priest/act2/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1484,1798},{82,110}}</string>
@@ -3852,7 +3852,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/14.png</key>
+            <key>Sprites/Priest/act2/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1598,1564},{82,112}}</string>
@@ -3865,7 +3865,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/15.png</key>
+            <key>Sprites/Priest/act2/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1108,1684},{84,112}}</string>
@@ -3878,7 +3878,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/16.png</key>
+            <key>Sprites/Priest/act2/16.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1294,1586},{84,112}}</string>
@@ -3891,7 +3891,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/17.png</key>
+            <key>Sprites/Priest/act2/17.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{544,1800},{84,114}}</string>
@@ -3904,7 +3904,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/18.png</key>
+            <key>Sprites/Priest/act2/18.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{530,1916},{86,114}}</string>
@@ -3917,7 +3917,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/19.png</key>
+            <key>Sprites/Priest/act2/19.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{440,1916},{88,114}}</string>
@@ -3930,7 +3930,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/20.png</key>
+            <key>Sprites/Priest/act2/20.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{238,1480},{88,116}}</string>
@@ -3943,7 +3943,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/21.png</key>
+            <key>Sprites/Priest/act2/21.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{476,1388},{90,116}}</string>
@@ -3956,7 +3956,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/22.png</key>
+            <key>Sprites/Priest/act2/22.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{356,1436},{90,116}}</string>
@@ -3969,7 +3969,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act2/23.png</key>
+            <key>Sprites/Priest/act2/23.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{120,1538},{88,116}}</string>
@@ -3982,7 +3982,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act3/10.png</key>
+            <key>Sprites/Priest/act3/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1380,1670},{104,102}}</string>
@@ -3995,7 +3995,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act3/11.png</key>
+            <key>Sprites/Priest/act3/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1380,1776},{104,102}}</string>
@@ -4008,7 +4008,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/01.png</key>
+            <key>Sprites/Priest/act5/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{496,1206},{70,120}}</string>
@@ -4021,7 +4021,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/06.png</key>
+            <key>Sprites/Priest/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1226,1382},{66,118}}</string>
@@ -4034,7 +4034,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/07.png</key>
+            <key>Sprites/Priest/act5/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{124,1144},{66,118}}</string>
@@ -4047,7 +4047,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/08.png</key>
+            <key>Sprites/Priest/act5/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,1152},{66,118}}</string>
@@ -4060,7 +4060,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/09.png</key>
+            <key>Sprites/Priest/act5/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{858,1342},{68,118}}</string>
@@ -4073,7 +4073,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/10.png</key>
+            <key>Sprites/Priest/act5/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1112,1308},{70,118}}</string>
@@ -4086,7 +4086,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/11.png</key>
+            <key>Sprites/Priest/act5/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1358,1376},{72,118}}</string>
@@ -4099,7 +4099,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act5/12.png</key>
+            <key>Sprites/Priest/act5/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1238,1304},{76,118}}</string>
@@ -4112,7 +4112,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/02.png</key>
+            <key>Sprites/Priest/act6/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1848,1146},{72,122}}</string>
@@ -4125,7 +4125,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/08.png</key>
+            <key>Sprites/Priest/act6/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1876,418},{102,126}}</string>
@@ -4138,7 +4138,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/09.png</key>
+            <key>Sprites/Priest/act6/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{538,232},{130,130}}</string>
@@ -4151,7 +4151,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/21.png</key>
+            <key>Sprites/Priest/act6/21.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1194,1684},{98,110}}</string>
@@ -4164,7 +4164,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/22.png</key>
+            <key>Sprites/Priest/act6/22.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{530,1586},{110,96}}</string>
@@ -4177,7 +4177,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/23.png</key>
+            <key>Sprites/Priest/act6/23.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,1398},{118,96}}</string>
@@ -4190,7 +4190,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/24.png</key>
+            <key>Sprites/Priest/act6/24.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1176,490},{124,102}}</string>
@@ -4203,7 +4203,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/25.png</key>
+            <key>Sprites/Priest/act6/25.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{950,296},{128,102}}</string>
@@ -4216,7 +4216,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/26.png</key>
+            <key>Sprites/Priest/act6/26.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1350,298},{128,106}}</string>
@@ -4229,7 +4229,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/act6/27.png</key>
+            <key>Sprites/Priest/act6/27.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{408,110},{132,106}}</string>
@@ -4242,7 +4242,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/die/03.png</key>
+            <key>Sprites/Priest/die/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2002,522},{64,44}}</string>
@@ -4255,7 +4255,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Units/Priest/portrait_hero.png</key>
+            <key>Sprites/Priest/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{128,766},{112,124}}</string>
@@ -4268,7 +4268,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Thor/act1/02.png</key>
+            <key>Sprites/Thor/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{504,1034},{120,90}}</string>
@@ -4281,7 +4281,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act1/03.png</key>
+            <key>Sprites/Thor/act1/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1620,90},{130,84}}</string>
@@ -4294,7 +4294,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act1/05.png</key>
+            <key>Sprites/Thor/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1492,1144},{118,112}}</string>
@@ -4307,7 +4307,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act1/06.png</key>
+            <key>Sprites/Thor/act1/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{630,994},{120,100}}</string>
@@ -4320,7 +4320,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act1/07.png</key>
+            <key>Sprites/Thor/act1/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{710,1684},{114,72}}</string>
@@ -4333,7 +4333,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act2/01.png</key>
+            <key>Sprites/Thor/act2/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1042,530},{124,90}}</string>
@@ -4346,7 +4346,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act3/01.png</key>
+            <key>Sprites/Thor/act3/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1302,512},{124,90}}</string>
@@ -4359,7 +4359,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act3/05.png</key>
+            <key>Sprites/Thor/act3/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{270,218},{132,80}}</string>
@@ -4372,7 +4372,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act3/06.png</key>
+            <key>Sprites/Thor/act3/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1826,1610},{112,72}}</string>
@@ -4385,7 +4385,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act5/05.png</key>
+            <key>Sprites/Thor/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{546,2},{104,134}}</string>
@@ -4398,7 +4398,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/act5/06.png</key>
+            <key>Sprites/Thor/act5/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{754,1586},{108,96}}</string>
@@ -4411,7 +4411,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/move/05.png</key>
+            <key>Sprites/Thor/move/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{712,1490},{110,94}}</string>
@@ -4424,7 +4424,7 @@
                 <key>sourceSize</key>
                 <string>{240,192}</string>
             </dict>
-            <key>Units/Thor/portrait_hero.png</key>
+            <key>Sprites/Thor/portrait_hero.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,846},{112,124}}</string>
@@ -4437,7 +4437,7 @@
                 <key>sourceSize</key>
                 <string>{112,124}</string>
             </dict>
-            <key>Units/Vhelsing/act1/03.png</key>
+            <key>Sprites/Vhelsing/act1/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{764,750},{124,76}}</string>
@@ -4450,7 +4450,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act1/04.png</key>
+            <key>Sprites/Vhelsing/act1/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1596,552},{126,76}}</string>
@@ -4463,7 +4463,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act1/05.png</key>
+            <key>Sprites/Vhelsing/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,624},{126,76}}</string>
@@ -4476,7 +4476,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act1/06.png</key>
+            <key>Sprites/Vhelsing/act1/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1746,370},{128,70}}</string>
@@ -4489,7 +4489,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act1/08.png</key>
+            <key>Sprites/Vhelsing/act1/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1710,1726},{106,68}}</string>
@@ -4502,7 +4502,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act3/17.png</key>
+            <key>Sprites/Vhelsing/act3/17.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{782,1916},{114,66}}</string>
@@ -4515,7 +4515,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act3/18.png</key>
+            <key>Sprites/Vhelsing/act3/18.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1818,1796},{108,84}}</string>
@@ -4528,7 +4528,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act3/19.png</key>
+            <key>Sprites/Vhelsing/act3/19.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1146,876},{122,84}}</string>
@@ -4541,7 +4541,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act3/20.png</key>
+            <key>Sprites/Vhelsing/act3/20.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1168,594},{124,86}}</string>
@@ -4554,7 +4554,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act3/21.png</key>
+            <key>Sprites/Vhelsing/act3/21.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1468,504},{126,86}}</string>
@@ -4567,7 +4567,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act3/22.png</key>
+            <key>Sprites/Vhelsing/act3/22.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1874,522},{126,80}}</string>
@@ -4580,7 +4580,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act3/23.png</key>
+            <key>Sprites/Vhelsing/act3/23.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1294,604},{124,80}}</string>
@@ -4593,7 +4593,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act4/14.png</key>
+            <key>Sprites/Vhelsing/act4/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{682,2},{134,86}}</string>
@@ -4606,7 +4606,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act5/00.png</key>
+            <key>Sprites/Vhelsing/act5/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1370,1084},{70,120}}</string>
@@ -4619,7 +4619,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act5/01.png</key>
+            <key>Sprites/Vhelsing/act5/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1248,1124},{68,120}}</string>
@@ -4632,7 +4632,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act5/02.png</key>
+            <key>Sprites/Vhelsing/act5/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1122,1128},{68,120}}</string>
@@ -4645,7 +4645,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act5/03.png</key>
+            <key>Sprites/Vhelsing/act5/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1106,1380},{68,118}}</string>
@@ -4658,7 +4658,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act5/04.png</key>
+            <key>Sprites/Vhelsing/act5/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{978,1398},{68,118}}</string>
@@ -4671,7 +4671,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act5/05.png</key>
+            <key>Sprites/Vhelsing/act5/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{986,1326},{70,118}}</string>
@@ -4684,7 +4684,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/act7/06.png</key>
+            <key>Sprites/Vhelsing/act7/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{238,1378},{116,100}}</string>
@@ -4697,7 +4697,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Vhelsing/die/03.png</key>
+            <key>Sprites/Vhelsing/die/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1954,1994},{62,52}}</string>
@@ -4710,7 +4710,7 @@
                 <key>sourceSize</key>
                 <string>{360,196}</string>
             </dict>
-            <key>Units/Viking/act1/01.png</key>
+            <key>Sprites/Viking/act1/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1060,1912},{112,86}}</string>
@@ -4723,7 +4723,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act1/02.png</key>
+            <key>Sprites/Viking/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1598,1478},{112,84}}</string>
@@ -4736,7 +4736,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act1/03.png</key>
+            <key>Sprites/Viking/act1/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1484,1554},{112,84}}</string>
@@ -4749,7 +4749,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act2/03.png</key>
+            <key>Sprites/Viking/act2/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1484,1720},{76,112}}</string>
@@ -4762,7 +4762,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act2/06.png</key>
+            <key>Sprites/Viking/act2/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{836,1472},{112,112}}</string>
@@ -4775,7 +4775,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act2/12.png</key>
+            <key>Sprites/Viking/act2/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1642,1016},{122,80}}</string>
@@ -4788,7 +4788,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act2/13.png</key>
+            <key>Sprites/Viking/act2/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1484,1640},{112,78}}</string>
@@ -4801,7 +4801,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act3/06.png</key>
+            <key>Sprites/Viking/act3/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{274,2},{106,134}}</string>
@@ -4814,7 +4814,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act3/09.png</key>
+            <key>Sprites/Viking/act3/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{138,2},{108,134}}</string>
@@ -4827,7 +4827,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act3/16.png</key>
+            <key>Sprites/Viking/act3/16.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{410,2},{106,134}}</string>
@@ -4840,7 +4840,7 @@
                 <key>sourceSize</key>
                 <string>{284,232}</string>
             </dict>
-            <key>Units/Viking/act5/15.png</key>
+            <key>Sprites/Viking/act5/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1004,990},{84,120}}</string>
@@ -4863,7 +4863,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:e0bed78573f0fb67cc1b4e7a763c0546:c3c0d858c00b50a76b48b925639fa8f5:cbc7ffaea9b3cb73f4655ba87628df80$</string>
+            <string>$TexturePacker:SmartUpdate:873a1497d89442eec8ba7290ff93c065:c3c0d858c00b50a76b48b925639fa8f5:cbc7ffaea9b3cb73f4655ba87628df80$</string>
             <key>textureFileName</key>
             <string>Heroes3.png</string>
         </dict>
