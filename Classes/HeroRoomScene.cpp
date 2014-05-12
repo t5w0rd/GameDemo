@@ -19,6 +19,7 @@ CCHeroRoomSceneLayer::CCHeroRoomSceneLayer()
     m_heroInfos[0].armVal = CArmorValue(0, 3);
     m_heroInfos[0].attackSpeed = 1 / 1.5f;
     m_heroInfos[0].moveSpeed = 80.0f;
+    m_heroInfos[0].exp = 0;
 
     m_heroInfos[1].id = CUnitLibraryForCC::kArcher;
     m_heroInfos[1].name = "Archer";
@@ -28,6 +29,7 @@ CCHeroRoomSceneLayer::CCHeroRoomSceneLayer()
     m_heroInfos[1].armVal = CArmorValue(0, 2);
     m_heroInfos[1].attackSpeed = 1 / 1.2f;
     m_heroInfos[1].moveSpeed = 85.0f;
+    m_heroInfos[1].exp = 0;
 
     m_heroInfos[2].id = CUnitLibraryForCC::kWizard;
     m_heroInfos[2].name = "Wizard";
@@ -37,6 +39,7 @@ CCHeroRoomSceneLayer::CCHeroRoomSceneLayer()
     m_heroInfos[2].armVal = CArmorValue(1, 1);
     m_heroInfos[2].attackSpeed = 1 / 1.5f;
     m_heroInfos[2].moveSpeed = 75.0f;
+    m_heroInfos[2].exp = 0;
 
     m_maxVal.hp = 300.0f;
     m_maxVal.atkVal = CAttackValue(0, 20);

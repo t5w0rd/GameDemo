@@ -10,6 +10,7 @@ class CCGameControler : public cocos2d::CCObject
 {
 public:
     CCGameControler(void);
+    virtual ~CCGameControler(void);
 
     virtual bool init();
     CREATE_FUNC(CCGameControler);

@@ -99,7 +99,10 @@ public:
     M_SYNTHESIZE(int, m_iBaseTipId, BaseTipId);
     M_SYNTHESIZE(int, m_iCurTipId, CurTipId);
     void addBattleTip(const char* pTip, const char* pFont, float fFontSize, ccColor3B color);
-
+    
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(vector<string>, m_vecCtrlSounds, CtrlSounds);
+    void addCtrlSound(const char* sounds, float duration);
+    void playRandomCtrlSound();
 };
 
 class CWorldForCC;

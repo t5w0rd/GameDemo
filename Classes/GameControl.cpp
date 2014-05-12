@@ -12,10 +12,17 @@ CCGameControler::CCGameControler(void)
 {
 }
 
+CCGameControler::~CCGameControler()
+{
+    CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCGameControler::step), this);
+}
+
 bool CCGameControler::init()
 {
     m_fc = CCSpriteFrameCache::sharedSpriteFrameCache();
     m_ac = CCAnimationCache::sharedAnimationCache();
+    m_ae = SimpleAudioEngine::sharedEngine();
+    CCDirector::sharedDirector()->getScheduler()->scheduleSelector(schedule_selector(CCGameControler::step), this, 0.1f, false);
 
     return true;
 }

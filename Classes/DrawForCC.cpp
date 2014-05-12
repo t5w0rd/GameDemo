@@ -464,6 +464,15 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
     }
 }
 
+void CUnitDrawForCC::addCtrlSound( const char* sounds, float duration )
+{
+
+}
+
+void CUnitDrawForCC::playRandomCtrlSound()
+{
+
+}
 
 // CCUnitLayer
 CCUnitLayer::CCUnitLayer()

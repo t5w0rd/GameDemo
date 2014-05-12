@@ -662,6 +662,10 @@ bool CUnitLibraryForCC::init()
     d->prepareFrame(CUnitDraw::kFrmDefault, "default");
     d->prepareAnimation(CUnitDraw::kAniMove, "move", -1);
     d->prepareAnimation(CUnitDraw::kAniDie, "die", -1);
+    d->addAnimationSound(CUnitDraw::kAniDie, "sounds/Effect/HumenDie00.mp3");
+    d->addAnimationSound(CUnitDraw::kAniDie, "sounds/Effect/HumenDie01.mp3");
+    d->addAnimationSound(CUnitDraw::kAniDie, "sounds/Effect/HumenDie02.mp3");
+    d->addAnimationSound(CUnitDraw::kAniDie, "sounds/Effect/HumenDie03.mp3");
     d->prepareAnimation(CUnitDraw::kAniAct1, "act1", 2);
     d->prepareAnimation(CUnitDraw::kAniAct2, "act2", 3);
     d->prepareAnimation(CUnitDraw::kAniAct3, "act3", 11);

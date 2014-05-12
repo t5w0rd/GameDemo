@@ -385,9 +385,6 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
     }
     else if (!d->isFixed())
     {
-        char sz[256];
-        sprintf(sz, "sounds/Effect/HumenDie%02d.mp3", rand() % 4);
-        ae->playEffect(sz);
     }
     else
     {
