@@ -1082,6 +1082,8 @@ CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCool
 : CActiveAbility(pRootId, pName, fCoolDown, eCastType, dwEffectiveTypeFlags)
 , m_fChance(fChance)
 , m_iTemplateBuff(iTemplateBuff)
+, m_bEffectFixed(false)
+, m_bEffectDead(false)
 , m_pTarget(nullptr)
 {
     setDbgClassName("CBuffMakerAct");
@@ -1109,7 +1111,7 @@ bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
         
     case CCommandTarget::kUnitTarget:
         m_pTarget = o->getUnit(rTarget.getTargetUnit());
-        if (m_pTarget != nullptr && m_pTarget->isDead())
+        if (m_pTarget != nullptr && (m_pTarget->isDead()))
         {
             m_pTarget = nullptr;
         }

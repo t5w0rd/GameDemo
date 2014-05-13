@@ -65,14 +65,14 @@ bool luaL_loadscript4cc(lua_State *L, const char* name, string& err)
     return true;
 }
 
-luaL_Reg unit4cc_funcs[] = {
-    { "ctor", unit4cc_ctor },
-    { "addBattleTip", unit4cc_addBattleTip },
-    { "setGeometry", unit4cc_setGeometry },
+luaL_Reg Unit4CC_funcs[] = {
+    { "ctor", Unit4CC_ctor },
+    { "addBattleTip", Unit4CC_addBattleTip },
+    { "setGeometry", Unit4CC_setGeometry },
     { nullptr, nullptr }
 };
 
-int unit4cc_ctor(lua_State* L)
+int Unit4CC_ctor(lua_State* L)
 {
     CSpriteInfo* si = nullptr;
     luaL_toobjptr(L, 2, si);
@@ -90,12 +90,11 @@ int unit4cc_ctor(lua_State* L)
     lua_pop(L, 1);
 
     w->addUnit(u);
-    //u->setAI(CBaseAI::instance());
 
     return 0;
 }
 
-int unit4cc_addBattleTip(lua_State* L)
+int Unit4CC_addBattleTip(lua_State* L)
 {
     CUnit* _p = luaL_tounitptr(L);
     const char* tip = lua_tostring(L, 2);
@@ -111,7 +110,7 @@ int unit4cc_addBattleTip(lua_State* L)
     return 0;
 }
 
-int unit4cc_setGeometry(lua_State* L)
+int Unit4CC_setGeometry(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     float fHalfOfWidth = lua_tonumber(L, 2);
@@ -121,6 +120,30 @@ int unit4cc_setGeometry(lua_State* L)
 
     CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
     d->setGeometry(fHalfOfWidth, fHalfOfHeight, anchorPoint, firePoint);
+
+    return 0;
+}
+
+luaL_Reg Projectile4CC_funcs[] = {
+    { "ctor", Projectile4CC_ctor },
+    { nullptr, nullptr }
+};
+
+int Projectile4CC_ctor(lua_State* L)
+{
+    CSpriteInfo* si = nullptr;
+    luaL_toobjptr(L, 2, si);
+
+    CProjectileForCC* p = new CProjectileForCC(si);
+
+    lua_pushlightuserdata(L, p);
+    lua_setfield(L, 1, "_p");
+
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    lua_pop(L, 1);
+
+    w->addProjectile(p);
 
     return 0;
 }
@@ -150,14 +173,14 @@ CUnitDrawForCC* luaL_tospriteptr(lua_State* L, int idx /*= 1*/)
     return ret;
 }
 
-luaL_Reg sprite4cc_funcs[] = {
-    { "ctor", sprite4cc_ctor },
-    { "prepareFrame", sprite4cc_prepareFrame },
-    { "prepareAnimation", sprite4cc_prepareAnimation },
+luaL_Reg Sprite_funcs[] = {
+    { "ctor", Sprite_ctor },
+    { "prepareFrame", Sprite_prepareFrame },
+    { "prepareAnimation", Sprite_prepareAnimation },
     { nullptr, nullptr }
 };
 
-int sprite4cc_ctor(lua_State* L)
+int Sprite_ctor(lua_State* L)
 {
     const char* name = lua_tostring(L, 2);
 
@@ -168,7 +191,7 @@ int sprite4cc_ctor(lua_State* L)
     return 0;
 }
 
-int sprite4cc_prepareFrame(lua_State* L)
+int Sprite_prepareFrame(lua_State* L)
 {
     CSpriteInfo* si = nullptr;
     luaL_toobjptr(L, 1, si);
@@ -180,7 +203,7 @@ int sprite4cc_prepareFrame(lua_State* L)
     return 0;
 }
 
-int sprite4cc_prepareAnimation(lua_State* L)
+int Sprite_prepareAnimation(lua_State* L)
 {
     CSpriteInfo* si = nullptr;
     luaL_toobjptr(L, 1, si);
@@ -366,8 +389,8 @@ int g_endWithVictory(lua_State* L)
 
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    DCAST(w->getLayer(), BattleSceneLayer*)->endWithVictory(grade);
     lua_pop(L, 1);  // pop _world
+    DCAST(w->getLayer(), BattleSceneLayer*)->endWithVictory(grade);
 
     return 0;
 }
@@ -376,8 +399,20 @@ int g_endWithDefeat(lua_State* L)
 {
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    DCAST(w->getLayer(), BattleSceneLayer*)->endWithDefeat();
     lua_pop(L, 1);  // pop _world
+    DCAST(w->getLayer(), BattleSceneLayer*)->endWithDefeat();
+
+    return 0;
+}
+
+int g_save(lua_State* L)
+{
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    CUserData::instance()->getHeroSelected()->exp = w->getHero()->getExp();
+    CUserData::instance()->save("");
 
     return 0;
 }
@@ -400,26 +435,16 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "include", g_include);
     lua_register(L, "endWithVictory", g_endWithVictory);
     lua_register(L, "endWithDefeat", g_endWithDefeat);
+    lua_register(L, "save", g_save);
 
-    // TODO: reg global class members
-    lua_getglobal(L, "Unit");
-    luaL_setfuncs(L, unit4cc_funcs, 0);
-    lua_pop(L, 1);
-
-    lua_getglobal(L, "UnitPath");
-    luaL_setfuncs(L, UnitPath4CC_funcs, 0);
-    lua_pop(L, 1);
-
-    lua_getglobal(L, "class");
-    lua_call(L, 0, 1);  // ret a class
-    int sprite4cc = lua_gettop(L);
-    luaL_setfuncs(L, sprite4cc_funcs, 0);
-    lua_setglobal(L, "Sprite");
-
-    int t = 0;
+    // TODO: patch global class members
+    M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);
+    M_LUA_PATCH_CLASS_WITH_FUNCS(L, Projectile, Projectile4CC);
+    M_LUA_PATCH_CLASS_WITH_FUNCS(L, UnitPath, UnitPath4CC);
 
     // bind a class
-    M_LUA_BIND_CLASS_EX(L, StatusShowPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_FUNCS(L, Sprite);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, StatusShowPas, PassiveAbility);
 
     return 0;
 }

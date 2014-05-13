@@ -770,12 +770,10 @@ void CUnitDraw2D::onCastDone()
     int iCastedActiveAbilityId = getCastActiveAbilityId();
     stopCast();
 
-    if (iCastedActiveAbilityId == u->getAttackAbilityId())
+    if (iCastedActiveAbilityId != u->getAttackAbilityId() ||
+        cmdCastSpell(getCastTarget(), iCastedActiveAbilityId, u->isDoingOr(CUnit::kObstinate)) < 0)
     {
-        cmdCastSpell(CCommandTarget(iCastedActiveAbilityId), isDoingAction(CUnit::kObstinate));
-    }
-    else
-    {
+        // 如果刚释放完毕的技能不是攻击技能 或 攻击技能无法继续释放在同一个目标身上，则
         // 施法(非攻击)结束，去除固执状态
         u->endDoing(CUnit::kObstinate);
     }

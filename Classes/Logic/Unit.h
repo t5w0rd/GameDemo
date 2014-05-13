@@ -293,7 +293,7 @@ public:
 
 class CUnitDraw;
 class CForceResource;
-class CUnit : public CMultiRefObject, public CUnitForce, public CLevelExp
+class CUnit : public CLevelExp, public CUnitForce
 {
 protected:
     const string CONST_ROOT_ID;
@@ -301,7 +301,7 @@ protected:
 public:
     CUnit(CUnitDraw* draw);
     virtual ~CUnit();
-    virtual CMultiRefObject* copy();
+    virtual CUnit* copy() override;
     virtual void copyData(const CUnit* from);
 
     virtual const char* getDbgTag() const;

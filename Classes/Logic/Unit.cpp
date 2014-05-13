@@ -735,7 +735,7 @@ CUnit::~CUnit()
     setResource(nullptr);
 }
 
-CMultiRefObject* CUnit::copy()
+CUnit* CUnit::copy()
 {
     CUnit* ret = new CUnit(getDraw()->copy());
     ret->copyData(this);
@@ -751,7 +751,7 @@ void CUnit::copyData(const CUnit* from)
     m_iLvl = from->m_iLvl;
     m_iMaxExp = from->m_iMaxExp;
     m_iExp = from->m_iExp;
-    //m_pUpdate
+    m_pUpdate = from->m_pUpdate ? from->m_pUpdate->copy() : nullptr;
     m_fMaxHp = from->m_fMaxHp;
     m_oExMaxHp = from->m_oExMaxHp;
     m_fHp = from->m_fHp;

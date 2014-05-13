@@ -16,12 +16,44 @@ lvl = 1
 
 taid2 = 0
 
+HeroLevelUpdate = class(LevelUpdate)
+function HeroLevelUpdate:onChangeLevel(u, change)
+    cast(u, Unit)
+
+    u:addBuffAbility(ChangeHpBuff:new("LevelUpHeal", "LevelUpHeal", 5.0, false, 0.2, 0.02, 0.0))
+    u:addBuffAbility(ReflectBuff:new("Reflect", "Reflect", 5.0))
+    
+    u:setBaseMoveSpeed(u:getBaseMoveSpeed() + 1.5)
+
+    local atk = u:getAttackAbility()
+    local a, b = atk:getExAttackSpeed()
+    atk:setExAttackSpeed(a + 0.01, b)
+
+    local t, v = atk:getBaseAttack()
+    atk:setBaseAttack(t, v + 7.8)
+
+    t, v = u:getBaseArmor()
+    u:setBaseArmor(t, v + 1)
+
+    save()
+end
+
+function HeroLevelUpdate:calcExp(lvl)
+    if lvl == 0 then
+        return 0
+    end
+
+    return lvl * lvl * 9 + lvl * 3 + 8;
+end
+
 function onWorldInit()
     showDebug(false)
     math.randomseed(os.time())
 
     me = getControlUnit()
     --me:setAI(LuaAI:new())
+
+    me:setLevelUpdate(HeroLevelUpdate:new())
 
     local x, y = me:getPosition()
     me:setPosition(x + 500, y - 200)
@@ -287,6 +319,16 @@ function game01_tick(dt)
 end
 
 function initAIAbility()
+    a = me:getActiveAbility("WarCry")
+    me:delActiveAbility(a)
+
+    --a = me:getActiveAbility("ThunderCap")
+    --me:delActiveAbility(a)
+    
+    a = BerserkerBloodPas:new("BerserkerBlood", 0.05, 0.0, 0.05, 0.0, 0.05, 0.0, 0.05, 0.0)
+    id = addTemplateAbility(a)
+    me:addPassiveAbility(a)
+
     --  ThrowHammer
     a = StunBuff:new("Stun", "Stun", 2.0, false)
     id = addTemplateAbility(a)
@@ -344,7 +386,7 @@ function initAIAbility()
     a:setImageName("UI/Ability/AbilityFireBall.png");
     a:setTemplateProjectile(PL.kPirateProy)
     cutter = addTemplateAbility(a)
-    --me:addActiveAbility(cutter)
+    me:addActiveAbility(cutter)
 
     -- Curse
     a = CurseBuff:new(13, false, 20, 4, 40 / 100)
@@ -358,12 +400,12 @@ function initAIAbility()
     curse = addTemplateAbility(a)
     --me:addActiveAbility(curse)
 
-    -- SummonUnitAct
-    a = SummonUnitAct:new("Summon", 5.0, CommandTarget.kPointTarget, UL.kThor)
+    -- GravitySurf
+    a = SummonUnitAct:new("GravitySurf", 1.0, CommandTarget.kPointTarget, 10002, 10.0)
     a:setCastRange(200.0)
-    --a:setCastTargetRadius(100.0)
+    a:setCastTargetRadius(150.0)
     a:addCastAnimation(Sprite.kAniAct4)
-    a:setImageName("UI/Ability/AbilityCurse.png");
+    a:setImageName("UI/Ability/GravitySurf.png");
     a:addEffectSound("sounds/Effects/KRF_sfx_vodoo_kamikazelanza.mp3");
     summon = addTemplateAbility(a)
     me:addActiveAbility(summon)
@@ -379,7 +421,7 @@ function initAIAbility()
     -- KnockBack
     a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0)
     id = addTemplateAbility(a)
-    a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, true, 100)
+    a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, 100)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     a = BuffMakerAct:new("KnockBack", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   LuaBinding.h
  * Author: thunderliu
  *
@@ -28,27 +28,56 @@ class CUnit;
 class CAbility;
 class CWorld;
 
-// game
-#define M_LUA_BIND_CLASS(L, name) \
-    do \
-    { \
-        lua_getglobal((L), "class"); \
-        lua_call((L), 0, 1); \
-        lua_pushcfunction((L), name##_ctor); \
-        lua_setfield((L), -2, "ctor"); \
-        lua_setglobal((L), #name); \
-    } while (false)
 
-#define M_LUA_BIND_CLASS_EX(L, name, base) \
-    do \
-    { \
-        lua_getglobal((L), "class"); \
-        lua_getglobal((L), #base); \
-        lua_call((L), 1, 1); \
-        lua_pushcfunction((L), name##_ctor); \
-        lua_setfield((L), -2, "ctor"); \
-        lua_setglobal((L), #name); \
-    } while (false)
+#define M_LUA_BIND_CLASS_WITH_FUNCS(L, name) \
+do \
+{ \
+    lua_getglobal((L), "class"); \
+    lua_call((L), 0, 1); \
+    luaL_setfuncs((L), name##_funcs, 0); \
+    lua_setglobal((L), #name); \
+} while (false)
+
+#define M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, name, base) \
+do \
+{ \
+    lua_getglobal((L), "class"); \
+    lua_getglobal((L), #base); \
+    lua_call((L), 1, 1); \
+    luaL_setfuncs((L), name##_funcs, 0); \
+    lua_setglobal((L), #name); \
+} while (false)
+
+#define M_LUA_BIND_CLASS_WITH_CTOR(L, name) \
+do \
+{ \
+    lua_getglobal((L), "class"); \
+    lua_call((L), 0, 1); \
+    lua_pushcfunction((L), name##_ctor); \
+    lua_setfield((L), -2, "ctor"); \
+    lua_setglobal((L), #name); \
+} while (false)
+
+#define M_LUA_BIND_CLASS_WITH_CTOR_EX(L, name, base) \
+do \
+{ \
+    lua_getglobal((L), "class"); \
+    lua_getglobal((L), #base); \
+    lua_call((L), 1, 1); \
+    lua_pushcfunction((L), name##_ctor); \
+    lua_setfield((L), -2, "ctor"); \
+    lua_setglobal((L), #name); \
+} while (false)
+
+#define M_LUA_PATCH_CLASS_WITH_FUNCS(L, name, patch) \
+do \
+{ \
+    lua_getglobal((L), #name); \
+    luaL_setfuncs((L), patch##_funcs, 0); \
+    lua_pop(L, 1); \
+} while (false)
+
+
 template <typename PTYPE>
 PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr);
 
@@ -61,88 +90,107 @@ CAbility* luaL_toabilityptr(lua_State* L, int idx);
 int luaL_tounitid(lua_State* L, int idx);
 int luaL_toabilityid(lua_State* L, int idx);
 
-int mrobj_getId(lua_State* L);
+int MRObj_getId(lua_State* L);
 
-int unit_ctor(lua_State* L);
-int unit_setMaxHp(lua_State* L);
-int unit_getMaxHp(lua_State* L);
-int unit_setExMaxHp(lua_State* L);
-int unit_getExMaxHp(lua_State* L);
-int unit_getRealMaxHp(lua_State* L);
-int unit_setHp(lua_State* L);
-int unit_getHp(lua_State* L);
-int unit_isDead(lua_State* L);
-int unit_setForceByIndex(lua_State* L);
-int unit_setForce(lua_State* L);
-int unit_getForce(lua_State* L);
-int unit_setAlly(lua_State* L);
-int unit_getAlly(lua_State* L);
-int unit_setBaseArmor(lua_State* L);
-int unit_getBaseArmor(lua_State* L);
-int unit_getRealArmorValue(lua_State* L);
-int unit_setExArmorValue(lua_State* L);
-int unit_getExArmorValue(lua_State* L);
-int unit_suspend(lua_State* L);
-int unit_isSuspended(lua_State* L);
-int unit_resume(lua_State* L);
-int unit_getBuffStackSize(lua_State* L);
-int unit_attack(lua_State* L);
-int unit_damaged(lua_State* L);
-int unit_attackLow(lua_State* L);
-int unit_damagedLow(lua_State* L);
-int unit_setLevel(lua_State* L);
-int unit_getLevel(lua_State* L);
-int unit_setMaxLevel(lua_State* L);
-int unit_getMaxLevel(lua_State* L);
-int unit_addExp(lua_State* L);
-int unit_setRewardGold(lua_State* L);
-int unit_getRewardGold(lua_State* L);
-int unit_setRewardExp(lua_State* L);
-int unit_getRewardExp(lua_State* L);
-int unit_setAI(lua_State* L);
-int unit_say(lua_State* L);
-int unit_setGhost(lua_State* L);
+int LevelExp_ctor(lua_State* L);
+int LevelExp_setLevel(lua_State* L);
+int LevelExp_getLevel(lua_State* L);
+int LevelExp_setMaxLevel(lua_State* L);
+int LevelExp_getMaxLevel(lua_State* L);
+int LevelExp_addExp(lua_State* L);
+int LevelExp_setExpRange(lua_State* L);
+int LevelExp_setLevelUpdate(lua_State* L);
 
-int unit_startDoing(lua_State* L);
-int unit_endDoing(lua_State* L);
-int unit_isDoingOr(lua_State* L);
-int unit_isDoingAnd(lua_State* L);
-int unit_isDoingNothing(lua_State* L);
+int LevelUpdate_ctor(lua_State* L);
+int LevelUpdate_updateExpRange(lua_State* L);
+int LevelUpdate_onChangeLevel(lua_State* L);
+int LevelUpdate_calcExp(lua_State* L);
 
-int unit_addActiveAbility(lua_State* L);
-int unit_addPassiveAbility(lua_State* L);
-int unit_addBuffAbility(lua_State* L);
-int unit_delActiveAbility(lua_State* L);
-int unit_delPassiveAbility(lua_State* L);
-int unit_delBuffAbility(lua_State* L);
-int unit_getAttackAbility(lua_State* L);
-int unit_getActiveAbility(lua_State* L);
-int unit_getBuffAbility(lua_State* L);
+int AttackData_ctor(lua_State* L);
+int AttackData_setAttack(lua_State* L);
+int AttackData_getAttack(lua_State* L);
+int AttackData_setAttackType(lua_State* L);
+int AttackData_getAttackType(lua_State* L);
+int AttackData_setAttackValue(lua_State* L);
+int AttackData_getAttackValue(lua_State* L);
+int AttackData_addAttackBuff(lua_State* L);
 
-int unit2d_setBaseMoveSpeed(lua_State* L);
-int unit2d_getRealMoveSpeed(lua_State* L);
-int unit2d_setExMoveSpeed(lua_State* L);
-int unit2d_getExMoveSpeed(lua_State* L);
-int unit2d_setPosition(lua_State* L);
-int unit2d_getPosition(lua_State* L);
-int unit2d_getNearestEnemyInRange(lua_State* L);
-int unit2d_move(lua_State* L);
-int unit2d_moveAlongPath(lua_State* L);
-int unit2d_setCastTarget(lua_State* L);
-int unit2d_getCastTarget(lua_State* L);
-int unit2d_castSpellWithoutTarget(lua_State* L);
-int unit2d_castSpellWithTargetUnit(lua_State* L);
-int unit2d_castSpellWithTargetPoint(lua_State* L);
-int unit2d_stop(lua_State* L);
-int unit2d_setHostilityRange(lua_State* L);
-int unit2d_getHostilityRange(lua_State* L);
-int unit2d_setFixed(lua_State* L);
-int unit2d_isFixed(lua_State* L);
-int unit2d_isDoingCastingAction(lua_State* L);
-int unit2d_getDistance(lua_State* L);
-int unit2d_getTouchDistance(lua_State* L);
-int unit2d_getAttackingTarget(lua_State* L);
-int unit2d_doAnimation(lua_State* L);
+int Unit_ctor(lua_State* L);
+int Unit_setMaxHp(lua_State* L);
+int Unit_getMaxHp(lua_State* L);
+int Unit_setExMaxHp(lua_State* L);
+int Unit_getExMaxHp(lua_State* L);
+int Unit_getRealMaxHp(lua_State* L);
+int Unit_setHp(lua_State* L);
+int Unit_getHp(lua_State* L);
+int Unit_isDead(lua_State* L);
+int Unit_setForceByIndex(lua_State* L);
+int Unit_setForce(lua_State* L);
+int Unit_getForce(lua_State* L);
+int Unit_setAlly(lua_State* L);
+int Unit_getAlly(lua_State* L);
+int Unit_setBaseArmor(lua_State* L);
+int Unit_getBaseArmor(lua_State* L);
+int Unit_getRealArmorValue(lua_State* L);
+int Unit_setExArmorValue(lua_State* L);
+int Unit_getExArmorValue(lua_State* L);
+int Unit_suspend(lua_State* L);
+int Unit_isSuspended(lua_State* L);
+int Unit_resume(lua_State* L);
+int Unit_getBuffStackSize(lua_State* L);
+int Unit_attack(lua_State* L);
+int Unit_damaged(lua_State* L);
+int Unit_attackLow(lua_State* L);
+int Unit_damagedLow(lua_State* L);
+int Unit_setRewardGold(lua_State* L);
+int Unit_getRewardGold(lua_State* L);
+int Unit_setRewardExp(lua_State* L);
+int Unit_getRewardExp(lua_State* L);
+int Unit_setAI(lua_State* L);
+int Unit_say(lua_State* L);
+int Unit_setGhost(lua_State* L);
+
+int Unit_startDoing(lua_State* L);
+int Unit_endDoing(lua_State* L);
+int Unit_isDoingOr(lua_State* L);
+int Unit_isDoingAnd(lua_State* L);
+int Unit_isDoingNothing(lua_State* L);
+
+int Unit_addActiveAbility(lua_State* L);
+int Unit_addPassiveAbility(lua_State* L);
+int Unit_addBuffAbility(lua_State* L);
+int Unit_delActiveAbility(lua_State* L);
+int Unit_delPassiveAbility(lua_State* L);
+int Unit_delBuffAbility(lua_State* L);
+int Unit_getAttackAbility(lua_State* L);
+int Unit_getActiveAbility(lua_State* L);
+int Unit_getBuffAbility(lua_State* L);
+
+int Unit2D_setBaseMoveSpeed(lua_State* L);
+int Unit2D_getBaseMoveSpeed(lua_State* L);
+int Unit2D_getRealMoveSpeed(lua_State* L);
+int Unit2D_setExMoveSpeed(lua_State* L);
+int Unit2D_getExMoveSpeed(lua_State* L);
+int Unit2D_setPosition(lua_State* L);
+int Unit2D_getPosition(lua_State* L);
+int Unit2D_getNearestEnemyInRange(lua_State* L);
+int Unit2D_move(lua_State* L);
+int Unit2D_moveAlongPath(lua_State* L);
+int Unit2D_setCastTarget(lua_State* L);
+int Unit2D_getCastTarget(lua_State* L);
+int Unit2D_castSpellWithoutTarget(lua_State* L);
+int Unit2D_castSpellWithTargetUnit(lua_State* L);
+int Unit2D_castSpellWithTargetPoint(lua_State* L);
+int Unit2D_stop(lua_State* L);
+int Unit2D_setHostilityRange(lua_State* L);
+int Unit2D_getHostilityRange(lua_State* L);
+int Unit2D_setFixed(lua_State* L);
+int Unit2D_isFixed(lua_State* L);
+int Unit2D_isDoingCastingAction(lua_State* L);
+int Unit2D_getDistance(lua_State* L);
+int Unit2D_getTouchDistance(lua_State* L);
+int Unit2D_getAttackingTarget(lua_State* L);
+int Unit2D_doAnimation(lua_State* L);
 
 int UnitPath_ctor(lua_State* L);
 int UnitPath_addPoint(lua_State* L);
@@ -157,67 +205,68 @@ int UnitAI_onUnitAddBuffAbility(lua_State* L);
 int UnitAI_onUnitDelBuffAbility(lua_State* L);
 int UnitAI_onUnitAbilityReady(lua_State* L);
 
-int projectile_setSrcUnit(lua_State* L);
-int projectile_setFromUnit(lua_State* L);
-int projectile_setToUnit(lua_State* L);
-int projectile_setFromPoint(lua_State* L);
-int projectile_setToPoint(lua_State* L);
-int projectile_setFromToType(lua_State* L);
-int projectile_setFireType(lua_State* L);
-int projectile_setPenaltyFlags(lua_State* L);
-int projectile_fire(lua_State* L);
-int projectile_redirect(lua_State* L);
-int projectile_die(lua_State* L);
-int projectile_setPosition(lua_State* L);
-int projectile_getPosition(lua_State* L);
-int projectile_setHeight(lua_State* L);
-int projectile_getHeight(lua_State* L);
-int projectile_setMoveSpeed(lua_State* L);
-int projectile_getMoveSpeed(lua_State* L);
-int projectile_setMaxHeightDelta(lua_State* L);
-int projectile_getMaxHeightDelta(lua_State* L);
-int projectile_setVisible(lua_State* L);
-int projectile_addFireSound(lua_State* L);
-int projectile_addEffectSound(lua_State* L);
-int projectile_setAttackData(lua_State* L);
-int projectile_getAttackData(lua_State* L);
-int projectile_setSrcAbility(lua_State* L);
-int projectile_setContactLeft(lua_State* L);
-int projectile_getContactLeft(lua_State* L);
-int projectile_decContactLeft(lua_State* L);
+int Projectile_ctor(lua_State* L);
+int Projectile_setSrcUnit(lua_State* L);
+int Projectile_setFromUnit(lua_State* L);
+int Projectile_setToUnit(lua_State* L);
+int Projectile_setFromPoint(lua_State* L);
+int Projectile_setToPoint(lua_State* L);
+int Projectile_setFromToType(lua_State* L);
+int Projectile_setFireType(lua_State* L);
+int Projectile_setPenaltyFlags(lua_State* L);
+int Projectile_fire(lua_State* L);
+int Projectile_redirect(lua_State* L);
+int Projectile_die(lua_State* L);
+int Projectile_setPosition(lua_State* L);
+int Projectile_getPosition(lua_State* L);
+int Projectile_setHeight(lua_State* L);
+int Projectile_getHeight(lua_State* L);
+int Projectile_setMoveSpeed(lua_State* L);
+int Projectile_getMoveSpeed(lua_State* L);
+int Projectile_setMaxHeightDelta(lua_State* L);
+int Projectile_getMaxHeightDelta(lua_State* L);
+int Projectile_setVisible(lua_State* L);
+int Projectile_addFireSound(lua_State* L);
+int Projectile_addEffectSound(lua_State* L);
+int Projectile_setAttackData(lua_State* L);
+int Projectile_getAttackData(lua_State* L);
+int Projectile_setSrcAbility(lua_State* L);
+int Projectile_setContactLeft(lua_State* L);
+int Projectile_getContactLeft(lua_State* L);
+int Projectile_decContactLeft(lua_State* L);
 
-int ability_ctor(lua_State* L);
-int ability_onUnitAddAbility(lua_State* L);
-int ability_onUnitDelAbility(lua_State* L);
-int ability_onUnitAbilityReady(lua_State* L);
-int ability_onUnitRevive(lua_State* L);
-int ability_onUnitDying(lua_State* L);
-int ability_onUnitDead(lua_State* L);
-int ability_onUnitChangeHp(lua_State* L);
-int ability_onUnitTick(lua_State* L);
-int ability_onUnitInterval(lua_State* L);
-int ability_onUnitAttackTarget(lua_State* L);
-int ability_onUnitAttacked(lua_State* L);
-int ability_onUnitDamaged(lua_State* L);
-int ability_onUnitDamagedDone(lua_State* L);
-int ability_onUnitDamageTargetDone(lua_State* L);
-int ability_onUnitProjectileEffect(lua_State* L);
-int ability_onUnitAbilityEffect(lua_State* L);
-int ability_copy(lua_State* L);
-int ability_setTriggerFlags(lua_State* L);
-int ability_getName(lua_State* L);
-int ability_getOwner(lua_State* L);
-int ability_setInterval(lua_State* L);
-int ability_getInterval(lua_State* L);
-int ability_setCoolDown(lua_State* L);
-int ability_getCoolDown(lua_State* L);
-int ability_isCoolingDown(lua_State* L);
-int ability_resetCD(lua_State* L);
-int ability_coolDown(lua_State* L);
-int ability_setLevel(lua_State* L);
-int ability_getLevel(lua_State* L);
-int ability_addEffectSound(lua_State* L);
-int ability_setImageName(lua_State* L);
+int Ability_ctor(lua_State* L);
+int Ability_onUnitAddAbility(lua_State* L);
+int Ability_onUnitDelAbility(lua_State* L);
+int Ability_onUnitAbilityReady(lua_State* L);
+int Ability_onUnitRevive(lua_State* L);
+int Ability_onUnitDying(lua_State* L);
+int Ability_onUnitDead(lua_State* L);
+int Ability_onUnitChangeHp(lua_State* L);
+int Ability_onUnitTick(lua_State* L);
+int Ability_onUnitInterval(lua_State* L);
+int Ability_onUnitAttackTarget(lua_State* L);
+int Ability_onUnitAttacked(lua_State* L);
+int Ability_onUnitDamaged(lua_State* L);
+int Ability_onUnitDamagedDone(lua_State* L);
+int Ability_onUnitDamageTargetDone(lua_State* L);
+int Ability_onUnitProjectileEffect(lua_State* L);
+int Ability_onUnitAbilityEffect(lua_State* L);
+int Ability_copy(lua_State* L);
+int Ability_setTriggerFlags(lua_State* L);
+int Ability_getName(lua_State* L);
+int Ability_getOwner(lua_State* L);
+int Ability_setInterval(lua_State* L);
+int Ability_getInterval(lua_State* L);
+int Ability_setCoolDown(lua_State* L);
+int Ability_getCoolDown(lua_State* L);
+int Ability_isCoolingDown(lua_State* L);
+int Ability_resetCD(lua_State* L);
+int Ability_coolDown(lua_State* L);
+int Ability_setLevel(lua_State* L);
+int Ability_getLevel(lua_State* L);
+int Ability_addEffectSound(lua_State* L);
+int Ability_setImageName(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -275,15 +324,6 @@ int AttractBuff_ctor(lua_State* L);
 int ReflectBuff_ctor(lua_State* L);
 int LimitedLifeBuff_ctor(lua_State* L);
 
-int AttackData_ctor(lua_State* L);
-int AttackData_setAttack(lua_State* L);
-int AttackData_getAttack(lua_State* L);
-int AttackData_setAttackType(lua_State* L);
-int AttackData_getAttackType(lua_State* L);
-int AttackData_setAttackValue(lua_State* L);
-int AttackData_getAttackValue(lua_State* L);
-int AttackData_addAttackBuff(lua_State* L);
-
 int g_onWorldInit(lua_State* L);
 int g_onWorldTick(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
@@ -291,6 +331,7 @@ int g_setControlUnit(lua_State* L);
 int g_getControlUnit(lua_State* L);
 int g_getUnit(lua_State* L);
 int g_getUnits(lua_State* L);
+int g_cast(lua_State* L);
 
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 

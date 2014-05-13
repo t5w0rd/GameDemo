@@ -7,16 +7,18 @@ class CUnitDrawForCC;
 int luaModuleLoader4cc(lua_State *L);
 bool luaL_loadscript4cc(lua_State *L, const char* name, string& err);
 
-int unit4cc_ctor(lua_State* L);
-int unit4cc_addBattleTip(lua_State* L);
-int unit4cc_setGeometry(lua_State* L);
+int Unit4CC_ctor(lua_State* L);
+int Unit4CC_addBattleTip(lua_State* L);
+int Unit4CC_setGeometry(lua_State* L);
+
+int Projectile4CC_ctor(lua_State* L);
 
 int UnitPath4CC_addPoints(lua_State* L);
 
 CUnitDrawForCC* luaL_tospriteptr(lua_State* L, int idx = 1);
-int sprite4cc_ctor(lua_State* L);
-int sprite4cc_prepareFrame(lua_State* L);
-int sprite4cc_prepareAnimation(lua_State* L);
+int Sprite_ctor(lua_State* L);
+int Sprite_prepareFrame(lua_State* L);
+int Sprite_prepareAnimation(lua_State* L);
 
 int g_log(lua_State* L);
 int g_loadFrames(lua_State* L);
@@ -31,6 +33,7 @@ int g_setSearchPath(lua_State* L);
 int g_include(lua_State* L);
 int g_endWithVictory(lua_State* L);
 int g_endWithDefeat(lua_State* L);
+int g_save(lua_State* L);
 
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld);
 

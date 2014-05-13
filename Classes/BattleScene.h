@@ -98,9 +98,9 @@ public:
         uint32_t dwLevel;
         uint32_t dwHp;
         uint32_t dwMaxHp;
-        uint32_t dwAtk0;
-        uint32_t dwAtk1;
-        uint32_t dwAtkEx;
+        int iAtk0;
+        int iAtk1;
+        int iAtkEx;
         int iDef;
 
         TARGET_INFO() { memset(this, 0, sizeof(TARGET_INFO)); }

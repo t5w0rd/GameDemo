@@ -223,9 +223,9 @@ bool CBattleWorld::onInit()
     u->setBaseArmor(udt->getHeroSelected()->armVal);
     d->setBaseMoveSpeed(udt->getHeroSelected()->moveSpeed);
 
-    u->addExp(udt->getHeroSelected()->exp);
-
     onLuaWorldInit();
+
+    u->addExp(udt->getHeroSelected()->exp);
     
     l->initTargetInfo();
     l->updateTargetInfo(getControlUnit());
@@ -739,6 +739,21 @@ void BattleSceneLayer::onLoadingDone()
     }
 
     setWorldInterval(0.02f);
+
+    CUnit* hero = DCAST(getWorld(), CBattleWorld*)->getHero();
+    auto mi = MenuItemFont::create("50%", bind([hero](Ref*)
+    {
+        hero->setHp(hero->getRealMaxHp() * 0.5);
+    }, placeholders::_1));
+    mn->addChild(mi, 5);
+    mi->setPosition(Point(wsz.width * 0.1, wsz.height * 0.4));
+
+    mi = MenuItemFont::create("100%", bind([hero](Ref*)
+    {
+        hero->setHp(hero->getRealMaxHp());
+    }, placeholders::_1));
+    mn->addChild(mi, 5);
+    mi->setPosition(Point(wsz.width * 0.2, wsz.height * 0.4));
 }
 
 void BattleSceneLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event* event)
@@ -1090,28 +1105,28 @@ void BattleSceneLayer::updateTargetInfo(int id)
             m_pTargetAtkIcon->setSpriteFrame(fc->getSpriteFrameByName("UI/status/MagicalAttack.png"));
             break;
         }
-        uint32_t dwAtk0 = 0;
-        uint32_t dwAtk1 = 0;
+        int iAtk0 = 0;
+        int iAtk1 = 0;
         float fAtk = 0;
         float fAtkRnd = 0;
-        uint32_t dwAtkEx = 0;
+        int iAtkEx = 0;
 
         fAtk = atkAct->getBaseAttackValue();
         fAtkRnd = atkAct->getAttackValueRandomRange() * 0.5;
-        dwAtk0 = toInt(fAtk * (1 - fAtkRnd));
-        dwAtk1 = toInt(fAtk * (1 + fAtkRnd));
-        dwAtkEx = toInt(fAtk * (atkAct->getExAttackValue().getMulriple() - 1.0) + atkAct->getExAttackValue().getAddend());
+        iAtk0 = toInt(fAtk * (1 - fAtkRnd));
+        iAtk1 = toInt(fAtk * (1 + fAtkRnd));
+        iAtkEx = toInt(fAtk * (atkAct->getExAttackValue().getMulriple() - 1.0) + atkAct->getExAttackValue().getAddend());
 
-        if ((dwAtk0 != m_stTargetInfo.dwAtk0) || (dwAtk1 != m_stTargetInfo.dwAtk1) || (dwAtkEx != m_stTargetInfo.dwAtkEx))
+        if ((iAtk0 != m_stTargetInfo.iAtk0) || (iAtk1 != m_stTargetInfo.iAtk1) || (iAtkEx != m_stTargetInfo.iAtkEx))
         {
-            sprintf(szBuf, "%u - %u", dwAtk0, dwAtk1);
+            sprintf(szBuf, "%d - %d", iAtk0, iAtk1);
             m_pTargetAtk->setString(szBuf);
-            m_stTargetInfo.dwAtk0 = dwAtk0;
-            m_stTargetInfo.dwAtk1 = dwAtk1;
+            m_stTargetInfo.iAtk0 = iAtk0;
+            m_stTargetInfo.iAtk1 = iAtk1;
 
-            if (dwAtkEx)
+            if (iAtkEx)
             {
-                sprintf(szBuf, " +%u", dwAtkEx);
+                sprintf(szBuf, " +%d", iAtkEx);
                 m_pTargetAtkEx->setString(szBuf);
                 //m_pTargetAtkEx->setPosition(m_pTargetAtk->getPosition() + Point(m_pTargetAtk->getTextureRect().size.width, 0));
                 m_pTargetAtkEx->setPosition(m_pTargetAtk->getPosition() + Point(m_pTargetAtk->getContentSize().width, 0));
@@ -1120,7 +1135,7 @@ void BattleSceneLayer::updateTargetInfo(int id)
             {
                 m_pTargetAtkEx->setString("");
             }
-            m_stTargetInfo.dwAtkEx = dwAtkEx;
+            m_stTargetInfo.iAtkEx = iAtkEx;
         }
     }
     

@@ -137,10 +137,11 @@ function OnDyingPas:onUnitDying()
 
     lvl = me:getLevel()
     kill = kill + 1
-    atk = me:getAttackAbility()
-    atk:setExAttackValue(1.0 + kill / 20.0, kill * 3.9 + 17)
+    local atk = me:getAttackAbility()
+    local a, b = atk:getExAttackValue()
+    atk:setExAttackValue(a + 1 / 50.0, b + 1 * 1.3)
     a, b = atk:getExAttackSpeed()
-    atk:setExAttackSpeed(a + kill / 50, b)
+    atk:setExAttackSpeed(a + 1 / 50, b)
     local level = math.ceil(kill / 2)
     if level >= 1 and level <= c then
         if level > learned then
@@ -185,6 +186,7 @@ function SummonUnitAct:onUnitAbilityEffect(projectile, target)
     local o = self:getOwner()
     local x, y = self:getAbilityEffectPoint(projectile, target)
     local u = createUnit(self.id)
+    u:setMaxHp(100)
     u:setPosition(x, y)
     u:setForce(o:getForce())
     u:setAlly(o:getAlly())
@@ -204,3 +206,69 @@ function SummonUnitAct:onUnitAbilityEffect(projectile, target)
     a = AuraPas:new("DamageAura", 1.0, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
     u:addPassiveAbility(a)
 end
+
+BerserkerBloodPas = class(PassiveAbility)
+function BerserkerBloodPas:ctor(name, exMaxHpDeltaA, exMaxHpDeltaB, exMoveSpeedDeltaA, exMoveSpeedDeltaB, exAttackSpeedDeltaA, exAttackSpeedDeltaB, exAttackValueDeltaA, exAttackValueDeltaB)
+    self:sctor("BerserkerBloodPas", name)
+    self:setTriggerFlags(Ability.kOnChangeHpTrigger)
+    self.exMaxHpDeltaA = exMaxHpDeltaA
+    self.exMaxHpDeltaB = exMaxHpDeltaB
+    self.exMoveSpeedDeltaA = exMoveSpeedDeltaA
+    self.exMoveSpeedDeltaB = exMoveSpeedDeltaB
+    self.exAttackSpeedDeltaA = exAttackSpeedDeltaA
+    self.exAttackSpeedDeltaB = exAttackSpeedDeltaB
+    self.exAttackValueDeltaA = exAttackValueDeltaA
+    self.exAttackValueDeltaB = exAttackValueDeltaB
+    self.lastLvl = 0
+end
+
+function BerserkerBloodPas:onUnitAddAbility()
+    self.lastLvl = 0
+    self:onUnitChangeHp(0)
+end
+
+function BerserkerBloodPas:onUnitDelAbility()
+    self:changeValueByDelta(-self.lastLvl)
+    self.lastLvl = 0
+end
+
+function BerserkerBloodPas:onUnitChangeHp(hp)
+    local o = self:getOwner()
+    local maxHp = o:getRealMaxHp()
+    local lvl = (maxHp - o:getHp()) / (self.exMaxHpDeltaA * maxHp + self.exMaxHpDeltaB)
+    --logf("lvl %f", lvl)
+    local dt = lvl - self.lastLvl
+    
+    if dt > -1 and dt < 1 then
+        return
+    end
+    
+    self:changeValueByDelta(dt)
+    
+    self.lastLvl = lvl
+end
+
+function BerserkerBloodPas:changeValueByDelta(dt)
+    --logf("%f x %f = %f", (self.lastLvl + dt), self.exAttackValueDeltaA, (self.lastLvl + dt) * self.exAttackValueDeltaA)
+    local o = self:getOwner()
+    local exMoveSpeedDeltaA = self.exMoveSpeedDeltaA * dt
+    local exMoveSpeedDeltaB = self.exMoveSpeedDeltaB * dt
+    local exAttackSpeedDeltaA = self.exAttackSpeedDeltaA * dt
+    local exAttackSpeedDeltaB = self.exAttackSpeedDeltaB * dt
+    local exAttackValueDeltaA = self.exAttackValueDeltaA * dt
+    local exAttackValueDeltaB = self.exAttackValueDeltaB * dt
+    
+    local a, b = o:getExMoveSpeed()
+    o:setExMoveSpeed(a + exMoveSpeedDeltaA, b + exMoveSpeedDeltaB)
+    
+    local atk = o:getAttackAbility()
+    
+    a, b = atk:getExAttackSpeed()
+    atk:setExAttackSpeed(a + exAttackSpeedDeltaA, b + exAttackSpeedDeltaB)
+    
+    a, b = atk:getExAttackValue()
+    atk:setExAttackValue(a + exAttackValueDeltaA, b + exAttackValueDeltaB)
+    
+end
+
+

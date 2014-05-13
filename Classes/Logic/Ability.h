@@ -15,7 +15,7 @@
 #include "Unit.h"
 
 
-class CAbility : public CMultiRefObject, public CLevelExp
+class CAbility : public CLevelExp
 {
 protected:
     const string CONST_ROOT_ID;
@@ -226,6 +226,9 @@ public:
     
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
+
+    M_SYNTHESIZE_BOOL(EffectFixed);
+    M_SYNTHESIZE_BOOL(EffectDead);
     
 protected:
     CUnit* m_pTarget;
