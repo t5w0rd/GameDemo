@@ -312,6 +312,9 @@ luaL_Reg unit_funcs[] = {
     { "addActiveAbility", unit_addActiveAbility },
     { "addPassiveAbility", unit_addPassiveAbility },
     { "addBuffAbility", unit_addBuffAbility },
+    { "delActiveAbility", unit_delActiveAbility },
+    { "delPassiveAbility", unit_delPassiveAbility },
+    { "delBuffAbility", unit_delBuffAbility },
     { "getAttackAbility", unit_getAttackAbility },
     { "getActiveAbility", unit_getActiveAbility },
     { "getBuffAbility", unit_getBuffAbility },
@@ -867,6 +870,36 @@ int unit_addBuffAbility(lua_State* L)
         }
         u->addBuffAbility(id, src);
     }
+
+    return 0;
+}
+
+int unit_delActiveAbility(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int id = luaL_toabilityid(L, 2);
+
+    u->delActiveAbility(id);
+
+    return 0;
+}
+
+int unit_delPassiveAbility(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int id = luaL_toabilityid(L, 2);
+
+    u->delPassiveAbility(id);
+
+    return 0;
+}
+
+int unit_delBuffAbility(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    int id = luaL_toabilityid(L, 2);
+
+    u->delBuffAbility(id);
 
     return 0;
 }

@@ -34,11 +34,11 @@ bool AppDelegate::applicationDidFinishLaunching()
     auto scene = UnpackSceneLayer::scene();
 #else
     CUserData::instance()->load("");
-    auto scene = BattleSceneLayer::scene();
+    //auto scene = BattleSceneLayer::scene();
     //auto scene = LogoSceneLayer::scene();
     //auto scene = HeroRoomSceneLayer::scene();
     //auto scene = StageSceneLayer::scene();
-    //auto scene = MainMenuSceneLayer::scene();
+    auto scene = MainMenuSceneLayer::scene();
     //auto scene = EmptySceneLayer::scene();
 
 #endif

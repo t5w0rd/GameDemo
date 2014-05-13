@@ -430,10 +430,10 @@ void CBattleWorld::onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit*
 
 void CBattleWorld::onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget)
 {
-#if 0
+#if 1
     // DemoTemp
     M_DEF_GC(gc);
-    if (strcmp(pProjectile->getName(), "ThorHammer") == 0)
+    if (strcmp(DCAST(pProjectile, CProjectileForCC*)->getSpriteInfo()->getName(), "ThorHammer") == 0)
     {
         Node* sn = DCAST(pTarget->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
 

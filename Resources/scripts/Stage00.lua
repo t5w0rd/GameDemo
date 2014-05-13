@@ -287,6 +287,12 @@ function game01_tick(dt)
 end
 
 function initAIAbility()
+    a = me:getActiveAbility("WarCry")
+    me:delActiveAbility(a)
+
+    --a = me:getActiveAbility("ThunderCap")
+    --me:delActiveAbility(a)
+
     --  ThrowHammer
     a = StunBuff:new("Stun", "Stun", 2.0, false)
     id = addTemplateAbility(a)
@@ -344,7 +350,7 @@ function initAIAbility()
     a:setImageName("UI/Ability/AbilityFireBall.png");
     a:setTemplateProjectile(PL.kPirateProy)
     cutter = addTemplateAbility(a)
-    --me:addActiveAbility(cutter)
+    me:addActiveAbility(cutter)
 
     -- Curse
     a = CurseBuff:new(13, false, 20, 4, 40 / 100)
@@ -358,12 +364,12 @@ function initAIAbility()
     curse = addTemplateAbility(a)
     --me:addActiveAbility(curse)
 
-    -- SummonUnitAct
-    a = SummonUnitAct:new("Summon", 1.0, CommandTarget.kPointTarget, 10001, 10.0)
+    -- GravitySurf
+    a = SummonUnitAct:new("GravitySurf", 1.0, CommandTarget.kPointTarget, 10002, 10.0)
     a:setCastRange(200.0)
-    --a:setCastTargetRadius(100.0)
+    a:setCastTargetRadius(100.0)
     a:addCastAnimation(Sprite.kAniAct4)
-    a:setImageName("UI/Ability/AbilityCurse.png");
+    a:setImageName("UI/Ability/GravitySurf.png");
     a:addEffectSound("sounds/Effects/KRF_sfx_vodoo_kamikazelanza.mp3");
     summon = addTemplateAbility(a)
     me:addActiveAbility(summon)
