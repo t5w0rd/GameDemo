@@ -616,3 +616,43 @@ void Shake::stop(void)
     }
     Repeat::stop();
 }
+
+// ScaleSizeTo
+bool ScaleSizeTo::initWithDuration(float duration, const Size& sz)
+{
+    if (ActionInterval::initWithDuration(duration))
+    {
+        _endScaleX = sz;
+
+        return true;
+    }
+
+    return false;
+}
+
+ScaleSizeTo* ScaleSizeTo::clone(void) const
+{
+    // no copy constructor
+    return ScaleSizeTo::create(_duration, _endScaleX);
+}
+
+ScaleSizeTo* ScaleSizeTo::reverse() const
+{
+    CCASSERT(false, "reverse() not supported in ScaleSizeTo");
+    return nullptr;
+}
+
+void ScaleSizeTo::startWithTarget(Node *target)
+{
+    ActionInterval::startWithTarget(target);
+    _startScaleX = target->getContentSize();
+    _deltaX = _endScaleX - _startScaleX;
+}
+
+void ScaleSizeTo::update(float time)
+{
+    if (_target)
+    {
+        _target->setContentSize(_startScaleX + _deltaX * time);
+    }
+}

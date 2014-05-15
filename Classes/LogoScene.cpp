@@ -178,7 +178,7 @@ void LogoSceneLayer::onEffectUpdate(Node* pNode)
         gc->preloadSound("sounds/Effects/ThunderCap.mp3");
         gc->preloadSound("sounds/Effects/KRF_sfx_minotauro_grito.mp3");
         gc->preloadSound("sounds/Effects/KRF_sfx_minotauro_carga.mp3");
-        gc->preloadSound("sounds/Effects/HammerThrow.mp3");
+        gc->preloadSound("sounds/Effects/ThrowHammer.mp3");
         gc->preloadSound("sounds/Effects/HeadlessHorseman-03a_WET.mp3");
         gc->preloadSound("sounds/Effects/KidnapGrab.mp3");
         gc->preloadSound("sounds/Effects/Sound_FireballHit.mp3");
@@ -578,7 +578,7 @@ void LogoScene2Layer::onEffectUpdate(Node* pNode)
                 CallFuncN::create(CC_CALLBACK_1(LogoScene2Layer::onEffectUpdate, this)),
                 nullptr));
 
-        gc->playSound("sounds/Effects/HammerThrow.mp3");
+        gc->playSound("sounds/Effects/ThrowHammer.mp3");
         break;
 
     case 13:

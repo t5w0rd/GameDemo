@@ -523,7 +523,7 @@ void CUnitDrawForCC::say(const char* words)
     lbl->setColor(Color3B::BLACK);
 
     sp->setContentSize(lbl->getContentSize() + Size(50, 50));
-    Point lblp = sp->getAnchorPointInPoints() + Point(1, 6);
+    Point lblp = Point(sp->getContentSize().width * 0.5 + 1, sp->getContentSize().height - lbl->getContentSize().height * 0.5 - 19);
     sp->setAnchorPoint(Point(36 / sp->getContentSize().width, 1 / sp->getContentSize().height));
     lbl->setPosition(lblp);
     

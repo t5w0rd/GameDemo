@@ -26,6 +26,9 @@ CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 , m_fInterval(0.0f)
 , m_fIntervalElapsed(0.0f)
 , m_dwTriggerFlags(0)
+
+, m_iGrade(kNormal)
+, m_iCost(0)
 {
     setDbgClassName("CAbility");
 }

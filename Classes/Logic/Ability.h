@@ -89,6 +89,15 @@ public:
     virtual void playEffectSound();
 
     M_SYNTHESIZE_STR(ImageName);
+    enum GRADE
+    {
+        kNormal,
+        kRare,
+        kEpic,
+        kLegend
+    };
+    M_SYNTHESIZE(GRADE, m_iGrade, Grade);
+    M_SYNTHESIZE(int, m_iCost, Cost);
 };
 
 class CActiveAbility : public CAbility

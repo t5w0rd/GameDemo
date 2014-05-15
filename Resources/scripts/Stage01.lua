@@ -1,7 +1,7 @@
-include("common.lua")
-include("ability.lua")
-include("ai.lua")
-include("ai2.lua")
+include("Common.lua")
+include("Ability.lua")
+include("AI.lua")
+include("AI2.lua")
 
 hero = nil
 me = nil

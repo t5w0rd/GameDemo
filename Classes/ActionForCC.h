@@ -155,4 +155,29 @@ public:
     Point m_oLoc;
 };
 
+class ScaleSizeTo : public ActionInterval
+{
+public:
+    bool initWithDuration(float duration, const Size& sz);
+    M_CREATE_INITWITH_FUNC_PARAM(Duration, ScaleSizeTo, (float duration, const Size& sz), duration, sz);
+
+    virtual ScaleSizeTo* clone() const override;
+    virtual ScaleSizeTo* reverse(void) const override;
+    virtual void startWithTarget(Node* target) override;
+    virtual void update(float time) override;
+
+CC_CONSTRUCTOR_ACCESS:
+    ScaleSizeTo() {}
+    virtual ~ScaleSizeTo() {}
+
+protected:
+    Size _scaleX;
+    Size _startScaleX;
+    Size _endScaleX;
+    Size _deltaX;
+
+private:
+    CC_DISALLOW_COPY_AND_ASSIGN(ScaleSizeTo);
+};
+
 #endif  /* __ACTIONFORCC_H__ */

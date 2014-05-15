@@ -39,10 +39,6 @@ public:
     void onAniDone(CMultiRefObject* obj, void* data);
 
     M_SYNTHESIZE(CUnit*, m_pHero, Hero);
-    M_SYNTHESIZE(CActiveAbility*, m_pThunderCapAct, ThunderCapAct);
-    M_SYNTHESIZE(CActiveAbility*, m_pHammerThrowAct, HammerThrowAct);
-    M_SYNTHESIZE(CActiveAbility*, m_pWarCryAct, WarCryAct);
-    M_SYNTHESIZE(CPassiveAbility*, m_pRebirthPas, RebirthPas);
     M_SYNTHESIZE(CStunBuff*, m_pDragonStrikeBuff, DragonStrikeBuff);
 
     CUnitLibraryForCC m_oULib;

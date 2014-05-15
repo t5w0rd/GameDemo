@@ -116,7 +116,7 @@ bool CUnitLibraryForCC::init()
     p->setMaxHeightDelta(0.0f);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
-    p->addFireSound("sounds/Effects/HammerThrow.mp3");
+    p->addFireSound("sounds/Effects/ThrowHammer.mp3");
     addProjectile(kThorHammer, p);
 
     // LumberjackProy

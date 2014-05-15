@@ -18,6 +18,8 @@ AppDelegate::~AppDelegate()
 
 bool AppDelegate::applicationDidFinishLaunching()
 {
+    str_normalize_init();
+
     // initialize director
     auto director = Director::getInstance();
     //
@@ -38,8 +40,8 @@ bool AppDelegate::applicationDidFinishLaunching()
     //auto scene = LogoSceneLayer::scene();
     //auto scene = HeroRoomSceneLayer::scene();
     //auto scene = StageSceneLayer::scene();
-    auto scene = MainMenuSceneLayer::scene();
-    //auto scene = EmptySceneLayer::scene();
+    //auto scene = MainMenuSceneLayer::scene();
+    auto scene = EmptySceneLayer::scene();
 
 #endif
 

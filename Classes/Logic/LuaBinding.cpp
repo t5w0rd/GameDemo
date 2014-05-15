@@ -2842,7 +2842,7 @@ int TransitiveLinkBuff_ctor(lua_State* L)
     float range = lua_tonumber(L, 4);
     int maxTimes = lua_tointeger(L, 5);
     uint32_t eff = lua_tounsigned(L, 6);
-    int projectile = lua_tointeger(L, 7);
+    int projectile = lua_gettop(L) < 7 ? 0 : lua_tointeger(L, 7);
 
     CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, eff);
     _p->setTemplateProjectile(projectile);

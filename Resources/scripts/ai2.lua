@@ -66,24 +66,28 @@ end
 
 function LuaAIWarrior:onUnitTick(unit, dt)
     t = unit:getAttackingTarget()
-    if t then
+    if t and t:getDistance(unit) < 200 then
         self:tryCastSkill(unit, "ThrowHammer", t)
     end
-    self:tryCastSkill(unit, "ThunderCap", nil, 100)
-    self:tryCastSkill(unit, "SpeedUp", nil, 100)
-    
+	if t and t:getHp() > 60 then
+		self:tryCastSkill(unit, "ThunderCap", nil, 100)
+		self:tryCastSkill(unit, "SpeedUp", nil, 100)
+	end
+    --[[
     if not unit:isDoingCastingAction() and unit:getHp() / unit:getRealMaxHp() < 0.5 and not unit:getBuffAbility("TowerHeal") then
         unit:move(100, 500)
-    end
+    end]]
     --self:hitAndRun(unit, 200)
     --self.timeCount = self.timeCount + dt
     --self.timeCount = self:setHpAI(unit, self.timeCount)
 end
 
 function LuaAIWarrior:onUnitDamagedDone(unit, dmg, src)
-    a = unit:getActiveAbility("ThunderCap")
+    --[[
+	a = unit:getActiveAbility("ThunderCap")
     if a and not a:isCoolingDown() and src and unit:getDistance(src) < 100 then
         unit:castSpellWithoutTarget(a)
     end
+	]]
 end
 

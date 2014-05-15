@@ -16,88 +16,6 @@
 #include "UserData.h"
 
 
-class CHeroLevelUp : public CLevelUpdate
-{
-public:
-    int funcExp(int lvl)
-    {
-        return (lvl == 0) ? 0 : (lvl * lvl * 9 + lvl * 3 + 8);
-    }
-
-    virtual void updateExpRange(CLevelExp* pLevel)
-    {
-        int lvl = pLevel->getLevel();
-        pLevel->setBaseExp(funcExp(lvl - 1));
-        pLevel->setMaxExp(funcExp(lvl));
-    }
-
-    virtual void onChangeLevel(CLevelExp* pLevel, int iChanged)
-    {
-        static Size wsz = Director::getInstance()->getVisibleSize();
-        static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
-        
-        CUnit* u = DCAST(pLevel, CUnit*);
-        CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
-        //d->cmdStop();
-        
-        u->setMaxHp(u->getMaxHp() + 200 + rand() % 100);
-
-        CBattleWorld* w = DCAST(u->getWorld(), CBattleWorld*);
-        //d->cmdCastSpell(CCommandTarget(), w->getWarCryAct()->getId());
-        u->addBuffAbility(new CChangeHpBuff("LevelUpHeal", "LevelUpHeal", 5.0f, false, 0.2f, CExtraCoeff(0.02f, 0.0f)));
-        u->addBuffAbility(new CReflectBuff("Reflect", "Reflect", 5.0f));
-        CAttackAct* atk = DCAST(u->getActiveAbility(u->getAttackAbilityId()), CAttackAct*);
-        atk->getBaseAttack().setValue(atk->getBaseAttack().getValue() + 7.8);
-        d->setBaseMoveSpeed(d->getBaseMoveSpeed() + 1.5);
-
-        atk->setExAttackSpeed(CExtraCoeff(atk->getExAttackSpeed().getMulriple() + 0.01, atk->getExAttackSpeed().getAddend()));
-        u->setBaseArmor(CArmorValue(u->getBaseArmor().getType(), u->getBaseArmor().getValue() + 1));
-
-        CUserData::instance()->getHeroSelected()->exp = u->getExp();
-        CUserData::instance()->save("");
-    }
-};
-
-class CMyAI : public CBaseAI
-{
-public:
-    CMyAI()
-    : m_bFirstTick(true)
-    , m_iBaseTag(CKeyGen::nextKey() * 10)
-    , m_iCurTag(m_iBaseTag)
-    {
-    }
-
-    virtual void onUnitTick(CUnit* pUnit, float dt)
-    {
-        CBaseAI::onUnitTick(pUnit, dt);
-        return;
-
-        CUnitDraw2D* d = DCAST(pUnit->getDraw(), CUnitDraw2D*);
-        if (isFirstTick())
-        {
-            setFirstTick(false);
-            setDstPoint(d->getPosition());
-            setOrgPoint(getDstPoint() + CPoint(300.0f, 300.0f));
-            return;
-        }
-
-        if (getDstPoint().getDistance(d->getPosition()) < 10.0f)
-        {
-            CPoint tmp = getOrgPoint();
-            setOrgPoint(getDstPoint());
-            setDstPoint(tmp);
-            d->cmdMove(getDstPoint());
-        }
-    }
-
-    M_SYNTHESIZE_BOOL(FirstTick);
-    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oOrgPoint, OrgPoint);
-    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oDstPoint, DstPoint);
-    M_SYNTHESIZE(int, m_iBaseTag, BaseTag);
-    M_SYNTHESIZE(int, m_iCurTag, CurTag);
-};
-
 // CBattleWorld
 const float CBattleWorld::CONST_MAX_REWARD_RANGE = 400;
 
@@ -113,7 +31,7 @@ CBattleWorld::~CBattleWorld()
 
 bool CBattleWorld::onInit()
 {
-    static Size vs = Director::getInstance()->getVisibleSize();
+    static Size wsz = Director::getInstance()->getVisibleSize();
     static Point org = Director::getInstance()->getVisibleOrigin();
 
     CUnit* u = nullptr;
@@ -135,77 +53,17 @@ bool CBattleWorld::onInit()
     // init hero
     CUserData* udt = CUserData::instance();
     u = m_oULib.copyUnit(udt->getHeroSelected()->id);
-    //u = m_oULib.copyUnit(CUnitLibraryForCC::kThor);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
     u->setMaxLevel(20);
-    u->setLevelUpdate(new CHeroLevelUp);
     u->updateExpRange();
     u->setRevivable();
     u->setForceByIndex(2);
     CForceResource* fr = new CForceResource(this, (FUNC_CALLFUNC_N)(&CBattleWorld::onChangeGold)); // 势力资源
     u->setResource(fr);
-    u->getActiveAbility(u->getAttackAbilityId())->dcast(atk);
-    atk->setExAttackValue(CExtraCoeff(1.3f, 0.0f));
 
     // add abilities
-    m_pRebirthPas = new CRebirthPas("Rebirth", "Rebirth", 120.0f);
-    u->addPassiveAbility(m_pRebirthPas);
-
-    a = new CSpeedBuff("SlowDownBuff", "SlowDown", 8.0f, false, CExtraCoeff(-0.8f, 0.0f), CExtraCoeff(-0.8f, 0.0f));
-    id = addTemplateAbility(a);
-    a = new CKnockBackBuff("KnockBackBuff", "KnockBackBuff", 0.5, 40);
-    DCAST(a, CBuffAbility*)->setAppendBuff(id);
-    id = addTemplateAbility(a);
-    a = new CDamageBuff("", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
-    DCAST(a, CBuffAbility*)->setAppendBuff(id);
-    id = addTemplateAbility(a);
-    m_pThunderCapAct = new CBuffMakerAct("", "ThunderCap", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, id);
-    m_pThunderCapAct->setCastTargetRadius(150.0f);
-    m_pThunderCapAct->addCastAnimation(CSpriteInfo::kAniAct2);
-    m_pThunderCapAct->addEffectSound("sounds/Effects/ThunderCap.mp3");
-    m_pThunderCapAct->setImageName("UI/Ability/ThunderCap.png");
-    u->addActiveAbility(m_pThunderCapAct);
-
-#if 1
-    a = new CDamageBuff("dmg", CAttackValue(CAttackValue::kMagical, 100.0f), 1.0f);
-    id = addTemplateAbility(a);
-    
-    a = new CStunBuff("Stun", "Stun", 5.0f, false);
-    DCAST(a, CBuffAbility*)->setAppendBuff(id);
-    id = addTemplateAbility(a);
-#else
-    a = new CChangeHpBuff("ChainHealBuff", "WarCryHeal", 1.0f, false, 0.02f, CExtraCoeff(0.02f, 0.0f));
-    id = addTemplateAbility(a);
-#endif
-    a = new CTransitiveLinkBuff("Chain", 0.3f, 150.0f, 4, CUnitForce::kEnemy);
-    DCAST(a, CBuffAbility*)->setAppendBuff(id);
-    DCAST(a, CTransitiveLinkBuff*)->setTemplateProjectile(CUnitLibraryForCC::kLightning);
-    id = addTemplateAbility(a);
-    
-    m_pHammerThrowAct = new CBuffMakerAct("", "HammerThrow", 12.0f, CCommandTarget::kUnitTarget, CUnitForce::kEnemy, 1.0f, id);
-    m_pHammerThrowAct->setCastRange(400.0f);
-    m_pHammerThrowAct->addCastAnimation(CSpriteInfo::kAniAct3);
-    m_pHammerThrowAct->setTemplateProjectile(CUnitLibraryForCC::kThorHammer);
-    m_pHammerThrowAct->addEffectSound("sounds/Effects/LightningLink.mp3");
-    m_pHammerThrowAct->setImageName("UI/Ability/HammerThrow.png");
-    u->addActiveAbility(m_pHammerThrowAct);
-
-    a = new CSpeedBuff("WarCrySpeedBuff", "WarCrySpeed", 10.0f, false, CExtraCoeff(2.0f, 0.0f), CExtraCoeff(2.0f, 0.0f));
-    id = addTemplateAbility(a);
-    a = new CChangeHpBuff("WarCryHealBuff", "WarCryHeal", 10.0f, false, 0.2f, CExtraCoeff(0.02f, 0.0f));
-    DCAST(a, CBuffAbility*)->setAppendBuff(id);
-    id = addTemplateAbility(a);
-    m_pWarCryAct = new CBuffMakerAct("", "WarCry", 15.0f, CCommandTarget::kNoTarget, CUnitForce::kAlly, 1.0f, id);
-    m_pWarCryAct->setCastTargetRadius(200.0f);
-    m_pWarCryAct->addCastAnimation(CSpriteInfo::kAniAct5);
-    m_pWarCryAct->addEffectSound("sounds/Effects/LevelUp.mp3");
-    m_pWarCryAct->setImageName("UI/Ability/WarCry.png");
-    u->addActiveAbility(m_pWarCryAct);
-
-    u->addActiveAbility(m_pWarCryAct);
-
     m_pDragonStrikeBuff = new CStunBuff("DragonStrikeBuff", "DragonStrikeBuff", 5.0f, false);
     addTemplateAbility(m_pDragonStrikeBuff);
 
@@ -218,6 +76,7 @@ bool CBattleWorld::onInit()
     
     u->setName(udt->getHeroSelected()->name.c_str());
     u->setMaxHp(udt->getHeroSelected()->hp);
+    u->getActiveAbility(u->getAttackAbilityId())->dcast(atk);
     atk->setBaseAttack(udt->getHeroSelected()->atkVal);
     atk->setBaseAttackInterval(1 / udt->getHeroSelected()->attackSpeed);
     u->setBaseArmor(udt->getHeroSelected()->armVal);
@@ -661,7 +520,7 @@ void BattleSceneLayer::onLoadingProgress()
         gc->preloadSound("sounds/Sprites/Thor/die/00.mp3");
         gc->preloadSound("sounds/Effects/WaveIncoming.mp3");
         gc->preloadSound("sounds/Effects/Fighting.mp3");
-        gc->preloadSound("sounds/Effects/HammerThrow.mp3");
+        gc->preloadSound("sounds/Effects/ThrowHammer.mp3");
         gc->preloadSound("sounds/Effects/LevelUp.mp3");
         gc->preloadSound("sounds/Effects/OpenDoor.mp3");
         gc->preloadSound("sounds/Effects/TeslaRay00.mp3");
@@ -740,6 +599,7 @@ void BattleSceneLayer::onLoadingDone()
 
     setWorldInterval(0.02f);
 
+#if 0
     CUnit* hero = DCAST(getWorld(), CBattleWorld*)->getHero();
     auto mi = MenuItemFont::create("50%", bind([hero](Ref*)
     {
@@ -754,6 +614,7 @@ void BattleSceneLayer::onLoadingDone()
     }, placeholders::_1));
     mn->addChild(mi, 5);
     mi->setPosition(Point(wsz.width * 0.2, wsz.height * 0.4));
+#endif
 }
 
 void BattleSceneLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event* event)

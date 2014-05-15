@@ -5,7 +5,7 @@ function table.copy(st)
         if type(v) ~= "table" then
             tab[k] = v
         else
-            tab[k] = copyTab(v)
+            tab[k] = table.copy(v)
         end
     end
     setmetatable(tab, getmetatable(st))
