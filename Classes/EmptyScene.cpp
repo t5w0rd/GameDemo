@@ -147,7 +147,7 @@ AbilityItem::AbilityItem()
 
 bool AbilityItem::initWithAbility(CAbility* ability)
 {
-    auto aibg = Sprite::create("UI/Ability/AbilityItemBackground.png");
+    auto aibg = Sprite::create("UI/Ability/AbilityItemBackground2.png");
     setContentSize(aibg->getContentSize());
     setAnchorPoint(Point(0.5f, 0.5f));
 
@@ -229,7 +229,7 @@ bool EmptySceneLayer::init()
     //////////////////////////////
     // 1. super init first
     //if (!LayerColor::initWithColor(Color4B(0, 0, 0, 0)))
-    if (!LayerColor::initWithColor(Color4B(190, 217, 84, 255)))
+    if (!LayerColor::initWithColor(Color4B(153, 100, 00, 255)))
     {
         return false;
     }
