@@ -29,6 +29,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
         auto wsz = Size(1920, 1080);
         //auto wsz = Size(2048, 1536);
+        //auto wsz = Size(800, 600);
 
         glview->setDesignResolutionSize(wsz.width, wsz.height, ResolutionPolicy::SHOW_ALL);
         glview->setFrameSize(wsz.width, wsz.height);

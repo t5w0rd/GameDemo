@@ -138,6 +138,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\Classes\AbilityForCC.cpp" />
+    <ClCompile Include="..\Classes\Logic\AbilityLibrary.cpp" />
     <ClCompile Include="..\Classes\ActionForCC.cpp" />
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\BattleScene.cpp" />
@@ -198,10 +199,12 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClCompile Include="..\Classes\UnitLibraryForCC.cpp" />
     <ClCompile Include="..\Classes\UnpackScene.cpp" />
     <ClCompile Include="..\Classes\UserData.cpp" />
+    <ClCompile Include="..\Classes\utils\strnormalize.c" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\AbilityForCC.h" />
+    <ClInclude Include="..\Classes\Logic\AbilityLibrary.h" />
     <ClInclude Include="..\Classes\ActionForCC.h" />
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\BattleScene.h" />
@@ -258,6 +261,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClInclude Include="..\Classes\UnitLibraryForCC.h" />
     <ClInclude Include="..\Classes\UnpackScene.h" />
     <ClInclude Include="..\Classes\UserData.h" />
+    <ClInclude Include="..\Classes\utils\strnormalize.h" />
     <ClInclude Include="main.h" />
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +281,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\scripts\ability.lua" />
+    <None Include="..\Resources\scripts\AbilityLibrary.lua" />
     <None Include="..\Resources\scripts\ai.lua" />
     <None Include="..\Resources\scripts\ai2.lua" />
     <None Include="..\Resources\scripts\common.lua" />

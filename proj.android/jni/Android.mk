@@ -39,7 +39,9 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/lua/lundump.c \
 ../../Classes/lua/lvm.c \
 ../../Classes/lua/lzio.c \
+../../Classes/utils/strnormalize.c \
 ../../Classes/Logic/Ability.cpp \
+../../Classes/Logic/AbilityLibrary.cpp \
 ../../Classes/Logic/Action.cpp \
 ../../Classes/Logic/Application.cpp \
 ../../Classes/Logic/Base.cpp \

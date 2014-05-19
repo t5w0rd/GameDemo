@@ -19,6 +19,9 @@
     <Filter Include="scripts">
       <UniqueIdentifier>{ac0318c3-3082-4a12-ac4d-fc663ca1216e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\utils">
+      <UniqueIdentifier>{d1393f2e-c649-48da-afdb-967a6f925e35}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -207,6 +210,12 @@
     <ClCompile Include="..\Classes\EmptyScene.cpp">
       <Filter>Classes</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\utils\strnormalize.c">
+      <Filter>Classes\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\AbilityLibrary.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -383,6 +392,12 @@
     <ClInclude Include="..\Classes\EmptyScene.h">
       <Filter>Classes</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\utils\strnormalize.h">
+      <Filter>Classes\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\AbilityLibrary.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
@@ -418,6 +433,9 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\Resources\scripts\Stage05.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\AbilityLibrary.lua">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>
