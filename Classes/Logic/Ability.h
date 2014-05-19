@@ -25,7 +25,7 @@ public:
     virtual ~CAbility();
     
     virtual const char* getDbgTag() const;
-
+    virtual CAbility* copy() override;
     virtual void copyData(CAbility* from);
 
 protected:
@@ -96,8 +96,11 @@ public:
         kEpic,
         kLegend
     };
+
     M_SYNTHESIZE(GRADE, m_iGrade, Grade);
     M_SYNTHESIZE(int, m_iCost, Cost);
+    M_SYNTHESIZE_STR(Describe);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(vector<string>, m_vecLevelDescribe, LevelDescribe);
 };
 
 class CActiveAbility : public CAbility

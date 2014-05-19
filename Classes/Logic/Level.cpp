@@ -204,18 +204,16 @@ void CLevelExp::setLevel(int iLvl)
 {
     int iOldLvl = m_iLvl;
 
-    if (m_iLvl >= m_iMaxLvl)
+    if (iLvl >= m_iMaxLvl)
     {
-        m_iLvl = m_iMaxLvl;
+        iLvl = m_iMaxLvl;
     }
-    else if (m_iLvl < 1)
+    else if (iLvl < 1)
     {
-        m_iLvl = 1;
+        iLvl = 1;
     }
-    else
-    {
-        m_iLvl = iLvl;
-    }
+
+    m_iLvl = iLvl;
 
     int32_t iChanged = m_iLvl - iOldLvl;
 

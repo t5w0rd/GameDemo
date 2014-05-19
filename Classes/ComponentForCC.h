@@ -81,12 +81,19 @@ public:
     virtual bool initWithColor(const Color4B& color);
     M_CREATE_INITWITH_FUNC_PARAM(Color, WinLayer, (const Color4B& color), color);
 
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(Size, m_oWinSize, WinSize);
+    virtual void setWinSize(const Size& rWinSize);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(Point, m_oWinPosition, WinPosition);
+    virtual void setWinPosition(const Point& rOffsetPosition);
+    void setOffsetPosition(const Point& rWinPosition);
+    Point getOffsetPosition();
     // default implements are used to call script callback if exist
     void setBackgroundSprite(Sprite* pSprite);
     void setBackgroundSprite(Sprite* pSprite, int zOrder, int tag);
     void setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK);
-    virtual void setScale(float fScale);
-    virtual void setPosition(const Point& newPosition);
+    virtual void setScale(float fScale) override;
+    virtual void setPosition(const Point& newPosition) override;
+    virtual void setContentSize(const Size& rSize) override;
     
     float getTouchMovedDuration() const;
     float getTouchMovedDistance() const;
@@ -112,7 +119,8 @@ protected:
     int m_iPendingAbilityOwner;
     bool m_bIsTouching;
     float m_fMoveK;
-    float m_fBuffRange;
+    float m_fHorBuffRange;
+    float m_fVerBuffRange;
     float m_fEdgeK;
     float m_fMoveDelta;
     Point m_oMoveStart;
@@ -356,8 +364,8 @@ public:
     ButtonPanel();
     virtual ~ButtonPanel();
 
-    virtual bool init(int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fHorBorderWidth, float fVerBorderWidth, Sprite* pBackground, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f);
-    M_CREATE_FUNC_PARAM(ButtonPanel, (int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fHorBorderWidth, float fVerBorderWidth, Sprite* pBackground, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f), iRow, iColumn, fButtonWidth, fButtonHeight, fHorBorderWidth, fVerBorderWidth, pBackground, fBackgroundOffsetX, fBackgroundOffsetY);
+    virtual bool init(int iRow, int iColumn, const Size& rButtonSize, float fHorBorderWidth, float fVerBorderWidth, Node* pBackground, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f);
+    M_CREATE_FUNC_PARAM(ButtonPanel, (int iRow, int iColumn, const Size& rButtonSize, float fHorBorderWidth, float fVerBorderWidth, Node* pBackground, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f), iRow, iColumn, rButtonSize, fHorBorderWidth, fVerBorderWidth, pBackground, fBackgroundOffsetX, fBackgroundOffsetY);
 
     void addButton(ButtonBase* pButton, int iIndex); // org
     void addButton(ButtonBase* pButton, int iX, int iY);
@@ -405,12 +413,12 @@ public:
 public:
     CC_SYNTHESIZE(int, m_iRow, Row);
     CC_SYNTHESIZE(int, m_iColumn, Column);
-    CC_SYNTHESIZE(float, m_fButtonWidth, ButtonWidth);
-    CC_SYNTHESIZE(float, m_fButtonHeight, ButtonHeight);
+    CC_SYNTHESIZE_READONLY_PASS_BY_REF(Size, m_oButtonSize, ButtonSize);
     CC_SYNTHESIZE(float, m_fHorBorderWidth, HorBorderWidth);
     CC_SYNTHESIZE(float, m_fVerBorderWidth, VerBorderWidth);
     CC_SYNTHESIZE(MenuEx*, m_pInnerMenu, InnerMenu);
-    CC_SYNTHESIZE(Sprite*, m_pBackground, Background);
+    CC_SYNTHESIZE_READONLY(Node*, m_pBackground, Background);
+    void setBackground(Node* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY);
 
 public:
     int m_iOwnerKey;
@@ -445,9 +453,11 @@ class Utils
 public:
     typedef function<void(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h)> FUNC_TRAN;
     static Image* nodeToImage(Node* node);
+    static RenderTexture* nodeToRenderTexture(Node* node);
     static Image* transformImage(Image* image, const FUNC_TRAN& funcTransform);
     static Texture2D* nodeToTexture(Node* node, const FUNC_TRAN& funcTransform = nullptr);
     static bool nodeToFile(Node* node, const char* file, const FUNC_TRAN& funcTransform = nullptr);
+    static void render();
 
 #define M_TRAN_COLOR_BIND(func, ...) std::bind(func, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3, std::placeholders::_4, std::placeholders::_5, ##__VA_ARGS__)
     static void tranGrayscale(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h);
@@ -455,6 +465,16 @@ public:
     static void tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h, GLushort a);
 };
 
+class AbilityItem : public Node
+{
+CC_CONSTRUCTOR_ACCESS:
+    AbilityItem();
+
+public:
+    bool initWithAbility(CAbility* ability);
+    M_CREATE_INITWITH_FUNC_PARAM(Ability, AbilityItem, (CAbility* ability), ability);
+    //Sprite
+};
 
 
 

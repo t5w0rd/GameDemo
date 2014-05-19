@@ -586,11 +586,11 @@ int Unit_ctor(lua_State* L)
     lua_pushlightuserdata(L, u);
     lua_setfield(L, 1, "_p");
 
-    lua_getglobal(L, "_world");
-    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    lua_pop(L, 1);
+    //lua_getglobal(L, "_world");
+    //CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    //lua_pop(L, 1);
 
-    w->addUnit(u);
+    //w->addUnit(u);
 
     return 0;
 }
@@ -1632,11 +1632,11 @@ int Projectile_ctor(lua_State* L)
     lua_pushlightuserdata(L, p);
     lua_setfield(L, 1, "_p");
 
-    lua_getglobal(L, "_world");
-    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    lua_pop(L, 1);
+    //lua_getglobal(L, "_world");
+    //CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    //lua_pop(L, 1);
 
-    w->addProjectile(p);
+    //w->addProjectile(p);
 
     return 0;
 }
@@ -3069,6 +3069,33 @@ int g_cast(lua_State* L)
     return 0;
 }
 
+int g_addUnit(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    lua_pop(L, 1);
+
+    w->addUnit(u);
+
+    return 0;
+}
+
+int g_addProjectile(lua_State* L)
+{
+    CProjectile* p = nullptr;
+    luaL_toobjptr(L, 1, p);
+
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    lua_pop(L, 1);
+
+    w->addProjectile(p);
+
+    return 0;
+}
+
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -3084,6 +3111,8 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_register(L, "getUnit", g_getUnit);
     lua_register(L, "getUnits", g_getUnits);
     lua_register(L, "cast", g_cast);
+    lua_register(L, "addUnit", g_addUnit);
+    lua_register(L, "addProjectile", g_addProjectile);
 
     // TODO: reg global classes
     M_LUA_BIND_CLASS_WITH_FUNCS(L, MRObj);

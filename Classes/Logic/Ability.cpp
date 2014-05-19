@@ -47,6 +47,13 @@ const char* CAbility::getDbgTag() const
     return getName();
 }
 
+CAbility* CAbility::copy()
+{
+    CAbility* ret = new CAbility(getRootId(), getName(), getCoolDown());
+    ret->copyData(this);
+    return ret;
+}
+
 void CAbility::copyData(CAbility* from)
 {
     // TODO: copy some members which are not in the constuctor params
@@ -58,6 +65,10 @@ void CAbility::copyData(CAbility* from)
     m_vecCastAnis = from->m_vecCastAnis;
     m_vecEffectSounds = from->m_vecEffectSounds;
     m_sImageName = from->m_sImageName;
+    m_iCost = from->m_iCost;
+    m_iGrade = from->m_iGrade;
+    m_sDescribe = from->m_sDescribe;
+    m_vecLevelDescribe = from->m_vecLevelDescribe;
 }
 
 void CAbility::copyScriptHandler(int iScriptHandler)

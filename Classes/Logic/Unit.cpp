@@ -13,6 +13,7 @@
 #include "Item.h"
 #include "Draw.h"
 #include "LuaBinding.h"
+#include "AbilityLibrary.h"
 
 
 // CTypeValue
@@ -2522,23 +2523,20 @@ void CWorld::step(float dt)
 
 int CWorld::addTemplateAbility(CAbility* pAbility)
 {
-    m_mapTemplateAbilitys.addObject(pAbility);
-    return pAbility->getId();
+    static CAbilityLibrary* al = CAbilityLibrary::instance();
+    return al->addTemplateAbility(pAbility);
 }
 
-void CWorld::loadTemplateAbilitys()
+int CWorld::addTemplateAbility(int id, CAbility* pAbility)
 {
+    static CAbilityLibrary* al =  CAbilityLibrary::instance();
+    return al->addTemplateAbility(id, pAbility);
 }
 
 CAbility* CWorld::copyAbility(int id) const
 {
-    CAbility* pAbility = m_mapTemplateAbilitys.getObject(id);
-    if (pAbility == nullptr)
-    {
-        return nullptr;
-    }
-    
-    return pAbility->copy()->dcast(pAbility);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
+    static CAbilityLibrary* al = CAbilityLibrary::instance();
+    return al->copyAbility(id);
 }
 
 int CWorld::addTemplateProjectile(CProjectile* pProjectile)

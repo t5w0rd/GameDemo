@@ -112,7 +112,7 @@ bool HeroRoomSceneLayer::init()
     sp->setPosition(Point(sz.width * 0.5, sz.height - lbl->getContentSize().height - 100));
     
     // Í·Ïñ¿ò
-    ButtonPanel* bp = ButtonPanel::create(1, 3, 156, 164, 11, 11, Sprite::create("UI/HeroInfo/HeroesBorder.png"), 0.0f, 38.0f);
+    ButtonPanel* bp = ButtonPanel::create(1, 3, Size(156, 164), 11, 11, Sprite::create("UI/HeroInfo/HeroesBorder.png"), 0.0f, 38.0f);
     bp->setTag(3);
     m_panel->addChild(bp);
     bp->setPosition(Point(sz.width * 0.05 + bp->getContentSize().width * 0.5, sz.height * 0.5 + 150));

@@ -85,11 +85,11 @@ int Unit4CC_ctor(lua_State* L)
     lua_pushlightuserdata(L, u);
     lua_setfield(L, 1, "_p");
 
-    lua_getglobal(L, "_world");
-    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    lua_pop(L, 1);
+    //lua_getglobal(L, "_world");
+    //CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    //lua_pop(L, 1);
 
-    w->addUnit(u);
+    //w->addUnit(u);
 
     return 0;
 }
@@ -139,11 +139,11 @@ int Projectile4CC_ctor(lua_State* L)
     lua_pushlightuserdata(L, p);
     lua_setfield(L, 1, "_p");
 
-    lua_getglobal(L, "_world");
-    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    lua_pop(L, 1);
+    //lua_getglobal(L, "_world");
+    //CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    //lua_pop(L, 1);
 
-    w->addProjectile(p);
+    //w->addProjectile(p);
 
     return 0;
 }

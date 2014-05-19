@@ -1,6 +1,7 @@
 #include "CommHeader.h"
 
 #include "ComponentForCC.h"
+#include "Ability.h"
 
 
 // ProgressBar
@@ -26,6 +27,7 @@ bool ProgressBar::init(const Size& roSize, Sprite* pFill, Sprite* pBorder, float
     {
         m_pPt->removeFromParentAndCleanup(true);
     }
+
     addChild(m_pPt, bFillOnTop);
     Size oSz = m_pPt->getContentSize();
     m_pPt->setPosition(getAnchorPointInPoints());
@@ -196,7 +198,8 @@ WinLayer::WinLayer()
 , m_iPendingAbilityOwner(0)
 , m_bIsTouching(false)
 , m_fMoveK(0.0f)
-, m_fBuffRange(0.0f)
+, m_fHorBuffRange(0.0f)
+, m_fVerBuffRange(0.0f)
 , m_fEdgeK(0.0f)
 , m_fMoveDelta(0.0f)
 , m_fTouchMovedDuration(0.0f)
@@ -208,13 +211,40 @@ WinLayer::WinLayer()
 bool WinLayer::init()
 {
     m_bIsTouching = false;
+    m_oWinSize = Director::getInstance()->getVisibleSize();
     return LayerColor::init();
 }
 
 bool WinLayer::initWithColor(const Color4B& color)
 {
     m_bIsTouching = false;
+    m_oWinSize = Director::getInstance()->getVisibleSize();
     return LayerColor::initWithColor(color);
+}
+
+void WinLayer::setWinSize(const Size& rWinSize)
+{
+    m_oWinSize = rWinSize;
+    setPosition(getPosition());
+
+    m_fHorBuffRange = min(max(0.0f, getContentSize().width - m_oWinSize.width) / 2, m_fHorBuffRange);
+    m_fVerBuffRange = min(max(0.0f, getContentSize().height - m_oWinSize.height) / 2, m_fVerBuffRange);
+}
+
+void WinLayer::setWinPosition(const Point& rWinPosition)
+{
+    m_oWinPosition = rWinPosition;
+    setPosition(getPosition());
+}
+
+void WinLayer::setOffsetPosition(const Point& rOffsetPosition)
+{
+    setPosition(rOffsetPosition + m_oWinPosition);
+}
+
+Point WinLayer::getOffsetPosition()
+{
+    return getPosition() + m_oWinPosition;
 }
 
 void WinLayer::setBackgroundSprite(Sprite* pSprite)
@@ -222,11 +252,10 @@ void WinLayer::setBackgroundSprite(Sprite* pSprite)
     Size oSz = pSprite->getContentSize();
     oSz.width *= pSprite->getScaleX();
     oSz.height *= pSprite->getScaleY();
-    Size oWinSz = Director::getInstance()->getVisibleSize();
     setContentSize(oSz);
     addChild(pSprite, -1);
     pSprite->setPosition(getAnchorPointInPoints());
-    setPosition(Point((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
+    setPosition(Point((m_oWinSize.width - oSz.width) / 2, (m_oWinSize.height - oSz.height) / 2));
 }
 
 void WinLayer::setBackgroundSprite(Sprite* pSprite, int zOrder, int tag)
@@ -234,11 +263,10 @@ void WinLayer::setBackgroundSprite(Sprite* pSprite, int zOrder, int tag)
     Size oSz = pSprite->getContentSize();
     oSz.width *= pSprite->getScaleX();
     oSz.height *= pSprite->getScaleY();
-    Size oWinSz = Director::getInstance()->getVisibleSize();
     setContentSize(oSz);
     addChild(pSprite, zOrder, tag);
     pSprite->setPosition(getAnchorPointInPoints());
-    setPosition(Point((oWinSz.width - oSz.width) / 2, (oWinSz.height - oSz.height) / 2));
+    setPosition(Point((m_oWinSize.width - oSz.width) / 2, (m_oWinSize.height - oSz.height) / 2));
 }
 
 void WinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange, float fEdgeK)
@@ -246,28 +274,33 @@ void WinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange
     setScale(fScale);
     m_fMoveK = min(1.0f, max(0.0f, fMoveK));
     Size oSz = getContentSize() * getScale();
-    static Size oWinSz = Director::getInstance()->getVisibleSize();
-    oSz.width = max(0.0f, oSz.width - oWinSz.width);
-    oSz.height = max(0.0f, oSz.height - oWinSz.height);
-    m_fBuffRange = fBuffRange;
-
+    oSz.width = max(0.0f, oSz.width - m_oWinSize.width);
+    oSz.height = max(0.0f, oSz.height - m_oWinSize.height);
+    m_fHorBuffRange = min(max(0.0f, getContentSize().width - m_oWinSize.width) / 2, max(0.0f, fBuffRange));
+    m_fVerBuffRange = min(max(0.0f, getContentSize().height - m_oWinSize.height) / 2, max(0.0f, fBuffRange));
     m_fEdgeK = min(1.0f, max(0.0f, fEdgeK));
 }
 
 void WinLayer::setScale(float fScale)
 {
-    static Size wsz = Director::getInstance()->getVisibleSize();
     Size oSz = getContentSize();
-    Layer::setScale(min(max(max(wsz.width / oSz.width, wsz.height / oSz.height), fScale), 4.0f));
+    Layer::setScale(min(max(max(m_oWinSize.width / oSz.width, m_oWinSize.height / oSz.height), fScale), 4.0f));
 }
 
 void WinLayer::setPosition(const Point& newPosition)
 {
-    static Size wsz = Director::getInstance()->getVisibleSize();
     Size oSz = getContentSize() * getScale();
-    float fX = (1 - 1 / getScale()) *  0.5 * oSz.width;
-    float fY = (1 - 1 / getScale()) *  0.5 * oSz.height;
-    Layer::setPosition(Point(min(max(newPosition.x, (wsz.width - oSz.width) + fX), fX), min(max(newPosition.y, (wsz.height - oSz.height) + fY), fY)));
+    float fX = (1 - 1 / getScale()) *  0.5 * oSz.width + m_oWinPosition.x;
+    float fY = (1 - 1 / getScale()) *  0.5 * oSz.height + m_oWinPosition.y;
+    Layer::setPosition(Point(min(max(newPosition.x, (m_oWinSize.width - oSz.width) + fX), fX), min(max(newPosition.y, (m_oWinSize.height - oSz.height) + fY), fY)));
+}
+
+void WinLayer::setContentSize(const Size& rSize)
+{
+    LayerColor::setContentSize(rSize);
+
+    m_fHorBuffRange = min(max(0.0f, getContentSize().width - m_oWinSize.width) / 2, m_fHorBuffRange);
+    m_fVerBuffRange = min(max(0.0f, getContentSize().height - m_oWinSize.height) / 2, m_fVerBuffRange);
 }
 
 float WinLayer::getTouchMovedDuration() const
@@ -321,38 +354,37 @@ void WinLayer::bufferWindowEffect(float fDt)
         return;
     }
 
-    static Size oWinSz = Director::getInstance()->getVisibleSize();
     Size oSz = getContentSize() * getScale();
     Point oT = getPosition();
 
-    float fW = MAX(0, oSz.width - oWinSz.width);
-    float fH = MAX(0, oSz.height - oWinSz.height);
+    float fW = max(0.0f, oSz.width - m_oWinSize.width);
+    float fH = max(0.0f, oSz.height - m_oWinSize.height);
 
     // layer用来计算位置的锚点为左下角，但缩放却是以中心进行缩放的，所以窗口的实际位置需要进行修正
-    float fX = oT.x + (1 / getScale() - 1) *  0.5 * oSz.width;
-    float fY = oT.y + (1 / getScale() - 1) *  0.5 * oSz.height;
-    float fBuffRange = MIN(MIN(fW, fH) / 2, MAX(0, m_fBuffRange));
+    float fX = oT.x + (1 / getScale() - 1) *  0.5 * oSz.width - m_oWinPosition.x;
+    float fY = oT.y + (1 / getScale() - 1) *  0.5 * oSz.height - m_oWinPosition.y;
+    
 
     bool bOut = false;
     float fMax;
-    if (fX > -fBuffRange)
+    if (fX > -m_fHorBuffRange)
     {
-        oT.x += MIN((-fX - fBuffRange) * m_fEdgeK, -0.1f);
+        oT.x += min((-fX - m_fHorBuffRange) * m_fEdgeK, -0.1f);
         !bOut && (bOut = true);
     }
-    else if (fX < (fMax = (oWinSz.width - oSz.width + fBuffRange)))
+    else if (fX < (fMax = (m_oWinSize.width - oSz.width + m_fHorBuffRange)))
     {
-        oT.x += MAX((-fX + fMax) * m_fEdgeK, 0.1f);
+        oT.x += max((-fX + fMax) * m_fEdgeK, 0.1f);
         !bOut && (bOut = true);
     }
-    if (fY > -fBuffRange)
+    if (fY > -m_fVerBuffRange)
     {
-        oT.y += MIN((-fY - fBuffRange) * m_fEdgeK, -0.1f);
+        oT.y += min((-fY - m_fVerBuffRange) * m_fEdgeK, -0.1f);
         !bOut && (bOut = true);
     }
-    else if (fY < (fMax = (oWinSz.height - oSz.height + fBuffRange)))
+    else if (fY < (fMax = (m_oWinSize.height - oSz.height + m_fVerBuffRange)))
     {
-        oT.y += MAX((-fY + fMax) * m_fEdgeK, 0.1f);
+        oT.y += max((-fY + fMax) * m_fEdgeK, 0.1f);
         !bOut && (bOut = true);
     }
     if (bOut)
@@ -1074,8 +1106,6 @@ ButtonNormal::ButtonNormal()
 ButtonPanel::ButtonPanel()
 : m_iRow(0)
 , m_iColumn(0)
-, m_fButtonWidth(0.0f)
-, m_fButtonHeight(0.0f)
 , m_fHorBorderWidth(0.0f)
 , m_fVerBorderWidth(0.0f)
 , m_pInnerMenu(nullptr)
@@ -1085,6 +1115,7 @@ ButtonPanel::ButtonPanel()
 , m_pRetain(nullptr)
 , m_iCount(0)
 {
+    CC_SAFE_RELEASE(m_pBackground);
 }
 
 ButtonPanel::~ButtonPanel()
@@ -1098,17 +1129,16 @@ ButtonPanel::~ButtonPanel()
 
 const float ButtonPanel::CONST_ACTION_DURATION = 0.25;
 
-bool ButtonPanel::init(int iRow, int iColumn, float fButtonWidth, float fButtonHeight, float fHorBorderWidth, float fVerBorderWidth, Sprite* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY)
+bool ButtonPanel::init(int iRow, int iColumn, const Size& rButtonSize, float fHorBorderWidth, float fVerBorderWidth, Node* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY)
 {
     m_iRow = iRow;
     m_iColumn = iColumn;
-    m_fButtonWidth = fButtonWidth;
-    m_fButtonHeight = fButtonHeight;
+    m_oButtonSize = rButtonSize;
     m_fHorBorderWidth = fHorBorderWidth;
     m_fVerBorderWidth = fVerBorderWidth;
 
     setAnchorPoint(Point(0.5f, 0.5f));
-    Size oSz = Size(m_fHorBorderWidth * (m_iColumn - 1) + m_fButtonWidth * m_iColumn, m_fVerBorderWidth * (m_iRow - 1) + m_fButtonHeight * m_iRow);
+    Size oSz = Size(m_fHorBorderWidth * (m_iColumn - 1) + m_oButtonSize.width * m_iColumn, m_fVerBorderWidth * (m_iRow - 1) + m_oButtonSize.height * m_iRow);
     setContentSize(oSz);
 
     if (pBackground)
@@ -1177,6 +1207,7 @@ void ButtonPanel::delButton(int iIndex)
     m_pInnerMenu->removeChild(m_ppBtnPos[iIndex], true);
     m_ppBtnPos[iIndex] = nullptr;
 }
+
 void ButtonPanel::delButton(ButtonBase* pButton)
 {
     int iIndex = getButtonIndex(pButton);
@@ -1188,6 +1219,19 @@ void ButtonPanel::delButton(int iX, int iY)
 {
     CCAssert(iY < m_iRow && iX < m_iColumn, "Break Bounds");
     delButton(toIndex(iX, iY));
+}
+
+void ButtonPanel::moveButton(int iIndexSrc, int iIndexDst)
+{
+    ButtonBase* pSrc = getButton(iIndexSrc);
+    m_ppBtnPos[iIndexDst] = pSrc;
+    m_ppBtnPos[iIndexSrc] = nullptr;
+    pSrc->setPosition(index2Point(iIndexDst));
+}
+
+void ButtonPanel::addButtonEx(ButtonBase* pButton, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
+{
+    addButton(pButton, allotSlot(eVer, eHor));
 }
 
 int ButtonPanel::allotSlot(ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
@@ -1273,6 +1317,18 @@ void ButtonPanel::clearUpSlot(ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONT
     }
 }
 
+void ButtonPanel::retainButton(ButtonBase* pButton)
+{
+    CC_SAFE_RETAIN(pButton);
+    CC_SAFE_RELEASE(m_pRetain);
+    m_pRetain = pButton;
+}
+
+ButtonBase* ButtonPanel::getRetainButton() const
+{
+    return m_pRetain;
+}
+
 ButtonBase* ButtonPanel::getButton(int iX, int iY) const
 {
     return getButton(toIndex(iX, iY));
@@ -1312,11 +1368,6 @@ int ButtonPanel::getButtonIndex(ButtonBase* pButton) const
     return -1;
 }
 
-bool ButtonPanel::isFull()
-{
-    return m_iCount == m_iRow * m_iColumn;
-}
-
 int ButtonPanel::index2Y(int iIndex) const
 {
     return iIndex / m_iColumn;
@@ -1327,34 +1378,9 @@ int ButtonPanel::index2X(int iIndex) const
     return iIndex % m_iColumn;
 }
 
-void ButtonPanel::retainButton(ButtonBase* pButton)
-{
-    CC_SAFE_RETAIN(pButton);
-    CC_SAFE_RELEASE(m_pRetain);
-    m_pRetain = pButton;
-}
-
-ButtonBase* ButtonPanel::getRetainButton() const
-{
-    return m_pRetain;
-}
-
 int ButtonPanel::toIndex(int iX, int iY) const
 {
     return iY * m_iColumn + iX;
-}
-
-void ButtonPanel::addButtonEx(ButtonBase* pButton, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
-{
-    addButton(pButton, allotSlot(eVer, eHor));
-}
-
-void ButtonPanel::moveButton(int iIndexSrc, int iIndexDst)
-{
-    ButtonBase* pSrc = getButton(iIndexSrc);
-    m_ppBtnPos[iIndexDst] = pSrc;
-    m_ppBtnPos[iIndexSrc] = nullptr;
-    pSrc->setPosition(index2Point(iIndexDst));
 }
 
 Point ButtonPanel::index2Point(int iIndex)
@@ -1363,8 +1389,13 @@ Point ButtonPanel::index2Point(int iIndex)
     int iX = index2X(iIndex);
     int iY = index2Y(iIndex);
     return Point(
-        m_fButtonWidth * 0.5 + (m_fButtonWidth + m_fHorBorderWidth) * iX,
-        m_fButtonHeight * 0.5 + (m_fButtonHeight + m_fVerBorderWidth) * iY);
+        m_oButtonSize.width * 0.5 + (m_oButtonSize.width + m_fHorBorderWidth) * iX,
+        m_oButtonSize.height * 0.5 + (m_oButtonSize.height + m_fVerBorderWidth) * iY);
+}
+
+bool ButtonPanel::isFull()
+{
+    return m_iCount == m_iRow * m_iColumn;
 }
 
 void ButtonPanel::pushAction(const ACTION_NODE& roAct)
@@ -1562,6 +1593,29 @@ int ButtonPanel::getCount() const
     return m_iCount;
 }
 
+void ButtonPanel::setBackground(Node* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY)
+{
+    if (m_pBackground == pBackground)
+    {
+        return;
+    }
+
+    if (m_pBackground != nullptr)
+    {
+        m_pBackground->removeFromParentAndCleanup(true);
+        m_pBackground->release();
+    }
+    
+    if (pBackground != nullptr)
+    {
+        pBackground = pBackground;
+        addChild(pBackground);
+        pBackground->setPosition(getAnchorPointInPoints() + Point(fBackgroundOffsetX, fBackgroundOffsetY));
+    }
+
+    m_pBackground = pBackground;
+}
+
 // PopPanel
 PopPanel::PopPanel()
 : m_mn(nullptr)
@@ -1661,10 +1715,28 @@ Image* Utils::nodeToImage(Node* node)
     rt->beginWithClear(0.0f, 0.0f, 0.0f, 0.0f);
     node->visit();
     rt->end();
-    Director::getInstance()->getRenderer()->render();
     node->setPosition(pos);
+    Director::getInstance()->getRenderer()->render();
 
     return rt->newImage();
+}
+
+RenderTexture* Utils::nodeToRenderTexture(Node* node)
+{
+    const Size& sz = node->getContentSize();
+    auto rt = RenderTexture::create(sz.width, sz.height, Texture2D::PixelFormat::RGBA8888);
+    rt->setKeepMatrix(true);
+
+    Point pos = node->getPosition();
+    node->setPosition(node->getAnchorPointInPoints());
+    //node->setPosition(Point(rsz.width * 0.5, rsz.height * 0.5));
+    rt->beginWithClear(0.0f, 0.0f, 0.0f, 0.0f);
+    node->visit();
+    rt->end();
+    node->setPosition(pos);
+    //Director::getInstance()->getRenderer()->render();
+
+    return rt;
 }
 
 Image* Utils::transformImage(Image* image, const FUNC_TRAN& funcTransform)
@@ -1717,6 +1789,11 @@ bool Utils::nodeToFile(Node* node, const char* file, const FUNC_TRAN& funcTransf
     return ret;
 }
 
+void Utils::render()
+{
+    Director::getInstance()->getRenderer()->render();
+}
+
 void Utils::tranGrayscale(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h)
 {
     GLubyte gray = (c->r + (c->g << 1) + c->b) >> 2;
@@ -1734,4 +1811,87 @@ void Utils::tranFillColor(Color4B* c, GLushort x, GLushort y, GLushort w, GLusho
 void Utils::tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h, GLushort a)
 {
     c->a = a;
+}
+
+// AbilityItem
+AbilityItem::AbilityItem()
+{
+}
+
+bool AbilityItem::initWithAbility(CAbility* ability)
+{
+    auto aibg = Sprite::create("UI/Ability/AbilityItemBackground3.png");
+    setContentSize(aibg->getContentSize());
+    setAnchorPoint(Point(0.5f, 0.5f));
+
+    addChild(aibg);
+    aibg->setPosition(getAnchorPointInPoints());
+
+    auto aib = Sprite::create("UI/Ability/AbilityItemBorder3.png");
+    aibg->addChild(aib, 1);
+    aib->setPosition(aibg->getAnchorPointInPoints());
+
+    auto aii = Sprite::create(ability->getImageName());
+    aibg->addChild(aii, 1);
+    aii->setPosition(Point(117, 104));
+
+    char sz[1024];
+    auto ainame = Label::createWithTTF(gbk_to_utf8(ability->getName(), sz), "fonts/DFYuanW7-GB2312.ttf", 28);
+    aibg->addChild(ainame, 2);
+    ainame->setPosition(Point(323, 135));
+    ainame->setColor(Color3B::BLACK);
+
+    auto ainame2 = Label::createWithTTF(ainame->getTTFConfig(), ainame->getString());
+    aibg->addChild(ainame2, 3);
+    ainame2->setPosition(ainame->getPosition() + Point(-2, 2));
+
+    Color3B color;
+    switch (ability->getGrade())
+    {
+    case CAbility::kNormal:
+        color = Color3B::WHITE;
+        break;
+
+    case CAbility::kRare:
+        color = Color3B(42, 97, 255);
+        break;
+
+    case CAbility::kEpic:
+        color = Color3B(180, 0, 255);
+        break;
+
+    case CAbility::kLegend:
+        color = Color3B(226, 155, 17);
+        break;
+
+    default:
+        return false;
+    }
+    aib->setColor(color);
+
+    auto aicost = Sprite::create("UI/Ability/AbilityItemCost.png");
+    aibg->addChild(aicost, 1);
+    //aicost->setPosition(Point(45, 132));
+    aicost->setPosition(Point(65, 67));
+
+    sprintf(sz, "%d", ability->getCost());
+    auto aicost2 = Label::createWithTTF(sz, "fonts/Comic Book.ttf", 28);
+    aicost->addChild(aicost2, 1);
+    aicost2->setPosition(aicost->getAnchorPointInPoints() + Point(-1, -2));
+    aicost2->setColor(Color3B(78, 43, 7));
+
+    const Point aistarCenter(323, 78);
+    const float aistarBetween = 5;
+    auto aistar = Sprite::createWithSpriteFrameName(ability->getLevel() > 0 ? "UI/Ability/AbilityItemStar.png" : "UI/Ability/AbilityItemUnstar.png");
+    float starBaseWidth = aistarCenter.x - (ability->getMaxLevel() - 1) * aistar->getContentSize().width * 0.5 - (ability->getMaxLevel() - 1) * aistarBetween * 0.5;
+    aibg->addChild(aistar, 1, 100);
+    aistar->setPosition(Point(starBaseWidth, aistarCenter.y));
+    for (auto i = 1; i < ability->getMaxLevel(); ++i)
+    {
+        aistar = Sprite::createWithSpriteFrameName(ability->getLevel() > i ? "UI/Ability/AbilityItemStar.png" : "UI/Ability/AbilityItemUnstar.png");
+        aibg->addChild(aistar, 1, 100 + i);
+        aistar->setPosition(Point(starBaseWidth + i * (aistar->getContentSize().width + aistarBetween), aistarCenter.y));
+    }
+
+    return true;
 }

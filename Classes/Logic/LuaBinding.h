@@ -332,6 +332,8 @@ int g_getControlUnit(lua_State* L);
 int g_getUnit(lua_State* L);
 int g_getUnits(lua_State* L);
 int g_cast(lua_State* L);
+int g_addUnit(lua_State* L);
+int g_addProjectile(lua_State* L);
 
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 

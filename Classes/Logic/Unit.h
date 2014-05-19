@@ -671,9 +671,8 @@ protected:
 public:
     virtual void step(float dt);
 
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapTemplateAbilitys, TemplateAbilitys);
     int addTemplateAbility(CAbility* pAbility);
-    void loadTemplateAbilitys();
+    int addTemplateAbility(int id, CAbility* pAbility);
     virtual CAbility* copyAbility(int id) const;
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;

@@ -1070,7 +1070,7 @@ void BattleSceneLayer::initHeroPortrait()
     SpriteFrame* fr = fc->getSpriteFrameByName(sz);
     
     const Point& pos = m_ctrlLayer->getChildByTag(1000)->getPosition();
-    ButtonPanel* bp = ButtonPanel::create(1, 1, 112, 124, 0, 0, nullptr);
+    ButtonPanel* bp = ButtonPanel::create(1, 1, Size(112, 124), 0, 0, nullptr);
     m_ctrlLayer->addChild(bp);
     ButtonNormal* btn = ButtonNormal::createWithFrameName(sz, sz, nullptr, nullptr, nullptr, 0.0f, CC_CALLBACK_1(BattleSceneLayer::onClickHeroPortrait, this), nullptr);
     bp->setPosition(Point(wsz.width * 0.07, pos.y - btn->getContentSize().height * 0.5 - 100));
@@ -1160,7 +1160,7 @@ ButtonBase* BattleSceneLayer::createAbilityButton(CAbility* ability)
 
 void BattleSceneLayer::initHeroAbilityPanel()
 {
-    m_bp = ButtonPanel::create(4, 1, 144, 136, 0, 0, Sprite::create("UI/Ability/AbilityButtonPanel.png"), -5, 6);
+    m_bp = ButtonPanel::create(4, 1, Size(144, 136), 0, 0, Sprite::create("UI/Ability/AbilityButtonPanel.png"), -5, 6);
     m_ctrlLayer->addChild(m_bp);
     m_bp->setPosition(Point(wsz().width - 100, wsz().height * 0.5));
     
