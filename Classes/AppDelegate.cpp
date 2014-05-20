@@ -5,6 +5,7 @@
 #include "MainMenuScene.h"
 #include "LogoScene.h"
 #include "StageScene.h"
+#include "AbilityScene.h"
 #include "EmptyScene.h"
 
 
@@ -31,6 +32,11 @@ bool AppDelegate::applicationDidFinishLaunching()
 
     director->setContentScaleFactor(1.0);
 
+    Director::getInstance()->getScheduler()->schedule([](float)
+    {
+        CAutoReleasePool::instance()->releaseObjects();
+    }, this, 0.1f, false, "AutoRelease");
+
     // create a scene. it's an autorelease object
 #if GD_UNPACK
     auto scene = UnpackSceneLayer::scene();
@@ -41,7 +47,8 @@ bool AppDelegate::applicationDidFinishLaunching()
     //auto scene = HeroRoomSceneLayer::scene();
     //auto scene = StageSceneLayer::scene();
     //auto scene = MainMenuSceneLayer::scene();
-    auto scene = EmptySceneLayer::scene();
+    auto scene = AbilitySceneLayer::scene();
+    //auto scene = EmptySceneLayer::scene();
 
 #endif
 

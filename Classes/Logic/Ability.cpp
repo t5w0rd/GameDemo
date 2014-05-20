@@ -69,6 +69,7 @@ void CAbility::copyData(CAbility* from)
     m_iGrade = from->m_iGrade;
     m_sDescribe = from->m_sDescribe;
     m_vecLevelDescribe = from->m_vecLevelDescribe;
+    m_vecLevelType = from->m_vecLevelType;
 }
 
 void CAbility::copyScriptHandler(int iScriptHandler)
@@ -618,6 +619,55 @@ void CAbility::playEffectSound()
     // !!!!!
     M_DEF_GC(gc);
     gc->playSound(m_vecEffectSounds[rand() % m_vecEffectSounds.size()].c_str());
+}
+
+const char* CAbility::getLevelDescribe()
+{
+    return getLevelDescribe(getLevel());
+}
+
+const char* CAbility::getLevelDescribe(int level)
+{
+    if (level < 1)
+    {
+        return nullptr;
+    }
+
+    assert(level - 1 < (int)m_vecLevelDescribe.size());
+    return m_vecLevelDescribe[level - 1].c_str();
+}
+
+int CAbility::getLevelType()
+{
+    return getLevelType(getLevel());
+}
+
+int CAbility::getLevelType(int level)
+{
+    if (level < 1)
+    {
+        return -1;
+    }
+
+    assert(level - 1 < (int)m_vecLevelType.size());
+    return m_vecLevelType[level - 1];
+}
+
+void CAbility::setLevelInfo(int level, int type, const char* desc)
+{
+    if (level < 1)
+    {
+        return;
+    }
+
+    for (auto i = (int)m_vecLevelDescribe.size(); i < level; ++i)
+    {
+        m_vecLevelDescribe.push_back(string());
+        m_vecLevelType.push_back(int());
+    }
+
+    m_vecLevelDescribe[level - 1] = desc;
+    m_vecLevelType[level - 1] = type;
 }
 
 // CActiveAbility

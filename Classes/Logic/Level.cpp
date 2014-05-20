@@ -208,9 +208,9 @@ void CLevelExp::setLevel(int iLvl)
     {
         iLvl = m_iMaxLvl;
     }
-    else if (iLvl < 1)
+    else if (iLvl < 0)
     {
-        iLvl = 1;
+        iLvl = 0;
     }
 
     m_iLvl = iLvl;

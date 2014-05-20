@@ -1845,29 +1845,7 @@ bool AbilityItem::initWithAbility(CAbility* ability)
     aibg->addChild(ainame2, 3);
     ainame2->setPosition(ainame->getPosition() + Point(-2, 2));
 
-    Color3B color;
-    switch (ability->getGrade())
-    {
-    case CAbility::kNormal:
-        color = Color3B::WHITE;
-        break;
-
-    case CAbility::kRare:
-        color = Color3B(42, 97, 255);
-        break;
-
-    case CAbility::kEpic:
-        color = Color3B(180, 0, 255);
-        break;
-
-    case CAbility::kLegend:
-        color = Color3B(226, 155, 17);
-        break;
-
-    default:
-        return false;
-    }
-    aib->setColor(color);
+    aib->setColor(AbilityItem::abilityGradeColor3B(ability->getGrade()));
 
     auto aicost = Sprite::create("UI/Ability/AbilityItemCost.png");
     aibg->addChild(aicost, 1);
@@ -1894,4 +1872,320 @@ bool AbilityItem::initWithAbility(CAbility* ability)
     }
 
     return true;
+}
+
+Color3B AbilityItem::abilityGradeColor3B(CAbility::GRADE grade)
+{
+    switch (grade)
+    {
+    case CAbility::kNormal:
+        return Color3B::WHITE;
+
+    case CAbility::kRare:
+        return Color3B(50, 120, 220);
+
+    case CAbility::kEpic:
+        return Color3B(180, 0, 255);
+
+    case CAbility::kLegend:
+        return Color3B(226, 155, 17);
+    }
+
+    return Color3B::WHITE;
+}
+
+// WinFormPanel
+WinFormPanel::WinFormPanel()
+: m_iRow(0)
+, m_iColumn(0)
+, m_fHorInnerBorderWidth(0.0f)
+, m_fVerInnerBorderWidth(0.0f)
+, m_pBackground(nullptr)
+, m_iCount(0)
+, m_ppNodes(nullptr)
+, m_fHorBorderWidth(0.0f)
+, m_fVerBorderWidth(0.0f)
+{
+}
+
+WinFormPanel::~WinFormPanel()
+{
+    if (m_ppNodes)
+    {
+        delete[] m_ppNodes;
+    }
+}
+
+bool WinFormPanel::init(int iRow, int iColumn, int iWinRow, int iWinColumn, const Size& rNodeSize, float fHorInnerBorderWidth, float fVerInnerBorderWidth, float fHorBorderWidth, float fVerBorderWidth, Node* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY)
+{
+    if (WinLayer::init() == false)
+    {
+        return false;
+    }
+
+    m_iRow = iRow;
+    m_iColumn = iColumn;
+    m_oNodeSize = rNodeSize;
+    m_fHorInnerBorderWidth = fHorInnerBorderWidth;
+    m_fVerInnerBorderWidth = fVerInnerBorderWidth;
+    m_fHorBorderWidth = fHorBorderWidth;
+    m_fVerBorderWidth = fVerBorderWidth;
+
+    setAnchorPoint(Point(0.5f, 0.5f));
+    setContentSize(Size(fHorInnerBorderWidth * (iColumn - 1) + rNodeSize.width * iColumn + fHorBorderWidth * 2, fVerInnerBorderWidth * (iRow - 1) + rNodeSize.height * iRow + fVerBorderWidth * 2));
+    setWinSize(Size(fHorInnerBorderWidth * (iWinColumn - 1) + rNodeSize.width * iWinColumn, fVerInnerBorderWidth * (iWinRow - 1) + rNodeSize.height * iWinRow));
+
+    if (pBackground)
+    {
+        m_pBackground = pBackground;
+        addChild(m_pBackground);
+        m_pBackground->setPosition(getAnchorPointInPoints() + Point(fBackgroundOffsetX, fBackgroundOffsetY));
+    }
+    else
+    {
+        m_pBackground = nullptr;
+    }
+
+    if (m_ppNodes)
+    {
+        delete[] m_ppNodes;
+    }
+
+    size_t uCount = iRow * iColumn;
+    m_ppNodes = new Node*[uCount];
+    memset(m_ppNodes, 0, sizeof(Node*)* uCount);
+
+    m_iCount = 0;
+
+    setCascadeOpacityEnabled(true);
+
+    return true;
+}
+
+void WinFormPanel::addNode(Node* pNode, int iIndex)
+{
+    CCAssert(iIndex < m_iRow * m_iColumn, "Break Bounds");
+    CCAssert(m_iCount <= m_iRow * m_iColumn, "already full");
+    Node* pBtn = getNode(iIndex);
+    if (pBtn)
+    {
+        delNode(iIndex);
+    }
+
+    addChild(pNode);
+    pNode->setPosition(index2Point(iIndex));
+    //pNode->setNodeIndex(iIndex);
+
+    m_ppNodes[iIndex] = pNode;
+
+    ++m_iCount;
+}
+
+void WinFormPanel::addNode(Node* pNode, int iX, int iY)
+{
+    CCAssert(iY < m_iRow && iX < m_iColumn, "Break Bounds");
+    addNode(pNode, toIndex(iX, iY));
+}
+
+void WinFormPanel::delNode(int iIndex)
+{
+    --m_iCount;
+    removeChild(m_ppNodes[iIndex], true);
+    m_ppNodes[iIndex] = nullptr;
+}
+
+void WinFormPanel::delNode(Node* pNode)
+{
+    int iIndex = getNodeIndex(pNode);
+    CCAssert(iIndex >= 0, "button not found");
+    delNode(iIndex);
+}
+
+void WinFormPanel::delNode(int iX, int iY)
+{
+    CCAssert(iY < m_iRow && iX < m_iColumn, "Break Bounds");
+    delNode(toIndex(iX, iY));
+}
+
+void WinFormPanel::moveNode(int iIndexSrc, int iIndexDst)
+{
+    Node* pSrc = getNode(iIndexSrc);
+    m_ppNodes[iIndexDst] = pSrc;
+    m_ppNodes[iIndexSrc] = nullptr;
+    pSrc->setPosition(index2Point(iIndexDst));
+}
+
+void WinFormPanel::addNodeEx(Node* pNode, ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
+{
+    addNode(pNode, allotSlot(eVer, eHor));
+}
+
+int WinFormPanel::allotSlot(ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
+{
+    bool bY = (eVer == kBottomToTop);
+    bool bX = (eHor == kLeftToRight);
+
+    int iStartY = bY ? 0 : (m_iRow - 1);
+    int iStartX = bX ? 0 : (m_iColumn - 1);
+
+    int iEndY = bY ? (m_iRow - 1) : 0;
+    int iEndX = bX ? (m_iColumn - 1) : 0;
+
+    return allotSlot(iStartX, iStartY, iEndX, iEndY, eVer, eHor);
+}
+
+int WinFormPanel::allotSlot(int iStartX, int iStartY, int iEndX, int iEndY, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor)
+{
+    bool bY = (eVer == kBottomToTop);
+    bool bX = (eHor == kLeftToRight);
+
+    int iY = bY ? 1 : -1;
+    int iX = bX ? 1 : -1;
+
+    int iIndex;
+    for (int y = iStartY; bY ? (y <= iEndY) : (y >= iEndY); y += iY)
+    {
+        int iStartX0 = (y == iStartY ? iStartX : (bX ? 0 : (m_iColumn - 1)));
+        int iEndX0 = (y == iEndY ? iEndX : (bX ? (m_iColumn - 1) : 0));
+        for (int x = iStartX0; bX ? (x <= iEndX0) : (x >= iEndX0); x += iX)
+        {
+            iIndex = toIndex(x, y);
+            if (!getNode(iIndex))
+            {
+                return iIndex;
+            }
+        }
+    }
+
+    return -1;
+}
+
+void WinFormPanel::clearUpSlot(ADD_VERTICAL eVer /*= kBottomToTop*/, ADD_HORIZONTAL eHor /*= kLeftToRight*/)
+{
+    bool bY = (eVer == kBottomToTop);
+    bool bX = (eHor == kLeftToRight);
+
+    int iY = bY ? 1 : -1;
+    int iX = bX ? 1 : -1;
+
+    int iStartY = bY ? 0 : (m_iRow - 1);
+    int iEndY = bY ? (m_iRow - 1) : 0;
+
+    int iStartX = bX ? 0 : (m_iColumn - 1);
+    int iEndX = bX ? (m_iColumn - 1) : 0;
+
+    int iEmpty = -1;
+    int iIndex;
+    for (int y = iStartY; bY ? (y <= iEndY) : (y >= iEndY); y += iY)
+    {
+        for (int x = iStartX; bX ? (x <= iEndX) : (x >= iEndX); x += iX)
+        {
+            iIndex = toIndex(x, y);
+            if (getNode(iIndex))
+            {
+                if (iEmpty >= 0)
+                {
+                    // 遇到按钮后且前面有空槽，移动按钮
+                    moveNode(iIndex, iEmpty);
+                    // 在前面找一块新空槽
+                    iEmpty = allotSlot(index2X(iEmpty), index2Y(iEmpty), x, y, eVer, eHor);
+                }
+            }
+            else
+            {
+                if (iEmpty < 0)
+                {
+                    // 首次遇到空槽
+                    iEmpty = iIndex;
+                }
+            }
+        }
+    }
+}
+
+Node* WinFormPanel::getNode(int iX, int iY) const
+{
+    return getNode(toIndex(iX, iY));
+}
+
+Node* WinFormPanel::getNode(int iIndex) const
+{
+    CCAssert(iIndex < m_iRow * m_iColumn, "Break Bounds");
+    return m_ppNodes[iIndex];
+}
+
+Node* WinFormPanel::getNode(const function<bool(Node*)>& match) const
+{
+    int n = m_iRow * m_iColumn;
+    for (int i = 0; i < n; ++i)
+    {
+        if (m_ppNodes[i] && match(m_ppNodes[i]))
+        {
+            return m_ppNodes[i];
+        }
+    }
+
+    return nullptr;
+}
+
+int WinFormPanel::getNodeIndex(Node* pNode) const
+{
+    int n = m_iRow * m_iColumn;
+    for (int i = 0; i < n; ++i)
+    {
+        if (m_ppNodes[i] == pNode)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int WinFormPanel::index2Y(int iIndex) const
+{
+    return iIndex / m_iColumn;
+}
+
+int WinFormPanel::index2X(int iIndex) const
+{
+    return iIndex % m_iColumn;
+}
+
+int WinFormPanel::toIndex(int iX, int iY) const
+{
+    return iY * m_iColumn + iX;
+}
+
+Point WinFormPanel::index2Point(int iIndex)
+{
+    const Size& roSz = getContentSize();
+    int iX = index2X(iIndex);
+    int iY = index2Y(iIndex);
+    return Point(
+        m_oNodeSize.width * 0.5 + (m_oNodeSize.width + m_fHorInnerBorderWidth) * iX + m_fHorBorderWidth,
+        m_oNodeSize.height * 0.5 + (m_oNodeSize.height + m_fVerInnerBorderWidth) * iY + m_fVerBorderWidth);
+}
+
+void WinFormPanel::setBackground(Node* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY)
+{
+    if (m_pBackground == pBackground)
+    {
+        return;
+    }
+
+    if (m_pBackground != nullptr)
+    {
+        m_pBackground->removeFromParentAndCleanup(true);
+        m_pBackground->release();
+    }
+
+    if (pBackground != nullptr)
+    {
+        pBackground = pBackground;
+        addChild(pBackground);
+        pBackground->setPosition(getAnchorPointInPoints() + Point(fBackgroundOffsetX, fBackgroundOffsetY));
+    }
+
+    m_pBackground = pBackground;
 }

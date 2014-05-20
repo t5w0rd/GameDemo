@@ -100,7 +100,13 @@ public:
     M_SYNTHESIZE(GRADE, m_iGrade, Grade);
     M_SYNTHESIZE(int, m_iCost, Cost);
     M_SYNTHESIZE_STR(Describe);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(vector<string>, m_vecLevelDescribe, LevelDescribe);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(vector<string>, m_vecLevelDescribe, LevelDescribes);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(vector<int>, m_vecLevelType, LevelTypes);
+    const char* getLevelDescribe();
+    const char* getLevelDescribe(int level);
+    int getLevelType();
+    int getLevelType(int level);
+    void setLevelInfo(int level, int type, const char* desc);
 };
 
 class CActiveAbility : public CAbility

@@ -465,6 +465,7 @@ public:
     static void tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLushort h, GLushort a);
 };
 
+#include "Ability.h"
 class AbilityItem : public Node
 {
 CC_CONSTRUCTOR_ACCESS:
@@ -473,7 +474,72 @@ CC_CONSTRUCTOR_ACCESS:
 public:
     bool initWithAbility(CAbility* ability);
     M_CREATE_INITWITH_FUNC_PARAM(Ability, AbilityItem, (CAbility* ability), ability);
+
+    static Color3B abilityGradeColor3B(CAbility::GRADE grade);
     //Sprite
+};
+
+class WinFormPanel : public WinLayer
+{
+public:
+    WinFormPanel();
+    virtual ~WinFormPanel();
+    bool init(int iRow, int iColumn, int iWinRow, int iWinColumn, const Size& rNodeSize, float fHorInnerBorderWidth, float fVerInnerBorderWidth, float fHorBorderWidth = 0.0f, float fVerBorderWidth = 0.0f, Node* pBackground = nullptr, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f);
+    M_CREATE_FUNC_PARAM(WinFormPanel, (int iRow, int iColumn, int iWinRow, int iWinColumn, const Size& rNodeSize, float fHorInnerBorderWidth, float fVerInnerBorderWidth, float fHorBorderWidth = 0.0f, float fVerBorderWidth = 0.0f, Node* pBackground = nullptr, float fBackgroundOffsetX = 0.0f, float fBackgroundOffsetY = 0.0f), iRow, iColumn, iWinRow, iWinColumn, rNodeSize, fHorInnerBorderWidth, fVerInnerBorderWidth, fHorBorderWidth, fVerBorderWidth, pBackground, fBackgroundOffsetX, fBackgroundOffsetY);
+
+    void addNode(Node* pNode, int iIndex); // org
+    void addNode(Node* pNode, int iX, int iY);
+
+    void delNode(int iIndex); // org
+    void delNode(int iX, int iY);
+    void delNode(Node* pNode);
+
+    enum ADD_HORIZONTAL
+    {
+        kLeftToRight,
+        kRightToLeft
+    };
+
+    enum ADD_VERTICAL
+    {
+        kBottomToTop,
+        kTopToBottom
+    };
+
+    void moveNode(int iIndexSrc, int iIndexDst); // org
+
+    void addNodeEx(Node* pNode, ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
+
+    int allotSlot(ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
+    int allotSlot(int iStartX, int iStartY, int iEndX, int iEndY, ADD_VERTICAL eVer, ADD_HORIZONTAL eHor);
+    void clearUpSlot(ADD_VERTICAL eVer = kBottomToTop, ADD_HORIZONTAL eHor = kLeftToRight);
+
+    Node* getNode(int iX, int iY) const;
+    Node* getNode(int iIndex) const;
+    Node* getNode(const function<bool(Node*)>& match) const;
+
+    int getNodeIndex(Node* pNode) const;
+
+    int index2Y(int iIndex) const;
+    int index2X(int iIndex) const;
+    int toIndex(int iX, int iY) const;
+    Point index2Point(int iIndex);
+
+    M_SYNTHESIZE(int, m_iRow, Row);
+    M_SYNTHESIZE(int, m_iColumn, Column);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(Size, m_oNodeSize, NodeSize);
+    M_SYNTHESIZE(float, m_fHorInnerBorderWidth, HorInnerBorderWidth);
+    M_SYNTHESIZE(float, m_fVerInnerBorderWidth, VerInnerBorderWidth);
+    M_SYNTHESIZE_READONLY(Node*, m_pBackground, Background);
+    void setBackground(Node* pBackground, float fBackgroundOffsetX, float fBackgroundOffsetY);
+
+    M_SYNTHESIZE_READONLY(int, m_iCount, Count);
+
+    M_SYNTHESIZE(float, m_fHorBorderWidth, HorBorderWidth);
+    M_SYNTHESIZE(float, m_fVerBorderWidth, VerBorderWidth);
+
+protected:
+    Node** m_ppNodes;
 };
 
 
