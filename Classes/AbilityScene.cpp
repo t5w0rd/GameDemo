@@ -394,13 +394,11 @@ bool AbilitySceneLayer::init()
     a->setCost(9);
     auto ai = AbilityItem::create(a);
 
-    auto bp = WinFormPanel::create(6, 3, 3, 3, ai->getContentSize(), 10, 10, 0.0f, 20.0f);
+    auto bp = WinFormPanel::create(6, 2, 3, 2, ai->getContentSize(), 10, 10, 0.0f, 20.0f);
     bp->setColor(Color3B::GRAY);
     bp->setOpacity(128);
     addChild(bp);
     bp->setBufferEffectParam(1.0f, 0.9f, 20.0f, 0.1f);
-    bp->setWinPosition(getAnchorPointInPoints() - Point(bp->getWinSize().width * 0.5, bp->getWinSize().height * 0.5));
-    bp->setOffsetPosition(Point(0, -9999));
 
     bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
 
@@ -413,7 +411,9 @@ bool AbilitySceneLayer::init()
     sp->setContentSize(bp->getWinSize() + Size(52, 52));
 
     addChild(sp, 1);
-    sp->setPosition(getAnchorPointInPoints());
+    sp->setPosition(Point(wsz.width * 0.5f, wsz.height - sp->getContentSize().height * 0.5f));
+    bp->setWinPosition(sp->getPosition() - Point(bp->getWinSize().width * 0.5, bp->getWinSize().height * 0.5));
+    bp->setOffsetPosition(Point(0, -9999));
 
     // Clipping Node
     auto sn = LayerColor::create(Color4B(0, 0, 0, 255), sp->getContentSize().width, sp->getContentSize().height);
@@ -478,31 +478,24 @@ bool AbilitySceneLayer::init()
     a->setLevelInfo(3, 2, "诅咒效果持续17秒");
     a->setLevel(2);
 
-    auto pop = PopAbilityDetails::create(a);
-    addChild(pop, 3);
-    pop->setPosition(getAnchorPointInPoints());
-    pop->setCascadeOpacityEnabled(true);
-    pop->setOpacity(0);
+    a->retain();
 
-    pop->runAction(FadeIn::create(0.5f));
-
-    runAction(Sequence::create(
-        DelayTime::create(5.0f),
-        CallFunc::create([pop]()
+    bp->setActionCallback([this, a](int action)
     {
-        Utils::nodeToFile(pop, "PopAbilityDetails.png");
+        if (action != WinLayer::kClickPoint)
+        {
+            return;
+        }
+        auto pop = PopAbilityDetails::create(a);
+        this->addChild(pop, 3);
+        pop->setPosition(getAnchorPointInPoints());
+        pop->setCascadeOpacityEnabled(true);
+        pop->setOpacity(0);
 
-        auto a = new CBuffMakerAct("BMA", "引力漩涡", 15.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, 0);
-        a->setImageName("UI/Ability/GravitySurf.png");
-        a->setGrade(CAbility::kRare);
-        a->setMaxLevel(1);
-        a->setLevelInfo(1, 2, "诅咒效果持续17秒");
-        a->setLevel(0);
-        a->setCost(8);
-        a->setDescribe("产生一个漩涡");
-        pop->updateContent(a);
-    }),
-        nullptr));
+        pop->runAction(FadeIn::create(0.5f));
+    });
+
+    
 
     return true;
 }

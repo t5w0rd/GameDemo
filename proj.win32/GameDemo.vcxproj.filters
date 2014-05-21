@@ -216,6 +216,9 @@
     <ClCompile Include="..\Classes\Logic\AbilityLibrary.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\AbilityScene.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -397,6 +400,9 @@
     </ClInclude>
     <ClInclude Include="..\Classes\Logic\AbilityLibrary.h">
       <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\AbilityScene.h">
+      <Filter>Classes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

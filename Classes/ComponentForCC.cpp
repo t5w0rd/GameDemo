@@ -205,6 +205,7 @@ WinLayer::WinLayer()
 , m_fTouchMovedDuration(0.0f)
 , m_fMoveR(0.0f)
 , m_bCanMove(false)
+, m_bInWin(true)
 {
 }
 
@@ -284,7 +285,7 @@ void WinLayer::setBufferEffectParam(float fScale, float fMoveK, float fBuffRange
 void WinLayer::setScale(float fScale)
 {
     Size oSz = getContentSize();
-    Layer::setScale(min(max(max(m_oWinSize.width / oSz.width, m_oWinSize.height / oSz.height), fScale), 4.0f));
+    LayerColor::setScale(min(max(max(m_oWinSize.width / oSz.width, m_oWinSize.height / oSz.height), fScale), 4.0f));
 }
 
 void WinLayer::setPosition(const Point& newPosition)
@@ -292,7 +293,7 @@ void WinLayer::setPosition(const Point& newPosition)
     Size oSz = getContentSize() * getScale();
     float fX = (1 - 1 / getScale()) *  0.5 * oSz.width + m_oWinPosition.x;
     float fY = (1 - 1 / getScale()) *  0.5 * oSz.height + m_oWinPosition.y;
-    Layer::setPosition(Point(min(max(newPosition.x, (m_oWinSize.width - oSz.width) + fX), fX), min(max(newPosition.y, (m_oWinSize.height - oSz.height) + fY), fY)));
+    LayerColor::setPosition(Point(min(max(newPosition.x, (m_oWinSize.width - oSz.width) + fX), fX), min(max(newPosition.y, (m_oWinSize.height - oSz.height) + fY), fY)));
 }
 
 void WinLayer::setContentSize(const Size& rSize)
@@ -413,19 +414,12 @@ bool WinLayer::isClickAction() const
 {
     return m_fMoveDelta < CONST_MIN_MOVE_DELTA;
 }
-/*
-void WinLayer::adjustWinPos(Point& roPos)
+
+void WinLayer::setActionCallback(const function<void(int actionIndex)>& callback)
 {
-    static Size oWinSz = Director::getInstance()->getVisibleSize();
-    Size oSz = getContentSize() * getScale();
-    float fX = (1 - 1 / getScale()) *  0.5 * oSz.width;
-    float fY = (1 - 1 / getScale()) *  0.5 * oSz.height;
-    roPos.x = MAX(roPos.x, (oWinSz.width - oSz.width) + fX);
-    roPos.y = MAX(roPos.y, (oWinSz.height - oSz.height) + fY);
-    roPos.x = MIN(roPos.x, fX);
-    roPos.y = MIN(roPos.y, fY);
+    m_actionCallback = callback;
 }
-*/
+
 int WinLayer::touchActionIndex() const
 {
     if (isSlideAction())
@@ -445,6 +439,10 @@ void WinLayer::onTouchesBegan(const std::vector<Touch*>& touches, cocos2d::Event
     Touch* pTouch = ((Touch*)(*it));
     if (touches.size() == 1)
     {
+        Point p = getParent()->convertToNodeSpace(pTouch->getLocation());
+        Rect win(getWinPosition().x, getWinPosition().y, getWinSize().width, getWinSize().height);
+        m_bInWin = win.containsPoint(p);
+
         m_bIsTouching = true;
         m_fTouchMovedDuration = 0;
         m_oMoveStart = pTouch->getLocation();
@@ -459,7 +457,7 @@ void WinLayer::onTouchesBegan(const std::vector<Touch*>& touches, cocos2d::Event
 
 void WinLayer::onTouchesMoved(const std::vector<Touch*>& touches, cocos2d::Event* event)
 {
-    if (m_bMoveEnabled == false)
+    if (m_bInWin == false || m_bMoveEnabled == false)
     {
         return;
     }
@@ -488,6 +486,11 @@ void WinLayer::onTouchesMoved(const std::vector<Touch*>& touches, cocos2d::Event
 
 void WinLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event* event)
 {
+    if (m_bInWin == false)
+    {
+        return;
+    }
+
     auto it = touches.begin();
     Touch* pTouch = ((Touch*)(*it));
     if (touches.size() == 1)
@@ -496,6 +499,11 @@ void WinLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event
         m_fMoveDelta = pTouch->getLocation().getDistance(m_oMoveStart);
         m_fMoveR = -(pTouch->getLocation() - m_oMoveStart).getAngle();
         m_bMoveEnabled && (m_fTouchMovedDuration <= CONST_MAX_CAN_MOVE_DURATION && !isClickAction()) && (m_bCanMove = true);
+    }
+
+    if (m_actionCallback)
+    {
+        m_actionCallback(touchActionIndex());
     }
 }
 
@@ -1953,7 +1961,7 @@ bool WinFormPanel::init(int iRow, int iColumn, int iWinRow, int iWinColumn, cons
 
     size_t uCount = iRow * iColumn;
     m_ppNodes = new Node*[uCount];
-    memset(m_ppNodes, 0, sizeof(Node*)* uCount);
+    memset(m_ppNodes, 0, sizeof(Node*) * uCount);
 
     m_iCount = 0;
 

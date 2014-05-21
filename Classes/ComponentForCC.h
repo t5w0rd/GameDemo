@@ -102,6 +102,9 @@ public:
     virtual bool isClickAction() const;
     
     M_SYNTHESIZE_BOOL(MoveEnabled);
+    M_SYNTHESIZE_BOOL(InWin);
+
+    void setActionCallback(const function<void(int actionIndex)>& callback);
 
 protected:
     virtual int touchActionIndex() const;
@@ -131,6 +134,7 @@ protected:
     Point m_oLast;
     float m_fStartScale;
     float m_fStartDis;
+    function<void(int actionIndex)> m_actionCallback;
 };
 
 class TouchSprite : public Sprite
