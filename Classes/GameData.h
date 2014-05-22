@@ -23,6 +23,9 @@ public:
 
     typedef vector<STAGE_INFO> VEC_STAGES;
     VEC_STAGES m_stages;
+
+    void initStageData();
+    void initAbilityData();
 };
 
 #endif

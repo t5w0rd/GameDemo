@@ -17,6 +17,7 @@ class CLevelUpdate : public CMultiRefObject
 {
 public:
     CLevelUpdate();
+    CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRange, const function<void(CLevelExp* pLevel, int iChanged)>& onChangeLevel, const function<int(int iLevel)>& calcExp);
     virtual ~CLevelUpdate();
     virtual CLevelUpdate* copy() override;
 
@@ -25,6 +26,11 @@ public:
     virtual void updateExpRange(CLevelExp* pLevel);
     virtual void onChangeLevel(CLevelExp* pLevel, int iChanged);
     virtual int calcExp(int iLevel);
+
+protected:
+    function<void(CLevelExp* pLevel)> m_updateExpRange;
+    function<void(CLevelExp* pLevel, int iChanged)> m_onChangeLevel;
+    function<int(int iLevel)> m_calcExp;
 };
 
 // 等级经验值，赋予对象等级经验值特性

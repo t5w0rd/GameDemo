@@ -18,6 +18,15 @@ CLevelUpdate::CLevelUpdate()
     setDbgClassName("CLevelUpdate");
 }
 
+CLevelUpdate::CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRange, const function<void(CLevelExp* pLevel, int iChanged)>& onChangeLevel, const function<int(int iLevel)>& calcExp)
+: m_iScriptHandler(0)
+{
+    m_updateExpRange = updateExpRange;
+    m_onChangeLevel = onChangeLevel;
+    m_calcExp = calcExp;
+    setDbgClassName("CLevelUpdate");
+}
+
 CLevelUpdate::~CLevelUpdate()
 {
     if (getScriptHandler() != 0)
@@ -35,6 +44,12 @@ CLevelUpdate* CLevelUpdate::copy()
 
 void CLevelUpdate::updateExpRange(CLevelExp* pLevel)
 {
+    if (m_updateExpRange)
+    {
+        m_updateExpRange(pLevel);
+        return;
+    }
+
     if (getScriptHandler() == 0)
     {
         return;
@@ -60,6 +75,12 @@ void CLevelUpdate::updateExpRange(CLevelExp* pLevel)
 
 void CLevelUpdate::onChangeLevel(CLevelExp* pLevel, int iChanged)
 {
+    if (m_onChangeLevel)
+    {
+        m_onChangeLevel(pLevel, iChanged);
+        return;
+    }
+
     if (getScriptHandler() == 0)
     {
         return;
@@ -86,6 +107,11 @@ void CLevelUpdate::onChangeLevel(CLevelExp* pLevel, int iChanged)
 
 int CLevelUpdate::calcExp(int iLevel)
 {
+    if (m_calcExp)
+    {
+        return m_calcExp(iLevel);
+    }
+
     if (getScriptHandler() == 0)
     {
         return iLevel;
@@ -119,7 +145,7 @@ int CLevelUpdate::calcExp(int iLevel)
 
 // CLevelExp
 CLevelExp::CLevelExp()
-: m_iLvl(1)
+: m_iLvl(0)
 , m_iMaxLvl(1)
 , m_iExp(0)
 , m_iBaseExp(0)

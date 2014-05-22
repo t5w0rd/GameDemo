@@ -57,8 +57,6 @@ CAbility* CAbility::copy()
 void CAbility::copyData(CAbility* from)
 {
     // TODO: copy some members which are not in the constuctor params
-    setMaxLevel(from->getMaxLevel());
-    setLevel(from->getLevel());
     copyScriptHandler(from->getScriptHandler());
     m_dwTriggerFlags = from->m_dwTriggerFlags;
     setInterval(from->getInterval());
@@ -70,6 +68,13 @@ void CAbility::copyData(CAbility* from)
     m_sDescribe = from->m_sDescribe;
     m_vecLevelDescribe = from->m_vecLevelDescribe;
     m_vecLevelType = from->m_vecLevelType;
+
+    m_iBaseExp = from->m_iBaseExp;
+    m_iMaxExp = from->m_iMaxExp;
+    m_iExp = from->m_iExp;
+    m_pUpdate = from->m_pUpdate ? from->m_pUpdate->copy() : nullptr;
+    m_iMaxLvl = from->m_iMaxLvl;
+    //setLevel(from->getLevel());
 }
 
 void CAbility::copyScriptHandler(int iScriptHandler)
@@ -628,12 +633,11 @@ const char* CAbility::getLevelDescribe()
 
 const char* CAbility::getLevelDescribe(int level)
 {
-    if (level < 1)
+    if (level < 1 || level > (int)m_vecLevelDescribe.size())
     {
         return nullptr;
     }
 
-    assert(level - 1 < (int)m_vecLevelDescribe.size());
     return m_vecLevelDescribe[level - 1].c_str();
 }
 
@@ -644,12 +648,11 @@ int CAbility::getLevelType()
 
 int CAbility::getLevelType(int level)
 {
-    if (level < 1)
+    if (level < 1 || level > (int)m_vecLevelType.size())
     {
         return -1;
     }
 
-    assert(level - 1 < (int)m_vecLevelType.size());
     return m_vecLevelType[level - 1];
 }
 

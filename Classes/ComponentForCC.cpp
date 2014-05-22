@@ -415,7 +415,7 @@ bool WinLayer::isClickAction() const
     return m_fMoveDelta < CONST_MIN_MOVE_DELTA;
 }
 
-void WinLayer::setActionCallback(const function<void(int actionIndex)>& callback)
+void WinLayer::setActionCallback(const function<void(const Point& pos, int actionIndex)>& callback)
 {
     m_actionCallback = callback;
 }
@@ -476,10 +476,9 @@ void WinLayer::onTouchesMoved(const std::vector<Touch*>& touches, cocos2d::Event
         ++it;
         Point p2 = ((Touch*)(*it))->getLocation();
         float fDis = p2.getDistance(p1);
-        float fScale = fDis / MAX(m_fStartDis, 1.0f) * m_fStartScale;
+        float fScale = fDis / max(m_fStartDis, 1.0f) * m_fStartScale;
         Point oT = getPosition();
         setScale(fScale);
-        //adjustWinPos(oT);
         setPosition(oT);
     }
 }
@@ -499,11 +498,11 @@ void WinLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event
         m_fMoveDelta = pTouch->getLocation().getDistance(m_oMoveStart);
         m_fMoveR = -(pTouch->getLocation() - m_oMoveStart).getAngle();
         m_bMoveEnabled && (m_fTouchMovedDuration <= CONST_MAX_CAN_MOVE_DURATION && !isClickAction()) && (m_bCanMove = true);
-    }
 
-    if (m_actionCallback)
-    {
-        m_actionCallback(touchActionIndex());
+        if (m_actionCallback)
+        {
+            m_actionCallback(convertToNodeSpace(pTouch->getLocation()), touchActionIndex());
+        }
     }
 }
 
@@ -1823,19 +1822,29 @@ void Utils::tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLusho
 
 // AbilityItem
 AbilityItem::AbilityItem()
+: m_ability(nullptr)
+, m_aicost2(nullptr)
 {
+    memset(m_aistars, 0, sizeof(m_aistars));
+}
+
+AbilityItem::~AbilityItem()
+{
+    M_SAFE_RELEASE(m_ability);
 }
 
 bool AbilityItem::initWithAbility(CAbility* ability)
 {
-    auto aibg = Sprite::create("UI/Ability/AbilityItemBackground3.png");
+    setAbility(ability);
+
+    auto aibg = Sprite::create("UI/Ability/AbilityItemBackground.png");
     setContentSize(aibg->getContentSize());
     setAnchorPoint(Point(0.5f, 0.5f));
 
     addChild(aibg);
     aibg->setPosition(getAnchorPointInPoints());
 
-    auto aib = Sprite::create("UI/Ability/AbilityItemBorder3.png");
+    auto aib = Sprite::create("UI/Ability/AbilityItemBorder.png");
     aibg->addChild(aib, 1);
     aib->setPosition(aibg->getAnchorPointInPoints());
 
@@ -1861,22 +1870,20 @@ bool AbilityItem::initWithAbility(CAbility* ability)
     aicost->setPosition(Point(65, 67));
 
     sprintf(sz, "%d", ability->getCost());
-    auto aicost2 = Label::createWithTTF(sz, "fonts/Comic Book.ttf", 28);
-    aicost->addChild(aicost2, 1);
-    aicost2->setPosition(aicost->getAnchorPointInPoints() + Point(-1, -2));
-    aicost2->setColor(Color3B(78, 43, 7));
+    m_aicost2 = Label::createWithTTF(sz, "fonts/Comic Book.ttf", 28);
+    aicost->addChild(m_aicost2, 1);
+    m_aicost2->setPosition(aicost->getAnchorPointInPoints() + Point(-1, -2));
+    m_aicost2->setColor(Color3B(78, 43, 7));
 
     const Point aistarCenter(323, 78);
     const float aistarBetween = 5;
-    auto aistar = Sprite::createWithSpriteFrameName(ability->getLevel() > 0 ? "UI/Ability/AbilityItemStar.png" : "UI/Ability/AbilityItemUnstar.png");
-    float starBaseWidth = aistarCenter.x - (ability->getMaxLevel() - 1) * aistar->getContentSize().width * 0.5 - (ability->getMaxLevel() - 1) * aistarBetween * 0.5;
-    aibg->addChild(aistar, 1, 100);
-    aistar->setPosition(Point(starBaseWidth, aistarCenter.y));
+    auto star = starByIndex(0, ability->getLevel() > 0);
+    float starBaseWidth = aistarCenter.x - (ability->getMaxLevel() - 1) * m_aistars[0]->getContentSize().width * 0.5 - (ability->getMaxLevel() - 1) * aistarBetween * 0.5;
+    star->setPosition(Point(starBaseWidth, aistarCenter.y));
     for (auto i = 1; i < ability->getMaxLevel(); ++i)
     {
-        aistar = Sprite::createWithSpriteFrameName(ability->getLevel() > i ? "UI/Ability/AbilityItemStar.png" : "UI/Ability/AbilityItemUnstar.png");
-        aibg->addChild(aistar, 1, 100 + i);
-        aistar->setPosition(Point(starBaseWidth + i * (aistar->getContentSize().width + aistarBetween), aistarCenter.y));
+        star = starByIndex(i, ability->getLevel() > i);
+        star->setPosition(Point(starBaseWidth + i * (star->getContentSize().width + aistarBetween), aistarCenter.y));
     }
 
     return true;
@@ -1900,6 +1907,54 @@ Color3B AbilityItem::abilityGradeColor3B(CAbility::GRADE grade)
     }
 
     return Color3B::WHITE;
+}
+
+void AbilityItem::setAbility(CAbility* ability)
+{
+    if (ability == m_ability)
+    {
+        return;
+    }
+
+    M_SAFE_RELEASE(m_ability);
+    M_SAFE_RETAIN(ability);
+    m_ability = ability;
+}
+
+Sprite* AbilityItem::starByIndex(int index, bool on)
+{
+    static auto fc = SpriteFrameCache::getInstance();
+    static auto tc = Director::getInstance()->getTextureCache();
+
+    auto file = on ? "UI/Ability/AbilityItemStar.png" : "UI/Ability/AbilityItemUnstar.png";
+    if (m_aistars[index] == nullptr)
+    {
+        m_aistars[index] = Sprite::create(file);
+        addChild(m_aistars[index], 1);
+    }
+    else
+    {
+        auto tx = Director::getInstance()->getTextureCache()->addImage(file);
+        auto sz = tx->getContentSize();
+        m_aistars[index]->setSpriteFrame(SpriteFrame::createWithTexture(tx, Rect(0.0f, 0.0f, sz.width, sz.height)));
+    }
+
+    return m_aistars[index];
+}
+
+void AbilityItem::updateContent(CAbility* ability)
+{
+    setAbility(ability);
+
+    char sz[1024];
+    
+    sprintf(sz, "%d", ability->getCost());
+    m_aicost2->setString(sz);
+
+    for (auto i = 0; i < ability->getMaxLevel(); ++i)
+    {
+        starByIndex(i, ability->getLevel() > i);
+    }
 }
 
 // WinFormPanel
@@ -2196,4 +2251,40 @@ void WinFormPanel::setBackground(Node* pBackground, float fBackgroundOffsetX, fl
     }
 
     m_pBackground = pBackground;
+}
+
+void WinFormPanel::onClickNode(const Point& pos, int action)
+{
+    if (action != WinLayer::kClickPoint)
+    {
+        return;
+    }
+
+    auto nd = getNode([pos](Node* nd)
+    {
+        auto& p = nd->getPosition();
+        auto& ap = nd->getAnchorPoint();
+        auto& sz = nd->getContentSize();
+        
+        return Rect(p.x - sz.width * ap.x, p.y - sz.height * ap.y, sz.width, sz.height).containsPoint(pos);
+    });
+
+    if (nd && m_clickNodeCallback)
+    {
+        m_clickNodeCallback(nd);
+    }
+}
+
+void WinFormPanel::setClickNodeCallback(const function<void(Node* note)>& callback)
+{
+    if (!callback)
+    {
+        setActionCallback(nullptr);
+    }
+    else
+    {
+        setActionCallback(bind(&WinFormPanel::onClickNode, this, placeholders::_1, placeholders::_2));
+    }
+
+    m_clickNodeCallback = callback;
 }

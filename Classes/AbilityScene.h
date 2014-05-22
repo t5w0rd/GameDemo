@@ -15,6 +15,12 @@ public:
     
     // implement the "static node()" method manually
     CREATE_FUNC(AbilitySceneLayer);
+
+    void onClickAbilityItems(Node* abilityItem);
+
+protected:
+    WinFormPanel* m_abilityItemsPanel;
+    Node* m_winFormBorder;
 };
 
 

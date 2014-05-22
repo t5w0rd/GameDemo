@@ -104,7 +104,7 @@ public:
     M_SYNTHESIZE_BOOL(MoveEnabled);
     M_SYNTHESIZE_BOOL(InWin);
 
-    void setActionCallback(const function<void(int actionIndex)>& callback);
+    void setActionCallback(const function<void(const Point& pos, int actionIndex)>& callback);
 
 protected:
     virtual int touchActionIndex() const;
@@ -134,7 +134,7 @@ protected:
     Point m_oLast;
     float m_fStartScale;
     float m_fStartDis;
-    function<void(int actionIndex)> m_actionCallback;
+    function<void(const Point& pos, int actionIndex)> m_actionCallback;
 };
 
 class TouchSprite : public Sprite
@@ -474,13 +474,23 @@ class AbilityItem : public Node
 {
 CC_CONSTRUCTOR_ACCESS:
     AbilityItem();
+    virtual ~AbilityItem();
 
 public:
     bool initWithAbility(CAbility* ability);
     M_CREATE_INITWITH_FUNC_PARAM(Ability, AbilityItem, (CAbility* ability), ability);
 
     static Color3B abilityGradeColor3B(CAbility::GRADE grade);
-    //Sprite
+
+    M_SYNTHESIZE_READONLY(CAbility*, m_ability, Ability);
+    void setAbility(CAbility* ability);
+
+    Sprite* starByIndex(int index, bool on);
+    void updateContent(CAbility* ability);
+    
+protected:
+    Label* m_aicost2;
+    Sprite* m_aistars[3];
 };
 
 class WinFormPanel : public WinLayer
@@ -541,6 +551,10 @@ public:
 
     M_SYNTHESIZE(float, m_fHorBorderWidth, HorBorderWidth);
     M_SYNTHESIZE(float, m_fVerBorderWidth, VerBorderWidth);
+
+    void onClickNode(const Point& pos, int action);
+    function<void(Node* note)> m_clickNodeCallback;
+    void setClickNodeCallback(const function<void(Node* note)>& callback);
 
 protected:
     Node** m_ppNodes;

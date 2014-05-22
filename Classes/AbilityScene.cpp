@@ -4,6 +4,9 @@
 #include "GameControl.h"
 #include "ComponentForCC.h"
 #include "Ability.h"
+#include "UserData.h"
+#include "GameData.h"
+#include "AbilityLibrary.h"
 
 
 // AbilitySceneLayer
@@ -35,22 +38,29 @@ Scene* AbilitySceneLayer::scene()
     return pScene;
 }
 
-class PopAbilityDetails : public Scale9Sprite
+class AbilityDetails : public Scale9Sprite
 {
 public:
     bool initWithAbility(CAbility* ability);
-    M_CREATE_INITWITH_FUNC_PARAM(Ability, PopAbilityDetails, (CAbility* ability), ability);
+    M_CREATE_INITWITH_FUNC_PARAM(Ability, AbilityDetails, (CAbility* ability), ability);
 
     void updateContent(CAbility* ability);
 
+    M_SYNTHESIZE_READONLY(CAbility*, m_ability, Ability);
+    void setAbility(CAbility* ability);
+
 CC_CONSTRUCTOR_ACCESS:
-    PopAbilityDetails();
+    AbilityDetails();
+    virtual ~AbilityDetails();
 
 protected:
     Sprite* starByIndex(int index, bool on);
     Sprite* iconByType(int index, int type);
 
+    void onClickUpgrade(Ref* ref);
+
 protected:
+    MenuEx* m_mn;
     Sprite* m_aIcon;  // ability icon
     Label* m_aNameBg;
     Label* m_aNameFg;
@@ -62,18 +72,22 @@ protected:
     Sprite* m_aUpIcon[3];
     Label* m_aUpDesc[3];
     Sprite* m_aUpgraded[3];
+    MenuItem* m_aUpBtn;
 };
 
 
-// PopAbilityDetails
-PopAbilityDetails::PopAbilityDetails()
-: m_aIcon(nullptr)
+// AbilityDetails
+AbilityDetails::AbilityDetails()
+: m_ability(nullptr)
+, m_mn(nullptr)
+, m_aIcon(nullptr)
 , m_aNameBg(nullptr)
 , m_aNameFg(nullptr)
 , m_aTypeCost(nullptr)
 , m_aDesc(nullptr)
 , m_aUpTitle(nullptr)
 , m_aLevel(nullptr)
+, m_aUpBtn(nullptr)
 {
     memset(m_aStars, 0, sizeof(m_aStars));
     memset(m_aUpIcon, 0, sizeof(m_aUpIcon));
@@ -81,31 +95,55 @@ PopAbilityDetails::PopAbilityDetails()
     memset(m_aUpgraded, 0, sizeof(m_aUpgraded));
 }
 
-bool PopAbilityDetails::initWithAbility(CAbility* ability)
+AbilityDetails::~AbilityDetails()
 {
-    if (Scale9Sprite::initWithFile("UI/PopBorder.png") == false)
+    M_SAFE_RELEASE(m_ability);
+}
+
+bool AbilityDetails::initWithAbility(CAbility* ability)
+{
+    //if (Scale9Sprite::initWithFile("UI/PopBorder.png") == false)
+    if (Scale9Sprite::initWithFile("UI/ScaleBorder2_109x69_45x157.png") == false)
     {
         return false;
     }
 
-    setInsetLeft(24);
-    setInsetRight(24);
-    setInsetTop(24);
-    setInsetBottom(24);
+    setAbility(ability);
+
+    //setInsetLeft(24);
+    //setInsetRight(24);
+    //setInsetTop(24);
+    //setInsetBottom(24);
+    setInsetTop(69);
+    setInsetBottom(69);
+    setInsetLeft(45);
+    setInsetRight(45);
     setContentSize(Size(620, 763));
+    
+    auto l = LayerColor::create(Color4B(83, 83, 83, 255));
+    l->setContentSize(getContentSize() - Size(10, 10));
+    addChild(l, -1);
+    l->setPosition(Point::ZERO);
+
+    m_mn = MenuEx::create();
+    m_mn->setContentSize(l->getContentSize());
+    addChild(m_mn, 4);
+    m_mn->setPosition(l->getPosition());
 
     updateContent(ability);
 
     return true;
 }
 
-void PopAbilityDetails::updateContent(CAbility* ability)
+void AbilityDetails::updateContent(CAbility* ability)
 {
     static auto fc = SpriteFrameCache::getInstance();
     static auto tc = Director::getInstance()->getTextureCache();
 
     char str[1024];  // buffer for sprintf
     char sz[1024];  //  buffer for gbk2utf8
+
+    setAbility(ability);
 
     // icon
     if (m_aIcon == nullptr)
@@ -172,6 +210,7 @@ void PopAbilityDetails::updateContent(CAbility* ability)
         }
         
     }
+
 
     // ability type & cost
     const char* type;
@@ -250,18 +289,35 @@ void PopAbilityDetails::updateContent(CAbility* ability)
         m_aLevel->setString(sz);
     }
 
+    if (m_aUpBtn != nullptr)
+    {
+        m_aUpBtn->setVisible(false);
+    }
+    
     for (auto i = 0; i < 3; ++i)
     {
         if (i < ability->getMaxLevel())
         {
-            auto upIcon = iconByType(i, ability->getLevelType(i + 1));
+            auto type = ability->getLevelType(i + 1);
+            if (type < 0)
+            {
+                break;
+            }
+
+            auto upIcon = iconByType(i, type);
             upIcon->setPosition(m_aIcon->getPosition() + Point(-27, fBaseHeightDelta - 95 * i - 28));
             upIcon->setVisible(true);
 
-            gbk_to_utf8(ability->getLevelDescribe(i + 1), sz);
+            auto desc = ability->getLevelDescribe(i + 1);
+            if (desc == nullptr)
+            {
+                break;
+            }
+
+            gbk_to_utf8(desc, sz);
             if (m_aUpDesc[i] == nullptr)
             {
-                m_aUpDesc[i] = Label::createWithTTF(sz, "fonts/DFYuanW7-GB2312.ttf", 28, Size(300, 80));
+                m_aUpDesc[i] = Label::createWithTTF(sz, "fonts/DFYuanW7-GB2312.ttf", 28, Size(300, 300));
                 m_aUpDesc[i]->setAnchorPoint(Point(0.0f, 1.0f));
                 addChild(m_aUpDesc[i]);
                 m_aUpDesc[i]->setPosition(m_aIcon->getPosition() + Point(20, fBaseHeightDelta - 95 * i));
@@ -302,6 +358,22 @@ void PopAbilityDetails::updateContent(CAbility* ability)
         }
         else
         {
+            if (i == ability->getLevel() && i < ability->getMaxLevel())
+            {
+                // upgrade button
+                if (m_aUpBtn == nullptr)
+                {
+                    m_aUpBtn = MenuItemFont::create("Upgrade", CC_CALLBACK_1(AbilityDetails::onClickUpgrade, this));
+                    m_mn->addChild(m_aUpBtn);
+                    m_aUpBtn->setColor(Color3B::YELLOW);
+                }
+                else
+                {
+                }
+                m_aUpBtn->setVisible(true);
+                m_aUpBtn->setPosition(m_aUpIcon[i]->getPosition() + Point(439, 0));
+            }
+
             if (m_aUpgraded[i] != nullptr)
             {
                 m_aUpgraded[i]->setVisible(false);
@@ -312,7 +384,19 @@ void PopAbilityDetails::updateContent(CAbility* ability)
     //Utils::nodeToFile(this, "AbilityPopPanel.png");
 }
 
-Sprite* PopAbilityDetails::starByIndex(int index, bool on)
+void AbilityDetails::setAbility(CAbility* ability)
+{
+    if (ability == m_ability)
+    {
+        return;
+    }
+
+    M_SAFE_RELEASE(m_ability);
+    M_SAFE_RETAIN(ability);
+    m_ability = ability;
+}
+
+Sprite* AbilityDetails::starByIndex(int index, bool on)
 {
     static auto fc = SpriteFrameCache::getInstance();
     static auto tc = Director::getInstance()->getTextureCache();
@@ -333,7 +417,7 @@ Sprite* PopAbilityDetails::starByIndex(int index, bool on)
     return m_aStars[index];
 }
 
-Sprite* PopAbilityDetails::iconByType(int index, int type)
+Sprite* AbilityDetails::iconByType(int index, int type)
 {
     static auto fc = SpriteFrameCache::getInstance();
     static auto tc = Director::getInstance()->getTextureCache();
@@ -370,6 +454,17 @@ Sprite* PopAbilityDetails::iconByType(int index, int type)
     return m_aUpIcon[index];
 }
 
+void AbilityDetails::onClickUpgrade(Ref* ref)
+{
+    assert(m_ability->getLevel() < m_ability->getMaxLevel());
+    
+    m_ability->setLevel(m_ability->getLevel() + 1);
+    updateContent(m_ability);
+    
+    auto ai = (AbilityItem*)getUserData();
+    ai->updateContent(m_ability);
+}
+
 // on "init" you need to initialize your instance
 bool AbilitySceneLayer::init()
 {
@@ -379,48 +474,51 @@ bool AbilitySceneLayer::init()
     {
         return false;
     }
-    
+
+    CUserData::ABILITY_INFO info;
+    info.id = 0;
+    info.level = 1;
+    CUserData::instance()->m_vecAbilitys.push_back(info);
+    info.id = 1;
+    info.level = 0;
+    CUserData::instance()->m_vecAbilitys.push_back(info);
+
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
 
     gc->loadFrames("Global0");
     gc->loadFrames("Global1");
 
-    auto a = new CBuffMakerAct("BMA", "雷霆一击", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, 0);
-    a->setImageName("UI/Ability/ThunderCap.png");
-    a->setMaxLevel(3);
-    a->setLevel(3);
-    a->setGrade(CAbility::kEpic);
-    a->setCost(9);
-    auto ai = AbilityItem::create(a);
+    auto tx = Director::getInstance()->getTextureCache()->addImage("UI/Ability/AbilityItemBackground.png");
+    Size aiSz = tx->getContentSize();
+    
+    // 滚动层
+    m_abilityItemsPanel = WinFormPanel::create(30, 2, 4, 2, aiSz, 10, 10, 0.0f, 20.0f);
+    m_abilityItemsPanel->setColor(Color3B::GRAY);
+    m_abilityItemsPanel->setOpacity(128);
+    addChild(m_abilityItemsPanel);
+    m_abilityItemsPanel->setBufferEffectParam(1.0f, 0.9f, 20.0f, 0.1f);
 
-    auto bp = WinFormPanel::create(6, 2, 3, 2, ai->getContentSize(), 10, 10, 0.0f, 20.0f);
-    bp->setColor(Color3B::GRAY);
-    bp->setOpacity(128);
-    addChild(bp);
-    bp->setBufferEffectParam(1.0f, 0.9f, 20.0f, 0.1f);
-
-    bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
-
-    // 镂空
+    // 镂空边框
     auto sp = Scale9Sprite::create("UI/ScaleBorder2_109x69_45x157.png");
+    //auto sp = Scale9Sprite::create("UI/PopBorder.png");
     sp->setInsetTop(69);
     sp->setInsetBottom(69);
     sp->setInsetLeft(45);
     sp->setInsetRight(45);
-    sp->setContentSize(bp->getWinSize() + Size(52, 52));
-
+    sp->setContentSize(m_abilityItemsPanel->getWinSize() + Size(52, 52));
     addChild(sp, 1);
-    sp->setPosition(Point(wsz.width * 0.5f, wsz.height - sp->getContentSize().height * 0.5f));
-    bp->setWinPosition(sp->getPosition() - Point(bp->getWinSize().width * 0.5, bp->getWinSize().height * 0.5));
-    bp->setOffsetPosition(Point(0, -9999));
+    m_winFormBorder = sp;
+
+    sp->setPosition(Point(sp->getContentSize().width * 0.5 + 10, wsz.height - sp->getContentSize().height * 0.5f - 10));
+    m_abilityItemsPanel->setWinPosition(sp->getPosition() - Point(m_abilityItemsPanel->getWinSize().width * 0.5, m_abilityItemsPanel->getWinSize().height * 0.5));
+    m_abilityItemsPanel->setOffsetPosition(Point(0, -9999));
 
     // Clipping Node
     auto sn = LayerColor::create(Color4B(0, 0, 0, 255), sp->getContentSize().width, sp->getContentSize().height);
     sn->ignoreAnchorPointForPosition(false);
+    sn->setContentSize(sp->getContentSize() - Size(10, 10));
     sn->setPosition(sp->getPosition());
-    sn->setScaleX((sp->getContentSize().width - 10) / sp->getContentSize().width);
-    sn->setScaleY((sp->getContentSize().height - 10) / sp->getContentSize().height);
 
     auto cn = ClippingNode::create(sn);
     cn->setContentSize(getContentSize());
@@ -432,72 +530,42 @@ bool AbilitySceneLayer::init()
 
     addChild(cn);
 
-    a = new CBuffMakerAct("BMA", "引力漩涡", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, 0);
-    a->setImageName("UI/Ability/GravitySurf.png");
-    a->setMaxLevel(2);
-    a->setLevel(1);
-    a->setGrade(CAbility::kRare);
-    a->setCost(2);
-    ai = AbilityItem::create(a);
-    bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
-
-
-    a = new CBuffMakerAct("BMA", "群体诅咒", 5.0f, CCommandTarget::kNoTarget, CUnitForce::kEnemy, 1.0f, 0);
-    a->setImageName("UI/Ability/AbilityCurse.png");
-    a->setMaxLevel(3);
-    a->setLevel(0);
-    a->setGrade(CAbility::kNormal);
-    a->setCost(1);
-    ai = AbilityItem::create(a);
-    bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
-
-    a->setGrade((CAbility::GRADE)(rand() % 4));
-    ai = AbilityItem::create(a->copy());
-    bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
-
-    a->setGrade((CAbility::GRADE)(rand() % 4));
-    ai = AbilityItem::create(a->copy());
-    bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
-
-    a->setGrade((CAbility::GRADE)(rand() % 4));
-    ai = AbilityItem::create(a->copy());
-    bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
-
-    a->setGrade((CAbility::GRADE)(rand() % 4));
-    ai = AbilityItem::create(a->copy());
-    bp->addNodeEx(ai, WinFormPanel::kTopToBottom);
-
-
-    a->setImageName("UI/Ability/AbilityCurse.png");
-    a->setGrade(CAbility::kLegend);
-    a->setCost(6);
-    a->setDescribe("诅咒一片区域，受诅咒的英雄受到20点/秒的伤害，持续13秒，每隔4秒每损失100点的生命值就会受到40点的额外伤害");
-    a->setMaxLevel(3);
-    a->setLevelInfo(1, 0, "每损失100的生命时所受到的伤害提高40点");
-    a->setLevelInfo(2, 1, "同时降低单位15%的移动速度");
-    a->setLevelInfo(3, 2, "诅咒效果持续17秒");
-    a->setLevel(2);
-
-    a->retain();
-
-    bp->setActionCallback([this, a](int action)
+    // add ability items
+    CUserData::VEC_ABILITY_INFOS& vec = CUserData::instance()->m_vecAbilitys;
+    for (auto i = 0; i < (int)vec.size(); ++i)
     {
-        if (action != WinLayer::kClickPoint)
-        {
-            return;
-        }
-        auto pop = PopAbilityDetails::create(a);
-        this->addChild(pop, 3);
-        pop->setPosition(getAnchorPointInPoints());
-        pop->setCascadeOpacityEnabled(true);
-        pop->setOpacity(0);
+        auto& item = vec[i];
+        auto a = CAbilityLibrary::instance()->copyAbility(item.id);
+        a->setLevel(item.level);
+        auto ai = AbilityItem::create(a);
+        m_abilityItemsPanel->addNodeEx(ai, WinFormPanel::kTopToBottom);
+    }
 
-        pop->runAction(FadeIn::create(0.5f));
-    });
-
-    
+    m_abilityItemsPanel->setClickNodeCallback(bind(&AbilitySceneLayer::onClickAbilityItems, this, placeholders::_1));
 
     return true;
 }
 
+void AbilitySceneLayer::onClickAbilityItems(Node* abilityItem)
+{
+    auto ai = DCAST(abilityItem, AbilityItem*);
+    auto a = ai->getAbility();
 
+    auto pop = DCAST(getChildByTag(101), AbilityDetails*);
+    if (pop == nullptr)
+    {
+        pop = AbilityDetails::create(a);
+        addChild(pop, 1, 101);
+        pop->setPosition(m_winFormBorder->getPosition() + Point(m_winFormBorder->getContentSize().width * 0.5 + pop->getContentSize().width * 0.5 + 10, m_winFormBorder->getContentSize().height * 0.5 - pop->getContentSize().height * 0.5));
+        pop->setCascadeOpacityEnabled(true);
+        pop->setOpacity(0);
+        pop->runAction(FadeIn::create(0.2f));
+    }
+    else
+    {
+        pop->updateContent(a);
+    }
+
+    pop->setUserData(abilityItem);
+    
+}

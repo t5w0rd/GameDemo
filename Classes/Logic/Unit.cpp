@@ -748,11 +748,6 @@ void CUnit::copyData(const CUnit* from)
     m_sName = from->m_sName;
     m_dwForceFlag = from->m_dwForceFlag;
     m_dwAllyMaskFlag = from->m_dwAllyMaskFlag;
-    m_iMaxLvl = from->m_iMaxLvl;
-    m_iLvl = from->m_iLvl;
-    m_iMaxExp = from->m_iMaxExp;
-    m_iExp = from->m_iExp;
-    m_pUpdate = from->m_pUpdate ? from->m_pUpdate->copy() : nullptr;
     m_fMaxHp = from->m_fMaxHp;
     m_oExMaxHp = from->m_oExMaxHp;
     m_fHp = from->m_fHp;
@@ -776,6 +771,13 @@ void CUnit::copyData(const CUnit* from)
     m_bRevivable = from->m_bRevivable;
     m_iRewardGold = from->m_iRewardGold;
     m_iRewardExp = from->m_iRewardExp;
+
+    m_iBaseExp = from->m_iBaseExp;
+    m_iMaxExp = from->m_iMaxExp;
+    m_iExp = from->m_iExp;
+    m_pUpdate = from->m_pUpdate ? from->m_pUpdate->copy() : nullptr;
+    m_iMaxLvl = from->m_iMaxLvl;
+    //setLevel(from->getLevel());
 }
 
 

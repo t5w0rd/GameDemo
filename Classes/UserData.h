@@ -43,7 +43,13 @@ public:
     int m_stageSel;
     CGameData::STAGE_INFO* getStageSelected();
 
-    vector<int> m_vecAbilitys;
+    struct ABILITY_INFO
+    {
+        int id;
+        int level;
+    };
+    typedef vector<ABILITY_INFO> VEC_ABILITY_INFOS;
+    VEC_ABILITY_INFOS m_vecAbilitys;
 };
 
 #endif

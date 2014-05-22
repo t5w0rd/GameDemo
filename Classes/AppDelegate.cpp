@@ -7,8 +7,10 @@
 #include "StageScene.h"
 #include "AbilityScene.h"
 #include "EmptyScene.h"
+#include "GameData.h"
 
 
+// AppDelegate
 AppDelegate::AppDelegate()
 {
 }
@@ -41,6 +43,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 #if GD_UNPACK
     auto scene = UnpackSceneLayer::scene();
 #else
+    CGameData::instance();
     CUserData::instance()->load("");
     //auto scene = BattleSceneLayer::scene();
     //auto scene = LogoSceneLayer::scene();
