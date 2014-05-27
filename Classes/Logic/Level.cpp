@@ -9,6 +9,7 @@
 #include "Level.h"
 #include "Unit.h"
 #include "LuaBinding.h"
+#include "LuaScriptEngine.h"
 
 
 // CLevelUpdate
@@ -31,7 +32,7 @@ CLevelUpdate::~CLevelUpdate()
 {
     if (getScriptHandler() != 0)
     {
-        lua_State* L = CWorld::getLuaHandle();
+        lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
         luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
     }
 }
@@ -55,7 +56,7 @@ void CLevelUpdate::updateExpRange(CLevelExp* pLevel)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int lu = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, lu, "updateExpRange");
@@ -86,7 +87,7 @@ void CLevelUpdate::onChangeLevel(CLevelExp* pLevel, int iChanged)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int lu = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, lu, "onChangeLevel");
@@ -117,7 +118,7 @@ int CLevelUpdate::calcExp(int iLevel)
         return iLevel;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int le = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, le, "calcExp");

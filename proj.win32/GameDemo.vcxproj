@@ -158,6 +158,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClCompile Include="..\Classes\Logic\Item.cpp" />
     <ClCompile Include="..\Classes\Logic\Level.cpp" />
     <ClCompile Include="..\Classes\Logic\LuaBinding.cpp" />
+    <ClCompile Include="..\Classes\Logic\LuaScriptEngine.cpp" />
     <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp" />
     <ClCompile Include="..\Classes\Logic\Unit.cpp" />
     <ClCompile Include="..\Classes\LogoScene.cpp" />
@@ -228,6 +229,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClInclude Include="..\Classes\Logic\Item.h" />
     <ClInclude Include="..\Classes\Logic\Level.h" />
     <ClInclude Include="..\Classes\Logic\LuaBinding.h" />
+    <ClInclude Include="..\Classes\Logic\LuaScriptEngine.h" />
     <ClInclude Include="..\Classes\Logic\MultiRefObject.h" />
     <ClInclude Include="..\Classes\Logic\Unit.h" />
     <ClInclude Include="..\Classes\LogoScene.h" />

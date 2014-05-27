@@ -12,6 +12,7 @@
 #include "Application.h"
 #include "Draw.h"
 #include "LuaBinding.h"
+#include "LuaScriptEngine.h"
 #include "GameControl.h"
 
 
@@ -37,7 +38,7 @@ CAbility::~CAbility()
 {
     if (getScriptHandler() != 0)
     {
-        lua_State* L = CWorld::getLuaHandle();
+        lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
         luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
     }
 }
@@ -84,7 +85,7 @@ void CAbility::copyScriptHandler(int iScriptHandler)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
 
     // copy source lua obj
     lua_getglobal(L, "table");
@@ -154,7 +155,7 @@ void CAbility::onUnitAddAbility()
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
     
     lua_getfield(L, a, "onUnitAddAbility");
@@ -178,7 +179,7 @@ void CAbility::onUnitDelAbility()
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
     
     lua_getfield(L, a, "onUnitDelAbility");
@@ -202,7 +203,7 @@ void CAbility::onUnitAbilityReady()
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitAbilityReady");
@@ -226,7 +227,7 @@ void CAbility::onUnitRevive()
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitRevive");
@@ -250,7 +251,7 @@ void CAbility::onUnitDying()
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDying");
@@ -274,7 +275,7 @@ void CAbility::onUnitDead()
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDead");
@@ -298,7 +299,7 @@ void CAbility::onUnitChangeHp(float fChanged)
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitChangeHp");
@@ -323,7 +324,7 @@ void CAbility::onUnitTick(float dt)
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitTick");
@@ -348,7 +349,7 @@ void CAbility::onUnitInterval()
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitInterval");
@@ -372,7 +373,7 @@ void CAbility::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitAttackTarget");
@@ -398,7 +399,7 @@ bool CAbility::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
         return true;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitAttacked");
@@ -432,7 +433,7 @@ void CAbility::onUnitDamaged(CAttackData* pAttack, CUnit* pSource)
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDamaged");
@@ -458,7 +459,7 @@ void CAbility::onUnitDamagedDone(float fDamage, CUnit* pSource)
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDamagedDone");
@@ -484,7 +485,7 @@ void CAbility::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitDamageTargetDone");
@@ -510,7 +511,7 @@ void CAbility::onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
         return;
     }
     
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitProjectileEffect");
@@ -536,7 +537,7 @@ bool CAbility::onUnitProjectileArrive(CProjectile* pProjectile)
         return true;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitProjectileArrive");
@@ -569,7 +570,7 @@ void CAbility::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitAbilityEffect");
@@ -737,7 +738,7 @@ bool CActiveAbility::checkConditions(const CCommandTarget& rTarget)
         return true;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "checkConditions");
@@ -790,7 +791,7 @@ void CActiveAbility::onUnitCastAbility()
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, a, "onUnitCastAbility");

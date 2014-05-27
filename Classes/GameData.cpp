@@ -2,11 +2,25 @@
 #include "GameData.h"
 #include "GameControl.h"
 #include "AbilityLibrary.h"
+#include "LuaBinding.h"
+#include "LuaBindingForCC.h"
+#include "LuaScriptEngine.h"
 
 
 // CGameData
 CGameData::CGameData()
 {
+    setDbgClassName("CGameData");
+    auto L = CLuaScriptEngine::instance()->getLuaHandle();
+    luaL_insertloader(L, luaModuleLoader4cc);
+    luaRegCommFunc(L);
+    luaRegCommFuncForCC(L);
+
+    lua_getglobal(L, "setSearchPath");
+    lua_call(L, 0, 0);
+
+    luaL_includefile(L, "Init.lua");
+
     initStageData();
     initAbilityData();
 }

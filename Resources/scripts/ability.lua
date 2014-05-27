@@ -153,28 +153,6 @@ function OnDyingPas:onUnitDying()
 
 end
 
-loadAnimation("Sprites/VoodooProy/move", "Sprites/VoodooProy/move", 0.1)
-loadAnimation("Sprites/VoodooProy/die", "Sprites/VoodooProy/die", 0.1)
-local sp = Sprite:new("VoodooProy")
-sp:prepareFrame(Sprite.kFrmDefault, "default")
-sp:prepareAnimation(Sprite.kAniMove, "move", -1)
-sp:prepareAnimation(Sprite.kAniDie, "die", 0)
-local u = Unit:new(sp, "Orb")
-u:setGeometry(16.0, 16.0, 0.5, 0.5, 0, 0);
-u:setFixed()
-addTemplateUnit(10001, u)
-
-loadAnimation("Sprites/AlienProy/move", "Sprites/AlienProy/move", 0.1)
-loadAnimation("Sprites/AlienProy/die", "Sprites/AlienProy/die", 0.1)
-local sp = Sprite:new("AlienProy")
-sp:prepareFrame(Sprite.kFrmDefault, "default")
-sp:prepareAnimation(Sprite.kAniMove, "move", -1)
-sp:prepareAnimation(Sprite.kAniDie, "die", 0)
-local u = Unit:new(sp, "Orb")
-u:setGeometry(16.0, 16.0, 0.5, 0.5, 0, 0);
-u:setFixed()
-addTemplateUnit(10002, u)
-
 SummonUnitAct = class(ActiveAbility)
 function SummonUnitAct:ctor(name, cd, castType, id, duration)
     self:sctor("SummonUnit", name, cd, castType, UnitForce.kSelf)

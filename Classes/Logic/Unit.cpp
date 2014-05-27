@@ -12,6 +12,7 @@
 #include "Application.h"
 #include "Item.h"
 #include "Draw.h"
+#include "LuaScriptEngine.h"
 #include "LuaBinding.h"
 #include "AbilityLibrary.h"
 
@@ -511,7 +512,7 @@ CUnitAI::~CUnitAI()
 {
     if (getScriptHandler() != 0)
     {
-        lua_State* L = CWorld::getLuaHandle();
+        lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
         luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
     }
 }
@@ -523,7 +524,7 @@ void CUnitAI::onUnitChangeHp(CUnit* pUnit, float fChanged)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, ai, "onUnitChangeHp");
@@ -551,7 +552,7 @@ void CUnitAI::onUnitTick(CUnit* pUnit, float dt)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, ai, "onUnitTick");
@@ -579,7 +580,7 @@ void CUnitAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, ai, "onUnitDamagedDone");
@@ -606,7 +607,7 @@ void CUnitAI::onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, ai, "onUnitDamageTargetDone");
@@ -633,7 +634,7 @@ void CUnitAI::onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, ai, "onUnitAddBuffAbility");
@@ -659,7 +660,7 @@ void CUnitAI::onUnitDelBuffAbility(CUnit* pUnit, CBuffAbility* pAbility)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, ai, "onUnitDelBuffAbility");
@@ -685,7 +686,7 @@ void CUnitAI::onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility)
         return;
     }
 
-    lua_State* L = CWorld::getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
     lua_getfield(L, ai, "onUnitAbilityReady");
@@ -723,6 +724,7 @@ CUnit::CUnit(CUnitDraw* draw)
 , m_iPriority(0)
 , m_pDraw(nullptr)
 , m_eSpecies(kUnknown)
+, m_iEnergy(0)
 {
     setDraw(draw);
     setDbgClassName("CUnit");
@@ -767,7 +769,7 @@ void CUnit::copyData(const CUnit* from)
     }
 
     m_oBaseArmor = from->m_oBaseArmor;
-    m_oExArmorValue = from->m_oExArmorValue;
+    //m_oExArmorValue = from->m_oExArmorValue;
     m_bRevivable = from->m_bRevivable;
     m_iRewardGold = from->m_iRewardGold;
     m_iRewardExp = from->m_iRewardExp;
@@ -2259,18 +2261,6 @@ CWorld::CWorld()
 
 CWorld::~CWorld()
 {
-}
-
-lua_State* CWorld::getLuaHandle()
-{
-    static lua_State* L = nullptr;
-    if (L == nullptr)
-    {
-        L = luaL_newstate();
-        luaL_openlibs(L);
-    }
-
-    return L;
 }
 
 bool CWorld::onInit()

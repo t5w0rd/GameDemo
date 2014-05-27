@@ -41,8 +41,6 @@ public:
     M_SYNTHESIZE(CUnit*, m_pHero, Hero);
     M_SYNTHESIZE(CStunBuff*, m_pDragonStrikeBuff, DragonStrikeBuff);
 
-    CUnitLibraryForCC m_oULib;
-
     M_SYNTHESIZE_STR(ScriptName);
     
 };

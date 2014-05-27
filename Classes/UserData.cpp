@@ -10,6 +10,7 @@ CUserData::CUserData()
 : m_heroSel(0)
 , m_stageSel(0)
 {
+    setDbgClassName("CUserData");
 }
 
 void CUserData::reset()

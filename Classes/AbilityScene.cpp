@@ -123,7 +123,7 @@ bool AbilityDetails::initWithAbility(CAbility* ability)
     auto l = LayerColor::create(Color4B(83, 83, 83, 255));
     l->setContentSize(getContentSize() - Size(10, 10));
     addChild(l, -1);
-    l->setPosition(Point::ZERO);
+    l->setPosition(Point::ZERO + Point(5, 5));
 
     m_mn = MenuEx::create();
     m_mn->setContentSize(l->getContentSize());
@@ -457,11 +457,13 @@ Sprite* AbilityDetails::iconByType(int index, int type)
 void AbilityDetails::onClickUpgrade(Ref* ref)
 {
     assert(m_ability->getLevel() < m_ability->getMaxLevel());
+
+    auto ai = (AbilityItem*)getUserData();
+    ai->setEquipped(false);
     
     m_ability->setLevel(m_ability->getLevel() + 1);
     updateContent(m_ability);
     
-    auto ai = (AbilityItem*)getUserData();
     ai->updateContent(m_ability);
 }
 
@@ -475,6 +477,7 @@ bool AbilitySceneLayer::init()
         return false;
     }
 
+    // test data
     CUserData::ABILITY_INFO info;
     info.id = 0;
     info.level = 1;
@@ -482,6 +485,8 @@ bool AbilitySceneLayer::init()
     info.id = 1;
     info.level = 0;
     CUserData::instance()->m_vecAbilitys.push_back(info);
+
+    CUserData::instance()->getHeroSelected()->energy = 12;
 
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
@@ -497,6 +502,7 @@ bool AbilitySceneLayer::init()
     m_abilityItemsPanel->setColor(Color3B::GRAY);
     m_abilityItemsPanel->setOpacity(128);
     addChild(m_abilityItemsPanel);
+    m_abilityItemsPanel->setWinSize(Size(m_abilityItemsPanel->getWinSize().width, 763 - 52));
     m_abilityItemsPanel->setBufferEffectParam(1.0f, 0.9f, 20.0f, 0.1f);
 
     // 镂空边框
@@ -506,7 +512,7 @@ bool AbilitySceneLayer::init()
     sp->setInsetBottom(69);
     sp->setInsetLeft(45);
     sp->setInsetRight(45);
-    sp->setContentSize(m_abilityItemsPanel->getWinSize() + Size(52, 52));
+    sp->setContentSize(Size(m_abilityItemsPanel->getWinSize().width + 52, 763));
     addChild(sp, 1);
     m_winFormBorder = sp;
 
@@ -538,10 +544,44 @@ bool AbilitySceneLayer::init()
         auto a = CAbilityLibrary::instance()->copyAbility(item.id);
         a->setLevel(item.level);
         auto ai = AbilityItem::create(a);
+        ai->setOnChangeEquippedCallback(CC_CALLBACK_2(AbilitySceneLayer::onChangeAbilityItemEquipped, this));
         m_abilityItemsPanel->addNodeEx(ai, WinFormPanel::kTopToBottom);
     }
 
     m_abilityItemsPanel->setClickNodeCallback(bind(&AbilitySceneLayer::onClickAbilityItems, this, placeholders::_1));
+
+    // 已装备技能栏
+    tx = Director::getInstance()->getTextureCache()->addImage("UI/Ability/AbilityBg.png");
+    aiSz = tx->getContentSize();
+    m_abilityEquippedPanel = ButtonPanel::create(1, 12, aiSz, 0, 0, nullptr);
+    addChild(m_abilityEquippedPanel, 10);
+    
+    sp = Scale9Sprite::create("UI/ScaleBorder2_109x69_45x157.png");
+    sp->setInsetTop(69);
+    sp->setInsetBottom(69);
+    sp->setInsetLeft(45);
+    sp->setInsetRight(45);
+    sp->setContentSize(m_abilityEquippedPanel->getContentSize() + Size(52, 52));
+    auto l = LayerColor::create(Color4B(83, 83, 83, 255));
+    l->setContentSize(sp->getContentSize() - Size(10, 10));
+    sp->addChild(l, -1);
+    l->setPosition(Point::ZERO + Point(5, 5));
+    m_abilityEquippedPanel->setBackground(sp, 0.0f, 5.0f);
+    m_abilityEquippedPanel->getBackground()->setLocalZOrder(-1);
+
+    m_abilityEquippedPanel->setPosition(Point(wsz.width * 0.5, sp->getContentSize().height * 0.5 + 15));
+
+    char str[1024];
+    char sz[1024];
+    m_energyCost = 0;
+    sprintf(str, "精力: %d/%d", CUserData::instance()->getHeroSelected()->energy - m_energyCost, CUserData::instance()->getHeroSelected()->energy);
+    gbk_to_utf8(str, sz);
+    m_energy = Label::createWithTTF(sz, "fonts/DFYuanW7-GB2312.ttf", 32);
+
+    addChild(m_energy, 11);
+    m_energy->setDimensions(m_energy->getContentSize().width * 1.5, m_energy->getContentSize().height);
+    m_energy->setPosition(Point(m_energy->getContentSize().width * 0.5 + wsz.width * 0.5 - m_abilityEquippedPanel->getContentSize().width * 0.5 + 0, m_energy->getContentSize().height * 0.5 + m_abilityEquippedPanel->getPosition().y + m_abilityEquippedPanel->getContentSize().height * 0.5 + 40));
+    
 
     return true;
 }
@@ -561,11 +601,80 @@ void AbilitySceneLayer::onClickAbilityItems(Node* abilityItem)
         pop->setOpacity(0);
         pop->runAction(FadeIn::create(0.2f));
     }
-    else
+    else if (pop->getUserData() != ai)
     {
         pop->updateContent(a);
     }
 
-    pop->setUserData(abilityItem);
-    
+    if (pop->getUserData() != ai)
+    {
+        pop->setUserData(ai);
+    }
+    else
+    {
+        // 装备状态变更
+        if (ai->isEquipped())
+        {
+            ai->setEquipped(false);
+        }
+        else
+        {
+            if (CUserData::instance()->getHeroSelected()->energy - m_energyCost >= a->getCost())
+            {
+                ai->setEquipped(true);
+                m_energy->stopAllActions();
+                m_energy->setScale(1.0f);
+                m_energy->setColor(Color3B(255, 255, 255));
+                m_energy->runAction(Sequence::create(ScaleTo::create(0.1f, m_energy->getScale() * 1.3f), ScaleTo::create(0.1f, m_energy->getScale() * 1.0f), nullptr));
+            }
+            else
+            {
+                m_energy->stopAllActions();
+                m_energy->setScale(1.0f);
+                m_energy->setColor(Color3B(255, 255, 255));
+                m_energy->runAction(Repeat::create(Sequence::create(TintTo::create(0.1f, 255, 0, 0), TintTo::create(0.1f, 255, 255, 255), nullptr), 3));
+                ai->m_aicost2->stopAllActions();
+                ai->m_aicost2->setColor(Color3B(78, 43, 7));
+                ai->m_aicost2->runAction(Repeat::create(Sequence::create(TintTo::create(0.1f, 255, 255, 255), TintTo::create(0.1f, 78, 43, 7), nullptr), 3));
+            }
+        }
+    }
+}
+
+void AbilitySceneLayer::onClickAbilityItemsEquipped(Ref* ref)
+{
+    auto btn = DCAST(ref, ButtonNormal*);
+    auto ai = (AbilityItem*)btn->getUserData();
+    ai->setEquipped(false);
+}
+
+void AbilitySceneLayer::onChangeAbilityItemEquipped(AbilityItem* ai, bool equipped)
+{
+    if (equipped == true)
+    {
+        auto btn = ButtonNormal::create(Sprite::create(ai->getAbility()->getImageName()), nullptr, nullptr, nullptr, nullptr, 0.0f, CC_CALLBACK_1(AbilitySceneLayer::onClickAbilityItemsEquipped, this), nullptr);
+        m_abilityEquippedPanel->addButtonEx(btn, ButtonPanel::kTopToBottom);
+        ai->setUserData(btn);
+        btn->setUserData(ai);
+        m_energyCost += ai->getAbility()->getCost();
+    }
+    else
+    {
+        auto btn = (ButtonNormal*)ai->getUserData();
+        m_abilityEquippedPanel->delButton(btn);
+        m_abilityEquippedPanel->clearUpSlot(ButtonPanel::kTopToBottom);
+        ai->setUserData(nullptr); 
+        m_energyCost -= ai->getAbility()->getCost();
+    }
+
+    char str[1024];
+    char sz[1024];
+    sprintf(str, "精力: %d/%d", CUserData::instance()->getHeroSelected()->energy - m_energyCost, CUserData::instance()->getHeroSelected()->energy);
+    gbk_to_utf8(str, sz);
+    m_energy->setString(sz);
+
+    m_energy->stopAllActions();
+    m_energy->setScale(1.0f);
+    m_energy->setColor(Color3B(255, 255, 255));
+    m_energy->runAction(Sequence::create(ScaleTo::create(0.1f, m_energy->getScale() * 1.3f), ScaleTo::create(0.1f, m_energy->getScale() * 1.0f), nullptr));
 }

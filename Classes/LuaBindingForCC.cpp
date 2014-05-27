@@ -65,6 +65,110 @@ bool luaL_loadscript4cc(lua_State *L, const char* name, string& err)
     return true;
 }
 
+int g_loadFrames(lua_State* L)
+{
+    const char* name = lua_tostring(L, 1);
+
+    M_DEF_GC(gc);
+    gc->loadFrames(name);
+
+    return 0;
+}
+
+int g_loadAnimation(lua_State* L)
+{
+    const char* path = lua_tostring(L, 1);
+    const char* name = lua_tostring(L, 2);
+    float delay = lua_tonumber(L, 3);
+
+    M_DEF_GC(gc);
+    gc->loadAnimation(path, name, delay);
+
+    return 0;
+}
+
+int g_showDebug(lua_State* L)
+{
+    bool bOn = lua_toboolean(L, 1) != 0;
+
+    Director::getInstance()->setDisplayStats(bOn);
+
+    return 0;
+}
+
+int g_playSound(lua_State* L)
+{
+    const char* eff = lua_tostring(L, 1);
+
+    SimpleAudioEngine::getInstance()->playEffect(eff);
+
+    return 0;
+}
+
+string g_sLuaSearchPath;
+
+int g_setSearchPath(lua_State* L)
+{
+    if (lua_gettop(L) == 0)
+    {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+        g_sLuaSearchPath = "/sdcard/ts/gamedemo";
+#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        g_sLuaSearchPath = "/var/mobile/Documents";
+#else
+        g_sLuaSearchPath = "scripts";
+#endif
+    }
+    else
+    {
+        const char* path = lua_tostring(L, 1);
+        if (path != nullptr)
+        {
+            g_sLuaSearchPath = path;
+        }
+    }
+
+    return 0;
+}
+
+int g_include(lua_State* L)
+{
+    const char* inc = lua_tostring(L, 1);
+
+    char sz[256];
+
+    sprintf(sz, "%s/%s", g_sLuaSearchPath.c_str(), inc);
+
+    string err;
+    if (luaL_loadscript4cc(L, sz, err) == false)
+    {
+        return luaL_error(L, "%s", err.c_str());
+    }
+
+    return 0;
+}
+
+int g_addTemplateUnit(lua_State* L)
+{
+    int id = lua_tointeger(L, 1);
+    CUnit* u = luaL_tounitptr(L, 2);
+
+    CUnitLibraryForCC::instance()->addUnit(id, u);
+
+    return 0;
+}
+
+int g_addTemplateProjectile(lua_State* L)
+{
+    int id = lua_tointeger(L, 1);
+    CProjectile* p = nullptr;
+    luaL_toobjptr(L, 2, p);
+
+    CUnitLibraryForCC::instance()->addProjectile(id, p);
+
+    return 0;
+}
+
 luaL_Reg Unit4CC_funcs[] = {
     { "ctor", Unit4CC_ctor },
     { "addBattleTip", Unit4CC_addBattleTip },
@@ -216,6 +320,47 @@ int Sprite_prepareAnimation(lua_State* L)
     return 0;
 }
 
+int luaRegCommFuncForCC(lua_State* L)
+{
+    // TODO: reg global funcs
+    lua_register(L, "loadFrames", g_loadFrames);
+    lua_register(L, "loadAnimation", g_loadAnimation);
+    lua_register(L, "showDebug", g_showDebug);
+    lua_register(L, "playSound", g_playSound);
+    lua_register(L, "setSearchPath", g_setSearchPath);
+    lua_register(L, "include", g_include);
+    lua_register(L, "addTemplateUnit", g_addTemplateUnit);
+    lua_register(L, "addTemplateProjectile", g_addTemplateProjectile);
+
+    // TODO: patch global class members
+    M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);
+    M_LUA_PATCH_CLASS_WITH_FUNCS(L, Projectile, Projectile4CC);
+    M_LUA_PATCH_CLASS_WITH_FUNCS(L, UnitPath, UnitPath4CC);
+
+    // TODO: reg global classes
+    M_LUA_BIND_CLASS_WITH_FUNCS(L, Sprite);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, StatusShowPas, PassiveAbility);
+
+    return 0;
+}
+
+int luaL_includefile(lua_State* L, const char* file)
+{
+    int res = 0;
+
+    lua_getglobal(L, "include");
+    lua_pushstring(L, file);
+    res = lua_pcall(L, 1, 0, 0);
+    if (res != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        CCLOG("ERR | LuaErr: %s", err);
+        lua_pop(L, 1);
+    }
+
+    return res;
+}
+
 int g_log(lua_State* L)
 {
     lua_getglobal(L, "string");
@@ -239,57 +384,6 @@ int g_log(lua_State* L)
     return 0;
 }
 
-int g_loadFrames(lua_State* L)
-{
-    const char* name = lua_tostring(L, 1);
-
-    M_DEF_GC(gc);
-    gc->loadFrames(name);
-
-    return 0;
-}
-
-int g_loadAnimation(lua_State* L)
-{
-    const char* path = lua_tostring(L, 1);
-    const char* name = lua_tostring(L, 2);
-    float delay = lua_tonumber(L, 3);
-
-    M_DEF_GC(gc);
-    gc->loadAnimation(path, name, delay);
-
-    return 0;
-}
-
-int g_addTemplateUnit(lua_State* L)
-{
-    int id = lua_tointeger(L, 1);
-    CUnit* u = luaL_tounitptr(L, 2);
-
-    lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    lua_pop(L, 1);  // pop _world
-
-    w->m_oULib.addUnit(id, u);
-
-    return 0;
-}
-
-int g_addTemplateProjectile(lua_State* L)
-{
-    int id = lua_tointeger(L, 1);
-    CProjectile* p = nullptr;
-    luaL_toobjptr(L, 2, p);
-
-    lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    lua_pop(L, 1);  // pop _world
-
-    w->m_oULib.addProjectile(id, p);
-
-    return 0;
-}
-
 int g_createUnit(lua_State* L)
 {
     int id = lua_tointeger(L, 1);
@@ -298,7 +392,7 @@ int g_createUnit(lua_State* L)
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
-    CUnit* _p = w->m_oULib.copyUnit(id);
+    CUnit* _p = CUnitLibraryForCC::instance()->copyUnit(id);
     w->addUnit(_p);
 
     luaL_pushobjptr(L, "Unit", _p);
@@ -314,73 +408,12 @@ int g_createProjectile(lua_State* L)
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
-    CProjectile* _p = w->m_oULib.copyProjectile(id);
+    CProjectile* _p = CUnitLibraryForCC::instance()->copyProjectile(id);
     w->addProjectile(_p);
 
     luaL_pushobjptr(L, "Projectile", _p);
 
     return 1;
-}
-
-int g_showDebug(lua_State* L)
-{
-    bool bOn = lua_toboolean(L, 1) != 0;
-
-    Director::getInstance()->setDisplayStats(bOn);
-
-    return 0;
-}
-
-int g_playSound(lua_State* L)
-{
-    const char* eff = lua_tostring(L, 1);
-
-    SimpleAudioEngine::getInstance()->playEffect(eff);
-
-    return 0;
-}
-
-string g_sLuaSearchPath;
-
-int g_setSearchPath(lua_State* L)
-{
-    if (lua_gettop(L) == 0)
-    {
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-        g_sLuaSearchPath = "/sdcard/ts/gamedemo";
-#elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-        g_sLuaSearchPath = "/var/mobile/Documents";
-#else
-        g_sLuaSearchPath = "scripts";
-#endif
-    }
-    else
-    {
-        const char* path = lua_tostring(L, 1);
-        if (path != nullptr)
-        {
-            g_sLuaSearchPath = path;
-        }
-    }
-
-    return 0;
-}
-
-int g_include(lua_State* L)
-{
-    const char* inc = lua_tostring(L, 1);
-
-    char sz[256];
-
-    sprintf(sz, "%s/%s", g_sLuaSearchPath.c_str(), inc);
-
-    string err;
-    if (luaL_loadscript4cc(L, sz, err) == false)
-    {
-        return luaL_error(L, "%s", err.c_str());
-    }
-
-    return 0;
 }
 
 int g_endWithVictory(lua_State* L)
@@ -421,32 +454,39 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
 
-    // TODO: reg global funcs
+    // TODO: reg global world funcs
     lua_register(L, "log", g_log);
-    lua_register(L, "loadFrames", g_loadFrames);
-    lua_register(L, "loadAnimation", g_loadAnimation);
-    lua_register(L, "addTemplateUnit", g_addTemplateUnit);
-    lua_register(L, "addTemplateProjectile", g_addTemplateProjectile);
     lua_register(L, "createUnit", g_createUnit);
     lua_register(L, "createProjectile", g_createProjectile);
-    lua_register(L, "showDebug", g_showDebug);
-    lua_register(L, "playSound", g_playSound);
-    lua_register(L, "setSearchPath", g_setSearchPath);
-    lua_register(L, "include", g_include);
     lua_register(L, "endWithVictory", g_endWithVictory);
     lua_register(L, "endWithDefeat", g_endWithDefeat);
     lua_register(L, "save", g_save);
 
-    // TODO: patch global class members
-    M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);
-    M_LUA_PATCH_CLASS_WITH_FUNCS(L, Projectile, Projectile4CC);
-    M_LUA_PATCH_CLASS_WITH_FUNCS(L, UnitPath, UnitPath4CC);
-
-    // bind a class
-    M_LUA_BIND_CLASS_WITH_FUNCS(L, Sprite);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, StatusShowPas, PassiveAbility);
-
     return 0;
+}
+
+int luaL_includefilelog(lua_State* L, const char* file)
+{
+    int res = 0;
+
+    lua_getglobal(L, "include");
+    lua_pushstring(L, CUserData::instance()->getStageSelected()->script.c_str());
+    res = lua_pcall(L, 1, 0, 0);
+    if (res != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        CCLOG("ERR | LuaErr: %s", err);
+        lua_pop(L, 1);
+
+        lua_getglobal(L, "_world");
+        CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+        lua_pop(L, 1);  // pop _world
+        DCAST(w->getLayer(), BattleSceneLayer*)->log("%s", err);
+
+        return LUA_ERRERR;
+    }
+
+    return LUA_OK;
 }
 
 int StatusShowPas_ctor(lua_State* L)

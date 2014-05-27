@@ -17,13 +17,6 @@ bool luaL_loadscript(lua_State *L, const char* name, string& err);
 int luaL_setregistry(lua_State* L, int idx);
 int luaL_getregistery(lua_State* L, int key);
 
-int obj_sctor(lua_State* L);
-int obj_ctor(lua_State* L);
-int class_type_new(lua_State* L);
-int g_class(lua_State* L);
-
-int luaRegCommFunc(lua_State* L);
-
 class CUnit;
 class CAbility;
 class CWorld;
@@ -77,6 +70,12 @@ do \
     lua_pop(L, 1); \
 } while (false)
 
+
+int obj_sctor(lua_State* L);
+int obj_ctor(lua_State* L);
+int class_type_new(lua_State* L);
+int g_class(lua_State* L);
+int g_cast(lua_State* L);
 
 template <typename PTYPE>
 PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr);
@@ -267,6 +266,13 @@ int Ability_setLevel(lua_State* L);
 int Ability_getLevel(lua_State* L);
 int Ability_addEffectSound(lua_State* L);
 int Ability_setImageName(lua_State* L);
+int Ability_setDescribe(lua_State* L);
+int Ability_getDescribe(lua_State* L);
+int Ability_setLevelInfo(lua_State* L);
+int Ability_setGrade(lua_State* L);
+int Ability_getGrade(lua_State* L);
+int Ability_setCost(lua_State* L);
+int Ability_getCost(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -324,6 +330,8 @@ int AttractBuff_ctor(lua_State* L);
 int ReflectBuff_ctor(lua_State* L);
 int LimitedLifeBuff_ctor(lua_State* L);
 
+int luaRegCommFunc(lua_State* L);
+
 int g_onWorldInit(lua_State* L);
 int g_onWorldTick(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
@@ -331,7 +339,6 @@ int g_setControlUnit(lua_State* L);
 int g_getControlUnit(lua_State* L);
 int g_getUnit(lua_State* L);
 int g_getUnits(lua_State* L);
-int g_cast(lua_State* L);
 int g_addUnit(lua_State* L);
 int g_addProjectile(lua_State* L);
 

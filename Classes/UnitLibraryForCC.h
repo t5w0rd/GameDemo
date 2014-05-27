@@ -1,14 +1,17 @@
 #ifndef __UNITLIBRARYFORCC_H__
 #define __UNITLIBRARYFORCC_H__
 
+#include "MultiRefObject.h"
+
 
 class CUnit;
 class CProjectile;
-class CUnitLibraryForCC
+
+class CUnitLibraryForCC : public CMultiRefObject
 {
 public:
-    CUnitLibraryForCC(void);
-    bool init();
+    CUnitLibraryForCC();
+    M_SINGLETON(CUnitLibraryForCC);
 
     enum ORG_UNIT
     {

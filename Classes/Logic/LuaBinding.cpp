@@ -180,9 +180,14 @@ int g_class(lua_State* L)
     return 1;
 }
 
-int luaRegCommFunc(lua_State* L)
+int g_cast(lua_State* L)
 {
-    lua_register(L, "class", g_class);
+    int t = 1;
+    int to = 2;
+
+    lua_pushvalue(L, to);
+    lua_setmetatable(L, t);
+
     return 0;
 }
 
@@ -1960,6 +1965,13 @@ luaL_Reg Ability_funcs[] = {
     { "getLevel", Ability_getLevel },
     { "addEffectSound", Ability_addEffectSound },
     { "setImageName", Ability_setImageName },
+    { "setDescribe", Ability_setDescribe },
+    { "getDescribe", Ability_getDescribe },
+    { "setLevelInfo", Ability_setLevelInfo },
+    { "setGrade", Ability_setGrade },
+    { "getGrade", Ability_getGrade },
+    { "setCost", Ability_setCost },
+    { "getCost", Ability_getCost },
     { nullptr, nullptr }
 };
 
@@ -2194,6 +2206,75 @@ int Ability_setImageName(lua_State* L)
     _p->setImageName(image);
 
     return 0;
+}
+
+int Ability_setDescribe(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    auto desc = lua_tostring(L, 2);
+    
+    _p->setDescribe(desc);
+
+    return 0;
+}
+
+int Ability_getDescribe(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+
+    lua_pushstring(L, _p->getDescribe());
+
+    return 1;
+}
+
+int Ability_setLevelInfo(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    auto lvl = lua_tointeger(L, 2);
+    auto type = lua_tointeger(L, 3);
+    auto desc = lua_tostring(L, 4);
+
+    _p->setLevelInfo(lvl, type, desc);
+
+    return 0;
+}
+
+int Ability_setGrade(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    auto grade = lua_tointeger(L, 2);
+
+    _p->setGrade((CAbility::GRADE)grade);
+
+    return 0;
+}
+
+int Ability_getGrade(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+
+    lua_pushinteger(L, _p->getGrade());
+
+    return 1;
+}
+
+int Ability_setCost(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    auto cost = lua_tointeger(L, 2);
+
+    _p->setCost(cost);
+
+    return 0;
+}
+
+int Ability_getCost(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+
+    lua_pushinteger(L, _p->getCost());
+
+    return 1;
 }
 
 luaL_Reg ActiveAbility_funcs[] = {
@@ -2923,6 +3004,51 @@ int LimitedLifeBuff_ctor(lua_State* L)
     return 0;
 }
 
+int luaRegCommFunc(lua_State* L)
+{
+    // TODO: reg global funcs
+    lua_register(L, "class", g_class);
+    lua_register(L, "cast", g_cast);
+
+    // TODO: reg global classes
+    M_LUA_BIND_CLASS_WITH_FUNCS(L, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, LevelExp, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, LevelUpdate, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, AttackData, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Unit, LevelExp);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, UnitPath, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, UnitAI, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Projectile, MRObj);
+
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Ability, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, ActiveAbility, Ability);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, PassiveAbility, Ability);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, BuffAbility, Ability);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, AttackAct, ActiveAbility);
+
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AttackBuffMakerPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AuraPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, VampirePas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, StunBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, DoubleAttackPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, SpeedBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ChangeHpPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ChangeHpBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, RebirthPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, EvadePas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, EvadeBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, BuffMakerAct, ActiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, DamageBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, TransitiveLinkBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, SplashPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, KnockBackBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AttractBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ReflectBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, LimitedLifeBuff, BuffAbility);
+
+    return 0;
+}
+
 int g_onWorldInit(lua_State* L)
 {
     return 0;
@@ -2935,11 +3061,24 @@ int g_onWorldTick(lua_State* L)
 
 int g_addTemplateAbility(lua_State* L)
 {
-    CAbility* a = luaL_toabilityptr(L, 1);
+    int n = lua_gettop(L);
+    
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    int id = w->addTemplateAbility(a);
     lua_pop(L, 1);
+
+    int id = 0;
+    if (n == 1)
+    {
+        CAbility* a = luaL_toabilityptr(L, 1);
+        id = w->addTemplateAbility(a);
+    }
+    else
+    {
+        int key = lua_tointeger(L, 1);
+        CAbility* a = luaL_toabilityptr(L, 2);
+        id = w->addTemplateAbility(key, a);
+    }
 
     lua_pushinteger(L, id);
 
@@ -3058,17 +3197,6 @@ int g_getUnits(lua_State* L)
     return 1;
 }
 
-int g_cast(lua_State* L)
-{
-    int t = 1;
-    int to = 2;
-
-    lua_pushvalue(L, to);
-    lua_setmetatable(L, t);
-
-    return 0;
-}
-
 int g_addUnit(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
@@ -3110,45 +3238,8 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_register(L, "getControlUnit", g_getControlUnit);
     lua_register(L, "getUnit", g_getUnit);
     lua_register(L, "getUnits", g_getUnits);
-    lua_register(L, "cast", g_cast);
     lua_register(L, "addUnit", g_addUnit);
     lua_register(L, "addProjectile", g_addProjectile);
-
-    // TODO: reg global classes
-    M_LUA_BIND_CLASS_WITH_FUNCS(L, MRObj);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, LevelExp, MRObj);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, LevelUpdate, MRObj);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, AttackData, MRObj);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Unit, LevelExp);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, UnitPath, MRObj);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, UnitAI, MRObj);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Projectile, MRObj);
-
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Ability, MRObj);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, ActiveAbility, Ability);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, PassiveAbility, Ability);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, BuffAbility, Ability);
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, AttackAct, ActiveAbility);
-
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AttackBuffMakerPas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AuraPas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, VampirePas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, StunBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, DoubleAttackPas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, SpeedBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ChangeHpPas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ChangeHpBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, RebirthPas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, EvadePas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, EvadeBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, BuffMakerAct, ActiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, DamageBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, TransitiveLinkBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, SplashPas, PassiveAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, KnockBackBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AttractBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ReflectBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, LimitedLifeBuff, BuffAbility);
 
     return 0;
 }

@@ -621,6 +621,8 @@ public:
     };
     
     M_SYNTHESIZE(UNIT_SPECIES, m_eSpecies, Species);
+
+    M_SYNTHESIZE(int, m_iEnergy, Energy);
     
 };
 
@@ -631,7 +633,6 @@ public:
     virtual ~CWorld();
     
     M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
-    static lua_State* getLuaHandle();
     
     virtual bool onInit();
     virtual void onTick(float dt);

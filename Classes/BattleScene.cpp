@@ -14,6 +14,8 @@
 #include "StageScene.h"
 #include "GameData.h"
 #include "UserData.h"
+#include "LuaScriptEngine.h"
+#include "UnitLibraryForCC.h"
 
 
 // CBattleWorld
@@ -22,7 +24,7 @@ const float CBattleWorld::CONST_MAX_REWARD_RANGE = 400;
 CBattleWorld::CBattleWorld()
 : m_bLuaWorldTickEnabled(true)
 {
-    CWorld::getLuaHandle();
+    CLuaScriptEngine::instance()->getLuaHandle();
 }
 
 CBattleWorld::~CBattleWorld()
@@ -49,10 +51,9 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Effects/Stun/Big", "Effects/Stun/Big", 0.1f);
     gc->loadAnimation("Effects/Stun/Small", "Effects/Stun/Small", 0.1f);
 
-    m_oULib.init();
     // init hero
     CUserData* udt = CUserData::instance();
-    u = m_oULib.copyUnit(udt->getHeroSelected()->id);
+    u = CUnitLibraryForCC::instance()->copyUnit(udt->getHeroSelected()->id);
     addUnit(u);
     setControlUnit(u->getId());
     setHero(u);
@@ -139,29 +140,14 @@ void CBattleWorld::onTick(float dt)
 bool CBattleWorld::onLuaWorldInit()
 {
     // lua
-    lua_State* L = getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     BattleSceneLayer* layer = DCAST(getLayer(), BattleSceneLayer*);
-
-    luaL_insertloader(L, luaModuleLoader4cc);
-    luaRegCommFunc(L);
-    luaRegWorldFuncs(L, this);
-    luaRegWorldFuncsForCC(L, this);
-
-    lua_getglobal(L, "setSearchPath");
-    lua_call(L, 0, 0);
 
     int res = 0;
 
-    lua_getglobal(L, "include");
-    lua_pushstring(L, CUserData::instance()->getStageSelected()->script.c_str());
-    res = lua_pcall(L, 1, 0, 0);
+    res = luaL_includefilelog(L, CUserData::instance()->getStageSelected()->script.c_str());
     if (res != LUA_OK)
     {
-        const char* err = lua_tostring(L, -1);
-        CCLOG("ERR | LuaErr: %s", err);
-        lua_pop(L, 1);
-        layer->log("%s", err);
-
         return false;
     }
 
@@ -184,7 +170,7 @@ bool CBattleWorld::onLuaWorldInit()
 
 void CBattleWorld::onLuaWorldTick(float dt)
 {
-    lua_State* L = getLuaHandle();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     BattleSceneLayer* layer = DCAST(getLayer(), BattleSceneLayer*);
 
     lua_getglobal(L, "onWorldTick");
@@ -205,7 +191,7 @@ void CBattleWorld::onLuaWorldTick(float dt)
 
 CProjectile* CBattleWorld::copyProjectile(int id) const
 {
-    return m_oULib.copyProjectile(id);
+    return CUnitLibraryForCC::instance()->copyProjectile(id);
 }
 
 void CBattleWorld::onUnitDying(CUnit* pUnit)

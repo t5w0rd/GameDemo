@@ -843,7 +843,17 @@ void MenuEx::onTouchEnded(Touch* touch, Event* event)
         return;
     }
 
-    Menu::onTouchEnded(touch, event);
+    this->retain();
+    auto sel = _selectedItem;
+    if (sel)
+    {
+        sel->retain();
+        sel->unselected();
+        sel->activate();
+        sel->release();
+    }
+    _state = Menu::State::WAITING;
+    this->release();
 }
 
 void MenuEx::onTouchCancelled(Touch* touch, Event* event)
@@ -1022,15 +1032,14 @@ void ButtonBase::unselected()
 
 void ButtonBase::onClick(Ref* pObject)
 {
-    setClickRetCode(0);
     if (m_onClick)
     {
+        setClickRetCode(0);
         m_onClick(this);
-    }
-
-    if (getClickRetCode() < 0)
-    {
-        return;
+        if (getClickRetCode() < 0)
+        {
+            return;
+        }
     }
 
     //coolDown();  // for test
@@ -1824,6 +1833,7 @@ void Utils::tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLusho
 AbilityItem::AbilityItem()
 : m_ability(nullptr)
 , m_aicost2(nullptr)
+, m_equipped(nullptr)
 {
     memset(m_aistars, 0, sizeof(m_aistars));
 }
@@ -1885,6 +1895,8 @@ bool AbilityItem::initWithAbility(CAbility* ability)
         star = starByIndex(i, ability->getLevel() > i);
         star->setPosition(Point(starBaseWidth + i * (star->getContentSize().width + aistarBetween), aistarCenter.y));
     }
+
+    //setCascadeOpacityEnabled(true);
 
     return true;
 }
@@ -1955,6 +1967,38 @@ void AbilityItem::updateContent(CAbility* ability)
     {
         starByIndex(i, ability->getLevel() > i);
     }
+}
+
+void AbilityItem::setEquipped(bool equipped)
+{
+    if (isEquipped() == equipped)
+    {
+        return;
+    }
+
+    if (m_equipped == nullptr)
+    {
+        m_equipped = Sprite::create("UI/Ability/AbilityEquipped.png");
+        addChild(m_equipped, 10);
+        m_equipped->setPosition(getAnchorPointInPoints());
+    }
+
+    m_equipped->setVisible(equipped);
+    
+    if (m_onChangeEquipped)
+    {
+        m_onChangeEquipped(this, equipped);
+    }
+}
+
+bool AbilityItem::isEquipped() const
+{
+    return m_equipped != nullptr && m_equipped->isVisible();
+}
+
+void AbilityItem::setOnChangeEquippedCallback(const function<void(AbilityItem* abilityItem, bool bEquipped)>& onChangeEquipped)
+{
+    m_onChangeEquipped = onChangeEquipped;
 }
 
 // WinFormPanel

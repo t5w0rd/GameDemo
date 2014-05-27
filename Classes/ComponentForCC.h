@@ -487,10 +487,17 @@ public:
 
     Sprite* starByIndex(int index, bool on);
     void updateContent(CAbility* ability);
+
+    void setEquipped(bool equipped);
+    bool isEquipped() const;
+
+    void setOnChangeEquippedCallback(const function<void(AbilityItem* abilityItem, bool bEquipped)>& onChangeEquipped);
     
-protected:
+public:
     Label* m_aicost2;
     Sprite* m_aistars[3];
+    Sprite* m_equipped;
+    function<void(AbilityItem* abilityItem, bool bEquipped)> m_onChangeEquipped;
 };
 
 class WinFormPanel : public WinLayer

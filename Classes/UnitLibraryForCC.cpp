@@ -7,11 +7,8 @@
 #include "DrawForCC.h"
 
 
-CUnitLibraryForCC::CUnitLibraryForCC(void)
-{
-}
-
-bool CUnitLibraryForCC::init()
+// CUnitLibraryForCC
+CUnitLibraryForCC::CUnitLibraryForCC()
 {
     CSpriteInfo* si = nullptr;
     CProjectileForCC* p = nullptr;
@@ -924,8 +921,6 @@ bool CUnitLibraryForCC::init()
     d->setBaseMoveSpeed(50.0f);
     d->setHostilityRange(300.0f);
     addUnit(kWizard, u);
-
-    return true;
 }
 
 void CUnitLibraryForCC::addUnit(int id, CUnit* u)

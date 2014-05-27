@@ -1,5 +1,3 @@
-include("Ability.lua")
-
 function createAbilityLibrary00()
     local lib = {}
     local a, id

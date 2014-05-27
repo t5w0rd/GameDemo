@@ -17,10 +17,15 @@ public:
     CREATE_FUNC(AbilitySceneLayer);
 
     void onClickAbilityItems(Node* abilityItem);
+    void onClickAbilityItemsEquipped(Ref* ref);
+    void onChangeAbilityItemEquipped(AbilityItem* ai, bool equipped);
 
 protected:
     WinFormPanel* m_abilityItemsPanel;
     Node* m_winFormBorder;
+    ButtonPanel* m_abilityEquippedPanel;
+    Label* m_energy;
+    int m_energyCost;
 };
 
 

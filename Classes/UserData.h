@@ -19,6 +19,7 @@ public:
 
     struct HERO_INFO
     {
+        HERO_INFO() : id(-1), attackSpeed(0.0f), moveSpeed(0.0f), exp(0.0f), energy(0.0f) {}
         int id;
         string name;
         string desc;
@@ -28,6 +29,7 @@ public:
         float attackSpeed;
         float moveSpeed;
         int exp;
+        int energy;
     };
 
     typedef vector<HERO_INFO> VEC_HEROES;

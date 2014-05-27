@@ -1,7 +1,6 @@
-include("Common.lua")
 include("AI.lua")
 include("AI2.lua")
-include("AbilityLibrary.lua")
+
 
 hero = nil
 me = nil
