@@ -49,9 +49,11 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/Logic/Item.cpp \
 ../../Classes/Logic/Level.cpp \
 ../../Classes/Logic/LuaBinding.cpp \
+../../Classes/Logic/LuaScriptEngine.cpp \
 ../../Classes/Logic/MultiRefObject.cpp \
 ../../Classes/Logic/Unit.cpp \
 ../../Classes/AbilityForCC.cpp \
+../../Classes/AbilityScene.cpp \
 ../../Classes/ActionForCC.cpp \
 ../../Classes/AppDelegate.cpp \
 ../../Classes/BattleScene.cpp \
