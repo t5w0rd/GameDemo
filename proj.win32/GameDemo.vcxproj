@@ -284,17 +284,19 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ResourceCompile Include="game.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\scripts\ability.lua" />
+    <None Include="..\Resources\scripts\Ability.lua" />
     <None Include="..\Resources\scripts\AbilityLibrary.lua" />
-    <None Include="..\Resources\scripts\ai.lua" />
-    <None Include="..\Resources\scripts\ai2.lua" />
-    <None Include="..\Resources\scripts\common.lua" />
+    <None Include="..\Resources\scripts\AI.lua" />
+    <None Include="..\Resources\scripts\AI2.lua" />
+    <None Include="..\Resources\scripts\Common.lua" />
+    <None Include="..\Resources\scripts\Init.lua" />
     <None Include="..\Resources\scripts\Stage00.lua" />
     <None Include="..\Resources\scripts\Stage01.lua" />
     <None Include="..\Resources\scripts\Stage02.lua" />
     <None Include="..\Resources\scripts\Stage03.lua" />
     <None Include="..\Resources\scripts\Stage04.lua" />
     <None Include="..\Resources\scripts\Stage05.lua" />
+    <None Include="..\Resources\scripts\UnitLibrary.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1241,7 +1241,12 @@ bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
 {
     while (pSource != nullptr && pSource->isGhost())
     {
-        pSource = pSource->getUnit(pSource->getGhostOwner());
+        auto go = pSource->getUnit(pSource->getGhostOwner());
+        if (go == pSource)
+        {
+            break;
+        }
+        pSource = go;
     }
 
     if (onAttacked(pAttack, pSource, dwTriggerMask) == false)
@@ -1274,7 +1279,12 @@ void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
     while (pSource != nullptr && pSource->isGhost())
     {
-        pSource = pSource->getUnit(pSource->getGhostOwner());
+        auto go = pSource->getUnit(pSource->getGhostOwner());
+        if (go == pSource)
+        {
+            break;
+        }
+        pSource = go;
     }
 
     if (fDamage > m_fHp)
@@ -1472,6 +1482,12 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
                 pBuff->setDuration(pAbility->getDuration());
                 pBuff->setElapsed(0.0f);
                 pBuff->onUnitDisplaceAbility();
+
+                if (pAbility->getAppendBuff() != 0)
+                {
+                    addBuffAbility(pAbility->getAppendBuff(), pAbility->getSrcUnit(), pAbility->getLevel());
+                }
+
                 return;
             }
             M_MAP_NEXT;

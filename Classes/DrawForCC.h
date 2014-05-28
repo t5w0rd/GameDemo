@@ -20,20 +20,6 @@ public:
 
     M_SYNTHESIZE_STR(Name);
 
-    enum ANI_ID
-    {
-        kAniMove,
-        kAniDie,
-        kAniAct1,
-        kAniAct2,
-        kAniAct3,
-        kAniAct4,
-        kAniAct5,
-        kAniAct6,
-        kAniAct7,
-        kAniAct8
-    };
-
     struct ANI_INFO
     {
         int iNotifyFrameIndex;
@@ -47,13 +33,6 @@ public:
     void prepareAnimation(int id, const char* pName, int iNotifyFrameIndex, const char* pSound = nullptr);
     const ANI_INFO* getAnimationInfo(int id) const;
     void addAnimationSound(int id, const char* sound);
-
-    enum FRM_ID
-    {
-        kFrmDefault,
-        kFrmPortraitHero,
-        kFrmPortraitSel
-    };
 
     struct FRM_INFO
     {

@@ -38,7 +38,8 @@ public:
     
     inline float getDistance(const CPoint& p) const { float fDeltaX = x - p.x; float fDeltaY = y - p.y; return sqrtf(fDeltaX * fDeltaX + fDeltaY * fDeltaY); }
     inline float getAngle() const { return atan2f(y, x); }
-    inline CPoint getForwardPoint(const CPoint& p, float distance) const { float a = (p - *this).getAngle(); return CPoint(x + cos(-a) * distance, y + sin(a) * distance); }
+    inline CPoint getDirectionPoint(float radian, float distance) const { return CPoint(x + cos(-radian) * distance, y + sin(radian) * distance); }
+    inline CPoint getForwardPoint(const CPoint& p, float distance) const { float a = (p - *this).getAngle(); return getDirectionPoint(a, distance); }
 
 public:
     float x;

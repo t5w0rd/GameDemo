@@ -82,9 +82,8 @@ void CAutoReleasePool::delObject(CMultiRefObject* pObject)
 
 void CAutoReleasePool::releaseObjects()
 {
-    for (auto it = m_setObjs.begin(); it != m_setObjs.end(); ++it)
+    for (auto& obj : m_setObjs)
     {
-        CMultiRefObject* obj = *it;
         assert(obj->getRefCount() == 0);
         delete obj;
     }
@@ -106,9 +105,9 @@ void CDbgMultiRefObjectManager::delObject(CMultiRefObject* pObject)
 void CDbgMultiRefObjectManager::printDbgInfo(const char* pFile, int iLine)
 {
     fprintf(stdout, "ObjectName(Tag)(RefCount) {\n");
-    for (auto it = m_setObjs.begin(); it != m_setObjs.end(); ++it)
+    for (auto& obj : m_setObjs)
     {
-        fprintf(stdout, "    %s(%s)(%d)\n", (*it)->getDbgClassName(), (*it)->getDbgTag(), (*it)->getRefCount());
+        fprintf(stdout, "    %s(%s)(%d)\n", obj->getDbgClassName(), obj->getDbgTag(), obj->getRefCount());
     }
     fprintf(stdout, "} NumberOfObjects(%zu), %s: %d\n", m_setObjs.size(), pFile, iLine);
 }

@@ -53,9 +53,12 @@ public:
 
     typedef vector<int> VEC_CAST_ANIS;
     M_SYNTHESIZE_PASS_BY_REF(VEC_CAST_ANIS, m_vecCastAnis, CastAnimations);
+    void addCastAnimation(int id);
+    int getCastRandomAnimation() const;
 
     // 技能持有者事件响应，只覆被注册的触发器相应的事件函数即可
     // @override
+    virtual void onChangeLevel(int iChanged) override;
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
     virtual void onUnitAbilityReady();
@@ -141,9 +144,6 @@ public:
     M_SYNTHESIZE(int, m_iTemplateProjectile, TemplateProjectile);
 
     M_SYNTHESIZE_BOOL(CastHorizontal);
-
-    void addCastAnimation(int id);
-    int getCastRandomAnimation() const;
 
     const CPoint& getAbilityEffectPoint(CProjectile* pProjectile, CUnit* pTarget);
     
@@ -420,10 +420,10 @@ public:
 class CTransitiveLinkBuff : public CBuffAbility
 {
 public:
-    typedef set<int> SET_DAMAGED;
+    typedef map<int, int> MAP_DAMAGED;
 
 public:    
-    CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, uint32_t dwEffectiveTypeFlags = CUnitForce::kEnemy);
+    CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, int iMinIntervalTimes, uint32_t dwEffectiveTypeFlags = CUnitForce::kEnemy);
     virtual CTransitiveLinkBuff* copy() override;
     virtual void copyData(CAbility* from) override;
 
@@ -443,7 +443,42 @@ public:
 
     M_SYNTHESIZE(int, m_iTemplateProjectile, TemplateProjectile);
 
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(SET_DAMAGED, m_setTransmited, UnitsTransmited);
+    M_SYNTHESIZE(int, m_iMinIntervalTimes, OneMaxTimes);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_DAMAGED, m_mapTransmited, UnitsTransmited);
+
+    bool checkConditions(CUnit* pUnit);
+
+protected:
+    bool m_bTransmited;
+};
+
+// 单位跳跃
+class CTransitiveBlinkBuff : public CBuffAbility
+{
+public:
+    typedef map<int, int> MAP_DAMAGED;
+
+public:
+    CTransitiveBlinkBuff(const char* pName, float fRange, int iMaxTimes, int iMinIntervalTimes, int iCastAnimation);
+    virtual CTransitiveBlinkBuff* copy() override;
+    virtual void copyData(CAbility* from) override;
+
+    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility();
+    virtual void onUnitDead();
+
+    void TransmitNext();
+
+    M_SYNTHESIZE(float, m_fRange, Range);
+    M_SYNTHESIZE(uint32_t, m_dwEffectiveTypeFlags, EffectiveTypeFlags);
+
+    M_SYNTHESIZE(int, m_iMaxTimes, MaxTimes);
+    M_SYNTHESIZE(int, m_iTimesLeft, TimesLeft);
+    M_SYNTHESIZE(int, m_iFromUnit, FromUnit);
+    M_SYNTHESIZE(int, m_iToUnit, ToUnit);
+
+    M_SYNTHESIZE(int, m_iMinIntervalTimes, OneMaxTimes);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_DAMAGED, m_mapTransmited, UnitsTransmited);
 
     bool checkConditions(CUnit* pUnit);
 

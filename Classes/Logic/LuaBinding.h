@@ -16,6 +16,8 @@ void luaL_addpath(lua_State *L, const char* pPath);
 bool luaL_loadscript(lua_State *L, const char* name, string& err);
 int luaL_setregistry(lua_State* L, int idx);
 int luaL_getregistery(lua_State* L, int key);
+const char* luaL_toutf8string(lua_State* L, int idx, char* buf);
+
 
 class CUnit;
 class CAbility;
@@ -76,6 +78,7 @@ int obj_ctor(lua_State* L);
 int class_type_new(lua_State* L);
 int g_class(lua_State* L);
 int g_cast(lua_State* L);
+int g_addTemplateAbility(lua_State* L);
 
 template <typename PTYPE>
 PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr);
@@ -148,6 +151,8 @@ int Unit_getRewardExp(lua_State* L);
 int Unit_setAI(lua_State* L);
 int Unit_say(lua_State* L);
 int Unit_setGhost(lua_State* L);
+int Unit_setEnergy(lua_State* L);
+int Unit_getEnergy(lua_State* L);
 
 int Unit_startDoing(lua_State* L);
 int Unit_endDoing(lua_State* L);
@@ -235,6 +240,7 @@ int Projectile_getContactLeft(lua_State* L);
 int Projectile_decContactLeft(lua_State* L);
 
 int Ability_ctor(lua_State* L);
+int Ability_onChangeLevel(lua_State* L);
 int Ability_onUnitAddAbility(lua_State* L);
 int Ability_onUnitDelAbility(lua_State* L);
 int Ability_onUnitAbilityReady(lua_State* L);
@@ -273,6 +279,7 @@ int Ability_setGrade(lua_State* L);
 int Ability_getGrade(lua_State* L);
 int Ability_setCost(lua_State* L);
 int Ability_getCost(lua_State* L);
+int Ability_addCastAnimation(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -288,7 +295,6 @@ int ActiveAbility_getCastTargetRadius(lua_State* L);
 int ActiveAbility_setTemplateProjectile(lua_State* L);
 int ActiveAbility_setCastHorizontal(lua_State* L);
 int ActiveAbility_isCastHorizontal(lua_State* L);
-int ActiveAbility_addCastAnimation(lua_State* L);
 int ActiveAbility_getAbilityEffectPoint(lua_State* L);
 
 int PassiveAbility_ctor(lua_State* L);
@@ -324,17 +330,17 @@ int EvadeBuff_ctor(lua_State* L);
 int BuffMakerAct_ctor(lua_State* L);
 int DamageBuff_ctor(lua_State* L);
 int TransitiveLinkBuff_ctor(lua_State* L);
+int TransitiveBlinkBuff_ctor(lua_State* L);
 int SplashPas_ctor(lua_State* L);
 int KnockBackBuff_ctor(lua_State* L);
 int AttractBuff_ctor(lua_State* L);
 int ReflectBuff_ctor(lua_State* L);
 int LimitedLifeBuff_ctor(lua_State* L);
 
-int luaRegCommFunc(lua_State* L);
+int luaRegCommFuncs(lua_State* L);
 
 int g_onWorldInit(lua_State* L);
 int g_onWorldTick(lua_State* L);
-int g_addTemplateAbility(lua_State* L);
 int g_setControlUnit(lua_State* L);
 int g_getControlUnit(lua_State* L);
 int g_getUnit(lua_State* L);

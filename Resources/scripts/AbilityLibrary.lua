@@ -134,14 +134,14 @@ function createAbilityLibrary00()
     lib.KnockBackEx = addTemplateAbility(a)
     
     -- ThrowHammerEx
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0)
-    id = addTemplateAbility(a)
-    
     a = StunBuff:new("StunBuff", "Stun", 5.0, false)
-    a:setAppendBuff(id)
+	id = addTemplateAbility(a)	
+	
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0)
+	a:setAppendBuff(id)
     id = addTemplateAbility(a)
 
-    a = TransitiveLinkBuff:new("Chain", 0.3, 150.0, 4, UnitForce.kEnemy, PL.kThorHammer)
+    a = TransitiveLinkBuff:new("Chain", 0.1, 150.0, 4, 1, UnitForce.kEnemy, PL.kThorHammer)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -168,6 +168,19 @@ function createAbilityLibrary00()
     a:setImageName("UI/Ability/WarCry.png")
     lib.WarCry = addTemplateAbility(a)
 	
+	-- MultiSlash
+	a = DamageBuff:new("dmg", AttackValue.kPhysical, 75.0, 1.0)
+    id = addTemplateAbility(a)
+    
+	a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 10, 0, Sprite.kAniAct1, Sprite.kAniAct2)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    
+	a = BuffMakerAct:new("MultiSlash", 1.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastRange(500)
+    a:setImageName("UI/Ability/Ability02.png")
+    lib.MultiSlash = addTemplateAbility(a)
+	
 	-- PassiveAbilitys
 	
 	-- Rebirth
@@ -177,6 +190,8 @@ function createAbilityLibrary00()
 	-- BerserkerBlood
 	a = BerserkerBloodPas:new("BerserkerBlood", 0.05, 0.0, 0.05, 0.0, 0.05, 0.0, 0.05, 0.0)
     lib.BerserkerBlood = addTemplateAbility(a)
+	a:setLevel(3)
+	a:onChangeLevel(2)
     
 	-- StunAttack
 	a = StunBuff:new("StunBuff", "Stun", 1, false)
@@ -200,6 +215,7 @@ function createAbilityLibrary00()
 	a = AttackBuffMakerPas:new("CriticalAttack", 0.15, id, true, 4.0, 0.0)
     lib.CriticalAttack = addTemplateAbility(a)
 	
+	
     return lib
 end
 
@@ -207,5 +223,42 @@ function createAbilityLibrary01()
 	local lib = {}
     local a, id
 	
-	
+	return lib
 end
+
+-- Curse
+CurseUpdate = class(LevelUpdate)
+function CurseUpdate:onChangeLevel(a, change)
+	cast(a, ActiveAbility)
+	local lvl = a:getLevel()
+	if lvl == 1 then
+		a:setCost(5)
+	elseif lvl == 2 then
+		a:setCost(7)
+	elseif lvl == 3 then
+		a:setCost(9)
+	end
+end
+CurseUpdate = CurseUpdate:new()
+
+a = CurseBuff:new(13, false, 20, 4, 40 / 100)
+id = addTemplateAbility(a)
+
+a = BuffMakerAct:new("群体诅咒", 5.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+a:setCastRange(200.0)
+a:setCastTargetRadius(100.0)
+a:addCastAnimation(Sprite.kAniAct4)
+a:setImageName("UI/Ability/AbilityCurse.png")
+a:addEffectSound("sounds/Effects/KRF_sfx_vodoo_kamikazelanza.mp3")
+a:setMaxLevel(3)
+a:setLevel(0)
+a:setDescribe("诅咒一片区域，受诅咒的英雄受到20点/秒的伤害，持续13秒，每隔4秒每损失100点的生命值就会受到40点的额外伤害")
+a:setLevelInfo(1, 0, "每损失100的生命时所受到的伤害提高40点")
+a:setLevelInfo(2, 1, "同时降低单位15%的移动速度")
+a:setLevelInfo(3, 2, "诅咒效果持续17秒")
+a:setGrade(Ability.kEpic)
+a:setCost(3)
+a:setLevelUpdate(CurseUpdate)
+addTemplateAbility(AL.kCurse, a)
+
+addAbilityToUserData(AL.kCurse, 1)

@@ -139,7 +139,7 @@ void CUnitDraw2D::copyData(CUnitDraw* from)
 
 void CUnitDraw2D::onUnitRevive()
 {
-    setFrame(CSpriteInfo::kFrmDefault);
+    setFrame(kFrmDefault);
 }
 
 void CUnitDraw2D::onUnitDying()
@@ -419,7 +419,7 @@ void CUnitDraw2D::move(const CPoint& roPos)  //, const UNIT_MOVE_PARAMS& roMoveP
     if (getMoveActionId() == 0 && u->isDoingOr(CUnit::kSpinning) == false)
     {
         int id = doAnimation(
-            CSpriteInfo::kAniMove,
+            kAniMove,
             nullptr,
             INFINITE,
             nullptr,
@@ -500,7 +500,7 @@ void CUnitDraw2D::stopMove()
     CUnit* u = getUnit();
     u->endDoing(CUnit::kMoving | CUnit::kAlongPath);
 
-    setFrame(CSpriteInfo::kFrmDefault);
+    setFrame(kFrmDefault);
 }
 
 void CUnitDraw2D::onMoveDone()
@@ -762,7 +762,7 @@ void CUnitDraw2D::onCastDone()
     if (u->getAttackAbilityId() != 0 && pAbility->getId() == u->getAttackAbilityId())
     {
         // 拥有攻击技能，正在释放的技能就是攻击技能
-        setFrame(CSpriteInfo::kFrmDefault);
+        setFrame(kFrmDefault);
         setCastActionId(0);
         return;
     }
@@ -790,7 +790,7 @@ void CUnitDraw2D::stopCast(bool bDefaultFrame)
     
     if (bDefaultFrame)
     {
-        setFrame(CSpriteInfo::kFrmDefault);
+        setFrame(kFrmDefault);
     }
 }
 
@@ -820,7 +820,7 @@ void CUnitDraw2D::stop(bool bDefaultFrame)
 
     if (bDefaultFrame)
     {
-        setFrame(CSpriteInfo::kFrmDefault);
+        setFrame(kFrmDefault);
     }
 }
 
@@ -831,7 +831,7 @@ void CUnitDraw2D::die()
     u->startDoing(CUnit::kDying);
     stopAllActions();
     doAnimation(
-        CSpriteInfo::kAniDie,
+        kAniDie,
         nullptr,
         1,
         CC_CALLBACK_0(CUnitDraw2D::onDyingDone, this),
@@ -906,10 +906,13 @@ bool CUnitPath::arriveCurTargetPoint(uint32_t& rCurPos)
 // CUnitGroup
 CUnitGroup::CUnitGroup()
 {
+    setDbgClassName("CUnitGroup");
 }
 
 CUnitGroup::CUnitGroup(CWorld* pWorld, const CPoint& roPos, float fRadius, int iMaxCount /*= INFINITE*/, const FUNC_MATCH& match /*= nullptr*/)
 {
+    setDbgClassName("CUnitGroup");
+
     if (fRadius < FLT_EPSILON)
     {
         return;
@@ -920,7 +923,7 @@ CUnitGroup::CUnitGroup(CWorld* pWorld, const CPoint& roPos, float fRadius, int i
     {
         CUnit* u = M_MAP_EACH;
         CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-        if ((int)m_vecUnits.size() >= iMaxCount)
+        if (m_vecUnits.size() >= (size_t)iMaxCount)
         {
             return;
         }
@@ -935,11 +938,13 @@ CUnitGroup::CUnitGroup(CWorld* pWorld, const CPoint& roPos, float fRadius, int i
 
 CUnitGroup::CUnitGroup(CWorld* pWorld, int iMaxCount /*= INFINITE*/, const FUNC_MATCH& match /*= nullptr*/)
 {
+    setDbgClassName("CUnitGroup");
+
     CWorld::MAP_UNITS& units = pWorld->getUnits();
     M_MAP_FOREACH(units)
     {
         CUnit* u = M_MAP_EACH;
-        if ((int)m_vecUnits.size() >= iMaxCount)
+        if ((int)m_vecUnits.size() >= (size_t)iMaxCount)
         {
             return;
         }
@@ -966,7 +971,7 @@ CUnit* CUnitGroup::getUnitByIndex(int iIndex)
 
 CUnit* CUnitGroup::getRandomUnit()
 {
-    return m_vecUnits[rand() % m_vecUnits.size()];
+    return m_vecUnits.empty() ? nullptr : m_vecUnits[rand() % m_vecUnits.size()];
 }
 
 CUnit* CUnitGroup::getNearestUnitInRange(const CPoint& roPos, float fRadius, const FUNC_MATCH& match /*= nullptr*/)
@@ -975,16 +980,14 @@ CUnit* CUnitGroup::getNearestUnitInRange(const CPoint& roPos, float fRadius, con
     float fMinDis = FLT_MAX;
     float fDis;
 
-    M_VEC_FOREACH(m_vecUnits)
+    for (auto& u : m_vecUnits)
     {
-        CUnit* u = M_VEC_EACH;
         CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
         if ((fDis = d->getPosition().getDistance(roPos)) < fRadius && fMinDis > fDis && (!match || (match(u))))
         {
             pTarget = u;
             fMinDis = fDis;
         }
-        M_VEC_NEXT;
     }
 
     return pTarget;

@@ -148,6 +148,46 @@ void CAbility::setInterval(float fInterval)
     m_fInterval = fInterval;
 }
 
+void CAbility::addCastAnimation(int id)
+{
+    m_vecCastAnis.push_back(id);
+}
+
+int CAbility::getCastRandomAnimation() const
+{
+    if (m_vecCastAnis.empty())
+    {
+        return -1;
+    }
+
+    return m_vecCastAnis[rand() % m_vecCastAnis.size()];
+}
+
+void CAbility::onChangeLevel(int iChanged)
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onChangeLevel");
+    lua_pushvalue(L, a);
+    lua_pushinteger(L, iChanged);
+    if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'a'
+}
+
 void CAbility::onUnitAddAbility()
 {
     if (getScriptHandler() == 0)
@@ -806,21 +846,6 @@ void CActiveAbility::onUnitCastAbility()
     }
 
     lua_pop(L, 1);
-}
-
-void CActiveAbility::addCastAnimation(int id)
-{
-    m_vecCastAnis.push_back(id);
-}
-
-int CActiveAbility::getCastRandomAnimation() const
-{
-    if (m_vecCastAnis.empty())
-    {
-        return -1;
-    }
-
-    return m_vecCastAnis[rand() % m_vecCastAnis.size()];
 }
 
 void CActiveAbility::effect()
@@ -1990,7 +2015,7 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 }
 
 // CTransitiveLinkBuff
-CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, uint32_t dwEffectiveTypeFlags)
+CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, int iMinIntervalTimes, uint32_t dwEffectiveTypeFlags)
 : CBuffAbility("LinkBuff", pName, fDuration, true)
 , m_fRange(fRange)
 , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
@@ -1999,15 +2024,16 @@ CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, flo
 , m_iFromUnit(0)
 , m_iToUnit(0)
 , m_iTemplateProjectile(0)
+, m_iMinIntervalTimes(iMinIntervalTimes)
 , m_bTransmited(false)
 {
-    setTriggerFlags(CUnit::kOnDeadTrigger);
     setDbgClassName("CTransitiveLinkBuff");
+    setTriggerFlags(CUnit::kOnDeadTrigger);
 }
 
 CTransitiveLinkBuff* CTransitiveLinkBuff::copy()
 {
-    CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_dwEffectiveTypeFlags);
+    CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_iMinIntervalTimes, m_dwEffectiveTypeFlags);
     ret->copyData(this);
     return ret;
 }
@@ -2018,7 +2044,7 @@ void CTransitiveLinkBuff::copyData(CAbility* from)
     CTransitiveLinkBuff* a = DCAST(from, CTransitiveLinkBuff*);
     setTimesLeft(a->getTimesLeft());
     setTemplateProjectile(a->getTemplateProjectile());
-    m_setTransmited = a->m_setTransmited;
+    m_mapTransmited = a->m_mapTransmited;
 }
 
 void CTransitiveLinkBuff::onUnitAddAbility()
@@ -2026,7 +2052,7 @@ void CTransitiveLinkBuff::onUnitAddAbility()
     CUnit* o = getOwner();
     m_iFromUnit = o->getId();
     setTimesLeft(getTimesLeft() - 1);
-    m_setTransmited.insert(m_iFromUnit);
+    m_mapTransmited[m_iFromUnit] = 0;
 }
 
 void CTransitiveLinkBuff::onUnitDelAbility()
@@ -2043,6 +2069,7 @@ void CTransitiveLinkBuff::TransmitNext()
 {
     if (m_bTransmited == true)
     {
+        // 保证只传递一次
         return;
     }
     else
@@ -2061,8 +2088,33 @@ void CTransitiveLinkBuff::TransmitNext()
     {
         //return;
     }
+    
     CWorld* w = o->getWorld();
-    CUnit* t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), m_fRange, bind(&CTransitiveLinkBuff::checkConditions, this, placeholders::_1));
+
+    M_MAP_FOREACH(m_mapTransmited)
+    {
+        auto& times = M_MAP_EACH;
+        ++times;
+        if (times > m_iMinIntervalTimes)
+        {
+            M_MAP_DEL_CUR_NEXT(m_mapTransmited);
+        }
+        else
+        {
+            M_MAP_NEXT;
+        }
+    }
+    
+    CUnit* t = nullptr;
+    if (m_iMinIntervalTimes > m_iMaxTimes)
+    {
+        t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), m_fRange, bind(&CTransitiveLinkBuff::checkConditions, this, placeholders::_1));
+    }
+    else
+    {
+        t = (new CUnitGroup(w, d->getPosition(), m_fRange, -1, bind(&CTransitiveLinkBuff::checkConditions, this, placeholders::_1)))->getRandomUnit();
+    }
+    
     if (!t)
     {
         return;
@@ -2099,8 +2151,174 @@ bool CTransitiveLinkBuff::checkConditions(CUnit* pUnit)
         return false;
     }
 
-    if (getOwner() == pUnit ||
-        pUnit->isDead() ||
+    if (pUnit->isDead() ||
+        !pUnit->isEffective(s, getEffectiveTypeFlags()) ||
+        getUnitsTransmited().find(pUnit->getId()) != getUnitsTransmited().end())
+    {
+        return false;
+    }
+
+    return true;
+}
+
+// CTransitiveBlinkBuff
+CTransitiveBlinkBuff::CTransitiveBlinkBuff(const char* pName, float fRange, int iMaxTimes, int iMinIntervalTimes, int iCastAnimation)
+: CBuffAbility("LinkBuff", pName, 0.5f, true)
+, m_fRange(fRange)
+, m_dwEffectiveTypeFlags(CUnitForce::kEnemy)
+, m_iMaxTimes(iMaxTimes)
+, m_iTimesLeft(m_iMaxTimes)
+, m_iFromUnit(0)
+, m_iToUnit(0)
+, m_iMinIntervalTimes(iMinIntervalTimes)
+, m_bTransmited(false)
+{
+    setDbgClassName("CTransitiveBlinkBuff");
+    setTriggerFlags(CUnit::kOnDeadTrigger);
+    addCastAnimation(iCastAnimation);
+}
+
+CTransitiveBlinkBuff* CTransitiveBlinkBuff::copy()
+{
+    CTransitiveBlinkBuff* ret = new CTransitiveBlinkBuff(getName(), m_fRange, m_iMaxTimes, m_iMinIntervalTimes, 0);
+    ret->copyData(this);
+    return ret;
+}
+
+void CTransitiveBlinkBuff::copyData(CAbility* from)
+{
+    CBuffAbility::copyData(from);
+    CTransitiveBlinkBuff* a = DCAST(from, CTransitiveBlinkBuff*);
+    setTimesLeft(a->getTimesLeft());
+    m_mapTransmited = a->m_mapTransmited;
+}
+
+void CTransitiveBlinkBuff::onUnitAddAbility()
+{
+    CUnit* o = getOwner();
+    auto s = o->getUnit(getSrcUnit());
+    m_iFromUnit = o->getId();
+    m_mapTransmited[m_iFromUnit] = 0;
+
+    if (s && !s->isDead())
+    {
+        s->suspend();
+        s->setGhost(s->getId());
+
+        auto sd = DCAST(s->getDraw(), CUnitDraw2D*);
+        auto od = DCAST(o->getDraw(), CUnitDraw2D*);
+        sd->stopAllActions();
+        CPoint from = od->getPosition().getDirectionPoint(rand(), od->getHalfOfWidth());
+        CPoint to = from.getForwardPoint(od->getPosition(), od->getHalfOfWidth() * 2);
+        sd->setPosition(from);
+        sd->setFlippedX(to.x < from.x);
+        float spd = 2.0f;
+        sd->doMoveTo(to, 0.3f, nullptr, spd);
+        sd->doAnimation(getCastRandomAnimation(), nullptr, 1, bind(&CTransitiveBlinkBuff::TransmitNext, this), spd);
+    }
+    
+    setTimesLeft(getTimesLeft() - 1);
+}
+
+void CTransitiveBlinkBuff::onUnitDelAbility()
+{
+    TransmitNext();
+}
+
+void CTransitiveBlinkBuff::onUnitDead()
+{
+    TransmitNext();
+}
+
+void CTransitiveBlinkBuff::TransmitNext()
+{
+    if (m_bTransmited == true)
+    {
+        // 保证只传递一次
+        return;
+    }
+    else
+    {
+        m_bTransmited = true;
+    }
+
+    auto s = getOwner()->getUnit(getSrcUnit());
+    if (s)
+    {
+        s->resume();
+        s->setGhost(0);
+        auto sd = DCAST(s->getDraw(), CUnitDraw2D*);
+        sd->cmdStop();
+    }
+
+    if (getTimesLeft() < 0)
+    {
+        return;
+    }
+
+    CUnit* o = getOwner();
+    CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+    if (o->isDead())
+    {
+        //return;
+    }
+
+    CWorld* w = o->getWorld();
+
+    M_MAP_FOREACH(m_mapTransmited)
+    {
+        auto& times = M_MAP_EACH;
+        ++times;
+        if (times > m_iMinIntervalTimes)
+        {
+            M_MAP_DEL_CUR_NEXT(m_mapTransmited);
+        }
+        else
+        {
+            M_MAP_NEXT;
+        }
+    }
+
+    CUnit* t = nullptr;
+    if (m_iMinIntervalTimes > m_iMaxTimes)
+    {
+        t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), m_fRange, bind(&CTransitiveBlinkBuff::checkConditions, this, placeholders::_1));
+    }
+    else
+    {
+        t = (new CUnitGroup(w, d->getPosition(), m_fRange, -1, bind(&CTransitiveBlinkBuff::checkConditions, this, placeholders::_1)))->getRandomUnit();
+    }
+
+    if (!t || !s || s->isDead())
+    {
+        return;
+    }
+
+    setFromUnit(o->getId());
+    setToUnit(t->getId());
+
+    auto atk = DCAST(s->getActiveAbility(s->getAttackAbilityId()), CAttackAct*);
+    
+    CAttackData* pAtk = new CAttackData();
+    pAtk->setAttackValue(atk->getBaseAttack().getType(), atk->getRealAttackValue());
+    s->attack(pAtk, t);
+    
+    int buff = w->addTemplateAbility(this);
+    pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
+
+    t->damaged(pAtk, s);
+}
+
+bool CTransitiveBlinkBuff::checkConditions(CUnit* pUnit)
+{
+    CUnit* o = getOwner();
+    CUnitForce* s = DCAST(o->getUnit(getSrcUnit()), CUnitForce*);
+    if (s == nullptr)
+    {
+        return false;
+    }
+
+    if (pUnit->isDead() ||
         !pUnit->isEffective(s, getEffectiveTypeFlags()) ||
         getUnitsTransmited().find(pUnit->getId()) != getUnitsTransmited().end())
     {

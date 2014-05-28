@@ -306,7 +306,28 @@ typedef std::function<void()> FUNC_VOID;
 #define M_DEPRECATED_ATTRIBUTE __declspec(deprecated) 
 #else
 #define M_DEPRECATED_ATTRIBUTE
-#endif 
+#endif
+
+enum ANI_ID
+{
+    kAniMove,
+    kAniDie,
+    kAniAct1,
+    kAniAct2,
+    kAniAct3,
+    kAniAct4,
+    kAniAct5,
+    kAniAct6,
+    kAniAct7,
+    kAniAct8
+};
+
+enum FRM_ID
+{
+    kFrmDefault,
+    kFrmPortraitHero,
+    kFrmPortraitSel
+};
 
 
 #endif	/* __COMDEF_H__ */

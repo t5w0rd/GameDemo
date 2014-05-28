@@ -21,6 +21,10 @@ function getForwardPoint(x0, y0, x1, y1, dis)
     return getDirectionPoint(x0, y0, a, dis)
 end
 
+if not log then
+	--log = print
+end
+
 function logf(...)
     log(string.format(table.unpack({...})))
 end
@@ -105,6 +109,12 @@ Ability.kNoMasked = 0
 Ability.kMaskAll = 0xFFFFFFFF
 Ability.kMaskActiveTrigger = Ability.kOnAttackTargetTrigger + Ability.kOnDamageTargetDoneTrigger
 
+Ability.kNormal = 0
+Ability.kRare = 1
+Ability.kEpic = 2
+Ability.kLegend = 3
+
+-- Unit Library
 UL = {}
 UL.BASE_ID = 0x100
 UL.kMalik = UL.BASE_ID + 0
@@ -136,6 +146,7 @@ UL.kArcane = UL.BASE_ID + 25
 UL.kTesla = UL.BASE_ID + 26
 UL.kWizard = UL.BASE_ID + 27
 
+-- Projectile Library
 PL = {}
 PL.BASE_ID = 0x100
 PL.kMageBolt = PL.BASE_ID + 0
@@ -159,3 +170,7 @@ PL.kArcaneRay2 = PL.BASE_ID + 17
 PL.kTeslaRay = PL.BASE_ID + 18
 PL.kArcherArrow2 = PL.BASE_ID + 19
 
+-- Ability Library
+AL = {}
+AL.BASE_ID = 0x100
+AL.kCurse = AL.BASE_ID + 0

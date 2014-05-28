@@ -169,6 +169,18 @@ int g_addTemplateProjectile(lua_State* L)
     return 0;
 }
 
+int g_addAbilityToUserData(lua_State* L)
+{
+    auto id = lua_tointeger(L, 1);
+    auto lvl = lua_tointeger(L, 2);
+    CUserData::ABILITY_INFO info;
+    info.id = id;
+    info.level = lvl;
+    CUserData::instance()->m_vecAbilitys.push_back(info);
+
+    return 0;
+}
+
 luaL_Reg Unit4CC_funcs[] = {
     { "ctor", Unit4CC_ctor },
     { "addBattleTip", Unit4CC_addBattleTip },
@@ -202,7 +214,7 @@ int Unit4CC_addBattleTip(lua_State* L)
 {
     CUnit* _p = luaL_tounitptr(L);
     const char* tip = lua_tostring(L, 2);
-    const char* font = lua_tostring(L, 3);
+    const char* font = lua_isnil(L, 3) ? nullptr : lua_tostring(L, 3);
     float fontSize = lua_tonumber(L, 4);
     unsigned int r = lua_tounsigned(L, 5);
     unsigned int g = lua_tounsigned(L, 6);
@@ -320,7 +332,7 @@ int Sprite_prepareAnimation(lua_State* L)
     return 0;
 }
 
-int luaRegCommFuncForCC(lua_State* L)
+int luaRegCommFuncsForCC(lua_State* L)
 {
     // TODO: reg global funcs
     lua_register(L, "loadFrames", g_loadFrames);
@@ -331,6 +343,7 @@ int luaRegCommFuncForCC(lua_State* L)
     lua_register(L, "include", g_include);
     lua_register(L, "addTemplateUnit", g_addTemplateUnit);
     lua_register(L, "addTemplateProjectile", g_addTemplateProjectile);
+    lua_register(L, "addAbilityToUserData", g_addAbilityToUserData);
 
     // TODO: patch global class members
     M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);
@@ -438,7 +451,7 @@ int g_endWithDefeat(lua_State* L)
     return 0;
 }
 
-int g_save(lua_State* L)
+int g_saveUserData(lua_State* L)
 {
     lua_getglobal(L, "_world");
     CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
@@ -460,7 +473,7 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "createProjectile", g_createProjectile);
     lua_register(L, "endWithVictory", g_endWithVictory);
     lua_register(L, "endWithDefeat", g_endWithDefeat);
-    lua_register(L, "save", g_save);
+    lua_register(L, "saveUserData", g_saveUserData);
 
     return 0;
 }

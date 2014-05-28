@@ -128,7 +128,7 @@ bool UnitSprite::initWithDraw(CUnitDrawForCC* pDraw)
 
     setDraw(pDraw);
 
-    SpriteFrame* sf = pDraw->getSpriteInfo()->getFrameInfo(CSpriteInfo::kFrmDefault)->pSf;
+    SpriteFrame* sf = pDraw->getSpriteInfo()->getFrameInfo(kFrmDefault)->pSf;
 
     return initWithSpriteFrame(sf);
 }
@@ -330,7 +330,7 @@ void CUnitDrawForCC::setVisible(bool bVisible /*= true*/)
 
 void CUnitDrawForCC::setFrame(int id)
 {
-    SpriteFrame* sf = m_si->getFrameInfo(CSpriteInfo::kFrmDefault)->pSf;
+    SpriteFrame* sf = m_si->getFrameInfo(kFrmDefault)->pSf;
     if (sf == nullptr)
     {
         return;
@@ -420,7 +420,8 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
     }
 
     //lbl = Label::create(pTip, pFont, fFontSize);
-    lbl = Label::createWithBMFont(pFont, pTip);
+    char sz[1024];
+    lbl = Label::createWithBMFont(pFont, gbk_to_utf8(pTip, sz));
     float scale = fFontSize / 32;
     lbl->setScale(scale);
     lbl->setColor(color);
@@ -515,9 +516,10 @@ void CUnitDrawForCC::say(const char* words)
     sp->setInsetTop(21);
     sp->setInsetBottom(33);
 
+    char sz[1024];
     auto lbl = Label::createWithBMFont(
         "fonts/Comic Book.fnt",
-        words);
+        gbk_to_utf8(words, sz));
     sp->addChild(lbl);
     lbl->setMaxLineWidth(400);
     lbl->setColor(Color3B::BLACK);
@@ -767,7 +769,7 @@ bool ProjectileSprite::initWithProjectile(CProjectileForCC* pProjectile)
 
     setProjectile(pProjectile);
 
-    SpriteFrame* sf = pProjectile->getSpriteInfo()->getFrameInfo(CSpriteInfo::kFrmDefault)->pSf;
+    SpriteFrame* sf = pProjectile->getSpriteInfo()->getFrameInfo(kFrmDefault)->pSf;
 
     return initWithSpriteFrame(sf);
 }

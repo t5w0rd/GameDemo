@@ -15,6 +15,7 @@ int g_setSearchPath(lua_State* L);
 int g_include(lua_State* L);
 int g_addTemplateUnit(lua_State* L);
 int g_addTemplateProjectile(lua_State* L);
+int g_addAbilityToUserData(lua_State* L);
 
 int Unit4CC_ctor(lua_State* L);
 int Unit4CC_addBattleTip(lua_State* L);
@@ -29,7 +30,7 @@ int Sprite_ctor(lua_State* L);
 int Sprite_prepareFrame(lua_State* L);
 int Sprite_prepareAnimation(lua_State* L);
 
-int luaRegCommFuncForCC(lua_State* L);
+int luaRegCommFuncsForCC(lua_State* L);
 
 int luaL_includefile(lua_State *L, const char* file);
 
@@ -38,7 +39,7 @@ int g_createUnit(lua_State* L);
 int g_createProjectile(lua_State* L);
 int g_endWithVictory(lua_State* L);
 int g_endWithDefeat(lua_State* L);
-int g_save(lua_State* L);
+int g_saveUserData(lua_State* L);
 
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld);
 

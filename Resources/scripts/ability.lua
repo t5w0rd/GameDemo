@@ -31,7 +31,7 @@ end
 function CurseBuff:onUnitAddAbility()
     o = self:getOwner()
     self.hp = o:getHp()
-    o:addBattleTip("Curse", "fonts/Comic Book.fnt", 18, 255, 0, 255)
+    o:addBattleTip("Curse", nil, 18, 255, 0, 255)
 end
 
 function CurseBuff:onUnitInterval()

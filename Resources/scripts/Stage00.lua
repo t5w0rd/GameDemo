@@ -1,3 +1,4 @@
+include("Init.lua")
 include("AI.lua")
 include("AI2.lua")
 
@@ -24,7 +25,9 @@ function HeroLevelUpdate:onChangeLevel(u, change)
     u:addBuffAbility(ChangeHpBuff:new("LevelUpHeal", "LevelUpHeal", 5.0, false, 0.2, 0.02, 0.0))
     u:addBuffAbility(ReflectBuff:new("Reflect", "Reflect", 5.0))
     
-    u:setBaseMoveSpeed(u:getBaseMoveSpeed() + 1.5)
+	u:setMaxHp(u:getMaxHp() + 200)
+	
+	u:setBaseMoveSpeed(u:getBaseMoveSpeed() + 1.5)
 
     local atk = u:getAttackAbility()
     local a, b = atk:getExAttackSpeed()
@@ -36,7 +39,7 @@ function HeroLevelUpdate:onChangeLevel(u, change)
     t, v = u:getBaseArmor()
     u:setBaseArmor(t, v + 1)
 
-    save()
+    saveUserData()
 end
 
 function HeroLevelUpdate:calcExp(lvl)
@@ -62,14 +65,14 @@ function onWorldInit()
     
     me:setAlly(2 ^ 3 + 2 ^ 4 + 2 ^ 2)
     
-    game02()
+    game01()
     --test()
     
     return true
 end
 
 function onWorldTick(dt)
-    game02_tick(dt)
+    game01_tick(dt)
     --test_tick(dt)
 end
 
@@ -225,7 +228,7 @@ function game01()
     --u:addPassiveAbility(DamageBackPas:new(1.2, 0))
     a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0)
     id = addTemplateAbility(a)
-    a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, UnitForce.kEnemy, PL.kArcaneRay)
+    a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 100, UnitForce.kEnemy, PL.kArcaneRay)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0)
@@ -242,7 +245,7 @@ function game01()
     --u:addPassiveAbility(DamageBackPas:new(1.0, 0))
     a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0)
     id = addTemplateAbility(a)
-    a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, UnitForce.kEnemy, PL.kTeslaRay)
+    a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 100, UnitForce.kEnemy, PL.kTeslaRay)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0)
@@ -326,9 +329,11 @@ function initAIAbility()
     --a = me:getActiveAbility("ThunderCap")
     --me:delActiveAbility(a)
 	
+	me:addActiveAbility(lib.MultiSlash)
 	me:addActiveAbility(lib.KnockBackEx)
 	me:addActiveAbility(lib.ThrowHammerEx)
-
+	me:addPassiveAbility(lib.VampireAttack)
+	me:addPassiveAbility(lib.CriticalAttack)
     
 end
 

@@ -417,18 +417,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\scripts\ability.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\ai.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\ai2.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\common.lua">
-      <Filter>scripts</Filter>
-    </None>
     <None Include="..\Resources\scripts\Stage00.lua">
       <Filter>scripts</Filter>
     </None>
@@ -448,6 +436,24 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\Resources\scripts\AbilityLibrary.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Init.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\UnitLibrary.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Ability.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\AI.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\AI2.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Common.lua">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

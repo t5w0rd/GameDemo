@@ -266,14 +266,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Malik/act5", "Sprites/Malik/act5", 0.1f);
 
     si = new CSpriteInfo("Malik");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 8);
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 7);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 8);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 3);
+    si->prepareAnimation(kAniAct2, "act2", 3);
+    si->prepareAnimation(kAniAct3, "act3", 8);
+    si->prepareAnimation(kAniAct4, "act4", 7);
+    si->prepareAnimation(kAniAct5, "act5", 8);
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 30.0f, Point(96.0f / 192, 20.0f / 200), CPoint(40.0f, 26.0f));
@@ -290,8 +290,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kMalik, u);
@@ -306,14 +306,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Mage/act5", "Sprites/Mage/act5", 0.1f);
 
     si = new CSpriteInfo("Mage");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 5);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 10);
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 9);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 5);
+    si->prepareAnimation(kAniAct2, "act2", 6);
+    si->prepareAnimation(kAniAct3, "act3", 10);
+    si->prepareAnimation(kAniAct4, "act4", 4);
+    si->prepareAnimation(kAniAct5, "act5", 9);
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(22.0f, 18.0f, Point(61.0f / 120, 21.0f / 152), CPoint(15.0f, 26.0f));
@@ -329,8 +329,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         0.5);
     atk->setCastMinRange(0.0f);
     atk->setCastRange(200.0f);
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
     atk->setTemplateProjectile(kMageBolt);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(50.0f);
@@ -347,14 +347,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Barracks/act5", "Sprites/Barracks/act5", 0.1f);
 
     si = new CSpriteInfo("Barracks");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1, "sounds/Sprites/Barracks/die/00.mp3");
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 5);
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 18);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 8);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1, "sounds/Sprites/Barracks/die/00.mp3");
+    si->prepareAnimation(kAniAct1, "act1", 3);
+    si->prepareAnimation(kAniAct2, "act2", 3);
+    si->prepareAnimation(kAniAct3, "act3", 5);
+    si->prepareAnimation(kAniAct4, "act4", 18);
+    si->prepareAnimation(kAniAct5, "act5", 8);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(28.0f, 19.0f, Point(64.0f / 128, 22.0f / 152), CPoint(37.0f, 23.0f));
@@ -375,8 +375,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kBarracks, u);
@@ -391,14 +391,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Archer/act5", "Sprites/Archer/act5", 0.1f);
     
     si = new CSpriteInfo("Archer");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1, "sounds/Sprites/Archer/die/00.mp3");
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 13);
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 6);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1, "sounds/Sprites/Archer/die/00.mp3");
+    si->prepareAnimation(kAniAct1, "act1", 4);
+    si->prepareAnimation(kAniAct2, "act2", 4);
+    si->prepareAnimation(kAniAct3, "act3", 13);
+    si->prepareAnimation(kAniAct4, "act4", 6);
+    si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(20.0f, 20.0f, Point(60.0f / 120, 24.0f / 152), CPoint(28.0f, 35.0f));
@@ -418,7 +418,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         0.5);
     atk->setCastMinRange(-25.0f);
     atk->setCastRange(200.0f);
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     atk->setTemplateProjectile(kArcherArrow);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(50.0f);
@@ -435,14 +435,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Frost/act5", "Sprites/Frost/act5", 0.1f);
 
     si = new CSpriteInfo("Frost");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 5);
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 7);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 6);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 4);
+    si->prepareAnimation(kAniAct2, "act2", 6);
+    si->prepareAnimation(kAniAct3, "act3", 5);
+    si->prepareAnimation(kAniAct4, "act4", 7);
+    si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(27.0f, 27.0f, Point(83.0f / 164, 36.0f / 208), CPoint(42.0f, 31.0f));
@@ -458,7 +458,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         0.5);
     atk->setCastMinRange(0.0f);
     atk->setCastRange(250.0f);
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     atk->setTemplateProjectile(kFrostBolt);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(50.0f);
@@ -475,14 +475,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Artillery/act5", "Sprites/Artillery/act5", 0.1f);
     
     si = new CSpriteInfo("Artillery");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 4, "sounds/Effects/ShootGun.mp3");
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 8);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 2);
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 6);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 4, "sounds/Effects/ShootGun.mp3");
+    si->prepareAnimation(kAniAct2, "act2", 8);
+    si->prepareAnimation(kAniAct3, "act3", 2);
+    si->prepareAnimation(kAniAct4, "act4", 3);
+    si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(26.0f, 20.0f, Point(91.0f / 184, 39.0f / 164), CPoint(36.0f, 46.0f));
@@ -498,7 +498,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         0.5);
     atk->setCastMinRange(0.0f);
     atk->setCastRange(180.0f);
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kArtillery, u);
@@ -512,13 +512,13 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Elemental/act5", "Sprites/Elemental/act5", 0.1f);
     
     si = new CSpriteInfo("Elemental");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 8);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 4);
+    si->prepareAnimation(kAniAct2, "act2", 4);
+    si->prepareAnimation(kAniAct3, "act3", 6);
+    si->prepareAnimation(kAniAct5, "act5", 8);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 28.0f, Point(59.0f / 120, 16.0f / 144), CPoint(40.0f, 30.0f));
@@ -535,8 +535,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kElemental, u);
@@ -550,13 +550,13 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Oni/act5", "Sprites/Oni/act5", 0.1f);
     
     si = new CSpriteInfo("Oni");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 9);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 9);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 19);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 6);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 9);
+    si->prepareAnimation(kAniAct2, "act2", 9);
+    si->prepareAnimation(kAniAct3, "act3", 19);
+    si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(38.0f, 31.0f, Point(130.0f / 256, 33.0f / 224), CPoint(105.0f, 10.0f));
@@ -573,8 +573,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct3);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct3);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kOni, u);
@@ -588,15 +588,15 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Thor/act5", "Sprites/Thor/act5", 0.1f);
     
     si = new CSpriteInfo("Thor");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1, "sounds/Sprites/Thor/die/00.mp3");
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 6, "sounds/Effects/MetalHeavyBashFlesh00.mp3");
-    si->addAnimationSound(CSpriteInfo::kAniAct1, "sounds/Effects/MetalHeavyBashFlesh01.mp3");
-    si->addAnimationSound(CSpriteInfo::kAniAct1, "sounds/Effects/MetalHeavyBashFlesh02.mp3");
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 5);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 3, "sounds/Effects/LevelUp.mp3");
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1, "sounds/Sprites/Thor/die/00.mp3");
+    si->prepareAnimation(kAniAct1, "act1", 6, "sounds/Effects/MetalHeavyBashFlesh00.mp3");
+    si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavyBashFlesh01.mp3");
+    si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavyBashFlesh02.mp3");
+    si->prepareAnimation(kAniAct2, "act2", 5);
+    si->prepareAnimation(kAniAct3, "act3", 4);
+    si->prepareAnimation(kAniAct5, "act5", 3, "sounds/Effects/LevelUp.mp3");
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(40.0f, 29.0f, Point(124.0f / 240, 52.0f / 192), CPoint(59.0f, 30.0f));
@@ -617,7 +617,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     //atk->setTemplateProjectile(kLightning);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
@@ -632,13 +632,13 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Viking/act5", "Sprites/Viking/act5", 0.1f);
     
     si = new CSpriteInfo("Viking");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 7);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 8);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 6);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 4);
+    si->prepareAnimation(kAniAct2, "act2", 7);
+    si->prepareAnimation(kAniAct3, "act3", 8);
+    si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(38.0f, 32.0f, Point(141.0f / 284, 44.0f / 232), CPoint(83.0f, 22.0f));
@@ -655,8 +655,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kViking, u);
@@ -670,13 +670,13 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Lumberjack/act5", "Sprites/Lumberjack/act5", 0.1f);
     
     si = new CSpriteInfo("Lumberjack");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 6);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 6);
+    si->prepareAnimation(kAniAct2, "act2", 6);
+    si->prepareAnimation(kAniAct3, "act3", 6);
+    si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(51.0f, 45.0f, Point(91.0f / 180, 31.0f / 220), CPoint(62.0f, 41.0f));
@@ -693,9 +693,9 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
-    atk->addCastAnimation(CSpriteInfo::kAniAct3);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
+    atk->addCastAnimation(kAniAct3);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kLumberjack, u);
@@ -710,14 +710,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Alric/act5", "Sprites/Alric/act5", 0.1f);
     
     si = new CSpriteInfo("Alric");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 4);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 8, "sounds/Effects/hero_alric_flurry.mp3");
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 10);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 3);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 4);
+    si->prepareAnimation(kAniAct2, "act2", 3);
+    si->prepareAnimation(kAniAct3, "act3", 8, "sounds/Effects/hero_alric_flurry.mp3");
+    si->prepareAnimation(kAniAct4, "act4", 10);
+    si->prepareAnimation(kAniAct5, "act5", 3);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(26.0f, 24.0f, Point(83.0f / 164, 17.0f / 180), CPoint(62.0f, 26.0f));
@@ -734,9 +734,9 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(0.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
-    atk->addCastAnimation(CSpriteInfo::kAniAct3);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
+    atk->addCastAnimation(kAniAct3);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kAlric, u);
@@ -750,17 +750,17 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Soldier/act5", "Sprites/Soldier/act5", 0.1f);
     
     si = new CSpriteInfo("Soldier");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->addAnimationSound(CSpriteInfo::kAniDie, "sounds/Effects/HumenDie00.mp3");
-    si->addAnimationSound(CSpriteInfo::kAniDie, "sounds/Effects/HumenDie01.mp3");
-    si->addAnimationSound(CSpriteInfo::kAniDie, "sounds/Effects/HumenDie02.mp3");
-    si->addAnimationSound(CSpriteInfo::kAniDie, "sounds/Effects/HumenDie03.mp3");
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 2);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 11);
-    si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 9);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->addAnimationSound(kAniDie, "sounds/Effects/HumenDie00.mp3");
+    si->addAnimationSound(kAniDie, "sounds/Effects/HumenDie01.mp3");
+    si->addAnimationSound(kAniDie, "sounds/Effects/HumenDie02.mp3");
+    si->addAnimationSound(kAniDie, "sounds/Effects/HumenDie03.mp3");
+    si->prepareAnimation(kAniAct1, "act1", 2);
+    si->prepareAnimation(kAniAct2, "act2", 3);
+    si->prepareAnimation(kAniAct3, "act3", 11);
+    si->prepareAnimation(kAniAct4, "act4", 9);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(25.0f, 21.0f, Point(94.0f / 188, 17.0f / 104), CPoint(40.0f, 21.0f));
@@ -777,8 +777,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(-9.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
-    atk->addCastAnimation(CSpriteInfo::kAniAct2);
+    atk->addCastAnimation(kAniAct1);
+    atk->addCastAnimation(kAniAct2);
     u->addActiveAbility(atk);
     u->setRewardGold(10);
     u->setRewardExp(7);
@@ -793,12 +793,12 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Templar/act3", "Sprites/Templar/act3", 0.1f);
     
     si = new CSpriteInfo("Templar");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 9);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 2);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 3);
+    si->prepareAnimation(kAniAct2, "act2", 9);
+    si->prepareAnimation(kAniAct3, "act3", 2);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(19.0f, 20.0f, Point(74.0f / 144, 16.0f / 84), CPoint(32.0f, 20.0f));
@@ -815,7 +815,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastMinRange(-7.0f);
     atk->setCastRange(20.0f);
     atk->setCastHorizontal();
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     u->addActiveAbility(atk);
     u->setRewardGold(10);
     u->setRewardExp(7);
@@ -827,9 +827,9 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Arcane/act1", "Sprites/Arcane/act1", 0.08f);
     
     si = new CSpriteInfo("Arcane");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 9);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 9);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(63.0f, 60.0f, Point(120.0f / 240, 44.0f / 184), CPoint(0.0f, 118.0f));
@@ -845,7 +845,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         0.1818f);
     atk->setCastMinRange(-60.0f);
     atk->setCastRange(300.0f);
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     atk->setTemplateProjectile(kArcaneRay);
     u->addActiveAbility(atk);
     d->setFixed();
@@ -857,9 +857,9 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Tesla/act1", "Sprites/Tesla/act1", 0.031f);
     
     si = new CSpriteInfo("Tesla");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 17);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 17);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(63.0f, 60.0f, Point(120.0f / 240, 44.0f / 184), CPoint(0.0f, 118.0f));
@@ -875,7 +875,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         0.1818f);
     atk->setCastMinRange(-60.0f);
     atk->setCastRange(300.0f);
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     atk->setTemplateProjectile(kTeslaRay);
     u->addActiveAbility(atk);
     d->setFixed();
@@ -892,14 +892,14 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Wizard/act5", "Sprites/Wizard/act5", 0.1f);
     
     si = new CSpriteInfo("Wizard");
-    si->prepareFrame(CSpriteInfo::kFrmDefault, "default");
-    si->prepareAnimation(CSpriteInfo::kAniMove, "move", -1);
-    si->prepareAnimation(CSpriteInfo::kAniDie, "die", -1);
-    si->prepareAnimation(CSpriteInfo::kAniAct1, "act1", 10);
-    si->prepareAnimation(CSpriteInfo::kAniAct2, "act2", 3);
-    si->prepareAnimation(CSpriteInfo::kAniAct3, "act3", 10);
-    //si->prepareAnimation(CSpriteInfo::kAniAct4, "act4", 6);
-    si->prepareAnimation(CSpriteInfo::kAniAct5, "act5", 6);
+    si->prepareFrame(kFrmDefault, "default");
+    si->prepareAnimation(kAniMove, "move", -1);
+    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniAct1, "act1", 10);
+    si->prepareAnimation(kAniAct2, "act2", 3);
+    si->prepareAnimation(kAniAct3, "act3", 10);
+    //si->prepareAnimation(kAniAct4, "act4", 6);
+    si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 25.0f, Point(72.0f / 144, 37.0f / 156), CPoint(33.0f, 67.0f));
@@ -915,7 +915,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         0.5);
     atk->setCastMinRange(0.0f);
     atk->setCastRange(200.0f);
-    atk->addCastAnimation(CSpriteInfo::kAniAct1);
+    atk->addCastAnimation(kAniAct1);
     atk->setTemplateProjectile(kWizardBolt);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(50.0f);

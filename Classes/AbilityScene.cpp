@@ -7,6 +7,7 @@
 #include "UserData.h"
 #include "GameData.h"
 #include "AbilityLibrary.h"
+#include "ActionForCC.h"
 
 
 // AbilitySceneLayer
@@ -479,9 +480,9 @@ bool AbilitySceneLayer::init()
 
     // test data
     CUserData::ABILITY_INFO info;
-    info.id = 0;
-    info.level = 1;
-    CUserData::instance()->m_vecAbilitys.push_back(info);
+    //info.id = 0;
+    //info.level = 1;
+    //CUserData::instance()->m_vecAbilitys.push_back(info);
     info.id = 1;
     info.level = 0;
     CUserData::instance()->m_vecAbilitys.push_back(info);
@@ -582,6 +583,7 @@ bool AbilitySceneLayer::init()
     m_energy->setDimensions(m_energy->getContentSize().width * 1.5, m_energy->getContentSize().height);
     m_energy->setPosition(Point(m_energy->getContentSize().width * 0.5 + wsz.width * 0.5 - m_abilityEquippedPanel->getContentSize().width * 0.5 + 0, m_energy->getContentSize().height * 0.5 + m_abilityEquippedPanel->getPosition().y + m_abilityEquippedPanel->getContentSize().height * 0.5 + 40));
     
+    runAction(Shake::create(1.0f, 10, 20));
 
     return true;
 }

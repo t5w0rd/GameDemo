@@ -11,6 +11,7 @@
 #include "Draw.h"
 #include "Ability.h"
 #include "MultiRefObject.h"
+#include "AbilityLibrary.h"
 
 
 // common
@@ -63,6 +64,14 @@ int luaL_getregistery(lua_State* L, int key)
     lua_rawgeti(L, LUA_REGISTRYINDEX, key);
 
     return lua_gettop(L);
+}
+
+const char* luaL_toutf8string(lua_State* L, int idx, char* buf)
+{
+    auto gbk = lua_tostring(L, idx);
+    gbk_to_utf8(gbk, buf);
+    
+    return buf;
 }
 
 int obj_sctor(lua_State* L)
@@ -189,6 +198,28 @@ int g_cast(lua_State* L)
     lua_setmetatable(L, t);
 
     return 0;
+}
+
+int g_addTemplateAbility(lua_State* L)
+{
+    int n = lua_gettop(L);
+
+    int id = 0;
+    if (n == 1)
+    {
+        CAbility* a = luaL_toabilityptr(L, 1);
+        id = CAbilityLibrary::instance()->addTemplateAbility(a);
+    }
+    else
+    {
+        int key = lua_tointeger(L, 1);
+        CAbility* a = luaL_toabilityptr(L, 2);
+        id = CAbilityLibrary::instance()->addTemplateAbility(key, a);
+    }
+
+    lua_pushinteger(L, id);
+
+    return 1;
 }
 
 // game
@@ -359,6 +390,7 @@ luaL_Reg LevelUpdate_funcs[] = {
     { "ctor", LevelUpdate_ctor },
     { "updateExpRange", LevelUpdate_updateExpRange },
     { "onChangeLevel", LevelUpdate_onChangeLevel },
+    { "calcExp", LevelUpdate_calcExp },
     { nullptr, nullptr }
 };
 
@@ -531,6 +563,8 @@ luaL_Reg Unit_funcs[] = {
     { "setAI", Unit_setAI },
     { "say", Unit_say },
     { "setGhost", Unit_setGhost },
+    { "setEnergy", Unit_setEnergy },
+    { "getEnergy", Unit_getEnergy },
 
     { "startDoing", Unit_startDoing },
     { "endDoing", Unit_endDoing },
@@ -945,6 +979,25 @@ int Unit_setGhost(lua_State* L)
     u->setGhost(ghost);
 
     return 0;
+}
+
+int Unit_setEnergy(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    auto energy = lua_tointeger(L, 2);
+
+    u->setEnergy(energy);
+
+    return 0;
+}
+
+int Unit_getEnergy(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushinteger(L, u->getEnergy());
+
+    return 1;
 }
 
 int Unit_startDoing(lua_State* L)
@@ -1935,6 +1988,7 @@ int Projectile_decContactLeft(lua_State* L)
 
 luaL_Reg Ability_funcs[] = {
     { "ctor", Ability_ctor },
+    { "onChangeLevel", Ability_onChangeLevel },
     { "onUnitAddAbility", Ability_onUnitAddAbility },
     { "onUnitDelAbility", Ability_onUnitDelAbility },
     { "onUnitAbilityReady", Ability_onUnitAbilityReady },
@@ -1972,10 +2026,16 @@ luaL_Reg Ability_funcs[] = {
     { "getGrade", Ability_getGrade },
     { "setCost", Ability_setCost },
     { "getCost", Ability_getCost },
+    { "addCastAnimation", Ability_addCastAnimation },
     { nullptr, nullptr }
 };
 
 int Ability_ctor(lua_State* L)
+{
+    return 0;
+}
+
+int Ability_onChangeLevel(lua_State* L)
 {
     return 0;
 }
@@ -2277,6 +2337,16 @@ int Ability_getCost(lua_State* L)
     return 1;
 }
 
+int Ability_addCastAnimation(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+    int id = lua_tointeger(L, 2);
+
+    _p->addCastAnimation(id);
+
+    return 0;
+}
+
 luaL_Reg ActiveAbility_funcs[] = {
     { "ctor", ActiveAbility_ctor },
     { "checkConditions", ActiveAbility_checkConditions },
@@ -2292,7 +2362,6 @@ luaL_Reg ActiveAbility_funcs[] = {
     { "setTemplateProjectile", ActiveAbility_setTemplateProjectile },
     { "setCastHorizontal", ActiveAbility_setCastHorizontal },
     { "isCastHorizontal", ActiveAbility_isCastHorizontal },
-    { "addCastAnimation", ActiveAbility_addCastAnimation },
     { "getAbilityEffectPoint", ActiveAbility_getAbilityEffectPoint },
     { nullptr, nullptr }
 };
@@ -2441,17 +2510,6 @@ int ActiveAbility_isCastHorizontal(lua_State* L)
     lua_pushboolean(L, _p->isCastHorizontal());
 
     return 1;
-}
-
-int ActiveAbility_addCastAnimation(lua_State* L)
-{
-    CActiveAbility* _p = nullptr;
-    luaL_toobjptr(L, 1, _p);
-    int id = lua_tointeger(L, 2);
-
-    _p->addCastAnimation(id);
-
-    return 0;
 }
 
 int ActiveAbility_getAbilityEffectPoint(lua_State* L)
@@ -2922,11 +2980,33 @@ int TransitiveLinkBuff_ctor(lua_State* L)
     float duration = lua_tonumber(L, 3);
     float range = lua_tonumber(L, 4);
     int maxTimes = lua_tointeger(L, 5);
-    uint32_t eff = lua_tounsigned(L, 6);
-    int projectile = lua_gettop(L) < 7 ? 0 : lua_tointeger(L, 7);
+    int minIvl = lua_tointeger(L, 6);
+    uint32_t eff = lua_tounsigned(L, 7);
+    int projectile = lua_gettop(L) < 8 ? 0 : lua_tointeger(L, 8);
 
-    CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, eff);
+    CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, minIvl, eff);
     _p->setTemplateProjectile(projectile);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int TransitiveBlinkBuff_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float range = lua_tonumber(L, 3);
+    int maxTimes = lua_tointeger(L, 4);
+    int minIvl = lua_tointeger(L, 5);
+    int ani = lua_tointeger(L, 6);
+
+    CTransitiveBlinkBuff* _p = new CTransitiveBlinkBuff(name, range, maxTimes, minIvl, ani);
+    int n = lua_gettop(L);
+    for (int i = 7; i <= n; ++i)
+    {
+        ani = lua_tointeger(L, i);
+        _p->addCastAnimation(ani);
+    }
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3004,11 +3084,12 @@ int LimitedLifeBuff_ctor(lua_State* L)
     return 0;
 }
 
-int luaRegCommFunc(lua_State* L)
+int luaRegCommFuncs(lua_State* L)
 {
     // TODO: reg global funcs
     lua_register(L, "class", g_class);
     lua_register(L, "cast", g_cast);
+    lua_register(L, "addTemplateAbility", g_addTemplateAbility);
 
     // TODO: reg global classes
     M_LUA_BIND_CLASS_WITH_FUNCS(L, MRObj);
@@ -3020,7 +3101,7 @@ int luaRegCommFunc(lua_State* L)
     M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, UnitAI, MRObj);
     M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Projectile, MRObj);
 
-    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Ability, MRObj);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, Ability, LevelExp);
     M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, ActiveAbility, Ability);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, PassiveAbility, Ability);
     M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, BuffAbility, Ability);
@@ -3040,6 +3121,7 @@ int luaRegCommFunc(lua_State* L)
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, BuffMakerAct, ActiveAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, DamageBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, TransitiveLinkBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, TransitiveBlinkBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, SplashPas, PassiveAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, KnockBackBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AttractBuff, BuffAbility);
@@ -3057,32 +3139,6 @@ int g_onWorldInit(lua_State* L)
 int g_onWorldTick(lua_State* L)
 {
     return 0;
-}
-
-int g_addTemplateAbility(lua_State* L)
-{
-    int n = lua_gettop(L);
-    
-    lua_getglobal(L, "_world");
-    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    lua_pop(L, 1);
-
-    int id = 0;
-    if (n == 1)
-    {
-        CAbility* a = luaL_toabilityptr(L, 1);
-        id = w->addTemplateAbility(a);
-    }
-    else
-    {
-        int key = lua_tointeger(L, 1);
-        CAbility* a = luaL_toabilityptr(L, 2);
-        id = w->addTemplateAbility(key, a);
-    }
-
-    lua_pushinteger(L, id);
-
-    return 1;
 }
 
 int g_setControlUnit(lua_State* L)
@@ -3233,7 +3289,6 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     // TODO: reg global funcs
     lua_register(L, "onWorldInit", g_onWorldInit);
     lua_register(L, "onWorldTick", g_onWorldTick);
-    lua_register(L, "addTemplateAbility", g_addTemplateAbility);
     lua_register(L, "setControlUnit", g_setControlUnit);
     lua_register(L, "getControlUnit", g_getControlUnit);
     lua_register(L, "getUnit", g_getUnit);

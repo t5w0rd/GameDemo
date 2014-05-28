@@ -24,7 +24,6 @@ const float CBattleWorld::CONST_MAX_REWARD_RANGE = 400;
 CBattleWorld::CBattleWorld()
 : m_bLuaWorldTickEnabled(true)
 {
-    CLuaScriptEngine::instance()->getLuaHandle();
 }
 
 CBattleWorld::~CBattleWorld()
@@ -143,8 +142,10 @@ bool CBattleWorld::onLuaWorldInit()
     lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     BattleSceneLayer* layer = DCAST(getLayer(), BattleSceneLayer*);
 
-    int res = 0;
+    luaRegWorldFuncs(L, this);
+    luaRegWorldFuncsForCC(L, this);
 
+    int res = 0;
     res = luaL_includefilelog(L, CUserData::instance()->getStageSelected()->script.c_str());
     if (res != LUA_OK)
     {
