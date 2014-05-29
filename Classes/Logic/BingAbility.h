@@ -26,7 +26,7 @@ public:
     M_SYNTHESIZE(int, m_iIncreaseTimes, increaseTimes);
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, AttackValue);
     
-    virtual void onUnitAddAbility();
+    virtual void onUnitAddAbility() override;
 
 
 };
@@ -41,8 +41,8 @@ public:
     M_SYNTHESIZE(float, m_fDamageReduce, fDamageReduce);
     
     virtual void onUnitDamaged(CAttackData* pAttack, CUnit* pSource);
-    virtual void onUnitDelAbility();
-    virtual void onUnitAddAbility();
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitAddAbility() override;
 
 
 };

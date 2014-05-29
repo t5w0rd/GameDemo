@@ -171,9 +171,15 @@ public:
 public:
     CUnitForce();
     
-    bool isAllyOf(const CUnitForce* pForce) const;
-    bool isEnemyOf(const CUnitForce* pForce) const;
-    bool isEffective(const CUnitForce* pForce, uint32_t dwEffectiveTypeFlags) const;
+    // it ONLY means that force is my ally
+    bool isMyAlly(const CUnitForce* pForce) const;
+
+    // it ONLY means that force is my enemy
+    bool isMyEnemy(const CUnitForce* pForce) const;
+    
+    // the result of 'this->canEffect(force)' is not always same as 'force->canEffect(this)'
+    // it ONLY means that 'this' can effect 'force'
+    bool canEffect(const CUnitForce* pForce, uint32_t dwEffectiveTypeFlags) const;
     
     void setForceByIndex(int iForceIndex);
     
@@ -231,6 +237,10 @@ public:
     M_SYNTHESIZE(TARGET_TYPE, m_eTargetType, TargetType);
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oTargetPoint, TargetPoint);
     M_SYNTHESIZE(int, m_iTargetUnit, TargetUnit);
+
+    void setTarget();
+    void setTarget(int iTargetUnit);
+    void setTarget(const CPoint& rTargetPoint);
 };
 
 class CUnitEventAdapter : public CMultiRefObject
@@ -449,18 +459,18 @@ public:
     // 下列函数将安全的增删触发器
     
     void addActiveAbility(CActiveAbility* pAbility, bool bNotify = true);
-    void addActiveAbility(int id, int iLevel = 1);
+    void addActiveAbility(int id, int iLevel = 1, bool bNotify = true);
     void delActiveAbility(int id, bool bNotify = true);
     CActiveAbility* getActiveAbility(int id);
     CActiveAbility* getActiveAbility(const char* name);
     
     void addPassiveAbility(CPassiveAbility* pAbility, bool bNotify = true);
-    void addPassiveAbility(int id, int iLevel = 1);
+    void addPassiveAbility(int id, int iLevel = 1, bool bNotify = true);
     void delPassiveAbility(int id, bool bNotify = true);
     CPassiveAbility* getPassiveAbility(int id);
     
     void addBuffAbility(CBuffAbility* pAbility, bool bNotify = true);
-    void addBuffAbility(int id, int iSrcUnit, int iLevel = 1);
+    void addBuffAbility(int id, int iSrcUnit, int iLevel = 1, bool bNotify = true);
     void delBuffAbility(int id, bool bNotify = true);
     CBuffAbility* getBuffAbility(int id);
     CBuffAbility* getBuffAbility(const char* name);

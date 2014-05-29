@@ -262,21 +262,21 @@ void CUnitForce::setForceByIndex(int iForceIndex)
     m_dwForceFlag = 1 << iForceIndex;
 }
 
-bool CUnitForce::isAllyOf(const CUnitForce* pForce) const
+bool CUnitForce::isMyAlly(const CUnitForce* pForce) const
 {
     return (m_dwForceFlag == pForce->m_dwForceFlag) || (m_dwAllyMaskFlag & pForce->m_dwForceFlag);
 }
 
-bool CUnitForce::isEnemyOf(const CUnitForce* pForce) const
+bool CUnitForce::isMyEnemy(const CUnitForce* pForce) const
 {
-    return !isAllyOf(pForce);
+    return !isMyAlly(pForce);
 }
 
-bool CUnitForce::isEffective(const CUnitForce* pForce, uint32_t dwEffectiveTypeFlags) const
+bool CUnitForce::canEffect(const CUnitForce* pForce, uint32_t dwEffectiveTypeFlags) const
 {
     return ((this == pForce) && (dwEffectiveTypeFlags & CUnitForce::kSelf)) ||
-           ((this != pForce) && (this->isAllyOf(pForce) && (dwEffectiveTypeFlags & CUnitForce::kAlly))) ||
-           (this->isEnemyOf(pForce) && (dwEffectiveTypeFlags & CUnitForce::kEnemy));
+           ((this != pForce) && (this->isMyAlly(pForce) && (dwEffectiveTypeFlags & CUnitForce::kAlly))) ||
+           (this->isMyEnemy(pForce) && (dwEffectiveTypeFlags & CUnitForce::kEnemy));
 }
 
 // CActionManager 
@@ -367,6 +367,26 @@ bool CCommandTarget::operator==(const CCommandTarget& rTarget) const
     return false;
 }
 
+void CCommandTarget::setTarget()
+{
+    m_eTargetType = kNoTarget;
+    m_iTargetUnit = m_oTargetPoint.x = m_oTargetPoint.y = 0;
+}
+
+void CCommandTarget::setTarget(int iTargetUnit)
+{
+    m_eTargetType = kUnitTarget;
+    m_iTargetUnit = iTargetUnit;
+    m_oTargetPoint.x = m_oTargetPoint.y = 0;
+}
+
+void CCommandTarget::setTarget(const CPoint& rTargetPoint)
+{
+    m_eTargetType = kPointTarget;
+    m_iTargetUnit = 0;
+    m_oTargetPoint = rTargetPoint;
+}
+
 // CUnitEventAdapter
 
 // CBaseAI
@@ -433,7 +453,7 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
         return;
     }
     //CCLOG("%s", u->isDoingAnd(CUnit::kObstinate) ? "Obs" : "NOT");
-    if (pSource == nullptr || pSource->isDead() || pSource->isAllyOf(pUnit))
+    if (pSource == nullptr || pSource->isDead() || pSource->isMyAlly(pUnit))
     {
         return;
     }
@@ -757,15 +777,25 @@ void CUnit::copyData(const CUnit* from)
     M_MAP_FOREACH(from->m_mapActAbilitys)
     {
         CActiveAbility* a = M_MAP_EACH;
-        addActiveAbility(DCAST(a->copy(), CActiveAbility*));
         M_MAP_NEXT;
+        if (a->isTemporary())
+        {
+            continue;
+        }
+
+        addActiveAbility(DCAST(a->copy(), CActiveAbility*));
     }
 
     M_MAP_FOREACH(from->m_mapPasAbilitys)
     {
         CPassiveAbility* a = M_MAP_EACH;
-        addPassiveAbility(DCAST(a->copy(), CPassiveAbility*));
         M_MAP_NEXT;
+        if (a->isTemporary())
+        {
+            continue;
+        }
+
+        addPassiveAbility(DCAST(a->copy(), CPassiveAbility*));
     }
 
     m_oBaseArmor = from->m_oBaseArmor;
@@ -1334,13 +1364,13 @@ void CUnit::addActiveAbility(CActiveAbility* pAbility, bool bNotify)
     }
 }
 
-void CUnit::addActiveAbility(int id, int iLevel)
+void CUnit::addActiveAbility(int id, int iLevel, bool bNotify)
 {
     CWorld* w = getWorld();
     CActiveAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
     pAbility->setLevel(iLevel);
-    addActiveAbility(pAbility);
+    addActiveAbility(pAbility, bNotify);
 }
 
 void CUnit::delActiveAbility(int id, bool bNotify)
@@ -1403,13 +1433,13 @@ void CUnit::addPassiveAbility(CPassiveAbility* pAbility, bool bNotify)
     }
 }
 
-void CUnit::addPassiveAbility(int id, int iLevel)
+void CUnit::addPassiveAbility(int id, int iLevel, bool bNotify)
 {
     CWorld* w = getWorld();
     CPassiveAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
     pAbility->setLevel(iLevel);
-    addPassiveAbility(pAbility);
+    addPassiveAbility(pAbility, bNotify);
 }
 
 void CUnit::delPassiveAbility(int id, bool bNotify)
@@ -1510,14 +1540,14 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
     }
 }
 
-void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel)
+void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel, bool bNotify)
 {
     CWorld* w = getWorld();
     CBuffAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
     pAbility->setSrcUnit(iSrcUnit);
     pAbility->setLevel(iLevel);
-    addBuffAbility(pAbility);
+    addBuffAbility(pAbility, bNotify);
 }
 
 void CUnit::delBuffAbility(int id, bool bNotify)

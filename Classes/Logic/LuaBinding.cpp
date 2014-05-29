@@ -2782,8 +2782,9 @@ int AttackBuffMakerPas_ctor(lua_State* L)
     bool toself = lua_toboolean(L, 5) != 0;
     float exAttackA = lua_tonumber(L, 6);
     float exAttackB = lua_tonumber(L, 7);
+    int act = lua_tointeger(L, 8);
 
-    CAttackBuffMakerPas* _p = new CAttackBuffMakerPas("ABM", name, chance, buff, toself, CExtraCoeff(exAttackA, exAttackB));
+    CAttackBuffMakerPas* _p = new CAttackBuffMakerPas("ABM", name, chance, buff, toself, CExtraCoeff(exAttackA, exAttackB), act);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 

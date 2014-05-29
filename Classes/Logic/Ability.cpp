@@ -14,6 +14,7 @@
 #include "LuaBinding.h"
 #include "LuaScriptEngine.h"
 #include "GameControl.h"
+#include "AbilityLibrary.h"
 
 
 // CAbility
@@ -30,6 +31,7 @@ CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 
 , m_iGrade(kNormal)
 , m_iCost(0)
+, m_bTemporary(false)
 {
     setDbgClassName("CAbility");
 }
@@ -69,6 +71,7 @@ void CAbility::copyData(CAbility* from)
     m_sDescribe = from->m_sDescribe;
     m_vecLevelDescribe = from->m_vecLevelDescribe;
     m_vecLevelType = from->m_vecLevelType;
+    m_bTemporary = from->m_bTemporary;
 
     m_iBaseExp = from->m_iBaseExp;
     m_iMaxExp = from->m_iMaxExp;
@@ -1215,7 +1218,7 @@ bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
     }
     
     if (m_pTarget != nullptr &&
-        !o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
+        !o->canEffect(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
     {
         // 如果有待选目标(自身或命令目标)，但是无法作用
         if (getCastTargetRadius() <= FLT_EPSILON ||
@@ -1244,7 +1247,7 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
     case CCommandTarget::kNoTarget:
     case CCommandTarget::kUnitTarget:
 
-        if (M_RAND_HIT(m_fChance) && (pProjectile != nullptr || o->isEffective(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags())))
+        if (M_RAND_HIT(m_fChance) && (pProjectile != nullptr || o->canEffect(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags())))
         {
             m_pTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
@@ -1258,7 +1261,7 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
     if (pProjectile != nullptr && pProjectile->hasPenaltyType(CProjectile::kOnContact) && pTarget != nullptr)
     {
         // 接触型抛射物，接触单位
-        if (M_RAND_HIT(m_fChance) && o->isEffective(DCAST(pTarget, CUnitForce*), m_dwEffectiveTypeFlags))
+        if (M_RAND_HIT(m_fChance) && o->canEffect(DCAST(pTarget, CUnitForce*), m_dwEffectiveTypeFlags))
         {
             CBuffAbility* pBuff = DCAST(w->copyAbility(getTemplateBuff()), CBuffAbility*);
             pBuff->setSrcUnit(o->getId());
@@ -1288,7 +1291,7 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
             continue;
         }
 
-        if (!o->isEffective(DCAST(u, CUnitForce*), m_dwEffectiveTypeFlags))
+        if (!o->canEffect(DCAST(u, CUnitForce*), m_dwEffectiveTypeFlags))
         {
             continue;
         }
@@ -1387,7 +1390,7 @@ void CAuraPas::onUnitInterval()
             continue;
         }
         
-        if (!o->isEffective(DCAST(u, CUnitForce*), m_dwEffectiveTypeFlags))
+        if (!o->canEffect(DCAST(u, CUnitForce*), m_dwEffectiveTypeFlags))
         {
             continue;
         }
@@ -1415,22 +1418,63 @@ void CAuraPas::onUnitInterval()
 }
 
 // CAttackBuffMakerPas
-CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff, bool bToSelf, const CExtraCoeff& roExAttackValue)
+CAttackBuffMakerPas::CAttackBuffMakerPas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff, bool bToSelf, const CExtraCoeff& roExAttackValue, int iTemplateAct)
 : CPassiveAbility(pRootId, pName)
 , m_fChance(fChance)
 , m_iTemplateBuff(iTemplateBuff)
 , m_bToSelf(bToSelf)
 , m_oExAttackValue(roExAttackValue)
+, m_iTemplateAct(iTemplateAct)
+, m_pInnerAct(nullptr)
 {
     setDbgClassName("CAttackBuffMakerPas");
     setTriggerFlags(CUnit::kOnAttackTargetTrigger);
+}
+
+CAttackBuffMakerPas::~CAttackBuffMakerPas()
+{
+    //M_SAFE_RELEASE(m_pInnerAct);
 }
 
 CAttackBuffMakerPas* CAttackBuffMakerPas::copy()
 {
     CAttackBuffMakerPas* ret = new CAttackBuffMakerPas(getRootId(), getName(), m_fChance, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
     ret->setCoolDown(getCoolDown());
+    ret->setTemplateAct(getTemplateAct());
     return ret;
+}
+
+void CAttackBuffMakerPas::onUnitAddAbility()
+{
+    if (m_iTemplateAct == 0)
+    {
+        return;
+    }
+
+    m_pInnerAct = DCAST(CAbilityLibrary::instance()->copyAbility(m_iTemplateAct), CActiveAbility*);
+    if (m_pInnerAct == nullptr)
+    {
+        return;
+    }
+
+    m_pInnerAct->setTemporary();
+    m_pInnerAct->setLevel(getLevel());
+    auto o = getOwner();
+    o->addActiveAbility(m_pInnerAct, false);
+}
+
+void CAttackBuffMakerPas::onUnitDelAbility()
+{
+    if (m_pInnerAct == nullptr)
+    {
+        return;
+    }
+
+    auto o = getOwner();
+    o->delActiveAbility(m_pInnerAct->getId(), false);
+    
+    //M_SAFE_RELEASE(m_pInnerAct);
+    m_pInnerAct = nullptr;
 }
 
 void CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
@@ -1461,6 +1505,74 @@ void CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarge
             pAttack->addAttackBuff(CAttackBuff(m_iTemplateBuff, getLevel()));
         }
     }
+
+    if (m_pInnerAct != nullptr)
+    {
+        castInnerSpell(pTarget);
+    }
+}
+
+bool CAttackBuffMakerPas::castInnerSpell(CUnit* pTarget)
+{
+    assert(m_pInnerAct != nullptr);
+
+    if (m_pInnerAct->isCoolingDown())
+    {
+        return false;
+    }
+    
+    auto o = getOwner();
+    auto od = DCAST(o->getDraw(), CUnitDraw2D*);
+    assert(od != nullptr);
+
+    CUnitDraw2D* td = pTarget ? DCAST(pTarget->getDraw(), CUnitDraw2D*) : nullptr;
+    CCommandTarget cmdTarget;
+    switch (m_pInnerAct->getCastTargetType())
+    {
+    case CCommandTarget::kNoTarget:
+        cmdTarget.setTarget();
+
+        break;
+
+    case CCommandTarget::kUnitTarget:
+        if (pTarget == nullptr)
+        {
+            // 目标不存在
+            return false;
+        }
+
+        cmdTarget.setTarget(pTarget->getId());
+
+        break;
+
+    case CCommandTarget::kPointTarget:
+        if (pTarget == nullptr)
+        {
+            // 目标不存在
+            return false;
+        }
+
+        assert(td != nullptr);
+        cmdTarget.setTarget(td->getPosition());
+
+        break;
+    }
+
+    if (m_pInnerAct->checkConditions(cmdTarget) == false)
+    {
+        return false;
+    }
+
+    // 施法距离合法性
+    bool disOk = od->checkCastTargetDistance(m_pInnerAct, od->getPosition(), cmdTarget, td);
+    if (disOk == false)
+    {
+        return false;
+    }
+
+    m_pInnerAct->effect();
+
+    return true;
 }
 
 // CDamageBuff
@@ -2077,7 +2189,7 @@ void CTransitiveLinkBuff::TransmitNext()
         m_bTransmited = true;
     }
 
-    if (getTimesLeft() < 0)
+    if (getTimesLeft() <= 0)
     {
         return;
     }
@@ -2152,8 +2264,8 @@ bool CTransitiveLinkBuff::checkConditions(CUnit* pUnit)
     }
 
     if (pUnit->isDead() ||
-        !pUnit->isEffective(s, getEffectiveTypeFlags()) ||
-        getUnitsTransmited().find(pUnit->getId()) != getUnitsTransmited().end())
+        !s->canEffect(DCAST(pUnit, CUnitForce*), m_dwEffectiveTypeFlags) ||
+        m_mapTransmited.find(pUnit->getId()) != m_mapTransmited.end())
     {
         return false;
     }
@@ -2196,27 +2308,11 @@ void CTransitiveBlinkBuff::copyData(CAbility* from)
 void CTransitiveBlinkBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
-    auto s = o->getUnit(getSrcUnit());
     m_iFromUnit = o->getId();
     m_mapTransmited[m_iFromUnit] = 0;
 
-    if (s && !s->isDead())
-    {
-        s->suspend();
-        s->setGhost(s->getId());
+    souceUnitRunActions(m_iTimesLeft == m_iMaxTimes);
 
-        auto sd = DCAST(s->getDraw(), CUnitDraw2D*);
-        auto od = DCAST(o->getDraw(), CUnitDraw2D*);
-        sd->stopAllActions();
-        CPoint from = od->getPosition().getDirectionPoint(rand(), od->getHalfOfWidth());
-        CPoint to = from.getForwardPoint(od->getPosition(), od->getHalfOfWidth() * 2);
-        sd->setPosition(from);
-        sd->setFlippedX(to.x < from.x);
-        float spd = 2.0f;
-        sd->doMoveTo(to, 0.3f, nullptr, spd);
-        sd->doAnimation(getCastRandomAnimation(), nullptr, 1, bind(&CTransitiveBlinkBuff::TransmitNext, this), spd);
-    }
-    
     setTimesLeft(getTimesLeft() - 1);
 }
 
@@ -2242,17 +2338,10 @@ void CTransitiveBlinkBuff::TransmitNext()
         m_bTransmited = true;
     }
 
-    auto s = getOwner()->getUnit(getSrcUnit());
-    if (s)
+    if (getTimesLeft() <= 0)
     {
-        s->resume();
-        s->setGhost(0);
-        auto sd = DCAST(s->getDraw(), CUnitDraw2D*);
-        sd->cmdStop();
-    }
-
-    if (getTimesLeft() < 0)
-    {
+        // 终止继续传递
+        resumeSourceUnit();
         return;
     }
 
@@ -2280,6 +2369,8 @@ void CTransitiveBlinkBuff::TransmitNext()
     }
 
     CUnit* t = nullptr;
+    auto s = getOwner()->getUnit(getSrcUnit());
+
     if (m_iMinIntervalTimes > m_iMaxTimes)
     {
         t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), m_fRange, bind(&CTransitiveBlinkBuff::checkConditions, this, placeholders::_1));
@@ -2291,6 +2382,8 @@ void CTransitiveBlinkBuff::TransmitNext()
 
     if (!t || !s || s->isDead())
     {
+        // 终止继续传递
+        resumeSourceUnit();
         return;
     }
 
@@ -2306,7 +2399,10 @@ void CTransitiveBlinkBuff::TransmitNext()
     int buff = w->addTemplateAbility(this);
     pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
 
-    t->damaged(pAtk, s);
+    if (t->damaged(pAtk, s, CUnit::kOnAttackedTrigger) == false)
+    {
+        resumeSourceUnit();
+    }
 }
 
 bool CTransitiveBlinkBuff::checkConditions(CUnit* pUnit)
@@ -2319,13 +2415,65 @@ bool CTransitiveBlinkBuff::checkConditions(CUnit* pUnit)
     }
 
     if (pUnit->isDead() ||
-        !pUnit->isEffective(s, getEffectiveTypeFlags()) ||
-        getUnitsTransmited().find(pUnit->getId()) != getUnitsTransmited().end())
+        !s->canEffect(DCAST(pUnit, CUnit*), m_dwEffectiveTypeFlags) ||
+        m_mapTransmited.find(pUnit->getId()) != m_mapTransmited.end())
     {
         return false;
     }
 
     return true;
+}
+
+void CTransitiveBlinkBuff::souceUnitRunActions(bool bFirstTime)
+{
+    auto o = getOwner();
+    auto s = o->getUnit(getSrcUnit());
+    if (s == nullptr || s->isDead())
+    {
+        return;
+    }
+
+    auto sd = DCAST(s->getDraw(), CUnitDrawForCC*);
+    auto od = DCAST(o->getDraw(), CUnitDraw2D*);
+
+    auto eff = Effect::createWithSpriteFrame(sd->getCurrentFrame());
+    eff->setAnchorPoint(sd->getAnchorPoint());
+    sd->getSprite()->getParent()->addChild(eff);
+    eff->setLogicPosition(sd->getPosition());
+
+    CPoint from = od->getPosition().getDirectionPoint(rand(), od->getHalfOfWidth());
+    CPoint to = from.getForwardPoint(od->getPosition(), od->getHalfOfWidth() * 2);
+    eff->setOpacity(200);
+    eff->setFlippedX(from.x < eff->getPosition().x);
+    eff->runAction(Sequence::create(MoveTo::create(eff->getLogicPosition().getDistance(from) / 1000.0, Point(from.x, from.y)), FadeTo::create(0.8f, 0), RemoveSelf::create(), nullptr));
+
+    if (bFirstTime)
+    {
+        s->suspend();
+        s->setGhost(s->getId());
+    }
+
+    sd->stopAllActions();
+    sd->setPosition(from);
+    sd->setFlippedX(to.x < from.x);
+    float spd = 2.5f;
+    sd->doMoveTo(to, 0.35f, nullptr, spd);
+    sd->doAnimation(getCastRandomAnimation(), nullptr, 1, bind(&CTransitiveBlinkBuff::TransmitNext, this), spd);
+}
+
+void CTransitiveBlinkBuff::resumeSourceUnit()
+{
+    CCLOG("RESUME");
+    auto s = getOwner()->getUnit(getSrcUnit());
+    if (s == nullptr)
+    {
+        return;
+    }
+
+    s->resume();
+    s->setGhost(0);
+    auto sd = DCAST(s->getDraw(), CUnitDraw2D*);
+    sd->cmdStop();
 }
 
 // CSplashPas

@@ -75,7 +75,7 @@ public:
     virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
     virtual void onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     virtual bool onUnitProjectileArrive(CProjectile* pProjectile);
-    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);  // no need to regist
+    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);  // no need to register this trigger
     
 public:
     // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生
@@ -110,6 +110,8 @@ public:
     int getLevelType();
     int getLevelType(int level);
     void setLevelInfo(int level, int type, const char* desc);
+
+    M_SYNTHESIZE_BOOL(Temporary);
 };
 
 class CActiveAbility : public CAbility
@@ -146,7 +148,7 @@ public:
     M_SYNTHESIZE_BOOL(CastHorizontal);
 
     const CPoint& getAbilityEffectPoint(CProjectile* pProjectile, CUnit* pTarget);
-    
+
 };
 
 class CPassiveAbility : public CAbility
@@ -193,10 +195,10 @@ public:
     CAttackAct(const char* pRootId, const char* pName, float fCoolDown, const CAttackValue& rAttackValue, float fAttackValueRandomRange = 0.15f);
     virtual CAttackAct* copy() override;
     
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual bool checkConditions(const CCommandTarget& rTarget);
-    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual bool checkConditions(const CCommandTarget& rTarget) override;
+    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget) override;
         
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAttackValue, BaseAttack);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_aoExAttackValue, ExAttackValue);
@@ -206,7 +208,7 @@ public:
     float getBaseAttackValue() const;
     float getRealAttackValue(bool bUseRandomRange = true) const;
     
-    virtual float getRealCoolDown() const;
+    virtual float getRealCoolDown() const override;
     void setBaseAttackInterval(float fAttackInterval);
     float getBaseAttackInterval() const;
     
@@ -239,8 +241,8 @@ public:
     CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, float fChance, int iTemplateBuff);
     virtual CBuffMakerAct* copy() override;
     
-    virtual bool checkConditions(const CCommandTarget& rTarget);
-    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);
+    virtual bool checkConditions(const CCommandTarget& rTarget) override;
+    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget) override;
     
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
@@ -261,7 +263,7 @@ public:
     virtual ~CAuraPas();
     virtual CAuraPas* copy() override;
     
-    virtual void onUnitInterval();
+    virtual void onUnitInterval() override;
     
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
     M_SYNTHESIZE(float, m_fRange, Range);
@@ -275,15 +277,23 @@ public:
 class CAttackBuffMakerPas : public CPassiveAbility
 {
 public:
-    CAttackBuffMakerPas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
+    CAttackBuffMakerPas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff(), int iTemplateAct = 0);
+    virtual ~CAttackBuffMakerPas();
+    
     virtual CAttackBuffMakerPas* copy() override;
     
-    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget) override;
     
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
     M_SYNTHESIZE_BOOL(ToSelf);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
+
+    M_SYNTHESIZE(int, m_iTemplateAct, TemplateAct);
+    M_SYNTHESIZE_READONLY(CActiveAbility*, m_pInnerAct, ActiveAbility);
+    bool castInnerSpell(CUnit* pTarget);
 };
 
 class CDamageBuff : public CBuffAbility
@@ -292,7 +302,7 @@ public:
     CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
     virtual CDamageBuff* copy() override;
 
-    virtual void onUnitAddAbility();
+    virtual void onUnitAddAbility() override;
 
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oDamage, Damage);
     M_SYNTHESIZE(float, m_fChance, Chance);
@@ -306,7 +316,7 @@ public:
     CVampirePas(const char* pRootId, const char* pName, float fPercentConversion);
     virtual CVampirePas* copy() override;
     
-    virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
+    virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget) override;
 
     M_SYNTHESIZE(float, m_fPercentConversion, PercentConversion);
 };
@@ -317,8 +327,8 @@ public:
     CStunBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable);
     virtual CStunBuff* copy() override;
     
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
 };
 
 class CDoubleAttackPas : public CAttackBuffMakerPas
@@ -327,7 +337,7 @@ public:
     CDoubleAttackPas(const char* pRootId, const char* pName, float fChance, const CExtraCoeff& roExAttackValue = CExtraCoeff());
     virtual CDoubleAttackPas* copy() override;
     
-    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
+    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget) override;
     
 };
 
@@ -337,8 +347,8 @@ public:
     CSpeedBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, const CExtraCoeff& roExMoveSpeedDelta, const CExtraCoeff& roExAttackSpeedDelta);
     virtual CSpeedBuff* copy() override;
     
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
     
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExMoveSpeedDelta, ExMoveSpeedDelta);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackSpeedDelta, ExAttackSpeedDelta);
@@ -352,9 +362,9 @@ public:
     CChangeHpPas(const char* pRootId, const char* pName, float fInterval, const CExtraCoeff& roChangeHp, const CExtraCoeff& roMinHp = CExtraCoeff(0.0, -1.0f));
     virtual CChangeHpPas* copy() override;
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual void onUnitInterval();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitInterval() override;
 
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oChangeHp, ChangeHp);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oMinHp, MinHp);
@@ -367,9 +377,9 @@ public:
     CChangeHpBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fInterval, const CExtraCoeff& roChangeHp, const CExtraCoeff& roMinHp = CExtraCoeff(0.0, -1.0f));
     virtual CChangeHpBuff* copy() override;
     
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual void onUnitInterval();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitInterval() override;
     
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oChangeHp, ChangeHp);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oMinHp, MinHp);
@@ -383,9 +393,9 @@ public:
     CRebirthPas(const char* pRootId, const char* pName, float fCoolDown, const CExtraCoeff& rExMaxHp = CExtraCoeff(1.0f, 0.0f));
     virtual CRebirthPas* copy() override;
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual void onUnitDead();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitDead() override;
 
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExMaxHp, ExMaxHp)
     M_SYNTHESIZE_BOOL(RevivableBefore);
@@ -398,7 +408,7 @@ public:
     CEvadePas(const char* pRootId, const char* pName, float fChance, int iTemplateBuff = 0);
     virtual CEvadePas* copy() override;
 
-    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource) override;
 
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
@@ -411,7 +421,7 @@ public:
     CEvadeBuff(const char* pRootId, const char* pName, float fDuration, bool bStackable, float fChance);
     virtual CEvadeBuff* copy() override;
 
-    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource);
+    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource) override;
 
     M_SYNTHESIZE(float, m_fChance, Chance);
 };
@@ -427,9 +437,9 @@ public:
     virtual CTransitiveLinkBuff* copy() override;
     virtual void copyData(CAbility* from) override;
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual void onUnitDead();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitDead() override;
 
     void TransmitNext();
 
@@ -463,9 +473,9 @@ public:
     virtual CTransitiveBlinkBuff* copy() override;
     virtual void copyData(CAbility* from) override;
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual void onUnitDead();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitDead() override;
 
     void TransmitNext();
 
@@ -482,6 +492,9 @@ public:
 
     bool checkConditions(CUnit* pUnit);
 
+    void souceUnitRunActions(bool bFirstTime);
+    void resumeSourceUnit();
+
 protected:
     bool m_bTransmited;
 };
@@ -493,7 +506,7 @@ public:
     CSplashPas(const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage);
     virtual CSplashPas* copy() override;
 
-    virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget);
+    virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget) override;
 
     M_SYNTHESIZE(float, m_fNearRange, NearRange);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExNearDamage, ExNearDamage);
@@ -512,9 +525,9 @@ public:
     CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance);
     virtual CKnockBackBuff* copy() override;
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual void onUnitDisplaceAbility();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitDisplaceAbility() override;
 
     void knockBack();
 
@@ -533,9 +546,9 @@ public:
 
     virtual CAttractBuff* copy() override;
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
-    virtual void onUnitDisplaceAbility();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    virtual void onUnitDisplaceAbility() override;
 
     void attract();
 
@@ -549,7 +562,7 @@ public:
     CReflectBuff(const char* pRootId, const char* pName, float fDuration);
     virtual CReflectBuff* copy() override;
 
-    virtual bool onUnitProjectileArrive(CProjectile* pProjectile);
+    virtual bool onUnitProjectileArrive(CProjectile* pProjectile) override;
 
 };
 
@@ -560,7 +573,7 @@ public:
     CLimitedLifeBuff(const char* pRootId, const char* pName, float fDuration);
     virtual CLimitedLifeBuff* copy() override;
 
-    virtual void onUnitDelAbility();
+    virtual void onUnitDelAbility() override;
 };
 
 

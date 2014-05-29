@@ -74,6 +74,10 @@ void CUnitDraw::setFrame(int id)
 {
 }
 
+void CUnitDraw::setFrameByAnimation(int id, int index)
+{
+}
+
 void CUnitDraw::setFlippedX(bool bFlipX)
 {
 }
@@ -553,11 +557,7 @@ int CUnitDraw2D::cmdCastSpell(const CCommandTarget& rTarget, int iActiveAbilityI
         }
 
         td = DCAST(t->getDraw(), CUnitDraw2D*);
-        if (td == nullptr)
-        {
-            // 目标不具备2D性
-            return -1;
-        }
+        assert(td != nullptr);
 
         bFlippedX = (td->getPosition().x < getPosition().x);
 
@@ -1038,12 +1038,12 @@ int CUnitGroup::getUnitsCount()
 
 bool CUnitGroup::isLivingAllyOf(CUnit* pUnit, CUnitForce* pParam)
 {
-    return !pUnit->isDead() && pUnit->isAllyOf(pParam);
+    return !pUnit->isDead() && pUnit->isMyAlly(pParam);
 }
 
 bool CUnitGroup::isLivingEnemyOf(CUnit* pUnit, CUnitForce* pParam)
 {
-    return !pUnit->isDead() && pParam->isEnemyOf(pUnit);
+    return !pUnit->isDead() && pParam->isMyEnemy(pUnit);
 }
 
 // CProjectile
@@ -1155,7 +1155,7 @@ void CProjectile::effect(CUnit* pTarget)
         return;
     }
 
-    if (pTarget != nullptr && getAttackData() != nullptr && pTarget->isEffective(DCAST(s, CUnitForce*), getEffectiveTypeFlags()))
+    if (pTarget != nullptr && getAttackData() != nullptr && pTarget->canEffect(DCAST(s, CUnitForce*), getEffectiveTypeFlags()))
     {
         pTarget->damaged(getAttackData(), s, getTriggerMask());
         decContactLeft();

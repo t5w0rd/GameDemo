@@ -350,14 +350,18 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
     si->prepareAnimation(kAniDie, "die", -1, "sounds/Sprites/Barracks/die/00.mp3");
-    si->prepareAnimation(kAniAct1, "act1", 3);
-    si->prepareAnimation(kAniAct2, "act2", 3);
+    si->prepareAnimation(kAniAct1, "act1", 3, "sounds/Effects/MetalHeavySliceFlesh00.mp3");
+    si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavySliceFlesh01.mp3");
+    si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavySliceFlesh02.mp3");
+    si->prepareAnimation(kAniAct2, "act2", 3, "sounds/Effects/MetalHeavySliceFlesh00.mp3");
+    si->addAnimationSound(kAniAct2, "sounds/Effects/MetalHeavySliceFlesh01.mp3");
+    si->addAnimationSound(kAniAct2, "sounds/Effects/MetalHeavySliceFlesh02.mp3");
     si->prepareAnimation(kAniAct3, "act3", 5);
     si->prepareAnimation(kAniAct4, "act4", 18);
     si->prepareAnimation(kAniAct5, "act5", 8);
     
     d = new CUnitDrawForCC(si);
-    d->setGeometry(28.0f, 19.0f, Point(64.0f / 128, 22.0f / 152), CPoint(37.0f, 23.0f));
+    d->setGeometry(28.0f, 25.0f, Point(64.0f / 128, 22.0f / 152), CPoint(37.0f, 23.0f));
     d->addCtrlSound("sounds/Sprites/Barracks/move/00.mp3", 1.697f);
     d->addCtrlSound("sounds/Sprites/Barracks/move/01.mp3", 1.201f);
     d->addCtrlSound("sounds/Sprites/Barracks/move/02.mp3", 1.959f);

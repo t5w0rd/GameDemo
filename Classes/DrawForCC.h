@@ -77,9 +77,9 @@ public:
     M_SYNTHESIZE_READONLY(CSpriteInfo*, m_si, SpriteInfo);
 
     // ·µ»ØactionTag
-    virtual int doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone, float fSpeed = 1.0f);
+    virtual int doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone, float fSpeed = 1.0f) override;
     virtual void updateMoveTo(const CPoint& rPos);
-    virtual int doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone, float fSpeed = 1.0f);
+    virtual int doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone, float fSpeed = 1.0f) override;
     virtual void stopAction(int tag);
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);
@@ -88,7 +88,11 @@ public:
 
     virtual void setVisible(bool bVisible = true);
 
-    virtual void setFrame(int id);
+    virtual void setFrame(int id) override;
+    SpriteFrame* getFrameOfAnimation(int id, int index);
+    virtual void setFrameByAnimation(int id, int index) override;
+    SpriteFrame* getCurrentFrame() const;
+    void setFrame(SpriteFrame* frame);
 
     virtual void setFlippedX(bool bFlipX = true);
     virtual bool isFlippedX() const;

@@ -627,6 +627,8 @@ void TouchMaskLayer::setMaskEnabled(bool enabled)
 // Effect
 Effect::Effect()
 : CONST_ACT_TAG(CKeyGen::nextKey())
+, m_bLogicPositionMode(false)
+, m_fLogicHeight(0.0f)
 {
 }
 
@@ -752,6 +754,55 @@ Animation* Effect::addAnimation(const char* path, float delay)
 void Effect::stop()
 {
     stopActionByTag(CONST_ACT_TAG);
+}
+
+void Effect::setLogicPosition(const CPoint& roPos)
+{
+    Sprite::setPosition(Point(roPos.x, roPos.y + m_fLogicHeight));
+    setLocalZOrder(M_BASE_Z - roPos.y);
+}
+
+CPoint Effect::getLogicPosition() const
+{
+    auto& p = Sprite::getPosition();
+    
+    CPoint ret(p.x, p.y);
+    ret.y -= m_fLogicHeight;
+
+    return ret;
+}
+
+void Effect::setLogicHeight(float fLogicHeight)
+{
+    Point p = Sprite::getPosition();
+    p.y -= m_fLogicHeight;
+    m_fLogicHeight = fLogicHeight;
+
+    Sprite::setPosition(Point(p.x, p.y + m_fLogicHeight));
+    setLocalZOrder(M_BASE_Z - p.y);
+}
+
+void Effect::setPosition(const Point& roPos)
+{
+    if (isLogicPositionMode())
+    {
+        Sprite::setPosition(Point(roPos.x, roPos.y + m_fLogicHeight));
+        setLocalZOrder(M_BASE_Z - roPos.y);
+        return;
+    }
+
+    Sprite::setPosition(roPos);
+    setLocalZOrder(M_BASE_Z + m_fLogicHeight - roPos.y);
+}
+
+const Point& Effect::getPosition() const
+{
+    if (isLogicPositionMode())
+    {
+        return Sprite::getPosition() + Point(0.0f, -m_fLogicHeight);
+    }
+
+    return Sprite::getPosition();
 }
 
 // MenuEx

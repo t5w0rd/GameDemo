@@ -188,8 +188,13 @@ public:
     Effect();
     virtual ~Effect();
 
-    virtual bool initWithPath(const char* path, float delay);
+    bool initWithPath(const char* path, float delay);
     M_CREATE_INITWITH_FUNC_PARAM(Path, Effect, (const char* path, float delay), path, delay);
+    
+    M_CREATE_INITWITH_FUNC_PARAM(File, Effect, (const std::string& filename), filename);
+    M_CREATEWITH_FUNC_PARAM(Texture, Effect, (Texture2D* texture), texture);
+    M_CREATEWITH_FUNC_PARAM(SpriteFrame, Effect, (SpriteFrame* pSpriteFrame), pSpriteFrame);
+    M_CREATEWITH_FUNC_PARAM(SpriteFrameName, Effect, (const std::string& spriteFrameName), spriteFrameName);
 
     void play(int index = 0, float speed = 1.0f, int times = 1.0, FiniteTimeAction* done = NULL);
     void playRelease(int index = 0, float speed = 1.0f, int times = 1.0);
@@ -200,6 +205,15 @@ public:
 
     typedef vector<string> VEC_ANIS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ANIS, m_vecAnis, AnimationNames);
+
+    M_SYNTHESIZE_BOOL(LogicPositionMode);
+    M_SYNTHESIZE_READONLY(float, m_fLogicHeight, LogicHeight);
+    void setLogicPosition(const CPoint& roPos);
+    CPoint getLogicPosition() const;
+    void setLogicHeight(float fLogicHeight);
+    virtual void setPosition(const Point& roPos) override;
+    virtual const Point& getPosition() const override;
+
 };
 
 class MenuEx : public Menu

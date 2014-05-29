@@ -37,6 +37,7 @@ public:
     virtual void onUnitTick(float dt);
 
     virtual void setFrame(int id);
+    virtual void setFrameByAnimation(int id, int index);
     virtual void setFlippedX(bool bFlipX);
     
     virtual void loadAnimation(int id, const char* pName, int iNotifyFrameIndex, float fDelay);

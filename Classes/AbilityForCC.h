@@ -13,8 +13,8 @@ public:
     CShowStatusPas();
     virtual CShowStatusPas* copy() override;
 
-    virtual void onUnitAddAbility();
-    virtual void onUnitDelAbility();
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
 
     virtual void onUnitChangeHp(float fChanged);
     virtual void onUnitRevive();

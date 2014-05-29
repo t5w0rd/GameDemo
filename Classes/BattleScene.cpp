@@ -87,6 +87,8 @@ bool CBattleWorld::onInit()
     u->addExp(udt->getHeroSelected()->exp);
     
     l->initTargetInfo();
+    l->showTargetInfo(false);
+    l->showTargetInfo(true);
     l->updateTargetInfo(getControlUnit());
 
     l->initResourceInfo();
@@ -210,7 +212,7 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
     {
     }
 
-    if (pUnit != getHero() && pUnit->getRewardExp() && pUnit->isEnemyOf(getHero()) && M_RAND_HIT(1.0f))
+    if (pUnit != getHero() && pUnit->getRewardExp() && pUnit->isMyEnemy(getHero()) && M_RAND_HIT(1.0f))
     {
         // µôÂäÎïÆ·
     }
@@ -224,7 +226,7 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
     {
         CUnit* uu = M_MAP_EACH;
         CUnitDraw2D* dd = DCAST(uu->getDraw(), CUnitDraw2D*);
-        if (!uu->isDead() && uu->canIncreaseExp() && uu->isEnemyOf(pUnit) && dd->getPosition().getDistance(d->getPosition()) < CBattleWorld::CONST_MAX_REWARD_RANGE)
+        if (!uu->isDead() && uu->canIncreaseExp() && uu->isMyEnemy(pUnit) && dd->getPosition().getDistance(d->getPosition()) < CBattleWorld::CONST_MAX_REWARD_RANGE)
         {
             vec.push_back(uu);
         }
@@ -627,7 +629,7 @@ void BattleSceneLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2
     }
 
     CUnit* t = CUnitGroup::getNearestUnitInRange(w, p, 50.0f);
-    if (t != nullptr)
+    if (t != nullptr && !t->isDead())
     {
         showTargetInfo(true);
         updateTargetInfo(t->getId());
@@ -677,7 +679,7 @@ void BattleSceneLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2
         sp->runAction(Sequence::create(FadeOut::create(0.2f), RemoveSelf::create(), nullptr));
     }
     
-    if (t != nullptr && hero->isEnemyOf(t))
+    if (t != nullptr && hero->isMyEnemy(t))
     {
         if (hero != t)
         {
@@ -890,13 +892,13 @@ void BattleSceneLayer::updateTargetInfo(int id)
             pUnit = w->getUnit(m_iTargetInfoUnitId);
             if (!pUnit)
             {
-                //showTargetInfo(false);
+                showTargetInfo(false);
                 return;
             }
         }
         else
         {
-            //showTargetInfo(false);
+            showTargetInfo(false);
             return;
         }
     }
@@ -1171,6 +1173,10 @@ void BattleSceneLayer::updateHeroAbilityPanel()
         auto id = M_MAP_IT->first;
         auto a = M_MAP_EACH;
         M_MAP_NEXT;
+        if (a->isTemporary())
+        {
+            continue;
+        }
 
         if (m_bp->getButton([id](ButtonBase* btn)
         {

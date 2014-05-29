@@ -4,3 +4,4 @@ echo %PATH%
 adb kill-server
 adb start-server
 cocos run -p android
+pause

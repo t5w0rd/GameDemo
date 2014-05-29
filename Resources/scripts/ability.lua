@@ -1,3 +1,6 @@
+if __ABILITY__ then return end
+__ABILITY__ = true
+
 BetrayBuff = class(BuffAbility)
 function BetrayBuff:ctor(duration)
     self:sctor("Betray", "Betray", duration, false)

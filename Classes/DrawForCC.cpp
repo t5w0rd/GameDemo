@@ -339,6 +339,41 @@ void CUnitDrawForCC::setFrame(int id)
     getSprite()->setSpriteFrame(sf);
 }
 
+SpriteFrame* CUnitDrawForCC::getFrameOfAnimation(int id, int index)
+{
+    const CSpriteInfo::ANI_INFO* pAniInfo = m_si->getAnimationInfo(id);
+    assert(pAniInfo != nullptr);
+
+    auto& frames = pAniInfo->pAni->getFrames();
+    if (index >= frames.size())
+    {
+        return nullptr;
+    }
+
+    return frames.at(index)->getSpriteFrame();
+}
+
+void CUnitDrawForCC::setFrameByAnimation(int id, int index)
+{
+    auto sf = getFrameOfAnimation(id, index);
+    if (sf == nullptr)
+    {
+        return;
+    }
+
+    getSprite()->setSpriteFrame(sf);
+}
+
+SpriteFrame* CUnitDrawForCC::getCurrentFrame() const
+{
+    return getSprite()->getSpriteFrame();
+}
+
+void CUnitDrawForCC::setFrame(SpriteFrame* frame)
+{
+    getSprite()->setSpriteFrame(frame);
+}
+
 void CUnitDrawForCC::setFlippedX(bool bFlipX)
 {
     getSprite()->setFlippedX(bFlipX);
@@ -507,29 +542,34 @@ void CUnitDrawForCC::say(const char* words)
     auto nd = getSprite()->getShadow();
 
     nd->removeChildByTag(getId());
-    auto sp = Scale9Sprite::create("UI/TalkBubble2.png");
+    auto sp = Scale9Sprite::create("UI/TalkBubble.png");
     sp->setTag(getId());
     nd->addChild(sp);
     
-    sp->setInsetLeft(53);
-    sp->setInsetRight(21);
-    sp->setInsetTop(21);
-    sp->setInsetBottom(33);
+    sp->setInsetLeft(30);
+    sp->setInsetRight(30);
+    sp->setInsetTop(30);
+    sp->setInsetBottom(30);
 
     char sz[1024];
     auto lbl = Label::createWithBMFont(
         "fonts/Comic Book.fnt",
         gbk_to_utf8(words, sz));
-    sp->addChild(lbl);
+    sp->addChild(lbl, 2);
     lbl->setMaxLineWidth(400);
     lbl->setColor(Color3B::BLACK);
-
-    sp->setContentSize(lbl->getContentSize() + Size(50, 50));
-    Point lblp = Point(sp->getContentSize().width * 0.5 + 1, sp->getContentSize().height - lbl->getContentSize().height * 0.5 - 19);
-    sp->setAnchorPoint(Point(36 / sp->getContentSize().width, 1 / sp->getContentSize().height));
-    lbl->setPosition(lblp);
     
-    sp->setPosition(nd->getAnchorPointInPoints() + Point(0, getHalfOfHeight() * 2.5 + 20));
+    sp->setContentSize(lbl->getContentSize() + Size(40, 20));
+    Point lblp = Point(sp->getContentSize().width * 0.5 + 1, sp->getContentSize().height - lbl->getContentSize().height * 0.5 - 10);
+    sp->setAnchorPoint(Point(0.5f, 0.0f));
+    lbl->setPosition(lblp);
+
+    auto sp2 = Sprite::create("UI/TalkBubble2.png");
+    sp2->setAnchorPoint(Point(0.5f, 1.0f));
+    sp->addChild(sp2, 1);
+    sp2->setPosition(sp->getAnchorPointInPoints() + Point(-20.0f, 4.0f));
+    
+    sp->setPosition(nd->getAnchorPointInPoints() + Point(0, getHalfOfHeight() * 2.5 + 38));
     float sc = 0.8f;
     sp->setScale(sc);
     sp->runAction(Sequence::create(FadeInOutScale4::create(0, sc * 1.2, sc, sc * 0.5, 0.06f, 0.06f, strlen(words) / 10 + 2, 0.06f), RemoveSelf::create(), nullptr));
