@@ -1,4 +1,4 @@
-if __ABILITY__ then return end
+--if __ABILITY__ then return end
 __ABILITY__ = true
 
 BetrayBuff = class(BuffAbility)
@@ -38,11 +38,11 @@ function CurseBuff:onUnitAddAbility()
 end
 
 function CurseBuff:onUnitInterval()
-    o = self:getOwner()
+    local o = self:getOwner()
     local damage = 0
     self.pass = self.pass + 0.5
-    if self.pass > self.interval then
-        self.pass = 0
+    if self.pass >= self.interval then
+        self.pass = self.pass - self.interval
         damage = (self.hp - o:getHp()) * self.multiply
     end
 
@@ -51,35 +51,13 @@ function CurseBuff:onUnitInterval()
     end
     damage = damage + self.damage
     --o:addBattleTip(string.format("-%d", damage), "fonts/Comic Book.fnt", 18, 255, 0, 0)
-    ad = AttackData:new()
-    ad:setAttack(2, damage)
-    s = self:getSrcUnit()
+    local ad = AttackData:new()
+    ad:setAttack(AttackValue.kMagical, damage)
+    local s = self:getSrcUnit()
     if s then
-        o:damaged(ad, s, Ability.kMaskAll)
+        o:damaged(ad, s, Ability.kMaskActiveTrigger)
     end
     
-end
-
-DefPas = class(PassiveAbility)
-function DefPas:ctor(buff)
-    self:sctor("root", "name", 0)
-    self.buff = buff
-    self:setTriggerFlags(Ability.kOnAttackTargetTrigger)
-end
-
-function DefPas:onUnitAddAbility()
-    print("DefPas:onUnitAddAbility()")
-end
-
-function DefPas:onUnitAttackTarget(ad, target)
-    o = self:getOwner()
-    if target:getId() ~= me:getId() and target:isFixed() == false then
-        target:setForceByIndex(1)
-    end
-    --log(string.format("%s attack %s", o:getName(), target:getName()))
-    --ad:setAttackValue(ad:getAttackValue() * 10)
-    --ad:addAttackBuff(self.buff, self:getLevel())
-    --o:addBattleTip(math.ceil(ad:getAttackValue()), "fonts/Comic Book.fnt", 18, 0, 0, 0)
 end
 
 DamageBackPas = class(PassiveAbility)
@@ -115,6 +93,14 @@ function ArmorBuff:onUnitAddAbility()
     self.change = self.exA * av + self.exB
     o:setExArmorValue(exA, exB + self.change)
     o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Comic Book.fnt", 18, 0, 0, 0)
+	
+	if self.change < 0 then
+		local eff = Effect:new("Effects/ArmorBreak", 0.08, 0.5, 0.5, o)
+		local x, y = o:getAnchorPointInPoints()
+		y = y + o:getHalfOfHeight()
+		eff:setPosition(x, y)
+		eff:playRelease()
+	end
 end
 
 function ArmorBuff:onUnitDelAbility()
@@ -252,4 +238,242 @@ function BerserkerBloodPas:changeValueByDelta(dt)
     
 end
 
+PressureBombBuff = class(BuffAbility)
+function PressureBombBuff:ctor(name, duration, maxDamage, damageType, damageValue)
+    self:sctor("PressureBombBuff", name, duration, true)
+    self:setTriggerFlags(Ability.kOnDamagedDoneTrigger)    
+    self.maxDamage = maxDamage
+    self.dt = damageType
+    self.dv = damageValue
+    self.effected = false
+end
+
+function PressureBombBuff:buffEffect(per)
+    if self.effected then
+        return
+    end
+    self.effected = true    
+    
+    local s = self:getSrcUnit()
+    if not s then
+        return
+    end
+    
+    local o = self:getOwner()
+    local ad = AttackData:new()
+    ad:setAttack(self.dt, self.dv * per)
+    o:damaged(ad, s, Ability.kMaskActiveTrigger)
+end
+
+function PressureBombBuff:onUnitDelAbility()
+    self:buffEffect(0.5)
+end
+
+function PressureBombBuff:onUnitDamagedDone(damage, source)
+    self.maxDamage = self.maxDamage - damage
+    if self.maxDamage <= 0 then
+        self:buffEffect(1.0)
+        self:setDuration(0.0)
+    end
+end
+
+DamageIncreaceBuff = class(BuffAbility)
+function DamageIncreaceBuff:ctor(root, name, duration, damageType, damageIncreace)
+    self:sctor(root, name, duration, false)
+    self.dt = damageType
+    self.dv = damageIncreace
+    self.damage = damageIncreace
+end
+
+function DamageIncreaceBuff:onUnitDisplaceAbility(new)
+    local s = self:getSrcUnit()
+    if not s then
+        return
+    end
+    
+    local o = self:getOwner()
+    local ad = AttackData:new()
+    ad:setAttack(self.dt, self.damage)
+    o:damaged(ad, s)--, Ability.kMaskActiveTrigger)
+    
+    self.damage = self.damage + self.dv
+end
+
+StrikeBackPas = class(PassiveAbility)
+function StrikeBackPas:ctor(name, range, probability, buff)
+	self:sctor("StrikeBackPas", name)
+	self:setTriggerFlags(Ability.kOnAttackedTrigger)
+	self.range = range
+	self.probability = probability
+	self.buff = buff
+end
+
+function StrikeBackPas:onUnitAttacked(ad, s)
+	if math.random() >= self.probability then
+		return true
+	end
+	
+	local o = self:getOwner()
+	local targets = getUnits(function (u, p)
+		return p:isMyEnemy(u) and p:getTouchDistance(u) < self.range
+	end, o)
+	
+	for _, u in ipairs(targets) do
+		u:addBuffAbility(self.buff, o)
+	end
+	
+	return true
+end
+
+ChangeAttributeBuff = class(BuffAbility)
+function ChangeAttributeBuff:ctor(root, name, duration, stackable, exMaxHpDeltaA, exMaxHpDeltaB, exMoveSpeedDeltaA, exMoveSpeedDeltaB, exAttackSpeedDeltaA, exAttackSpeedDeltaB, exAttackValueDeltaA, exAttackValueDeltaB, exArmorValueDeltaA, exArmorValueDeltaB)
+    self:sctor(root, name, duration, stackable)
+    self.exMaxHpDeltaA = exMaxHpDeltaA
+    self.exMaxHpDeltaB = exMaxHpDeltaB
+    self.exMoveSpeedDeltaA = exMoveSpeedDeltaA
+    self.exMoveSpeedDeltaB = exMoveSpeedDeltaB
+    self.exAttackSpeedDeltaA = exAttackSpeedDeltaA
+    self.exAttackSpeedDeltaB = exAttackSpeedDeltaB
+    self.exAttackValueDeltaA = exAttackValueDeltaA
+    self.exAttackValueDeltaB = exAttackValueDeltaB
+	self.exArmorValueDeltaA = exArmorValueDeltaA
+    self.exArmorValueDeltaB = exArmorValueDeltaB
+    self.lastLvl = 0
+end
+
+function ChangeAttributeBuff:onUnitAddAbility()
+    self:changeValueByDelta(1)
+end
+
+function ChangeAttributeBuff:onUnitDelAbility()
+    self:changeValueByDelta(-1)
+end
+
+function ChangeAttributeBuff:changeValueByDelta(dt)
+    local o = self:getOwner()
+	local exMaxHpDeltaA = self.exMaxHpDeltaA * dt
+    local exMaxHpDeltaB = self.exMaxHpDeltaB * dt
+    local exMoveSpeedDeltaA = self.exMoveSpeedDeltaA * dt
+    local exMoveSpeedDeltaB = self.exMoveSpeedDeltaB * dt
+    local exAttackSpeedDeltaA = self.exAttackSpeedDeltaA * dt
+    local exAttackSpeedDeltaB = self.exAttackSpeedDeltaB * dt
+    local exAttackValueDeltaA = self.exAttackValueDeltaA * dt
+    local exAttackValueDeltaB = self.exAttackValueDeltaB * dt
+	local exArmorValueDeltaA = self.exArmorValueDeltaA * dt
+    local exArmorValueDeltaB = self.exArmorValueDeltaB * dt
+    
+    local a, b = o:getExMaxHp()
+	o:setExMaxHp(a + exMaxHpDeltaA, b + exMaxHpDeltaB)
+	
+	a, b = o:getExMoveSpeed()
+    o:setExMoveSpeed(a + exMoveSpeedDeltaA, b + exMoveSpeedDeltaB)
+    
+    local atk = o:getAttackAbility()
+    
+    a, b = atk:getExAttackSpeed()
+    atk:setExAttackSpeed(a + exAttackSpeedDeltaA, b + exAttackSpeedDeltaB)
+    
+    a, b = atk:getExAttackValue()
+    atk:setExAttackValue(a + exAttackValueDeltaA, b + exAttackValueDeltaB)
+	
+	a, b = o:getExArmorValue()
+	o:setExArmorValue(a + exArmorValueDeltaA, b + exArmorValueDeltaB)
+end
+
+RainAct = class(ActiveAbility)
+RainAct.INTERVAL = 0.1
+RainAct.kBolt = 0
+RainAct.kIce = 1
+RainAct.kSharpIce = 2
+function RainAct:ctor(name, cd, effect, intensity, duration, buff, castTarget, effectFlags)
+	self:sctor("RainAct", name, cd, castTarget, effectFlags)
+	self:setCastRange(500)
+	self:setCastTargetRadius(100)
+	
+	self.effect = effect
+	self.x = 0.0
+	self.y = 0.0
+	self.intensity = intensity
+	self.duration = duration
+	self.play = false
+	self.elapsed = 0.0
+	self.buff = buff
+	
+	self:setInterval(RainAct.INTERVAL)
+end
+
+function RainAct:onUnitAbilityEffect(proj, target)
+	self.x, self.y = self:getAbilityEffectPoint(proj, target)
+	self:setInterval(RainAct.INTERVAL)
+	self.play = true
+	self.elapsed = 0.0
+	self.total = 1
+end
+
+function RainAct:spawnEffect(index)
+	local eff
+	if index == 0 then
+		eff = Effect:new("Effects/Rain", 0.03, 0.5, 25 / 320)
+	elseif index == 1 then
+		eff = Effect:new("Effects/Rain2", 0.05, 0.5, 40 / 208)
+	elseif index == 2 then
+		eff = Effect:new("Effects/Rain3", 0.05, 0.5, 40 / 172)
+	end
+	
+	return eff
+end
+
+function RainAct:onUnitInterval()
+	if not self.play then
+		return
+	end
+	
+	self.elapsed = self.elapsed + RainAct.INTERVAL
+	
+	local intensity = self.total / self.elapsed
+	if intensity <= self.intensity then
+		self.total = self.total + 1
+	
+		local eff = self:spawnEffect(self.effect)
+		local x, y = getDirectionPoint(self.x, self.y, math.random(2 * math.pi), math.random(self:getCastTargetRadius()))
+		eff:setLogicPosition(x, y)
+		eff:playRelease()
+		
+		local o = self:getOwner()
+		local targets = getUnits(function (u, p)
+			return p:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(self.x, self.y) < self:getCastTargetRadius()
+		end, o)
+		
+		for _, u in ipairs(targets) do
+			u:addBuffAbility(self.buff, o)
+		end
+		
+	end
+	
+	if self.elapsed >= self.duration then
+		self:setInterval(0.0)
+		self.play = false
+	end
+end
+
+WhenDamagedBuff = class(BuffAbility)
+function WhenDamagedBuff:ctor(root, name, duration, stackable, minDamageA, minDamageB, buff)
+	self:sctor(root, name, duration, stackable)
+	self:setTriggerFlags(Ability.kOnDamagedDoneTrigger)
+	self.minDamageA = minDamageA
+	self.minDamageB = minDamageB
+	self.buff = buff
+end
+
+function WhenDamagedBuff:onUnitDamagedDone(damage, source)
+	local o = self:getOwner()
+	if damage < self.minDamageA * o:getRealMaxHp() + self.minDamageB or not source then
+		return
+	end
+	
+	local s = self:getSrcUnit()
+	if s then
+		o:addBuffAbility(self.buff, s)
+	end
+end
 

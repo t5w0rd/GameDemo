@@ -656,3 +656,74 @@ void ScaleSizeTo::update(float time)
         _target->setContentSize(_startScaleX + _deltaX * time);
     }
 }
+
+// LogicJumpTo
+bool LogicJumpTo::initWithDuration(float duration, const Point& to, float deltaHeight)
+{
+    MoveTo::initWithDuration(duration, to);
+    m_fDeltaHeight = deltaHeight;
+
+    return true;
+}
+
+LogicJumpTo* LogicJumpTo::clone() const
+{
+    auto ret = LogicJumpTo::create(_duration, _endPosition, m_fDeltaHeight);
+    return ret;
+}
+
+void LogicJumpTo::startWithTarget(Node *pTarget)
+{
+    MoveTo::startWithTarget(pTarget);
+    if (DCAST(pTarget, Effect*))
+    {
+        m_eNodeType = kEffect;
+        m_fStartHeight = DCAST(pTarget, Effect*)->getLogicHeight();
+    }
+    else if (DCAST(pTarget, UnitSprite*))
+    {
+        m_eNodeType = kDraw;
+        m_fStartHeight = DCAST(pTarget, UnitSprite*)->getDraw()->getHeight();
+    }
+    else if (DCAST(pTarget, ProjectileSprite*))
+    {
+        m_eNodeType = kProjectile;
+        m_fStartHeight = DCAST(pTarget, ProjectileSprite*)->getProjectile()->getHeight();
+    }
+    else
+    {
+        assert(false);
+    }
+    
+}
+
+void LogicJumpTo::update(float time)
+{
+    MoveTo::update(time);
+    
+    float fA = _startPosition.getDistance(_endPosition);
+    float fX = time * fA - fA / 2;
+    fA = -4 * m_fDeltaHeight / (fA * fA);
+    float fHeightDelta = fA * fX * fX + m_fDeltaHeight + m_fStartHeight;
+
+    switch (m_eNodeType)
+    {
+    case kEffect:
+        DCAST(_target, Effect*)->setLogicHeight(fHeightDelta);
+        break;
+
+    case kDraw:
+        DCAST(_target, UnitSprite*)->getDraw()->setHeight(fHeightDelta);
+        break;
+
+    case kProjectile:
+        DCAST(_target, ProjectileSprite*)->getProjectile()->setHeight(fHeightDelta);
+        break;
+    }
+}
+
+LogicJumpTo* LogicJumpTo::reverse() const
+{
+    assert(false);
+    return nullptr;
+}

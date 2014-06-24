@@ -228,6 +228,14 @@ CAttackData::CAttackData()
     setDbgClassName("CAttackData");
 }
 
+CAttackData* CAttackData::copy()
+{
+    auto ret = new CAttackData;
+    ret->m_oAtkVal = m_oAtkVal;
+    ret->m_vecAtkBuffs = m_vecAtkBuffs;
+    return ret;
+}
+
 void CAttackData::setAttackValue(int eAttackType, float fAttackValue)
 {
     m_oAtkVal.set(eAttackType, fAttackValue);
@@ -435,7 +443,7 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
         return;
     }
 
-    CUnit* t = CUnitGroup::getNearestUnitInRange(pUnit->getWorld(), d->getPosition(), d->getHostilityRange(), bind(&CUnitGroup::isLivingEnemyOf, placeholders::_1, DCAST(pUnit, CUnitForce*)));
+    CUnit* t = CUnitGroup::getNearestUnitInRange(pUnit->getWorld(), d->getPosition(), d->getHostilityRange(), CUnitGroup::matchLivingEnemy(pUnit));
     if (t == nullptr || t->isDead())
     {
         //d->stop();
@@ -1511,7 +1519,7 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
                 pBuff->setName(pAbility->getName());
                 pBuff->setDuration(pAbility->getDuration());
                 pBuff->setElapsed(0.0f);
-                pBuff->onUnitDisplaceAbility();
+                pBuff->onUnitDisplaceAbility(pAbility);
 
                 if (pAbility->getAppendBuff() != 0)
                 {
@@ -1795,7 +1803,7 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     
     if (dwTriggerFlags & kOnDamagedDoneTrigger)
     {
-        m_mapOnDamagedDoneTriggerAbilitys.addObject(pAbility);
+        m_mapOnDamagedDoneTriggerAbilitys.delObject(id);
     }
     
     if (dwTriggerFlags & kOnDamageTargetDoneTrigger)
@@ -1911,14 +1919,22 @@ void CUnit::triggerOnTick(float dt)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitTick(dt);
-        if (pAbility->getInterval() > FLT_EPSILON)
+        if (pAbility->getInterval() > 0.0f)
         {
             pAbility->setIntervalElapsed(pAbility->getIntervalElapsed() + dt);
 
             while (pAbility->getIntervalElapsed() >= pAbility->getInterval())
             {
                 pAbility->onUnitInterval();
-                pAbility->setIntervalElapsed(pAbility->getIntervalElapsed() - pAbility->getInterval());
+                if (pAbility->getInterval() > 0.0f)
+                {
+                    pAbility->setIntervalElapsed(pAbility->getIntervalElapsed() - pAbility->getInterval());
+                }
+                else
+                {
+                    pAbility->setIntervalElapsed(0.0f);
+                    break;
+                }
             }
         }
         M_MAP_NEXT;

@@ -543,6 +543,9 @@ luaL_Reg Unit_funcs[] = {
     { "getForce", Unit_getForce },
     { "setAlly", Unit_setAlly },
     { "getAlly", Unit_getAlly },
+    { "isMyAlly", Unit_isMyAlly },
+    { "isMyEnemy", Unit_isMyEnemy },
+    { "canEffect", Unit_canEffect },
     { "setBaseArmor", Unit_setBaseArmor },
     { "getBaseArmor", Unit_getBaseArmor },
     { "getRealArmorValue", Unit_getRealArmorValue },
@@ -587,6 +590,8 @@ luaL_Reg Unit_funcs[] = {
     { "getRealMoveSpeed", Unit2D_getRealMoveSpeed },
     { "setExMoveSpeed", Unit2D_setExMoveSpeed },
     { "getExMoveSpeed", Unit2D_getExMoveSpeed },
+    { "getHalfOfWidth", Unit2D_getHalfOfWidth },
+    { "getHalfOfHeight", Unit2D_getHalfOfHeight },
     { "setPosition", Unit2D_setPosition },
     { "getPosition", Unit2D_getPosition },
     { "getNearestEnemyInRange", Unit2D_getNearestEnemyInRange },
@@ -757,6 +762,37 @@ int Unit_getAlly(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
 
     lua_pushunsigned(L, u->getAlly());
+
+    return 1;
+}
+
+int Unit_isMyAlly(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CUnit* u2 = luaL_tounitptr(L, 2);
+
+    lua_pushboolean(L, u->isMyAlly(DCAST(u2, CUnitForce*)));
+
+    return 1;
+}
+
+int Unit_isMyEnemy(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CUnit* u2 = luaL_tounitptr(L, 2);
+
+    lua_pushboolean(L, u->isMyEnemy(DCAST(u2, CUnitForce*)));
+
+    return 1;
+}
+
+int Unit_canEffect(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    CUnit* u2 = luaL_tounitptr(L, 2);
+    auto eff = lua_tounsigned(L, 3);
+
+    lua_pushboolean(L, u->canEffect(DCAST(u2, CUnitForce*), eff));
 
     return 1;
 }
@@ -1248,6 +1284,26 @@ int Unit2D_getExMoveSpeed(lua_State* L)
     return 2;
 }
 
+int Unit2D_getHalfOfWidth(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+
+    lua_pushnumber(L, d->getHalfOfWidth());
+
+    return 1;
+}
+
+int Unit2D_getHalfOfHeight(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    
+    lua_pushnumber(L, d->getHalfOfHeight());
+
+    return 1;
+}
+
 int Unit2D_setPosition(lua_State* L)
 {
     CUnit* _p = luaL_tounitptr(L);
@@ -1279,7 +1335,7 @@ int Unit2D_getNearestEnemyInRange(lua_State* L)
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    CUnit* _p = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), r, bind(&CUnitGroup::isLivingEnemyOf, placeholders::_1, DCAST(u, CUnitForce*)));
+    CUnit* _p = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), r, CUnitGroup::matchLivingEnemy(u));
     lua_pop(L, 1);
 
     luaL_pushobjptr(L, "Unit", _p);
@@ -1481,12 +1537,24 @@ int Unit2D_isDoingCastingAction(lua_State* L)
 int Unit2D_getDistance(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CUnit* t = luaL_tounitptr(L, 2);
-
+    
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-    CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
 
-    lua_pushnumber(L, d->getPosition().getDistance(td->getPosition()));
+    if (lua_gettop(L) == 2)
+    {
+        CUnit* t = luaL_tounitptr(L, 2);
+        
+        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+        
+        lua_pushnumber(L, d->getPosition().getDistance(td->getPosition()));
+    }
+    else
+    {
+        auto x = lua_tonumber(L, 2);
+        auto y = lua_tonumber(L, 3);
+
+        lua_pushnumber(L, d->getPosition().getDistance(CPoint(x, y)));
+    }
 
     return 1;
 }
@@ -1494,12 +1562,24 @@ int Unit2D_getDistance(lua_State* L)
 int Unit2D_getTouchDistance(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    CUnit* t = luaL_tounitptr(L, 2);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-    CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
 
-    lua_pushnumber(L, d->getPosition().getDistance(td->getPosition()) - d->getHalfOfWidth() - td->getHalfOfWidth());
+    if (lua_gettop(L) == 2)
+    {
+        CUnit* t = luaL_tounitptr(L, 2);
+        CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
+
+        lua_pushnumber(L, d->getPosition().getDistance(td->getPosition()) - d->getHalfOfWidth() - td->getHalfOfWidth());
+    }
+    else
+    {
+        auto x = lua_tonumber(L, 2);
+        auto y = lua_tonumber(L, 3);
+
+        lua_pushnumber(L, d->getPosition().getDistance(CPoint(x, y)) - d->getHalfOfWidth());
+    }
+    
 
     return 1;
 }
@@ -1988,6 +2068,7 @@ int Projectile_decContactLeft(lua_State* L)
 
 luaL_Reg Ability_funcs[] = {
     { "ctor", Ability_ctor },
+    { "onCopy", Ability_onCopy },
     { "onChangeLevel", Ability_onChangeLevel },
     { "onUnitAddAbility", Ability_onUnitAddAbility },
     { "onUnitDelAbility", Ability_onUnitDelAbility },
@@ -2036,6 +2117,11 @@ int Ability_ctor(lua_State* L)
 }
 
 int Ability_onChangeLevel(lua_State* L)
+{
+    return 0;
+}
+
+int Ability_onCopy(lua_State* L)
 {
     return 0;
 }
@@ -2351,6 +2437,7 @@ luaL_Reg ActiveAbility_funcs[] = {
     { "ctor", ActiveAbility_ctor },
     { "checkConditions", ActiveAbility_checkConditions },
     { "onUnitCastAbility", ActiveAbility_onUnitCastAbility },
+    { "onUnitAbilityEffect", ActiveAbility_onUnitAbilityEffect },
     { "setEffectiveTypeFlags", ActiveAbility_setEffectiveTypeFlags },
     { "getEffectiveTypeFlags", ActiveAbility_getEffectiveTypeFlags },
     { "setCastRange", ActiveAbility_setCastRange },
@@ -2363,6 +2450,7 @@ luaL_Reg ActiveAbility_funcs[] = {
     { "setCastHorizontal", ActiveAbility_setCastHorizontal },
     { "isCastHorizontal", ActiveAbility_isCastHorizontal },
     { "getAbilityEffectPoint", ActiveAbility_getAbilityEffectPoint },
+
     { nullptr, nullptr }
 };
 
@@ -2392,6 +2480,11 @@ int ActiveAbility_checkConditions(lua_State* L)
 }
 
 int ActiveAbility_onUnitCastAbility(lua_State* L)
+{
+    return 0;
+}
+
+int ActiveAbility_onUnitAbilityEffect(lua_State* L)
 {
     return 0;
 }
@@ -2549,8 +2642,11 @@ int PassiveAbility_ctor(lua_State* L)
 
 luaL_Reg BuffAbility_funcs[] = {
     { "ctor", BuffAbility_ctor },
+    { "onUnitDisplaceAbility", BuffAbility_onUnitDisplaceAbility },
     { "getSrcUnit", BuffAbility_getSrcUnit },
     { "setAppendBuff", BuffAbility_setAppendBuff },
+    { "setDuration", BuffAbility_setDuration },
+    { "getDuration", BuffAbility_getDuration },
     { nullptr, nullptr }
 };
 
@@ -2568,6 +2664,11 @@ int BuffAbility_ctor(lua_State* L)
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
+    return 0;
+}
+
+int BuffAbility_onUnitDisplaceAbility(lua_State* L)
+{
     return 0;
 }
 
@@ -2598,6 +2699,27 @@ int BuffAbility_setAppendBuff(lua_State* L)
     _p->setAppendBuff(id);
 
     return 0;
+}
+
+int BuffAbility_setDuration(lua_State* L)
+{
+    CBuffAbility* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    float dur = lua_tonumber(L, 2);
+
+    _p->setDuration(dur);
+
+    return 0;
+}
+
+int BuffAbility_getDuration(lua_State* L)
+{
+    CBuffAbility* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getDuration());
+
+    return 1;
 }
 
 luaL_Reg AttackAct_funcs[] = {
@@ -2967,8 +3089,10 @@ int DamageBuff_ctor(lua_State* L)
     bool toself = lua_toboolean(L, 6) != 0;
     float exAvA = lua_tonumber(L, 7);
     float exAvB = lua_tonumber(L, 8);
+    uint32_t mask = lua_tounsigned(L, 9);
+    bool attack = lua_toboolean(L, 10) != 0;
 
-    CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), chance, toself, CExtraCoeff(exAvA, exAvB));
+    CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), chance, toself, CExtraCoeff(exAvA, exAvB), mask, attack);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3085,6 +3209,35 @@ int LimitedLifeBuff_ctor(lua_State* L)
     return 0;
 }
 
+int ChargeJumpBuff_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float duration = lua_tonumber(L, 3);
+    float exA = lua_tonumber(L, 4);
+    float exB = lua_tonumber(L, 5);
+    float dmgCoeff = lua_tonumber(L, 6);
+    int buff = lua_tointeger(L, 7);
+
+    CChargeJumpBuff* _p = new CChargeJumpBuff(name, duration, CExtraCoeff(exA, exB), dmgCoeff, buff);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int LimitedPasBuff_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float duration = lua_tonumber(L, 3);
+    int pas = lua_tointeger(L, 4);
+
+    CLimitedPasBuff* _p = new CLimitedPasBuff(name, duration, pas);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
 int luaRegCommFuncs(lua_State* L)
 {
     // TODO: reg global funcs
@@ -3128,6 +3281,8 @@ int luaRegCommFuncs(lua_State* L)
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AttractBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ReflectBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, LimitedLifeBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ChargeJumpBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, LimitedPasBuff, BuffAbility);
 
     return 0;
 }

@@ -1,5 +1,5 @@
-if __ABILITY_LIBRARY__ then return end
-__ABILITY_LIBRARY__ = true
+--if __ABILITYLIBRARY__ then return end
+__ABILITYLIBRARY__ = true
 
 function createAbilityLibrary00()
     local lib = {}
@@ -10,7 +10,7 @@ function createAbilityLibrary00()
     a = StunBuff:new("Stun", "Stun", 2.0, false)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 50.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 50.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -25,7 +25,7 @@ function createAbilityLibrary00()
     a = SpeedBuff:new("ThunderCap", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -62,7 +62,7 @@ function createAbilityLibrary00()
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -104,7 +104,7 @@ function createAbilityLibrary00()
     lib.SpeedUp2 = addTemplateAbility(a)
     
     -- KnockBack
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     
     a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, 100)
@@ -125,7 +125,7 @@ function createAbilityLibrary00()
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -140,7 +140,7 @@ function createAbilityLibrary00()
     a = StunBuff:new("StunBuff", "Stun", 5.0, false)
     id = addTemplateAbility(a)    
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0, Ability.kNoMasked, true)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
 
@@ -172,7 +172,7 @@ function createAbilityLibrary00()
     lib.WarCry = addTemplateAbility(a)
     
     -- MultiSlash
-    a = DamageBuff:new("dmg", AttackValue.kPhysical, 75.0, 1.0)
+    a = DamageBuff:new("dmg", AttackValue.kPhysical, 75.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     
     a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 10, 0, Sprite.kAniAct1, Sprite.kAniAct2)
@@ -183,6 +183,41 @@ function createAbilityLibrary00()
     a:setCastRange(300)
     a:setImageName("UI/Ability/Ability02.png")
     lib.MultiSlash = addTemplateAbility(a)
+    
+    -- ChargeJump
+    a = ChargeJumpBuff:new("ChargeJump", 2.0, 2.0, 0.0, 1.0, 0)
+    id = addTemplateAbility(a)
+    
+    a = BuffMakerAct:new("ChargeJump", 18.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+    a:addCastAnimation(Sprite.kAniAct5)
+    a:addEffectSound("sounds/Effects/LevelUp.mp3")
+    a:setImageName("UI/Ability/ChargeJump.png")
+    lib.ChargeJump = addTemplateAbility(a)
+	
+	-- MagicalRain
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 0.75, 0.0, Ability.kMaskActiveTrigger)
+    id = addTemplateAbility(a)
+	
+	a = RainAct:new("MagicalRain", 2.0, RainAct.kBolt, 5.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
+	a:addCastAnimation(Sprite.kAniAct5)
+    a:addEffectSound("sounds/Effects/LevelUp.mp3")
+    a:setImageName("UI/Ability/Ability03.png")
+    lib.MagicalRain = addTemplateAbility(a)
+	
+	-- BuffMaker
+	a = StunBuff:new("Stun", "Stun", 0.5, false)
+    id = addTemplateAbility(a)
+	
+	a = WhenDamagedBuff:new("Buff", "Buff", 10.0, false, 0.02, 0.0, id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("BuffMaker", 1.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+    a:setCastRange(400.0)
+    a:addCastAnimation(Sprite.kAniAct3)
+    a:setTemplateProjectile(PL.kLightning)
+    a:addEffectSound("sounds/Effects/LightningLink.mp3")
+    a:setImageName("UI/Ability/ThrowHammer.png")
+    lib.BuffMaker = addTemplateAbility(a)
     
     -- PassiveAbilitys
     
@@ -213,18 +248,22 @@ function createAbilityLibrary00()
     lib.VampireAttack = addTemplateAbility(a)
     
     -- CriticalAttack
-    a = AttackBuffMakerPas:new("CriticalAttack", 0.15, id, true, 4.0, 0.0)
+    a = AttackBuffMakerPas:new("CriticalAttack", 0.15, 0, true, 4.0, 0.0)
     lib.CriticalAttack = addTemplateAbility(a)
+	
+	-- DeadlyAttack
+    a = AttackBuffMakerPas:new("DeadlyAttack", 0.05, 0, true, 50.0, 0.0)
+    lib.DeadlyAttack = addTemplateAbility(a)
     
-    -- StrikeBack
-    a = ReflectBuff:new("StrikeBackBuff", "StrikeBack", 0.2)
+    -- FastReflect
+    a = ReflectBuff:new("FastReflectBuff", "FastReflect", 0.2)
     id = addTemplateAbility(a)
     
-    a = BuffMakerAct:new("StrikeBack", 2.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+    a = BuffMakerAct:new("FastReflect", 2.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
     a:setImageName("UI/Ability/ThunderCap.png")
     a:addCastAnimation(Sprite.kAniAct2)
     a:addEffectSound("sounds/Effects/KidnapGrab.mp3")
-    lib.StrikeBack = addTemplateAbility(a)
+    lib.FastReflect = addTemplateAbility(a)
     
     -- Evade
     a = EvadePas:new("Evade", 0.20, 0)
@@ -242,7 +281,7 @@ function createAbilityLibrary00()
     a = SpeedBuff:new("ThunderCapBuff", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -259,7 +298,7 @@ function createAbilityLibrary00()
     a = StunBuff:new("StunBuff", "Stun", 5.0, false)
     id = addTemplateAbility(a)    
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
 
@@ -286,12 +325,12 @@ function createAbilityLibrary00()
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
     a = BuffMakerAct:new("Cutter", 1.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
-    a:setCastRange(600.0)
+    a:setCastRange(150.0)
     a:addCastAnimation(Sprite.kAniAct2)
     a:setImageName("UI/Ability/AbilityFireBall.png")
     a:setTemplateProjectile(PL.kPirateProy)
@@ -299,6 +338,64 @@ function createAbilityLibrary00()
     
     a = AttackBuffMakerPas:new("CutterAttack", 0.08, 0, false, 1.0, 0.0, id)
     lib.CutterAttack = addTemplateAbility(a)
+    
+    -- PressureBombAttack
+    a = PressureBombBuff:new("PressureBomb", 15.0, 750, AttackValue.kMagical, 360.0)
+    id = addTemplateAbility(a)
+    
+    a = AttackBuffMakerPas:new("PressureBombAttack", 1.0, id, false, 1.0, 0.0)
+    lib.PressureBombAttack = addTemplateAbility(a)
+    
+    -- DamageIncreaceAttack
+    a = DamageIncreaceBuff:new("DamageIncreaceBuff", "DamageIncreace", 6.0, AttackValue.kMagical, 30.0)
+    id = addTemplateAbility(a)
+    
+    a = AttackBuffMakerPas:new("DamageIncreaceAttack", 1.0, id, false, 1.0, 0.0)
+    lib.DamageIncreaceAttack = addTemplateAbility(a)
+    
+    -- LightningAttack
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 0.75, 0.0, Ability.kMaskActiveTrigger)
+    id = addTemplateAbility(a)
+    
+    a = TransitiveLinkBuff:new("LightningAttack", 0.2, 150, 5, 100, UnitForce.kEnemy, PL.kTeslaRay)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+    
+    a = AttackBuffMakerPas:new("LightningAttack", 0.20, id, false, 1.0, 0.0, 0)
+    lib.LightningAttack = addTemplateAbility(a)
+	
+	-- StrikeBack
+	a = StunBuff:new("StunBuff", "Stun", 1, false)
+    id = addTemplateAbility(a)
+	
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 1.00, 0.0, Ability.kOnDamagedDoneTrigger, true)
+	a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+	
+	a = StrikeBackPas:new("StrikeBack", 100, 0.2, id)
+	lib.StrikeBack = addTemplateAbility(a)
+	
+	-- TransitiveAttack
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 1.00, 0.0, Ability.kOnAttackTargetTrigger, true)
+    id = addTemplateAbility(a)
+	
+	a = TransitiveLinkBuff:new("TransitiveAttack", 0.0, 200.0, 9, 1, UnitForce.kEnemy, PL.kArcherArrow)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+	
+	a = AttackBuffMakerPas:new("TransitiveAttack", 1.00, id, false, 1.0, 0.0, 0)
+    lib.TransitiveAttack = addTemplateAbility(a)
+	
+	-- ChangeAttributeAttack
+	a = ChangeAttributeBuff:new("ChangeAttributeAttackBuff", "ChangeAttributeAttack", 0.5, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0)
+	id = addTemplateAbility(a)
+	
+	a = EvadeBuff:new("EvadeBuff", "Evade", 0.5, false, 1.00)
+	a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+	
+	a = AttackBuffMakerPas:new("ChangeAttributeAttack", 0.20, id, true, 1.0, 0.0, 0)
+	lib.ChangeAttributeAttack = addTemplateAbility(a)
     
     return lib
 end

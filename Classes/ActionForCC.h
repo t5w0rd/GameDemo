@@ -180,4 +180,28 @@ private:
     CC_DISALLOW_COPY_AND_ASSIGN(ScaleSizeTo);
 };
 
+class LogicJumpTo : public MoveTo
+{
+public:
+    virtual bool initWithDuration(float duration, const Point& to, float deltaHeight);
+    M_CREATE_INITWITH_FUNC_PARAM(Duration, LogicJumpTo, (float duration, const Point& to, float height), duration, to, height);
+
+    virtual LogicJumpTo* clone() const override;
+
+    virtual void startWithTarget(Node *pTarget) override;
+    virtual void update(float time) override;
+    virtual LogicJumpTo* reverse() const override;
+
+protected:
+    float m_fStartHeight;
+    float m_fDeltaHeight;
+    enum NODE_TYPE
+    {
+        kEffect,
+        kDraw,
+        kProjectile
+    };
+    NODE_TYPE m_eNodeType;
+};
+
 #endif  /* __ACTIONFORCC_H__ */

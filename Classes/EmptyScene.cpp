@@ -138,35 +138,23 @@ bool EmptySceneLayer::init()
         return false;
     }
 
-    auto sp = Scale9Sprite::create("UI/TalkBubble.png");
-    addChild(sp);
+    auto mn = MenuEx::create();
+    addChild(mn);
+    mn->setPosition(Point::ZERO);
 
-    sp->setInsetLeft(30);
-    sp->setInsetRight(30);
-    sp->setInsetTop(30);
-    sp->setInsetBottom(30);
+    auto eff = Effect::create("UI/Ability/ThunderCap.png");
+    addChild(eff);
 
-    auto lbl = Label::createWithBMFont(
-        "fonts/Comic Book.fnt",
-        " ");
-    sp->addChild(lbl, 2);
-    lbl->setMaxLineWidth(400);
-    lbl->setColor(Color3B::BLACK);
-    lbl->setString("alskd fajshgd fasiudytiwue rhgasdf gkjgahsd jfgakjsdh giwuet rwerqwe rasd fasdf asdf");
+    eff->setPosition(getAnchorPointInPoints());
 
-    sp->setContentSize(lbl->getContentSize() + Size(30, 20));
-    Point lblp = Point(sp->getContentSize().width * 0.5 + 1, sp->getContentSize().height - lbl->getContentSize().height * 0.5 - 10);
-    sp->setAnchorPoint(Point(0.4f, 0.0f));
-    lbl->setPosition(lblp);
+    auto mi = MenuItemFont::create("Restart", [this, eff](Ref* ref)
+    {
+        eff->setPosition(getAnchorPointInPoints());
+        eff->runAction(EaseInOut::create(LogicJumpTo::create(0.5f, getAnchorPointInPoints() + Point(500, 0), 400), 0.4f));
+    });
 
-    auto sp2 = Sprite::create("UI/TalkBubble2.png");
-    sp2->setAnchorPoint(Point(0.5f, 1.0f));
-    sp->addChild(sp2, 1);
-    sp2->setPosition(sp->getAnchorPointInPoints() + Point(0.0f, 3.0f));
-
-    sp->setPosition(getAnchorPointInPoints());
-    float sc = 0.8f;
-    sp->setScale(sc);
+    mn->addChild(mi);
+    mi->setPosition(Point(wsz().width - mi->getContentSize().width * 0.5 - 20, wsz().height - mi->getContentSize().height * 0.5 - 20));
 
     return true;
 }

@@ -136,6 +136,7 @@ public:
     
 public:
     CAttackData();
+    virtual CAttackData* copy() override;
 
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oAtkVal, AttackValue);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ATTACK_BUFF, m_vecAtkBuffs, AttackBuffs);

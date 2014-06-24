@@ -421,13 +421,6 @@ BattleSceneLayer::BattleSceneLayer()
 
 BattleSceneLayer::~BattleSceneLayer()
 {
-    if (m_ctrlLayer != nullptr)
-    {
-        if (m_ctrlLayer->getParent() != nullptr)
-        {
-            m_ctrlLayer->removeFromParentAndCleanup(true);
-        }
-    }
 }
 
 Scene* BattleSceneLayer::scene()
@@ -1325,7 +1318,7 @@ void BattleSceneLayer::onClickAbilityButton(Ref* mi)
 
         if (d->cmdCastSpell(CCommandTarget(m_iTargetInfoUnitId), id) < 0)
         {
-            auto t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), a->getCastRange() + d->getHostilityRange(), bind(&CUnitGroup::isLivingEnemyOf, placeholders::_1, DCAST(u, CUnitForce*)));
+            auto t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), a->getCastRange() + d->getHostilityRange(), CUnitGroup::matchLivingEnemy(u));
             if (t != nullptr)
             {
                 if (d->cmdCastSpell(CCommandTarget(t->getId()), id) < 0)
@@ -1451,7 +1444,7 @@ void BattleSceneLayer::onDragonStrikeUpdate(Node* pNode)
         {
             CUnit* t = M_MAP_EACH;
             CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-            if (t != nullptr && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
+            if (t != nullptr && CUnitGroup::matchLivingEnemy(w->getHero())(t) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
             {
                 CAttackData* ad = new CAttackData;
                 ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (50 * w->getHero()->getLevel()));
@@ -1490,7 +1483,7 @@ void BattleSceneLayer::onDragonStrikeUpdate(Node* pNode)
         {
             CUnit* t = M_MAP_EACH;
             CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-            if (t != nullptr && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
+            if (t != nullptr && CUnitGroup::matchLivingEnemy(w->getHero())(t) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
             {
                 CAttackData* ad = new CAttackData;
                 ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (100 * w->getHero()->getLevel()));
@@ -1533,7 +1526,7 @@ void BattleSceneLayer::onDragonStrikeUpdate(Node* pNode)
         {
             CUnit* t = M_MAP_EACH;
             CUnitDraw2D* td = DCAST(t->getDraw(), CUnitDraw2D*);
-            if (t != nullptr && CUnitGroup::isLivingEnemyOf(t, w->getHero()) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
+            if (t != nullptr && CUnitGroup::matchLivingEnemy(w->getHero())(t) && td->getPosition().getDistance(CPoint(eff->getPositionX(), eff->getPositionY())) < 300.0f)
             {
                 CAttackData* ad = new CAttackData;
                 ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (150 * w->getHero()->getLevel()));

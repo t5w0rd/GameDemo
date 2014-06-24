@@ -20,6 +20,7 @@ int g_addAbilityToUserData(lua_State* L);
 int Unit4CC_ctor(lua_State* L);
 int Unit4CC_addBattleTip(lua_State* L);
 int Unit4CC_setGeometry(lua_State* L);
+int Unit4CC_getAnchorPointInPoints(lua_State* L);
 
 int Projectile4CC_ctor(lua_State* L);
 
@@ -29,6 +30,24 @@ CUnitDrawForCC* luaL_tospriteptr(lua_State* L, int idx = 1);
 int Sprite_ctor(lua_State* L);
 int Sprite_prepareFrame(lua_State* L);
 int Sprite_prepareAnimation(lua_State* L);
+
+int Effect_ctor(lua_State* L);
+int Effect_addAnimation(lua_State* L);
+int Effect_play(lua_State* L);
+int Effect_playRelease(lua_State* L);
+int Effect_playForever(lua_State* L);
+int Effect_stop(lua_State* L);
+int Effect_setLogicPositionMode(lua_State* L);
+int Effect_isLogicPositionMode(lua_State* L);
+int Effect_setLogicPosition(lua_State* L);
+int Effect_getLogicPosition(lua_State* L);
+int Effect_setLogicHeight(lua_State* L);
+int Effect_getLogicHeight(lua_State* L);
+int Effect_setPosition(lua_State* L);
+int Effect_getPosition(lua_State* L);
+int Effect_setAnchorPoint(lua_State* L);
+int Effect_getAnchorPoint(lua_State* L);
+int Effect_release(lua_State* L);
 
 int luaRegCommFuncsForCC(lua_State* L);
 

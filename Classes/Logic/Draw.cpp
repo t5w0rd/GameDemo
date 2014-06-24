@@ -1036,12 +1036,44 @@ int CUnitGroup::getUnitsCount()
     return m_vecUnits.size();
 }
 
-bool CUnitGroup::isLivingAllyOf(CUnit* pUnit, CUnitForce* pParam)
+void CUnitGroup::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
+{
+    CAttackData* ad = nullptr;
+    M_VEC_FOREACH(m_vecUnits)
+    {
+        auto u = M_VEC_EACH;
+        M_VEC_NEXT;
+        ad = ad ? ad->copy() : pAttack;
+        u->damaged(ad, pSource, dwTriggerMask);
+    }
+}
+
+CUnitGroup::FUNC_MATCH CUnitGroup::matchLivingAlly(CUnitForce* ref)
+{
+    return bind(&CUnitGroup::funcMatchLivingAlly, placeholders::_1, ref);
+}
+
+CUnitGroup::FUNC_MATCH CUnitGroup::matchLivingEnemy(CUnitForce* ref)
+{
+    return bind(&CUnitGroup::funcMatchLivingEnemy, placeholders::_1, ref);
+}
+
+CUnitGroup::FUNC_MATCH CUnitGroup::matchLivingAlly(CUnit* ref)
+{
+    return bind(&CUnitGroup::funcMatchLivingAlly, placeholders::_1, DCAST(ref, CUnitForce*));
+}
+
+CUnitGroup::FUNC_MATCH CUnitGroup::matchLivingEnemy(CUnit* ref)
+{
+    return bind(&CUnitGroup::funcMatchLivingEnemy, placeholders::_1, DCAST(ref, CUnitForce*));
+}
+
+bool CUnitGroup::funcMatchLivingAlly(CUnit* pUnit, CUnitForce* pParam)
 {
     return !pUnit->isDead() && pUnit->isMyAlly(pParam);
 }
 
-bool CUnitGroup::isLivingEnemyOf(CUnit* pUnit, CUnitForce* pParam)
+bool CUnitGroup::funcMatchLivingEnemy(CUnit* pUnit, CUnitForce* pParam)
 {
     return !pUnit->isDead() && pParam->isMyEnemy(pUnit);
 }

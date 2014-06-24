@@ -59,6 +59,7 @@ public:
     // 技能持有者事件响应，只覆被注册的触发器相应的事件函数即可
     // @override
     virtual void onChangeLevel(int iChanged) override;
+    virtual void onCopy(CAbility* from);
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
     virtual void onUnitAbilityReady();
@@ -168,7 +169,7 @@ public:
     virtual CBuffAbility* copy() override;
     virtual void copyData(CAbility* from) override;
 
-    virtual void onUnitDisplaceAbility();
+    virtual void onUnitDisplaceAbility(CBuffAbility* newBuff);
 
     M_SYNTHESIZE(float, m_fDuration, Duration);
     M_SYNTHESIZE(float, m_fElapsed, Elapsed);
@@ -296,10 +297,11 @@ public:
     bool castInnerSpell(CUnit* pTarget);
 };
 
+// 附加伤害
 class CDamageBuff : public CBuffAbility
 {
 public:
-    CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff());
+    CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff(), uint32_t dwTriggerMask = CUnit::kMaskActiveTrigger, bool bAttack = false);
     virtual CDamageBuff* copy() override;
 
     virtual void onUnitAddAbility() override;
@@ -308,8 +310,11 @@ public:
     M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE_BOOL(ToSelf);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
+    M_SYNTHESIZE(uint32_t, m_dwTriggerMask, TriggerMask);
+    M_SYNTHESIZE_BOOL(Attack);
 };
 
+// 吸血
 class CVampirePas : public CPassiveAbility
 {
 public:
@@ -321,6 +326,7 @@ public:
     M_SYNTHESIZE(float, m_fPercentConversion, PercentConversion);
 };
 
+// 眩晕
 class CStunBuff : public CBuffAbility
 {
 public:
@@ -331,6 +337,7 @@ public:
     virtual void onUnitDelAbility() override;
 };
 
+// 连击
 class CDoubleAttackPas : public CAttackBuffMakerPas
 {
 public:
@@ -341,6 +348,7 @@ public:
     
 };
 
+// 变速
 class CSpeedBuff : public CBuffAbility
 {
 public:
@@ -527,7 +535,7 @@ public:
 
     virtual void onUnitAddAbility() override;
     virtual void onUnitDelAbility() override;
-    virtual void onUnitDisplaceAbility() override;
+    virtual void onUnitDisplaceAbility(CBuffAbility* newBuff) override;
 
     void knockBack();
 
@@ -548,7 +556,7 @@ public:
 
     virtual void onUnitAddAbility() override;
     virtual void onUnitDelAbility() override;
-    virtual void onUnitDisplaceAbility() override;
+    virtual void onUnitDisplaceAbility(CBuffAbility* newBuff) override;
 
     void attract();
 
@@ -574,6 +582,44 @@ public:
     virtual CLimitedLifeBuff* copy() override;
 
     virtual void onUnitDelAbility() override;
+};
+
+// 冲刺跳跃
+class CChargeJumpBuff : public CBuffAbility
+{
+public:
+    CChargeJumpBuff(const char* pName, float fDuration, const CExtraCoeff& rExTotalSpeedDelta, float fDamageCoeff, int iTemplateBuff);
+    virtual CChargeJumpBuff* copy() override;
+
+    virtual void onUnitInterval() override;
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+    void onJumpDone();
+
+    M_SYNTHESIZE(float, m_fDamageCoeff, DamageCoeff);
+    M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
+
+protected:
+    int m_iTimes;
+    CExtraCoeff m_oExSpeedDelta;
+    CExtraCoeff m_oExTotalSpeedDelta;
+    CPoint m_oStartPosition, StartPosition;
+    CPoint m_oLastPosition;
+    float m_fLastAngle;
+};
+
+// 限时技能
+class CLimitedPasBuff : public CBuffAbility
+{
+public:
+    CLimitedPasBuff(const char* pName, float fDuration, int iTemplatePas);
+    virtual CLimitedPasBuff* copy() override;
+
+    virtual void onUnitAddAbility() override;
+    virtual void onUnitDelAbility() override;
+
+    M_SYNTHESIZE_READONLY(int, m_iTemplatePas, TemplatePas);
+    M_SYNTHESIZE_READONLY(CPassiveAbility*, m_pInnerPas, PassiveAbility);
 };
 
 

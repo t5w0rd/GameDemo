@@ -131,6 +131,9 @@ int Unit_setForce(lua_State* L);
 int Unit_getForce(lua_State* L);
 int Unit_setAlly(lua_State* L);
 int Unit_getAlly(lua_State* L);
+int Unit_isMyAlly(lua_State* L);
+int Unit_isMyEnemy(lua_State* L);
+int Unit_canEffect(lua_State* L);
 int Unit_setBaseArmor(lua_State* L);
 int Unit_getBaseArmor(lua_State* L);
 int Unit_getRealArmorValue(lua_State* L);
@@ -175,6 +178,8 @@ int Unit2D_getBaseMoveSpeed(lua_State* L);
 int Unit2D_getRealMoveSpeed(lua_State* L);
 int Unit2D_setExMoveSpeed(lua_State* L);
 int Unit2D_getExMoveSpeed(lua_State* L);
+int Unit2D_getHalfOfWidth(lua_State* L);
+int Unit2D_getHalfOfHeight(lua_State* L);
 int Unit2D_setPosition(lua_State* L);
 int Unit2D_getPosition(lua_State* L);
 int Unit2D_getNearestEnemyInRange(lua_State* L);
@@ -241,6 +246,7 @@ int Projectile_decContactLeft(lua_State* L);
 
 int Ability_ctor(lua_State* L);
 int Ability_onChangeLevel(lua_State* L);
+int Ability_onCopy(lua_State* L);
 int Ability_onUnitAddAbility(lua_State* L);
 int Ability_onUnitDelAbility(lua_State* L);
 int Ability_onUnitAbilityReady(lua_State* L);
@@ -284,6 +290,7 @@ int Ability_addCastAnimation(lua_State* L);
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
 int ActiveAbility_onUnitCastAbility(lua_State* L);
+int ActiveAbility_onUnitAbilityEffect(lua_State* L);
 int ActiveAbility_setEffectiveTypeFlags(lua_State* L);
 int ActiveAbility_getEffectiveTypeFlags(lua_State* L);
 int ActiveAbility_setCastRange(lua_State* L);
@@ -300,8 +307,11 @@ int ActiveAbility_getAbilityEffectPoint(lua_State* L);
 int PassiveAbility_ctor(lua_State* L);
 
 int BuffAbility_ctor(lua_State* L);
+int BuffAbility_onUnitDisplaceAbility(lua_State* L);
 int BuffAbility_getSrcUnit(lua_State* L);
 int BuffAbility_setAppendBuff(lua_State* L);
+int BuffAbility_setDuration(lua_State* L);
+int BuffAbility_getDuration(lua_State* L);
 
 int AttackAct_ctor(lua_State* L);
 int AttackAct_setBaseAttack(lua_State* L);
@@ -336,6 +346,8 @@ int KnockBackBuff_ctor(lua_State* L);
 int AttractBuff_ctor(lua_State* L);
 int ReflectBuff_ctor(lua_State* L);
 int LimitedLifeBuff_ctor(lua_State* L);
+int ChargeJumpBuff_ctor(lua_State* L);
+int LimitedPasBuff_ctor(lua_State* L);
 
 int luaRegCommFuncs(lua_State* L);
 

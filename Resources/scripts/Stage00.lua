@@ -1,6 +1,7 @@
 include("Init.lua")
 include("AI.lua")
 include("AI2.lua")
+include("LevelUpdate.lua")
 
 
 hero = nil
@@ -17,47 +18,6 @@ lvl = 1
 taid2 = 0
 
 lib = createAbilityLibrary00()
-
-HeroLevelUpdate = class(LevelUpdate)
-function HeroLevelUpdate:onChangeLevel(u, change)
-    cast(u, Unit)
-
-    u:addBuffAbility(ChangeHpBuff:new("LevelUpHeal", "LevelUpHeal", 5.0, false, 0.2, 0.02, 0.0))
-    u:addBuffAbility(ReflectBuff:new("Reflect", "Reflect", 5.0))
-    
-    u:setMaxHp(u:getMaxHp() + 300)
-    
-    u:setBaseMoveSpeed(u:getBaseMoveSpeed() + 1.5)
-
-    local atk = u:getAttackAbility()
-    local a, b = atk:getExAttackSpeed()
-    atk:setExAttackSpeed(a + 0.01, b)
-
-    local t, v = atk:getBaseAttack()
-    atk:setBaseAttack(t, v + 7.8)
-
-    t, v = u:getBaseArmor()
-    u:setBaseArmor(t, v + 1)
-    
-    local lvl = u:getLevel()
-    if lvl == 14 then
-        u:addPassiveAbility(lib.Rebirth)
-    elseif lvl == 15 then
-        me:addActiveAbility(lib.Curse)
-    elseif lvl == 16 then
-        u:addPassiveAbility(lib.CriticalAttack)
-    elseif lvl == 17 then
-        me:addPassiveAbility(lib.ThrowHammerAttack)
-    elseif lvl == 18 then
-        me:addPassiveAbility(lib.BerserkerBlood)
-    elseif lvl == 19 then
-        me:addPassiveAbility(lib.CutterAttack)
-    elseif lvl == 20 then
-        me:addActiveAbility(lib.MultiSlash)
-    end
-
-    saveUserData()
-end
 
 function HeroLevelUpdate:calcExp(lvl)
     if lvl == 0 then
@@ -124,7 +84,7 @@ function spawnHero(id)
     end
     hero = spawnSoldier(id, 1)
     hero:addPassiveAbility(OnDyingPas:new())
-    hero:setMaxHp(400 + (kill / 1.0) * 150)
+    hero:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
     if me:getLevel() > 15 and math.random() < 0.1 then
         hero:setExMaxHp(1 + kill / 10, 0.0)
     end
@@ -247,7 +207,7 @@ function game01()
     u:addPassiveAbility(taid2)
     u:addPassiveAbility(lib.AutoHeal)
     --u:addPassiveAbility(DamageBackPas:new(1.2, 0))
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 100, UnitForce.kEnemy, PL.kArcaneRay)
     a:setAppendBuff(id)
@@ -265,7 +225,7 @@ function game01()
     u:addPassiveAbility(taid2)
     u:addPassiveAbility(lib.AutoHeal)
     --u:addPassiveAbility(DamageBackPas:new(1.0, 0))
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 100, UnitForce.kEnemy, PL.kTeslaRay)
     a:setAppendBuff(id)
@@ -354,7 +314,10 @@ function initAbilityForMe()
     --me:addActiveAbility(lib.MultiSlash)
     --me:addActiveAbility(lib.KnockBackEx)
     me:addActiveAbility(lib.ThrowHammerEx)
-    me:addActiveAbility(lib.StrikeBack)
+	--me:addActiveAbility(lib.WarCry)
+	me:addActiveAbility(lib.MagicalRain)
+    
+	me:addPassiveAbility(lib.StrikeBack)
     
     --me:addPassiveAbility(lib.VampireAttack)
     --me:addPassiveAbility(lib.CriticalAttack)
@@ -449,7 +412,7 @@ function game03()
     u:addPassiveAbility(taid2)
     u:addPassiveAbility(lib.AutoHeal)
     --u:addPassiveAbility(DamageBackPas:new(1.2, 0))
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 100, UnitForce.kEnemy, PL.kArcaneRay)
     a:setAppendBuff(id)

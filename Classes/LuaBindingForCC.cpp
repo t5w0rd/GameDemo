@@ -185,6 +185,8 @@ luaL_Reg Unit4CC_funcs[] = {
     { "ctor", Unit4CC_ctor },
     { "addBattleTip", Unit4CC_addBattleTip },
     { "setGeometry", Unit4CC_setGeometry },
+    { "getAnchorPointInPoints", Unit4CC_getAnchorPointInPoints },
+    
     { nullptr, nullptr }
 };
 
@@ -238,6 +240,20 @@ int Unit4CC_setGeometry(lua_State* L)
     d->setGeometry(fHalfOfWidth, fHalfOfHeight, anchorPoint, firePoint);
 
     return 0;
+}
+
+int Unit4CC_getAnchorPointInPoints(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
+
+    auto& p = d->getSprite()->getAnchorPointInPoints();
+
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+
+    return 2;
 }
 
 luaL_Reg Projectile4CC_funcs[] = {
@@ -332,6 +348,243 @@ int Sprite_prepareAnimation(lua_State* L)
     return 0;
 }
 
+luaL_Reg Effect_funcs[] = {
+    { "ctor", Effect_ctor },
+    { "addAnimation", Effect_addAnimation },
+    { "play", Effect_play },
+    { "playRelease", Effect_playRelease },
+    { "playForever", Effect_playForever },
+    { "stop", Effect_stop },
+    { "setLogicPositionMode", Effect_setLogicPositionMode },
+    { "isLogicPositionMode", Effect_isLogicPositionMode },
+    { "setLogicPosition", Effect_setLogicPosition },
+    { "getLogicPosition", Effect_getLogicPosition },
+    { "setLogicHeight", Effect_setLogicHeight },
+    { "getLogicHeight", Effect_getLogicHeight },
+    { "setPosition", Effect_setPosition },
+    { "getPosition", Effect_getPosition },
+    { "setAnchorPoint", Effect_setAnchorPoint },
+    { "getAnchorPoint", Effect_getAnchorPoint },
+    { "release", Effect_release },
+    
+    { nullptr, nullptr }
+};
+
+int Effect_ctor(lua_State* L)
+{
+    auto path = lua_tostring(L, 2);
+    auto delay = lua_tonumber(L, 3);
+    auto x = lua_gettop(L) < 4 ? 0.5f : lua_tonumber(L, 4);
+    auto y = lua_gettop(L) < 5 ? 0.5f : lua_tonumber(L, 5);
+
+    Effect* eff = Effect::create(path, delay);
+    lua_pushlightuserdata(L, eff);
+    lua_setfield(L, 1, "_p");
+
+    eff->setAnchorPoint(Point(x, y));
+
+    if (lua_gettop(L) < 6)
+    {
+        lua_getglobal(L, "_world");
+        CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+        lua_pop(L, 1);  // pop _world
+        w->getLayer()->addChild(eff); 
+    }
+    else
+    {
+        CUnit* u = luaL_tounitptr(L, 6);
+        CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
+        d->getSprite()->getShadow()->addChild(eff);
+    }
+
+    return 0;
+}
+
+int Effect_addAnimation(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto path = lua_tostring(L, 2);
+    auto delay = lua_tonumber(L, 3);
+
+    eff->addAnimation(path, delay);
+
+    return 0;
+}
+
+int Effect_play(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto index = lua_gettop(L) < 2 ? 0 : lua_tointeger(L, 2);
+    auto speed = lua_gettop(L) < 3 ? 1.0f : lua_tonumber(L, 3);
+    auto times = lua_gettop(L) < 4 ? 1 : lua_tointeger(L, 4);
+
+    eff->play(index, speed, times);
+
+    return 0;
+}
+
+int Effect_playRelease(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto index = lua_gettop(L) < 2 ? 0 : lua_tointeger(L, 2);
+    auto speed = lua_gettop(L) < 3 ? 1.0f : lua_tonumber(L, 3);
+    auto times = lua_gettop(L) < 4 ? 1 : lua_tointeger(L, 4);
+
+    eff->playRelease(index, speed, times);
+
+    return 0;
+}
+
+int Effect_playForever(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto index = lua_gettop(L) < 2 ? 0 : lua_tointeger(L, 2);
+    auto speed = lua_gettop(L) < 3 ? 1.0f : lua_tonumber(L, 3);
+
+    eff->playForever(index, speed);
+
+    return 0;
+}
+
+int Effect_stop(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+
+    eff->stop();
+
+    return 0;
+}
+
+int Effect_setLogicPositionMode(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto b = lua_toboolean(L, 2) != 0;
+
+    eff->setLogicPositionMode(b);
+
+    return 0;
+}
+
+int Effect_isLogicPositionMode(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+
+    lua_pushboolean(L, eff->isLogicPositionMode());
+
+    return 1;
+}
+
+int Effect_setLogicPosition(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto x = lua_tonumber(L, 2);
+    auto y = lua_tonumber(L, 3);
+
+    eff->setLogicPosition(CPoint(x, y));
+
+    return 0;
+}
+
+int Effect_getLogicPosition(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+
+    auto p = eff->getLogicPosition();
+
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+
+    return 2;
+}
+
+int Effect_setLogicHeight(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto h = lua_tonumber(L, 2);
+
+    eff->setLogicHeight(h);
+
+    return 0;
+}
+
+int Effect_getLogicHeight(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    
+    lua_pushnumber(L, eff->getLogicHeight());
+
+    return 1;
+}
+
+int Effect_setPosition(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto x = lua_tonumber(L, 2);
+    auto y = lua_tonumber(L, 3);
+
+    eff->setPosition(Point(x, y));
+
+    return 0;
+}
+
+int Effect_getPosition(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto& p = eff->getPosition();
+
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+
+    return 2;
+}
+
+int Effect_setAnchorPoint(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto x = lua_tonumber(L, 2);
+    auto y = lua_tonumber(L, 3);
+
+    eff->setAnchorPoint(Point(x, y));
+
+    return 0;
+}
+
+int Effect_getAnchorPoint(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto& p = eff->getAnchorPoint();
+
+    lua_pushnumber(L, p.x);
+    lua_pushnumber(L, p.y);
+
+    return 2;
+}
+
+int Effect_release(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+
+    eff->removeFromParentAndCleanup(true);
+
+    return 0;
+}
+
 int luaRegCommFuncsForCC(lua_State* L)
 {
     // TODO: reg global funcs
@@ -352,6 +605,7 @@ int luaRegCommFuncsForCC(lua_State* L)
 
     // TODO: reg global classes
     M_LUA_BIND_CLASS_WITH_FUNCS(L, Sprite);
+    M_LUA_BIND_CLASS_WITH_FUNCS(L, Effect);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, StatusShowPas, PassiveAbility);
 
     return 0;

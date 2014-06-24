@@ -567,7 +567,7 @@ void CUnitDrawForCC::say(const char* words)
     auto sp2 = Sprite::create("UI/TalkBubble2.png");
     sp2->setAnchorPoint(Point(0.5f, 1.0f));
     sp->addChild(sp2, 1);
-    sp2->setPosition(sp->getAnchorPointInPoints() + Point(-20.0f, 4.0f));
+    sp2->setPosition(sp->getAnchorPointInPoints() + Point(-20.0f, 5.0f));
     
     sp->setPosition(nd->getAnchorPointInPoints() + Point(0, getHalfOfHeight() * 2.5 + 38));
     float sc = 0.8f;

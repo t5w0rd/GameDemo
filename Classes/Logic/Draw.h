@@ -191,6 +191,8 @@ public:
     void cleanUnits();
     int getUnitsCount();
 
+    void damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = CUnit::kNoMasked);
+
     //virtual void setRangePosition(const CPoint& roPos, float fRadius);
     //virtual void turnTo(bool bLeft);
     //virtual void move(const CPoint& roPos, const CUnit::UNIT_MOVE_PARAMS& roMoveParams = CUnit::CONST_DEFAULT_MOVE_PARAMS);
@@ -206,8 +208,14 @@ public:
     //void addActiveAbility(CAbility* pAbility);
     //void addBuff(CBuffAbility* pBuff, bool bForce = false);
 
-    static bool isLivingAllyOf(CUnit* pUnit, CUnitForce* pParam);
-    static bool isLivingEnemyOf(CUnit* pUnit, CUnitForce* pParam);
+    static FUNC_MATCH matchLivingAlly(CUnitForce* ref);
+    static FUNC_MATCH matchLivingEnemy(CUnitForce* ref);
+    static FUNC_MATCH matchLivingAlly(CUnit* ref);
+    static FUNC_MATCH matchLivingEnemy(CUnit* ref);
+
+protected:
+    static bool funcMatchLivingAlly(CUnit* pUnit, CUnitForce* pParam);
+    static bool funcMatchLivingEnemy(CUnit* pUnit, CUnitForce* pParam);
 
 };
 

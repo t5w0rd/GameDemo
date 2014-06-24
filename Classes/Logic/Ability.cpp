@@ -54,6 +54,7 @@ CAbility* CAbility::copy()
 {
     CAbility* ret = new CAbility(getRootId(), getName(), getCoolDown());
     ret->copyData(this);
+    ret->onCopy(this);
     return ret;
 }
 
@@ -179,6 +180,31 @@ void CAbility::onChangeLevel(int iChanged)
     lua_getfield(L, a, "onChangeLevel");
     lua_pushvalue(L, a);
     lua_pushinteger(L, iChanged);
+    if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'a'
+}
+
+void CAbility::onCopy(CAbility* from)
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onCopy");
+    lua_pushvalue(L, a);
+    luaL_pushobjptr(L, "Ability", from);
     if (lua_pcall(L, 2, 0, 0) != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
@@ -993,8 +1019,29 @@ void CBuffAbility::copyData(CAbility* from)
     setAppendBuff(a->getAppendBuff());
 }
 
-void CBuffAbility::onUnitDisplaceAbility()
+void CBuffAbility::onUnitDisplaceAbility(CBuffAbility* newBuff)
 {
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitDisplaceAbility");
+    lua_pushvalue(L, a);
+    luaL_pushobjptr(L, "BuffAbility", newBuff);
+    if (lua_pcall(L, 2, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'a'
 }
 
 bool CBuffAbility::isDone() const
@@ -1576,18 +1623,21 @@ bool CAttackBuffMakerPas::castInnerSpell(CUnit* pTarget)
 }
 
 // CDamageBuff
-CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf /*= false*/, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/)
+CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf /*= false*/, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/, uint32_t dwTriggerMask /*= CUnit::kMaskActiveTrigger*/, bool bAttack /*= false*/)
 : CBuffAbility("DBM", pName, 0.0f, true)
 , m_oDamage(rDamage)
 , m_fChance(fChance)
 , m_bToSelf(bToSelf)
 , m_oExAttackValue(roExAttackValue)
+, m_dwTriggerMask(dwTriggerMask)
+, m_bAttack(bAttack)
 {
+    setDbgClassName("CDamageBuff");
 }
 
 CDamageBuff* CDamageBuff::copy()
 {
-    CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getChance(), isToSelf(), getExAttackValue());
+    CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getChance(), isToSelf(), getExAttackValue(), m_dwTriggerMask, m_bAttack);
     ret->copyData(this);
     return ret;
 }
@@ -1630,7 +1680,11 @@ void CDamageBuff::onUnitAddAbility()
         
     }
 
-    o->damaged(ad, s, CUnit::kMaskActiveTrigger);
+    if (m_bAttack && s != nullptr)
+    {
+        s->attack(ad, o, m_dwTriggerMask);
+    }
+    o->damaged(ad, s, m_dwTriggerMask);
 }
 
 // CVampirePas
@@ -2077,6 +2131,14 @@ bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             char sz[64];
             sprintf(sz, "%s!", getName());
             ccd->addBattleTip(sz, "", 18, Color3B(250, 104, 16));
+            
+            auto sp = Sprite::createWithSpriteFrame(ccd->getSprite()->getSpriteFrame());
+            sp->setAnchorPoint(ccd->getSprite()->getAnchorPoint());
+            sp->setFlippedX(ccd->getSprite()->isFlippedX());
+            sp->setOpacity(160);
+            ccd->getSprite()->getShadow()->addChild(sp);
+            sp->setPosition(ccd->getSprite()->getShadow()->getAnchorPointInPoints() + Point(-10.0f, 0.0f));
+            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 2), RemoveSelf::create(), nullptr));
         }
 #endif
         return false;
@@ -2118,6 +2180,14 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             char sz[64];
             sprintf(sz, "%s!", getName());
             ccd->addBattleTip(sz, "", 18, Color3B(250, 104, 16));
+            
+            auto sp = Sprite::createWithSpriteFrame(ccd->getSprite()->getSpriteFrame());
+            sp->setAnchorPoint(ccd->getSprite()->getAnchorPoint());
+            sp->setFlippedX(ccd->getSprite()->isFlippedX());
+            sp->setOpacity(160);
+            ccd->getSprite()->getShadow()->addChild(sp);
+            sp->setPosition(ccd->getSprite()->getShadow()->getAnchorPointInPoints() + Point(-10.0f, 0.0f));
+            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 2), RemoveSelf::create(), nullptr));
         }
         return false;
 #endif
@@ -2447,23 +2517,24 @@ void CTransitiveBlinkBuff::souceUnitRunActions(bool bFirstTime)
     eff->setFlippedX(from.x < eff->getPosition().x);
     eff->runAction(Sequence::create(MoveTo::create(eff->getLogicPosition().getDistance(from) / 1000.0, Point(from.x, from.y)), FadeTo::create(0.8f, 0), RemoveSelf::create(), nullptr));
 
+    sd->cmdStop();
+    //sd->stopAllActions();
     if (bFirstTime)
     {
         s->suspend();
         s->setGhost(s->getId());
     }
 
-    sd->stopAllActions();
     sd->setPosition(from);
     sd->setFlippedX(to.x < from.x);
     float spd = 2.5f;
     sd->doMoveTo(to, 0.35f, nullptr, spd);
+    // unsafe
     sd->doAnimation(getCastRandomAnimation(), nullptr, 1, bind(&CTransitiveBlinkBuff::TransmitNext, this), spd);
 }
 
 void CTransitiveBlinkBuff::resumeSourceUnit()
 {
-    CCLOG("RESUME");
     auto s = getOwner()->getUnit(getSrcUnit());
     if (s == nullptr)
     {
@@ -2519,7 +2590,7 @@ void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
         }
 
         fDis = max(0.0f, pDraw->getPosition().getDistance(td->getPosition()) - pDraw->getHalfOfWidth());
-        if (fDis <= m_fFarRange && CUnitGroup::isLivingEnemyOf(pUnit, DCAST(o, CUnitForce*)) && pUnit != pTarget)
+        if (fDis <= m_fFarRange && CUnitGroup::matchLivingEnemy(o)(pUnit) && pUnit != pTarget)
         {
             if (fDis <= m_fNearRange)
             {
@@ -2565,7 +2636,7 @@ void CKnockBackBuff::onUnitDelAbility()
     d->stopAction(CONST_ACT_TAG);
 }
 
-void CKnockBackBuff::onUnitDisplaceAbility()
+void CKnockBackBuff::onUnitDisplaceAbility(CBuffAbility* newBuff)
 {
     knockBack();
 }
@@ -2625,7 +2696,7 @@ void CAttractBuff::onUnitDelAbility()
     d->stopAction(CONST_ACT_TAG);
 }
 
-void CAttractBuff::onUnitDisplaceAbility()
+void CAttractBuff::onUnitDisplaceAbility(CBuffAbility* newBuff)
 {
     attract();
 }
@@ -2739,4 +2810,167 @@ void CLimitedLifeBuff::onUnitDelAbility()
 {
     CUnit* u = getOwner();
     u->setHp(0.0f);
+}
+
+// CChargeJumpBuff
+CChargeJumpBuff::CChargeJumpBuff(const char* pName, float fDuration, const CExtraCoeff& rExTotalSpeedDelta, float fDamageCoeff, int iTemplateBuff)
+: CBuffAbility("ChargeJumpBuff", pName, fDuration + 1.0f, false)
+, m_oExTotalSpeedDelta(0.0f, 0.0f)
+, m_fDamageCoeff(fDamageCoeff)
+, m_iTemplateBuff(iTemplateBuff)
+, m_fLastAngle(0.0f)
+{
+    setDbgClassName("CChargeJumpBuff");
+    setInterval(0.1f);
+    m_iTimes = toInt(fDuration / getInterval());
+    m_oExSpeedDelta.setMulriple(rExTotalSpeedDelta.getMulriple() / m_iTimes);
+    m_oExSpeedDelta.setAddend(rExTotalSpeedDelta.getAddend() / m_iTimes);
+}
+
+CChargeJumpBuff* CChargeJumpBuff::copy()
+{
+    float times = getDuration() / getInterval();
+    auto ret = new CChargeJumpBuff(getName(), getDuration() - 1.0f, CExtraCoeff(m_oExSpeedDelta.getMulriple() * times, m_oExSpeedDelta.getAddend() * times), m_fDamageCoeff, m_iTemplateBuff);
+    ret->copyData(this);
+    return ret;
+}
+#include "ActionForCC.h"
+void CChargeJumpBuff::onUnitInterval()
+{
+    auto o = getOwner();
+    auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
+
+    auto& ex = od->getExMoveSpeed();
+    od->setExMoveSpeed(CExtraCoeff(ex.getMulriple() + m_oExSpeedDelta.getMulriple(), ex.getAddend() + m_oExSpeedDelta.getAddend()));
+    m_oExTotalSpeedDelta.setMulriple(m_oExTotalSpeedDelta.getMulriple() + m_oExSpeedDelta.getMulriple());
+    m_oExTotalSpeedDelta.setAddend(m_oExTotalSpeedDelta.getAddend() + m_oExSpeedDelta.getAddend());
+    --m_iTimes;
+
+    auto& pos = od->getPosition();
+
+    if (m_iTimes <= 0)
+    {
+        setInterval(0.0f);
+        if (!o->isDead())
+        {
+            float spd = od->getRealMoveSpeed();
+
+            const float dur = 0.5;  // base duration
+            //auto to = pos.getForwardPoint(m_oLastPosition, -dur * od->getRealMoveSpeed());
+            auto to = pos.getDirectionPoint(m_fLastAngle, max(pos.getDistance(m_oStartPosition), 50.0f));
+
+            od->cmdStop();
+            o->suspend();
+            auto aniInfo = od->getSpriteInfo()->getAnimationInfo(kAniAct1);
+            float aniDur = aniInfo->iNotifyFrameIndex * aniInfo->pAni->getDelayPerUnit();
+            od->doAnimation(kAniAct1, nullptr, 1, nullptr, aniDur / dur);  // calc notifyframe
+            od->getSprite()->runAction(SequenceEx::create(EaseInOut::create(LogicJumpTo::create(dur, Point(to.x, to.y), 200), 0.4f), CallFunc::create(CC_CALLBACK_0(CChargeJumpBuff::onJumpDone, this)), nullptr));
+        }
+
+        auto& ex = od->getExMoveSpeed();
+        od->setExMoveSpeed(CExtraCoeff(ex.getMulriple() - m_oExTotalSpeedDelta.getMulriple(), ex.getAddend() - m_oExTotalSpeedDelta.getAddend()));
+    }
+
+    if (pos != m_oLastPosition)
+    {
+        m_fLastAngle = (pos - m_oLastPosition).getAngle();
+        m_oLastPosition = pos;
+    }
+}
+
+void CChargeJumpBuff::onUnitAddAbility()
+{
+    auto o = getOwner();
+    auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
+    auto& pos = od->getPosition();
+    m_oStartPosition = pos;
+    m_oLastPosition = pos;
+    m_fLastAngle = od->isFlippedX() ? M_PI : 0.0f;
+}
+
+void CChargeJumpBuff::onUnitDelAbility()
+{
+    auto o = getOwner();
+    auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
+    o->resume();
+    od->cmdStop();
+}
+
+void CChargeJumpBuff::onJumpDone()
+{
+    auto o = getOwner();
+    auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
+    auto ug = new CUnitGroup(o->getWorld(), od->getPosition(), 100, -1, CUnitGroup::matchLivingEnemy(o));
+
+    auto eff = Effect::createWithSpriteFrameName("Effects/Kidnap/Bang.png");
+    od->getSprite()->getParent()->addChild(eff);
+    eff->setLogicPosition(od->getPosition());
+    eff->setScale(3.0f);
+    eff->runAction(Sequence::create(DelayTime::create(1.0f), FadeOut::create(1.0f), RemoveSelf::create(), nullptr));
+
+    eff = Effect::create("Effects/Bang", 0.1f);
+    eff->setAnchorPoint(Point(0.5f, 0.6f));
+    od->getSprite()->getParent()->addChild(eff);
+    eff->setScale(0.6f);
+    eff->setLogicPosition(od->getPosition());
+    eff->playRelease();
+
+    M_DEF_GC(gc);
+    gc->playSound("sounds/Effects/ThunderCap.mp3");
+    
+    auto a = DCAST(o->getActiveAbility(o->getAttackAbilityId()), CAttackAct*);
+    auto& atk = a->getBaseAttack();
+    auto ad = new CAttackData;
+    ad->setAttackValue(atk.getType(), a->getRealAttackValue() * (1.0f + m_fDamageCoeff * m_oStartPosition.getDistance(od->getPosition()) / 100));
+
+    ug->damaged(ad, o);
+}
+
+// 
+CLimitedPasBuff::CLimitedPasBuff(const char* pName, float fDuration, int iTemplatePas)
+: CBuffAbility("LimitedPasBuf", pName, fDuration, false)
+, m_iTemplatePas(iTemplatePas)
+, m_pInnerPas(nullptr)
+{
+    setDbgClassName("CLimitedPasBuff");
+}
+
+CLimitedPasBuff* CLimitedPasBuff::copy()
+{
+    CLimitedPasBuff* ret = new CLimitedPasBuff(getName(), m_fDuration, m_iTemplatePas);
+    ret->copyData(this);
+    return ret;
+}
+
+void CLimitedPasBuff::onUnitAddAbility()
+{
+    if (m_iTemplatePas == 0)
+    {
+        return;
+    }
+
+    m_pInnerPas = DCAST(CAbilityLibrary::instance()->copyAbility(m_iTemplatePas), CPassiveAbility*);
+    if (m_pInnerPas == nullptr)
+    {
+        return;
+    }
+
+    m_pInnerPas->setTemporary();
+    m_pInnerPas->setLevel(getLevel());
+    auto o = getOwner();
+    o->addPassiveAbility(m_pInnerPas, false);
+}
+
+void CLimitedPasBuff::onUnitDelAbility()
+{
+    if (m_pInnerPas == nullptr)
+    {
+        return;
+    }
+
+    auto o = getOwner();
+    o->delPassiveAbility(m_pInnerPas->getId(), false);
+
+    //M_SAFE_RELEASE(m_pInnerPas);
+    m_pInnerPas = nullptr;
 }

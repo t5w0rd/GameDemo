@@ -73,10 +73,10 @@ function LuaAIWarrior:onUnitTick(unit, dt)
 		self:tryCastSkill(unit, "ThunderCap", nil, 100)
 		self:tryCastSkill(unit, "SpeedUp", nil, 100)
 	end
-    --[[
+    
     if not unit:isDoingCastingAction() and unit:getHp() / unit:getRealMaxHp() < 0.5 and not unit:getBuffAbility("TowerHeal") then
         unit:move(100, 500)
-    end]]
+    end
     --self:hitAndRun(unit, 200)
     --self.timeCount = self.timeCount + dt
     --self.timeCount = self:setHpAI(unit, self.timeCount)
