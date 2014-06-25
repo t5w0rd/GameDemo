@@ -35,7 +35,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         glview->setFrameSize(wsz.width, wsz.height);
         glview->setFrameZoomFactor(0.4f);
     }
-
+    
     // create the application instance
     AppDelegate app;
     return Application::getInstance()->run();

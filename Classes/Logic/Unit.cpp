@@ -1089,7 +1089,7 @@ void CUnit::onDamagedDone(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
     {
         char sz[64];
         sprintf(sz, "-%d", dmg);
-        ccd->addBattleTip(sz, "", 18, Color3B(255, 0, 0));
+        //ccd->addBattleTip(sz, "", 18, Color3B(255, 0, 0));
     }
 #endif
 }
@@ -1100,6 +1100,8 @@ void CUnit::onDamageTargetDone(float fDamage, CUnit* pTarget, uint32_t dwTrigger
     {
         triggerOnDamageTargetDone(fDamage, pTarget);
     }
+
+    triggerOnCalcDamageTarget(fDamage, pTarget);
     
     if (m_pAI != nullptr)
     {
@@ -1277,6 +1279,11 @@ void CUnit::attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMa
 
 bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
+    if (isDead())
+    {
+        return false;
+    }
+
     while (pSource != nullptr && pSource->isGhost())
     {
         auto go = pSource->getUnit(pSource->getGhostOwner());
@@ -1315,6 +1322,11 @@ bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
 
 void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
 {
+    if (isDead())
+    {
+        return;
+    }
+
     while (pSource != nullptr && pSource->isGhost())
     {
         auto go = pSource->getUnit(pSource->getGhostOwner());
@@ -1737,6 +1749,11 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
     {
         m_mapOnProjectileArriveTriggerAbilitys.addObject(pAbility);
     }
+
+    if (dwTriggerFlags & kOnCalcDamageTargetTrigger)
+    {
+        m_mapOnCalcDamageTargetTriggerAbilitys.addObject(pAbility);
+    }
 }
 
 void CUnit::delAbilityFromTriggers(CAbility* pAbility)
@@ -1819,6 +1836,11 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     if (dwTriggerFlags & kOnProjectileArriveTrigger)
     {
         m_mapOnProjectileArriveTriggerAbilitys.delObject(id);
+    }
+
+    if (dwTriggerFlags & kOnCalcDamageTargetTrigger)
+    {
+        m_mapOnCalcDamageTargetTriggerAbilitys.delObject(id);
     }
 }
 
@@ -2048,6 +2070,18 @@ bool CUnit::triggerOnProjectileArrive(CProjectile* pProjectile)
     }
     endTrigger();
     return res;
+}
+
+void CUnit::triggerOnCalcDamageTarget(float fDamage, CUnit* pTarget)
+{
+    beginTrigger();
+    M_MAP_FOREACH(m_mapOnCalcDamageTargetTriggerAbilitys)
+    {
+        CAbility* pAbility = M_MAP_EACH;
+        pAbility->onUnitCalcDamageTarget(fDamage, pTarget);
+        M_MAP_NEXT;
+    }
+    endTrigger();
 }
 
 bool CUnit::isSuspended() const

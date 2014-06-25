@@ -456,5 +456,11 @@
     <None Include="..\Resources\scripts\Common.lua">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\Resources\scripts\GameCommon.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\LevelUpdate.lua">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
 </Project>

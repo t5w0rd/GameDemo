@@ -77,6 +77,7 @@ public:
     virtual void onUnitProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     virtual bool onUnitProjectileArrive(CProjectile* pProjectile);
     virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget);  // no need to register this trigger
+    virtual void onUnitCalcDamageTarget(float fDamage, CUnit* pTarget);
     
 public:
     // 来自CUnit内部调用，bNotify为false时，不需要通知onUnitAddAbility，通常这种情况在Buff被覆盖的时候发生

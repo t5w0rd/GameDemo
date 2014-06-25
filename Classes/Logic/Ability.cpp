@@ -658,6 +658,32 @@ void CAbility::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
     lua_pop(L, 1);  // pop 'a'
 }
 
+void CAbility::onUnitCalcDamageTarget(float fDamage, CUnit* pTarget)
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int a = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, a, "onUnitCalcDamageTarget");
+    lua_pushvalue(L, a);
+    lua_pushnumber(L, fDamage);
+    luaL_pushobjptr(L, "Unit", pTarget);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'a'
+}
+
 void CAbility::onAddToUnit(CUnit* pOwner)
 {
     setOwner(pOwner);

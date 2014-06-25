@@ -1,4 +1,4 @@
---if __ABILITY__ then return end
+if __ABILITY__ then return end
 __ABILITY__ = true
 
 BetrayBuff = class(BuffAbility)

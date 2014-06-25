@@ -404,7 +404,8 @@ public:
         kOnDamagedDoneTrigger = 1 << 9,
         kOnDamageTargetDoneTrigger = 1 << 10,
         kOnProjectileEffectTrigger = 1 << 11,
-        kOnProjectileArriveTrigger = 1 << 12
+        kOnProjectileArriveTrigger = 1 << 12,
+        kOnCalcDamageTargetTrigger = 1 << 13
     };
     
     enum TRIGGER_MASK
@@ -497,6 +498,7 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnTickTriggerAbilitys, OnTickTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnProjectileEffectTriggerAbilitys, OnProjectileEffectTriggerAbilitys);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnProjectileArriveTriggerAbilitys, OnProjectileArriveTriggerAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnCalcDamageTargetTriggerAbilitys, OnCalcDamageTargetTriggerAbilitys);
     
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToAdd, TriggerAbilitysToAdd);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToDel, TriggerAbilitysToDel);
@@ -533,6 +535,7 @@ protected:
     void triggerOnDamageTargetDone(float fDamage, CUnit* pTarget);
     void triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget);
     bool triggerOnProjectileArrive(CProjectile* pProjectile);
+    void triggerOnCalcDamageTarget(float fDamage, CUnit* pTarget);
     
     // 为单位添加/删除技能
     //void addAbility(CAbility* pAbility);

@@ -1,52 +1,88 @@
---if __LEVELUPDATE__ then return end
-__LEVELUPDATE__ = true
+--if __LEVEL_UPDATE__ then return end
+__LEVEL_UPDATE__ = true
 
 HeroLevelUpdate = class(LevelUpdate)
+
+function HeroLevelUpdate:calcExp(lv)
+    if lv == 0 then
+        return 0
+    end
+
+    return lv * lv * 9 + lv * 3 + 8;
+end
+
+function HeroLevelUpdate:calcMaxHp(lv)
+	--return 50 + (lv - 1) * 15
+	return 50 + (lv - 1) * 300
+end
+
+function HeroLevelUpdate:calcMoveSpeed(lv)
+	return 70.0 + (lv - 1) * 0.8
+end
+
+function HeroLevelUpdate:calcAttackValue(lv)
+	--return 10.0 + (lv - 1) * 3.6
+	return 10.0 + (lv - 1) * 7.8
+end
+
+function HeroLevelUpdate:calcAttackSpeed(lv)
+	if lv == 0 then
+		return 0.0
+	end
+	return 0.0 + (lv - 1) * 0.01
+end
+
+function HeroLevelUpdate:calcArmorValue(lv)
+	--return 2.0 + (lv - 1) * 0.5
+	return 2.0 + (lv - 1) * 1.0
+end
+
 function HeroLevelUpdate:onChangeLevel(u, change)
     cast(u, Unit)
+	
+	local lv = u:getLevel()
 
     u:addBuffAbility(ChangeHpBuff:new("LevelUpHeal", "LevelUpHeal", 5.0, false, 0.2, 0.02, 0.0))
     u:addBuffAbility(ReflectBuff:new("Reflect", "Reflect", 5.0))
     
-    u:setMaxHp(u:getMaxHp() + 300)
+    u:setMaxHp(self:calcMaxHp(lv))
     
-    u:setBaseMoveSpeed(u:getBaseMoveSpeed() + 1.5)
+    u:setBaseMoveSpeed(self:calcMoveSpeed(lv))
 
     local atk = u:getAttackAbility()
     local a, b = atk:getExAttackSpeed()
-    atk:setExAttackSpeed(a + 0.01, b)
+    atk:setExAttackSpeed(a + self:calcAttackSpeed(lv) - self:calcAttackSpeed(lv - 1), b)
 
     local t, v = atk:getBaseAttack()
-    atk:setBaseAttack(t, v + 7.8)
+    atk:setBaseAttack(t, self:calcAttackValue(lv))
 
     t, v = u:getBaseArmor()
-    u:setBaseArmor(t, v + 1)
+    u:setBaseArmor(t, self:calcArmorValue(lv))
     
-    local lvl = u:getLevel()
-    
-	if lvl == 10 then
-        u:addPassiveAbility(lib.TransitiveAttack)
-    elseif lvl == 11 then
-        u:addPassiveAbility(lib.LightningAttack)
-    elseif lvl == 12 then
-        u:addPassiveAbility(lib.DamageIncreaceAttack)
-    elseif lvl == 13 then
-        u:addPassiveAbility(lib.PressureBombAttack)
-    elseif lvl == 14 then
-        u:addPassiveAbility(lib.Rebirth)
-    elseif lvl == 15 then
-        me:addActiveAbility(lib.ChargeJump)
-    elseif lvl == 16 then
-        u:addPassiveAbility(lib.CriticalAttack)
-    elseif lvl == 17 then
-        me:addPassiveAbility(lib.ThrowHammerAttack)
-    elseif lvl == 18 then
-        me:addPassiveAbility(lib.BerserkerBlood)
-    elseif lvl == 19 then
-        me:addPassiveAbility(lib.CutterAttack)
-    elseif lvl == 20 then
-        me:addActiveAbility(lib.MultiSlash)
+	--[[]]
+	if lv == 10 then
+        u:addPassiveAbility(AL.kTransitiveAttack:getId())
+    elseif lv == 11 then
+        u:addPassiveAbility(AL.kLightningAttack:getId())
+    elseif lv == 12 then
+        u:addPassiveAbility(AL.kDamageIncreaceAttack:getId())
+    elseif lv == 13 then
+        u:addPassiveAbility(AL.kPressureBombAttack:getId())
+    elseif lv == 14 then
+        u:addPassiveAbility(AL.kRebirth:getId())
+    elseif lv == 15 then
+        u:addActiveAbility(AL.kChargeJump:getId())
+    elseif lv == 16 then
+        u:addPassiveAbility(AL.kCriticalAttack:getId())
+    elseif lv == 17 then
+        u:addPassiveAbility(AL.kThrowHammerAttack:getId())
+    elseif lv == 18 then
+        u:addPassiveAbility(AL.kBerserkerBlood:getId())
+    elseif lv == 19 then
+        u:addPassiveAbility(AL.kCutterAttack:getId())
+    elseif lv == 20 then
+        u:addActiveAbility(AL.kMultiSlash:getId())
     end
-
+	--[[]]
     saveUserData()
 end

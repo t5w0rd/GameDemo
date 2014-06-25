@@ -2085,6 +2085,9 @@ luaL_Reg Ability_funcs[] = {
     { "onUnitDamagedDone", Ability_onUnitDamagedDone },
     { "onUnitDamageTargetDone", Ability_onUnitDamageTargetDone },
     { "onUnitProjectileEffect", Ability_onUnitProjectileEffect },
+    { "onUnitProjectileArrive", Ability_onUnitProjectileArrive },
+    { "onUnitAbilityEffect", Ability_onUnitAbilityEffect },
+    { "onUnitCalcDamageTarget", Ability_onUnitCalcDamageTarget },
     { "copy", Ability_copy },
     { "setTriggerFlags", Ability_setTriggerFlags },
     { "getName", Ability_getName },
@@ -2203,7 +2206,17 @@ int Ability_onUnitProjectileEffect(lua_State* L)
     return 0;
 }
 
+int Ability_onUnitProjectileArrive(lua_State* L)
+{
+    return 0;
+}
+
 int Ability_onUnitAbilityEffect(lua_State* L)
+{
+    return 0;
+}
+
+int Ability_onUnitCalcDamageTarget(lua_State* L)
 {
     return 0;
 }

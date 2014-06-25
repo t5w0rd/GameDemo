@@ -16,12 +16,23 @@ public:
     virtual void onUnitAddAbility() override;
     virtual void onUnitDelAbility() override;
 
-    virtual void onUnitChangeHp(float fChanged);
-    virtual void onUnitRevive();
-    virtual void onUnitDying();
+    virtual void onUnitChangeHp(float fChanged) override;
+    virtual void onUnitRevive() override;
+    virtual void onUnitDying() override;
+    virtual void onUnitInterval() override;
+    virtual void onUnitCalcDamageTarget(float fDamage, CUnit* pTarget);
 
 public:
-    ProgressBar* m_pProgressBar;
+    ProgressBar* m_pHpBar;
+    Label* m_pDps;
+
+protected:
+    static const float CONST_INTERVAL;
+    static const float CONST_DPS_INTERVAL;
+    float m_fTotalDamage;
+    float m_fDpsDuration;
+    float m_fDpsUpdate;
+    float m_f0DpsDuration;
 };
 
 #endif	/* __ABILITYFORCC_H__ */

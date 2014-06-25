@@ -1,7 +1,5 @@
 include("Init.lua")
-include("AI.lua")
-include("AI2.lua")
-include("LevelUpdate.lua")
+
 
 
 hero = nil
@@ -16,45 +14,6 @@ learned = 0
 lvl = 1
 
 taid2 = 0
-
-lib = createAbilityLibrary00()
-
-function HeroLevelUpdate:calcExp(lvl)
-    if lvl == 0 then
-        return 0
-    end
-
-    return lvl * lvl * 9 + lvl * 3 + 8;
-end
-
-function onWorldInit()
-    showDebug(false)
-    math.randomseed(os.time())
-
-    me = getControlUnit()
-    --me:setAI(LuaAI:new())
-
-    me:setLevelUpdate(HeroLevelUpdate:new())
-
-    local x, y = me:getPosition()
-    me:setPosition(x + 500, y - 200)
-    me:setExMaxHp(1.0, 0.0)
-    
-    --me:setAlly(2 ^ 3 + 2 ^ 4 + 2 ^ 2)
-    
-    initAbilityForMe()
-    initAbilityForLevelUp()
-    
-    game01()
-    --test()
-    
-    return true
-end
-
-function onWorldTick(dt)
-    game01_tick(dt)
-    --test_tick(dt)
-end
 
 function spawnSoldier(id, force)
     u = createUnit(0xff + id)
@@ -100,14 +59,14 @@ function spawnHero(id)
     end
 
     if atk:getCastRange() > 100 then
-        hero:addActiveAbility(lib.Reflect)
-        hero:addActiveAbility(lib.SpeedUp2)
-        hero:addActiveAbility(lib.KnockBack)
+        --hero:addActiveAbility(AL.kReflect:getId())
+        hero:addActiveAbility(AL.kSpeedUp2:getId())
+        hero:addActiveAbility(AL.kKnockBack:getId())
         hero:setAI(LuaAI:new())
     else
-        hero:addActiveAbility(lib.ThrowHammer)
-        hero:addActiveAbility(lib.ThunderCap)
-        hero:addActiveAbility(lib.SpeedUp)
+        hero:addActiveAbility(AL.kThrowHammer:getId())
+        hero:addActiveAbility(AL.kThunderCap:getId())
+        hero:addActiveAbility(AL.kSpeedUp:getId())
         hero:setAI(LuaAIWarrior:new())
     end
     
@@ -192,20 +151,56 @@ up2:addPoint(100, 500)
 uc = 0
 tower1 = 0
 tower2 = 0
-function game01()
+
+Stage00 = class(Battle)
+function Stage00:onInit()
+
+	initAbilityForLevelUp()
+	
+	me = initForHero()
+	me:setMaxLevel(100)
+	
+
+    
+	
+	
+	--a = me:getActiveAbility("WarCry")
+    --me:delActiveAbility(a)
+
+    --a = me:getActiveAbility("ThunderCap")
+    --me:delActiveAbility(a)
+    
+    --me:addActiveAbility(AL.kMultiSlash:getId())
+    --me:addActiveAbility(AL.kKnockBackEx:getId())
+    --me:addActiveAbility(AL.kThrowHammerEx:getId())
+	--me:addActiveAbility(AL.kBuffMaker:getId())
+	--me:addActiveAbility(AL.kMagicalRain:getId())
+	--me:addActiveAbility(AL.kWarCry:getId())
+    
+    me:addPassiveAbility(AL.kStrikeBack:getId())
+	me:addPassiveAbility(AL.kDeadlyAttack:getId())
+	me:addPassiveAbility(AL.kChangeAttributeAttack:getId())
+	--me:addPassiveAbility(AL.kVampireAttack:getId())
+    --me:addPassiveAbility(AL.kCriticalAttack:getId())
+    --me:addPassiveAbility(AL.kRebirth:getId())
+    --me:addPassiveAbility(AL.kThunderCapAttack:getId())
+    --me:addPassiveAbility(AL.kThrowHammerAttack:getId())
+    --me:addPassiveAbility(AL.kCutterAttack:getId())
+	
+	
     a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.001, 5, 0, -1)
     id = addTemplateAbility(a)
     a = AuraPas:new("HealAura", 1, id, 200, UnitForce.kAlly + UnitForce.kSelf, false)
     taid = addTemplateAbility(a)
     
     u = createUnit(UL.kArcane)
-    u:setMaxHp(u:getMaxHp() * 3)
+    u:setMaxHp(u:getMaxHp() * 5)
     u:setBaseArmor(ArmorValue.kWall, 52)
     u:setForceByIndex(1)
     u:setPosition(100, 500)
     u:addPassiveAbility(taid)
     u:addPassiveAbility(taid2)
-    u:addPassiveAbility(lib.AutoHeal)
+    u:addPassiveAbility(AL.kAutoHeal:getId())
     --u:addPassiveAbility(DamageBackPas:new(1.2, 0))
     a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
@@ -217,13 +212,13 @@ function game01()
     tower1 = u:getId()
 
     u = createUnit(UL.kTesla)
-    u:setMaxHp(u:getMaxHp() * 3)
+    u:setMaxHp(u:getMaxHp() * 5)
     u:setBaseArmor(ArmorValue.kWall, 52)
-    u:setForceByIndex(2)
+    u:setForceByIndex(0)
     u:setPosition(1900, 500)
     u:addPassiveAbility(taid)
     u:addPassiveAbility(taid2)
-    u:addPassiveAbility(lib.AutoHeal)
+    u:addPassiveAbility(AL.kAutoHeal:getId())
     --u:addPassiveAbility(DamageBackPas:new(1.0, 0))
     a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
@@ -236,7 +231,7 @@ function game01()
     
 end
 
-function game01_tick(dt)
+function Stage00:onTick(dt)
     if not getUnit(tower1) then
         endWithVictory(math.random(1, 3))
     end
@@ -266,7 +261,7 @@ function game01_tick(dt)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
                 
-                u = spawnSoldier(4, 2)
+                u = spawnSoldier(4, 0)
                 u:setRewardGold(20)
                 u:setRewardExp(14)
                 u:setMaxHp(200 + lvl * 46)
@@ -278,7 +273,7 @@ function game01_tick(dt)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.3)
                 
-                u = spawnSoldier(23, 2)
+                u = spawnSoldier(23, 0)
                 u:setMaxHp(200 + lvl * 63)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.3)
@@ -288,7 +283,7 @@ function game01_tick(dt)
                 a = u:getAttackAbility()
                 if a:getCastRange() < 150 and math.random(0, 100) < 50 then
                     spawnHero(4)
-                    hero:addActiveAbility(lib.Cutter)
+                    hero:addActiveAbility(AL.kCutter:getId())
                     hero:setBaseMoveSpeed(85)
                     hero = u
                 end
@@ -304,173 +299,7 @@ function game01_tick(dt)
     end
 end
 
-function initAbilityForMe()
-    --a = me:getActiveAbility("WarCry")
-    --me:delActiveAbility(a)
-
-    --a = me:getActiveAbility("ThunderCap")
-    --me:delActiveAbility(a)
-    
-    --me:addActiveAbility(lib.MultiSlash)
-    --me:addActiveAbility(lib.KnockBackEx)
-    me:addActiveAbility(lib.ThrowHammerEx)
-	--me:addActiveAbility(lib.WarCry)
-	me:addActiveAbility(lib.MagicalRain)
-    
-	me:addPassiveAbility(lib.StrikeBack)
-    
-    --me:addPassiveAbility(lib.VampireAttack)
-    --me:addPassiveAbility(lib.CriticalAttack)
-    --me:addPassiveAbility(lib.Rebirth)
-    --me:addPassiveAbility(lib.ThunderCapAttack)
-    --me:addPassiveAbility(lib.ThrowHammerAttack)
-    --me:addPassiveAbility(lib.CutterAttack)
-end
-
-function game02()
-
-    -- create hero3
-    u = createUnit(UL.kBarracks)
-    u:setPosition(700, 500)
-    u:setForceByIndex(3)
-    u:setAlly(2 ^ 3 + 2 ^ 2)
-    u:setHostilityRange(10000)
-    u:setMaxHp(300)
-    u:setBaseArmor(ArmorValue.kHeavy, 3.0)
-    u:setBaseMoveSpeed(80)
-    atk = u:getAttackAbility()
-    atk:setBaseAttack(AttackValue.kPhysical, 15)
-    atk:setBaseAttackInterval(1.5)
-    u:addActiveAbility(lib.ThrowHammer)
-    u:addActiveAbility(lib.ThunderCap)
-    u:addActiveAbility(lib.SpeedUp)
-    u:addPassiveAbility(lib.BerserkerBlood)
-    u:addPassiveAbility(lib.StunAttack)
-    
-    u:setAI(LuaAIWarrior:new())
-    
-    -- create hero4
-    u = createUnit(UL.kArcher)
-    u:setPosition(1300, 500)
-    u:setForceByIndex(4)
-    u:setAlly(2 ^ 4 + 2 ^ 2)
-    u:setHostilityRange(10000)
-    u:setMaxHp(240)
-    u:setBaseArmor(ArmorValue.kHeavy, 2.0)
-    u:setBaseMoveSpeed(85)
-    atk = u:getAttackAbility()
-    atk:setBaseAttack(AttackValue.kPhysical, 18)
-    atk:setBaseAttackInterval(1.2)
-    --u:addActiveAbility(lib.Reflect)
-    u:addActiveAbility(lib.Cutter)
-    u:addActiveAbility(lib.SpeedUp2)
-    u:addActiveAbility(lib.KnockBack)
-    u:addPassiveAbility(lib.VampireAttack)
-    u:addPassiveAbility(lib.ArmorBreakAttack)
-    u:addPassiveAbility(lib.CriticalAttack)
-    
-    u:setAI(LuaAI:new())
-    
-end
-
-function game02_tick(dt)
-end
-
-function fireStraight(x, y, x1, y1, speed)
-    local p = createProjectile(PL.kVoodooProy)
-    p:setPenaltyFlags(Projectile.kOnContact)
-    p:setFireType(Projectile.kFireStraight)
-    p:setMoveSpeed(speed)
-    p:setPosition(x, y)
-    p:setFromToType(Projectile.kPointToPoint)
-    p:setFromPoint(p:getPosition())
-    p:setToPoint(x1, y1)
-    p:setSrcUnit(me:getId())
-    p:setContactLeft(1)
-    local ad = AttackData:new()
-    ad:setAttack(AttackValue.kMagical, 20)
-    p:setAttackData(ad)
-    p:fire()
-    
-end
-
-function game03()
-    a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.001, 5, 0, -1)
-    id = addTemplateAbility(a)
-    a = AuraPas:new("HealAura", 1, id, 200, UnitForce.kAlly + UnitForce.kSelf, false)
-    taid = addTemplateAbility(a)
-    
-    u = createUnit(UL.kArcane)
-    u:setMaxHp(u:getMaxHp() * 10)
-    u:setBaseArmor(ArmorValue.kWall, 52)
-    u:setForceByIndex(3)
-    u:setAlly(2 ^ 3 + 2 ^ 4)
-    u:setPosition(100, 500)
-    atk = u:getAttackAbility()
-    atk:setExAttackValue(2.0, 0.0)
-    u:addPassiveAbility(taid)
-    u:addPassiveAbility(taid2)
-    u:addPassiveAbility(lib.AutoHeal)
-    --u:addPassiveAbility(DamageBackPas:new(1.2, 0))
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
-    id = addTemplateAbility(a)
-    a = TransitiveLinkBuff:new("TransitiveLink", 0.2, 300, 8, 100, UnitForce.kEnemy, PL.kArcaneRay)
-    a:setAppendBuff(id)
-    id = addTemplateAbility(a)
-    a = AttackBuffMakerPas:new("RayLink", 0.20, id, false, 1.0, 0.0, 0)
-    u:addPassiveAbility(a)
-    tower1 = u:getId()
-    
-    -- create hero3
-    u = createUnit(UL.kBarracks)
-    u:setPosition(700, 500)
-    u:setForceByIndex(3)
-    u:setAlly(2 ^ 3 + 2 ^ 4)
-    u:setHostilityRange(10000)
-    u:setMaxHp(300000)
-    u:setBaseArmor(ArmorValue.kHeavy, 3.0)
-    u:setBaseMoveSpeed(80)
-    atk = u:getAttackAbility()
-    atk:setBaseAttack(AttackValue.kPhysical, 295)
-    atk:setBaseAttackInterval(1.5)
-    u:addActiveAbility(lib.ThrowHammer)
-    u:addActiveAbility(lib.ThunderCap)
-    u:addActiveAbility(lib.SpeedUp)
-    u:addPassiveAbility(lib.BerserkerBlood)
-    u:addPassiveAbility(lib.StunAttack)
-    u:addPassiveAbility(lib.Evade)
-    
-    u:setAI(LuaAIWarrior:new())
-    
-    u = createUnit(UL.kArcher)
-    u:setPosition(1300, 500)
-    u:setForceByIndex(4)
-    u:setAlly(2 ^ 4 + 2 ^ 3)
-    u:setHostilityRange(10000)
-    u:setMaxHp(240000)
-    u:setBaseArmor(ArmorValue.kHeavy, 2.0)
-    u:setBaseMoveSpeed(85)
-    atk = u:getAttackAbility()
-    atk:setBaseAttack(AttackValue.kPhysical, 280)
-    atk:setBaseAttackInterval(1.2)
-    --u:addActiveAbility(lib.Reflect)
-    u:addActiveAbility(lib.Cutter)
-    u:addActiveAbility(lib.SpeedUp2)
-    u:addActiveAbility(lib.KnockBack)
-    u:addPassiveAbility(lib.VampireAttack)
-    u:addPassiveAbility(lib.ArmorBreakAttack)
-    
-    me:addPassiveAbility(lib.VampireAttack)
-    me:addPassiveAbility(lib.CriticalAttack)
-    
-    u:setAI(LuaAI:new())
-end
-
-function game03_tick(dt)
-    if not getUnit(tower1) then
-        endWithVictory(math.random(1, 3))
-    end
-end
+Stage00:new():run()
 
 pass = 0
 interval = 0

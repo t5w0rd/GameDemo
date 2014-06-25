@@ -660,9 +660,14 @@ void CWorldForCC::onAddUnit(CUnit* pUnit)
     if (pSprite == nullptr)
     {
         pSprite = pDraw->createSprite();
+        pUnit->addSystemAbility(new CShowStatusPas());
         if (!pUnit->isGhost())
         {
             onAddNormalAttributes(pUnit);
+        }
+        else
+        {
+            onDelNormalAttributes(pUnit);
         }
     }
 
@@ -710,14 +715,16 @@ void CWorldForCC::onDelProjectile(CProjectile* pProjectile)
 
 void CWorldForCC::onAddNormalAttributes(CUnit* pUnit)
 {
-    pUnit->addSystemAbility(new CShowStatusPas());
+    //pUnit->addSystemAbility(new CShowStatusPas());
     pUnit->setAI(CBaseAI::instance());
+    DCAST(pUnit->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow()->setVisible(true);
 }
 
 void CWorldForCC::onDelNormalAttributes(CUnit *pUnit)
 {
-    pUnit->delSystemAbility("ShowStatus");
+    //pUnit->delSystemAbility("ShowStatus");
     pUnit->setAI(nullptr);
+    DCAST(pUnit->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow()->setVisible(false);
 }
 
 void CWorldForCC::setLayer(UnitLayer* pLayer)
