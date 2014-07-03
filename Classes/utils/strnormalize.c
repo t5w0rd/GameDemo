@@ -16634,7 +16634,7 @@ char* gbk_to_utf8(const char* from, char* to)
 				result[i_to ++] = tmp;
 			}
 		}
-		else if (from[i_from] < 0)
+		else if ((unsigned char)from[i_from] > 0x7F)
 			flag = 1;
 		else
 			result[i_to ++] = from[i_from];

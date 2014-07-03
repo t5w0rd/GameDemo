@@ -335,6 +335,8 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_CONTACTED, m_mapContactedUnits, ContactedUnits);
     M_SYNTHESIZE(int, m_iContactLeft, ContactLeft);
     void decContactLeft(int dec = 1);
+
+    M_SYNTHESIZE_BOOL(Redirected);
 };
 
 

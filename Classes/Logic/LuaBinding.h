@@ -118,6 +118,8 @@ int AttackData_getAttackValue(lua_State* L);
 int AttackData_addAttackBuff(lua_State* L);
 
 int Unit_ctor(lua_State* L);
+int Unit_setName(lua_State* L);
+int Unit_getName(lua_State* L);
 int Unit_setMaxHp(lua_State* L);
 int Unit_getMaxHp(lua_State* L);
 int Unit_setExMaxHp(lua_State* L);

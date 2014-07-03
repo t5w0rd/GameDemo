@@ -1094,6 +1094,7 @@ CProjectile::CProjectile()
 , m_eFromToType(kPointToPoint)
 , m_eFireType(kFireFollow)
 , m_iContactLeft(-1)
+, m_bRedirected(false)
 {
     setDbgClassName("CProjectile");
 }
@@ -1472,6 +1473,7 @@ void CProjectile::fire()
 
 void CProjectile::redirect()
 {
+    m_bRedirected = true;
     stopAllActions();
     playFireSound();
     CWorld* w = getWorld();

@@ -446,15 +446,15 @@ public:
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
     
     
-    typedef CMultiRefMap<CActiveAbility*> MAP_ACTIVE_ABILITYS;
-    typedef CMultiRefMap<CPassiveAbility*> MAP_PASSIVE_ABILITYS;
-    typedef CMultiRefMap<CBuffAbility*> MAP_BUFF_ABILITYS;
-    typedef CMultiRefMap<CPassiveAbility*> MAP_SYSTEM_ABILITYS;
+    typedef CMultiRefMap<CActiveAbility*> MAP_ACTIVE_ABILITIES;
+    typedef CMultiRefMap<CPassiveAbility*> MAP_PASSIVE_ABILITIES;
+    typedef CMultiRefMap<CBuffAbility*> MAP_BUFF_ABILITIES;
+    typedef CMultiRefMap<CPassiveAbility*> MAP_SYSTEM_ABILITIES;
     
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ACTIVE_ABILITYS, m_mapActAbilitys, ActiveAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PASSIVE_ABILITYS, m_mapPasAbilitys, PassiveAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_BUFF_ABILITYS, m_mapBuffAbilitys, BuffAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_SYSTEM_ABILITYS, m_mapSysAbilitys, SystemAbilitys);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ACTIVE_ABILITIES, m_mapActAbilities, ActiveAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PASSIVE_ABILITIES, m_mapPasAbilities, PassiveAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_BUFF_ABILITIES, m_mapBuffAbilities, BuffAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_SYSTEM_ABILITIES, m_mapSysAbilities, SystemAbilities);
 
 
     M_SYNTHESIZE(int, m_iAttackAbilityId, AttackAbilityId);
@@ -484,24 +484,24 @@ protected:
     void updateBuffAbilityElapsed(float dt);
     
 public:
-    typedef CMultiRefMap<CAbility*> MAP_TRIGGER_ABILITYS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnAttackTargetTriggerAbilitys, OnAttackTargetTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnAttackedTriggerAbilitys, OnAttackedTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedSurfaceTriggerAbilitys, OnDamagedSurfaceTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedInnerTriggerAbilitys, OnDamagedInnerTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamagedDoneTriggerAbilitys, OnDamagedDoneTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDamageTargetDoneTriggerAbilitys, OnDamageTargetDoneTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnChangeHpTriggerAbilitys, OnChangeHpTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnReviveTriggerAbilitys, OnReviveTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDyingTriggerAbilitys, OnDyingTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnDeadTriggerAbilitys, OnDeadTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnTickTriggerAbilitys, OnTickTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnProjectileEffectTriggerAbilitys, OnProjectileEffectTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnProjectileArriveTriggerAbilitys, OnProjectileArriveTriggerAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapOnCalcDamageTargetTriggerAbilitys, OnCalcDamageTargetTriggerAbilitys);
+    typedef CMultiRefMap<CAbility*> MAP_TRIGGER_ABILITIES;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnAttackTargetTriggerAbilities, OnAttackTargetTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnAttackedTriggerAbilities, OnAttackedTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDamagedSurfaceTriggerAbilities, OnDamagedSurfaceTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDamagedInnerTriggerAbilities, OnDamagedInnerTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDamagedDoneTriggerAbilities, OnDamagedDoneTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDamageTargetDoneTriggerAbilities, OnDamageTargetDoneTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnChangeHpTriggerAbilities, OnChangeHpTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnReviveTriggerAbilities, OnReviveTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDyingTriggerAbilities, OnDyingTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDeadTriggerAbilities, OnDeadTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnTickTriggerAbilities, OnTickTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnProjectileEffectTriggerAbilities, OnProjectileEffectTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnProjectileArriveTriggerAbilities, OnProjectileArriveTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnCalcDamageTargetTriggerAbilities, OnCalcDamageTargetTriggerAbilities);
     
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToAdd, TriggerAbilitysToAdd);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITYS, m_mapTriggerAbilitysToDel, TriggerAbilitysToDel);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapTriggerAbilitiesToAdd, TriggerAbilitiesToAdd);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapTriggerAbilitiesToDel, TriggerAbilitiesToDel);
     
 public:
     // 添加触发器
@@ -512,7 +512,7 @@ public:
     
 protected:
     // 只能在triggerFree的时候调用
-    void updateTriggerAbilitysWhenTriggerFree();
+    void updateTriggerAbilitiesWhenTriggerFree();
     
     // trigger之间是有可能存在嵌套关系的
     // 为了安全增删trigger，需要维护一个引用计数
@@ -669,8 +669,8 @@ public:
     void reviveUnit(int id, float fHp);
     CUnit* getUnitToRevive(int id);
     
-    typedef CMultiRefMap<CAbility*> MAP_ABILITYS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapAbilitysCD, AbilitysCD);
+    typedef CMultiRefMap<CAbility*> MAP_ABILITIES;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITIES, m_mapAbilitiesCD, AbilitiesCD);
     void addAbilityCD(CAbility* pAbility);
     void delAbilityCD(int id);
     bool isAbilityCD(int id) const;
@@ -680,7 +680,7 @@ public:
     virtual void onDelNormalAttributes(CUnit* pUnit);
     
 protected:
-    void cleanAbilitysCD(CUnit* pUnit);
+    void cleanAbilitiesCD(CUnit* pUnit);
     void abilityReady(CAbility* pAbility);
     
 public:

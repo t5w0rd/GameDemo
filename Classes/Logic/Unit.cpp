@@ -782,7 +782,7 @@ void CUnit::copyData(const CUnit* from)
     m_oExMaxHp = from->m_oExMaxHp;
     m_fHp = from->m_fHp;
     //m_pAI
-    M_MAP_FOREACH(from->m_mapActAbilitys)
+    M_MAP_FOREACH(from->m_mapActAbilities)
     {
         CActiveAbility* a = M_MAP_EACH;
         M_MAP_NEXT;
@@ -794,7 +794,7 @@ void CUnit::copyData(const CUnit* from)
         addActiveAbility(DCAST(a->copy(), CActiveAbility*));
     }
 
-    M_MAP_FOREACH(from->m_mapPasAbilitys)
+    M_MAP_FOREACH(from->m_mapPasAbilities)
     {
         CPassiveAbility* a = M_MAP_EACH;
         M_MAP_NEXT;
@@ -1312,7 +1312,7 @@ bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
     M_VEC_FOREACH(pAttack->getAttackBuffs())
     {
         const CAttackBuff* pAb = &M_VEC_EACH;
-        // TODO: copy BUFF from TemplateAbilitys
+        // TODO: copy BUFF from TemplateAbilities
         addBuffAbility(pAb->getTemplateBuff(), pSource->getId(), pAb->getBuffLevel());
         M_MAP_NEXT;
     }
@@ -1374,7 +1374,7 @@ float CUnit::calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValu
 
 void CUnit::addActiveAbility(CActiveAbility* pAbility, bool bNotify)
 {
-    m_mapActAbilitys.addObject(pAbility);
+    m_mapActAbilities.addObject(pAbility);
     pAbility->onAddToUnit(this);  // 消息传递
     addAbilityToTriggers(pAbility);
     
@@ -1395,8 +1395,8 @@ void CUnit::addActiveAbility(int id, int iLevel, bool bNotify)
 
 void CUnit::delActiveAbility(int id, bool bNotify)
 {
-    auto it = m_mapActAbilitys.find(id);
-    if (it == m_mapActAbilitys.end())
+    auto it = m_mapActAbilities.find(id);
+    if (it == m_mapActAbilities.end())
     {
         return;
     }
@@ -1416,18 +1416,18 @@ void CUnit::delActiveAbility(int id, bool bNotify)
     pAbility->onDelFromUnit();
     delAbilityFromTriggers(pAbility);
     
-    m_mapActAbilitys.erase(it);
+    m_mapActAbilities.erase(it);
     pAbility->release();
 }
 
 CActiveAbility* CUnit::getActiveAbility(int id)
 {
-    return id != 0 ? m_mapActAbilitys.getObject(id) : nullptr;
+    return id != 0 ? m_mapActAbilities.getObject(id) : nullptr;
 }
 
 CActiveAbility* CUnit::getActiveAbility(const char* name)
 {
-    M_MAP_FOREACH(m_mapActAbilitys)
+    M_MAP_FOREACH(m_mapActAbilities)
     {
         CActiveAbility* a = M_MAP_EACH;
         if (strcmp(a->getName(), name) == 0)
@@ -1443,7 +1443,7 @@ CActiveAbility* CUnit::getActiveAbility(const char* name)
 
 void CUnit::addPassiveAbility(CPassiveAbility* pAbility, bool bNotify)
 {
-    m_mapPasAbilitys.addObject(pAbility);
+    m_mapPasAbilities.addObject(pAbility);
     pAbility->onAddToUnit(this);  // 消息传递
     addAbilityToTriggers(pAbility);
     
@@ -1464,8 +1464,8 @@ void CUnit::addPassiveAbility(int id, int iLevel, bool bNotify)
 
 void CUnit::delPassiveAbility(int id, bool bNotify)
 {
-    auto it = m_mapPasAbilitys.find(id);
-    if (it == m_mapPasAbilitys.end())
+    auto it = m_mapPasAbilities.find(id);
+    if (it == m_mapPasAbilities.end())
     {
         return;
     }
@@ -1485,20 +1485,20 @@ void CUnit::delPassiveAbility(int id, bool bNotify)
     pAbility->onDelFromUnit();
     delAbilityFromTriggers(pAbility);
     
-    m_mapPasAbilitys.erase(it);
+    m_mapPasAbilities.erase(it);
     pAbility->release();
 }
 
 CPassiveAbility* CUnit::getPassiveAbility(int id)
 {
-    return id != 0 ? m_mapPasAbilitys.getObject(id) : nullptr;
+    return id != 0 ? m_mapPasAbilities.getObject(id) : nullptr;
 }
 
 void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
 {
     if (pAbility->isStackable() == false)
     {
-        M_MAP_FOREACH(m_mapBuffAbilitys)
+        M_MAP_FOREACH(m_mapBuffAbilities)
         {
             CBuffAbility* pBuff = M_MAP_EACH;
             if (strcmp(pBuff->getRootId(), pAbility->getRootId()) == 0)
@@ -1513,11 +1513,11 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
                 delAbilityFromTriggers(pBuff);
                 pBuff->release();
                 
-                m_mapBuffAbilitys.addObject(pAbility);
+                m_mapBuffAbilities.addObject(pAbility);
                 pAbility->onAddToUnit(this);
                 addAbilityToTriggers(pAbility);
                 
-                M_MAP_DEL_CUR_NEXT(m_mapBuffAbilitys);
+                M_MAP_DEL_CUR_NEXT(m_mapBuffAbilities);
                 return;
             }
             else
@@ -1545,7 +1545,7 @@ void CUnit::addBuffAbility(CBuffAbility* pAbility, bool bNotify)
         }
     }
     
-    m_mapBuffAbilitys.addObject(pAbility);
+    m_mapBuffAbilities.addObject(pAbility);
     pAbility->onAddToUnit(this);  // 消息传递
     addAbilityToTriggers(pAbility);
     
@@ -1572,8 +1572,8 @@ void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel, bool bNotify)
 
 void CUnit::delBuffAbility(int id, bool bNotify)
 {
-    auto it = m_mapBuffAbilitys.find(id);
-    if (it == m_mapBuffAbilitys.end())
+    auto it = m_mapBuffAbilities.find(id);
+    if (it == m_mapBuffAbilities.end())
     {
         return;
     }
@@ -1593,18 +1593,18 @@ void CUnit::delBuffAbility(int id, bool bNotify)
     pAbility->onDelFromUnit();
     delAbilityFromTriggers(pAbility);
     
-    m_mapBuffAbilitys.erase(it);
+    m_mapBuffAbilities.erase(it);
     pAbility->release();
 }
 
 CBuffAbility* CUnit::getBuffAbility(int id)
 {
-    return id != 0 ? m_mapBuffAbilitys.getObject(id) : nullptr;
+    return id != 0 ? m_mapBuffAbilities.getObject(id) : nullptr;
 }
 
 CBuffAbility* CUnit::getBuffAbility(const char* name)
 {
-    M_MAP_FOREACH(m_mapBuffAbilitys)
+    M_MAP_FOREACH(m_mapBuffAbilities)
     {
         CBuffAbility* a = M_MAP_EACH;
         if (strcmp(a->getName(), name) == 0)
@@ -1620,14 +1620,14 @@ CBuffAbility* CUnit::getBuffAbility(const char* name)
 
 void CUnit::addSystemAbility(CPassiveAbility* pAbility)
 {
-    m_mapSysAbilitys.addObject(pAbility);
+    m_mapSysAbilities.addObject(pAbility);
     pAbility->onAddToUnit(this);  // 消息传递
     addAbilityToTriggers(pAbility);
 }
 
 void CUnit::delSystemAbility(const char *name)
 {
-    M_MAP_FOREACH(m_mapSysAbilitys)
+    M_MAP_FOREACH(m_mapSysAbilities)
     {
         CPassiveAbility* a = M_MAP_EACH;
         if (strcmp(a->getName(), name) == 0)
@@ -1640,7 +1640,7 @@ void CUnit::delSystemAbility(const char *name)
             a->onDelFromUnit();
             delAbilityFromTriggers(a);
 
-            m_mapSysAbilitys.erase(M_MAP_IT);
+            m_mapSysAbilities.erase(M_MAP_IT);
             a->release();
             return;
         }
@@ -1651,7 +1651,7 @@ void CUnit::delSystemAbility(const char *name)
 
 void CUnit::updateBuffAbilityElapsed(float dt)
 {
-    M_MAP_FOREACH(m_mapBuffAbilitys)
+    M_MAP_FOREACH(m_mapBuffAbilities)
     {
         CBuffAbility* pBuff = M_MAP_EACH;
         pBuff->setElapsed(pBuff->getElapsed() + dt);
@@ -1661,7 +1661,7 @@ void CUnit::updateBuffAbilityElapsed(float dt)
             delAbilityFromTriggers(pBuff);
             pBuff->release();
             
-            M_MAP_DEL_CUR_NEXT(m_mapBuffAbilitys);
+            M_MAP_DEL_CUR_NEXT(m_mapBuffAbilities);
         }
         else
         {
@@ -1681,78 +1681,78 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
     
     if (isTriggerFree() == false)
     {
-        m_mapTriggerAbilitysToAdd.addObject(pAbility);
+        m_mapTriggerAbilitiesToAdd.addObject(pAbility);
         return;
     }
     
     if (dwTriggerFlags & kOnReviveTrigger)
     {
-        m_mapOnReviveTriggerAbilitys.addObject(pAbility);
+        m_mapOnReviveTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnDyingTrigger)
     {
-        m_mapOnDyingTriggerAbilitys.addObject(pAbility);
+        m_mapOnDyingTriggerAbilities.addObject(pAbility);
     }
 
     if (dwTriggerFlags & kOnDeadTrigger)
     {
-        m_mapOnDeadTriggerAbilitys.addObject(pAbility);
+        m_mapOnDeadTriggerAbilities.addObject(pAbility);
     }
 
     if (dwTriggerFlags & kOnChangeHpTrigger)
     {
-        m_mapOnChangeHpTriggerAbilitys.addObject(pAbility);
+        m_mapOnChangeHpTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnTickTrigger)
     {
-        m_mapOnTickTriggerAbilitys.addObject(pAbility);
+        m_mapOnTickTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnAttackTargetTrigger)
     {
-        m_mapOnAttackTargetTriggerAbilitys.addObject(pAbility);
+        m_mapOnAttackTargetTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnAttackedTrigger)
     {
-        m_mapOnAttackedTriggerAbilitys.addObject(pAbility);
+        m_mapOnAttackedTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnDamagedSurfaceTrigger)
     {
-        m_mapOnDamagedSurfaceTriggerAbilitys.addObject(pAbility);
+        m_mapOnDamagedSurfaceTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnDamagedInnerTrigger)
     {
-        m_mapOnDamagedInnerTriggerAbilitys.addObject(pAbility);
+        m_mapOnDamagedInnerTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnDamagedDoneTrigger)
     {
-        m_mapOnDamagedDoneTriggerAbilitys.addObject(pAbility);
+        m_mapOnDamagedDoneTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnDamageTargetDoneTrigger)
     {
-        m_mapOnDamageTargetDoneTriggerAbilitys.addObject(pAbility);
+        m_mapOnDamageTargetDoneTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
-        m_mapOnProjectileEffectTriggerAbilitys.addObject(pAbility);
+        m_mapOnProjectileEffectTriggerAbilities.addObject(pAbility);
     }
 
     if (dwTriggerFlags & kOnProjectileArriveTrigger)
     {
-        m_mapOnProjectileArriveTriggerAbilitys.addObject(pAbility);
+        m_mapOnProjectileArriveTriggerAbilities.addObject(pAbility);
     }
 
     if (dwTriggerFlags & kOnCalcDamageTargetTrigger)
     {
-        m_mapOnCalcDamageTargetTriggerAbilitys.addObject(pAbility);
+        m_mapOnCalcDamageTargetTriggerAbilities.addObject(pAbility);
     }
 }
 
@@ -1767,7 +1767,7 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     
     if (isTriggerFree() == false)
     {
-        m_mapTriggerAbilitysToDel.addObject(pAbility);
+        m_mapTriggerAbilitiesToDel.addObject(pAbility);
         return;
     }
     
@@ -1775,95 +1775,95 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
     
     if (dwTriggerFlags & kOnReviveTrigger)
     {
-        m_mapOnReviveTriggerAbilitys.delObject(id);
+        m_mapOnReviveTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnDyingTrigger)
     {
-        m_mapOnDyingTriggerAbilitys.delObject(id);
+        m_mapOnDyingTriggerAbilities.delObject(id);
     }
 
     if (dwTriggerFlags & kOnDeadTrigger)
     {
-        m_mapOnDeadTriggerAbilitys.delObject(id);
+        m_mapOnDeadTriggerAbilities.delObject(id);
     }
 
     if (dwTriggerFlags & kOnChangeHpTrigger)
     {
-        m_mapOnChangeHpTriggerAbilitys.delObject(id);
+        m_mapOnChangeHpTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnTickTrigger)
     {
-        m_mapOnTickTriggerAbilitys.delObject(id);
+        m_mapOnTickTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnAttackTargetTrigger)
     {
-        m_mapOnAttackTargetTriggerAbilitys.delObject(id);
+        m_mapOnAttackTargetTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnAttackedTrigger)
     {
-        m_mapOnAttackedTriggerAbilitys.delObject(id);
+        m_mapOnAttackedTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnDamagedSurfaceTrigger)
     {
-        m_mapOnDamagedSurfaceTriggerAbilitys.delObject(id);
+        m_mapOnDamagedSurfaceTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnDamagedInnerTrigger)
     {
-        m_mapOnDamagedInnerTriggerAbilitys.delObject(id);
+        m_mapOnDamagedInnerTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnDamagedDoneTrigger)
     {
-        m_mapOnDamagedDoneTriggerAbilitys.delObject(id);
+        m_mapOnDamagedDoneTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnDamageTargetDoneTrigger)
     {
-        m_mapOnDamageTargetDoneTriggerAbilitys.delObject(id);
+        m_mapOnDamageTargetDoneTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnProjectileEffectTrigger)
     {
-        m_mapOnProjectileEffectTriggerAbilitys.delObject(id);
+        m_mapOnProjectileEffectTriggerAbilities.delObject(id);
     }
 
     if (dwTriggerFlags & kOnProjectileArriveTrigger)
     {
-        m_mapOnProjectileArriveTriggerAbilitys.delObject(id);
+        m_mapOnProjectileArriveTriggerAbilities.delObject(id);
     }
 
     if (dwTriggerFlags & kOnCalcDamageTargetTrigger)
     {
-        m_mapOnCalcDamageTargetTriggerAbilitys.delObject(id);
+        m_mapOnCalcDamageTargetTriggerAbilities.delObject(id);
     }
 }
 
-void CUnit::updateTriggerAbilitysWhenTriggerFree()
+void CUnit::updateTriggerAbilitiesWhenTriggerFree()
 {
     assert(isTriggerFree());
     
-    M_MAP_FOREACH(m_mapTriggerAbilitysToAdd)
+    M_MAP_FOREACH(m_mapTriggerAbilitiesToAdd)
     {
         CAbility* pAbility = M_MAP_EACH;
         addAbilityToTriggers(pAbility);
         M_MAP_NEXT;
     }
     
-    M_MAP_FOREACH(m_mapTriggerAbilitysToDel)
+    M_MAP_FOREACH(m_mapTriggerAbilitiesToDel)
     {
         CAbility* pAbility = M_MAP_EACH;
         delAbilityFromTriggers(pAbility);
         M_MAP_NEXT;
     }
     
-    m_mapTriggerAbilitysToAdd.delAllObjects();
-    m_mapTriggerAbilitysToDel.delAllObjects();
+    m_mapTriggerAbilitiesToAdd.delAllObjects();
+    m_mapTriggerAbilitiesToDel.delAllObjects();
 }
 
 void CUnit::beginTrigger()
@@ -1877,7 +1877,7 @@ void CUnit::endTrigger()
     --m_iTriggerRefCount;
     if (m_iTriggerRefCount == 0)
     {
-        updateTriggerAbilitysWhenTriggerFree();
+        updateTriggerAbilitiesWhenTriggerFree();
     }
 }
 
@@ -1889,7 +1889,7 @@ bool CUnit::isTriggerFree() const
 void CUnit::triggerOnRevive()
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnReviveTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnReviveTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitRevive();
@@ -1901,7 +1901,7 @@ void CUnit::triggerOnRevive()
 void CUnit::triggerOnDying()
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDyingTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnDyingTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitDying();
@@ -1913,7 +1913,7 @@ void CUnit::triggerOnDying()
 void CUnit::triggerOnDead()
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDeadTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnDeadTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitDead();
@@ -1925,7 +1925,7 @@ void CUnit::triggerOnDead()
 void CUnit::triggerOnChangeHp(float fChanged)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnChangeHpTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnChangeHpTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitChangeHp(fChanged);
@@ -1937,7 +1937,7 @@ void CUnit::triggerOnChangeHp(float fChanged)
 void CUnit::triggerOnTick(float dt)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnTickTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnTickTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitTick(dt);
@@ -1967,7 +1967,7 @@ void CUnit::triggerOnTick(float dt)
 void CUnit::triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnAttackTargetTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnAttackTargetTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitAttackTarget(pAttack, pTarget);
@@ -1980,7 +1980,7 @@ bool CUnit::triggerOnAttacked(CAttackData* pAttack, CUnit* pSource)
 {
     beginTrigger();
     bool res = true;
-    M_MAP_FOREACH(m_mapOnAttackedTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnAttackedTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         if (pAbility->onUnitAttacked(pAttack, pSource) == false)
@@ -1997,7 +1997,7 @@ bool CUnit::triggerOnAttacked(CAttackData* pAttack, CUnit* pSource)
 void CUnit::triggerOnDamagedSurface(CAttackData* pAttack, CUnit* pSource)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDamagedSurfaceTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnDamagedSurfaceTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitDamaged(pAttack, pSource);
@@ -2009,7 +2009,7 @@ void CUnit::triggerOnDamagedSurface(CAttackData* pAttack, CUnit* pSource)
 void CUnit::triggerOnDamagedInner(CAttackData* pAttack, CUnit* pSource)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDamagedInnerTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnDamagedInnerTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitDamaged(pAttack, pSource);
@@ -2021,7 +2021,7 @@ void CUnit::triggerOnDamagedInner(CAttackData* pAttack, CUnit* pSource)
 void CUnit::triggerOnDamagedDone(float fDamage, CUnit* pSource)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDamagedDoneTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnDamagedDoneTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitDamagedDone(fDamage, pSource);
@@ -2033,7 +2033,7 @@ void CUnit::triggerOnDamagedDone(float fDamage, CUnit* pSource)
 void CUnit::triggerOnDamageTargetDone(float fDamage, CUnit* pTarget)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnDamageTargetDoneTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnDamageTargetDoneTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitDamageTargetDone(fDamage, pTarget);
@@ -2045,7 +2045,7 @@ void CUnit::triggerOnDamageTargetDone(float fDamage, CUnit* pTarget)
 void CUnit::triggerOnProjectileEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnProjectileEffectTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnProjectileEffectTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitProjectileEffect(pProjectile, pTarget);
@@ -2058,7 +2058,7 @@ bool CUnit::triggerOnProjectileArrive(CProjectile* pProjectile)
 {
     beginTrigger();
     bool res = true;
-    M_MAP_FOREACH(m_mapOnProjectileArriveTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnProjectileArriveTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         if (pAbility->onUnitProjectileArrive(pProjectile) == false)
@@ -2075,7 +2075,7 @@ bool CUnit::triggerOnProjectileArrive(CProjectile* pProjectile)
 void CUnit::triggerOnCalcDamageTarget(float fDamage, CUnit* pTarget)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnCalcDamageTargetTriggerAbilitys)
+    M_MAP_FOREACH(m_mapOnCalcDamageTargetTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->onUnitCalcDamageTarget(fDamage, pTarget);
@@ -2175,7 +2175,7 @@ bool CUnit::addItem(CItem* pItem)
         // 直接使用
         assert(pItem->getItemType() == CItem::kConsumable);
         pItem->onAddToNewSlot(this);
-        assert(!pItem->getActiveAbilitys().empty());
+        assert(!pItem->getActiveAbilities().empty());
         
         pItem->use();
         pItem->onDelFromSlot();
@@ -2423,7 +2423,7 @@ void CWorld::delUnit(int id, bool bRevivable /*= false*/)
         {
             pUnit->setEventAdapter(nullptr);
         }
-        cleanAbilitysCD(pUnit);
+        cleanAbilitiesCD(pUnit);
     }
 
     pUnit->release();
@@ -2466,29 +2466,29 @@ void CWorld::addAbilityCD(CAbility* pAbility)
     {
         return;
     }
-    m_mapAbilitysCD.addObject(pAbility);
+    m_mapAbilitiesCD.addObject(pAbility);
     LOG("%s的%s技能开始冷却(%.1fs)", pAbility->getOwner()->getName(), pAbility->getName(), pAbility->getRealCoolDown());
 }
 
 void CWorld::delAbilityCD(int id)
 {
-    m_mapAbilitysCD.delObject(id);
+    m_mapAbilitiesCD.delObject(id);
 }
 
 bool CWorld::isAbilityCD(int id) const
 {
-    return m_mapAbilitysCD.find(id) != m_mapAbilitysCD.end();
+    return m_mapAbilitiesCD.find(id) != m_mapAbilitiesCD.end();
 }
 
 CAbility* CWorld::getAbilityCD(int id) const
 {
-    return m_mapAbilitysCD.getObject(id);
+    return m_mapAbilitiesCD.getObject(id);
 }
 
 void CWorld::updateAbilityCD(int id)
 {
-    auto it = m_mapAbilitysCD.find(id);
-    if (it == m_mapAbilitysCD.end())
+    auto it = m_mapAbilitiesCD.find(id);
+    if (it == m_mapAbilitiesCD.end())
     {
         return;
     }
@@ -2499,7 +2499,7 @@ void CWorld::updateAbilityCD(int id)
         return;
     }
     
-    m_mapAbilitysCD.erase(it);
+    m_mapAbilitiesCD.erase(it);
     abilityReady(pAbility);
     pAbility->release();
 }
@@ -2512,34 +2512,34 @@ void CWorld::onDelNormalAttributes(CUnit* pUnit)
 {
 }
 
-void CWorld::cleanAbilitysCD(CUnit* pUnit)
+void CWorld::cleanAbilitiesCD(CUnit* pUnit)
 {
-    M_MAP_FOREACH(pUnit->getActiveAbilitys())
+    M_MAP_FOREACH(pUnit->getActiveAbilities())
     {
         CActiveAbility* pAbility = M_MAP_EACH;
         if (pAbility->isCoolingDown())
         {
-            m_mapAbilitysCD.delObject(pAbility->getId());
+            m_mapAbilitiesCD.delObject(pAbility->getId());
         }
         M_MAP_NEXT;
     }
     
-    M_MAP_FOREACH(pUnit->getPassiveAbilitys())
+    M_MAP_FOREACH(pUnit->getPassiveAbilities())
     {
         CPassiveAbility* pAbility = M_MAP_EACH;
         if (pAbility->isCoolingDown())
         {
-            m_mapAbilitysCD.delObject(pAbility->getId());
+            m_mapAbilitiesCD.delObject(pAbility->getId());
         }
         M_MAP_NEXT;
     }
     
-    M_MAP_FOREACH(pUnit->getBuffAbilitys())
+    M_MAP_FOREACH(pUnit->getBuffAbilities())
     {
         CBuffAbility* pAbility = M_MAP_EACH;
         if (pAbility->isCoolingDown())
         {
-            m_mapAbilitysCD.delObject(pAbility->getId());
+            m_mapAbilitiesCD.delObject(pAbility->getId());
         }
         M_MAP_NEXT;
     }
@@ -2566,7 +2566,7 @@ void CWorld::step(float dt)
     }
 
     // 单位死亡后技能CD独立计算，所以放在此处独立计算，不整合到单位onTick中
-    M_MAP_FOREACH(m_mapAbilitysCD)
+    M_MAP_FOREACH(m_mapAbilitiesCD)
     {
         CAbility* pAbility = M_MAP_EACH;
         pAbility->setCoolingDownElapsed(pAbility->getCoolingDownElapsed() + dt);
@@ -2576,7 +2576,7 @@ void CWorld::step(float dt)
             abilityReady(pAbility);
             pAbility->release();
             
-            M_MAP_DEL_CUR_NEXT(m_mapAbilitysCD);
+            M_MAP_DEL_CUR_NEXT(m_mapAbilitiesCD);
         }
         else
         {

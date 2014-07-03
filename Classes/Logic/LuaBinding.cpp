@@ -530,6 +530,8 @@ int AttackData_addAttackBuff(lua_State* L)
 
 luaL_Reg Unit_funcs[] = {
     { "ctor", Unit_ctor },
+    { "setName", Unit_setName },
+    { "getName", Unit_getName },
     { "setMaxHp", Unit_setMaxHp },
     { "getMaxHp", Unit_getMaxHp },
     { "setExMaxHp", Unit_setExMaxHp },
@@ -637,6 +639,25 @@ int Unit_ctor(lua_State* L)
     //w->addUnit(u);
 
     return 0;
+}
+
+int Unit_setName(lua_State* L)
+{
+    auto nm = lua_tostring(L, 2);
+
+    CUnit* u = luaL_tounitptr(L);
+    u->setName(nm);
+
+    return 0;
+}
+
+int Unit_getName(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_pushstring(L, u->getName());
+
+    return 1;
 }
 
 int Unit_setMaxHp(lua_State* L)
@@ -881,7 +902,7 @@ int Unit_getBuffStackSize(lua_State* L)
     const char* root = lua_tostring(L, 2);
 
     int count = 0;
-    CUnit::MAP_BUFF_ABILITYS& mapBuffs = u->getBuffAbilitys();
+    CUnit::MAP_BUFF_ABILITIES& mapBuffs = u->getBuffAbilities();
     M_MAP_FOREACH(mapBuffs)
     {
         CBuffAbility* buff = M_MAP_EACH;

@@ -2037,17 +2037,19 @@ void CChangeHpBuff::onUnitDelAbility()
 void CChangeHpBuff::onUnitInterval()
 {
     CUnit* o = getOwner();
-    float fNewHp = o->getHp();
+    float fOrgHp = o->getHp();
     float fChangeHp = getChangeHp().getValue(o->getRealMaxHp());
-    fNewHp += fChangeHp;
 
-    float fMinHp = getMinHp().getValue(o->getRealMaxHp());
-    if (fNewHp < fMinHp)
+    if (fChangeHp < 0.0f)
     {
-        fNewHp = fMinHp;
+        float fNewHp = max(getMinHp().getValue(o->getRealMaxHp()), fOrgHp + fChangeHp);
+        CUnit* s = o->getUnit(getSrcUnit());
+        o->damagedLow(fOrgHp - fNewHp, s, CUnit::kMaskActiveTrigger);
     }
-
-    o->setHp(fNewHp);
+    else
+    {
+        o->setHp(fOrgHp + fChangeHp);
+    }
 }
 
 // CRebirthPas
@@ -2164,7 +2166,7 @@ bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             sp->setOpacity(160);
             ccd->getSprite()->getShadow()->addChild(sp);
             sp->setPosition(ccd->getSprite()->getShadow()->getAnchorPointInPoints() + Point(-10.0f, 0.0f));
-            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 2), RemoveSelf::create(), nullptr));
+            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 1), RemoveSelf::create(), nullptr));
         }
 #endif
         return false;
@@ -2213,7 +2215,7 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             sp->setOpacity(160);
             ccd->getSprite()->getShadow()->addChild(sp);
             sp->setPosition(ccd->getSprite()->getShadow()->getAnchorPointInPoints() + Point(-10.0f, 0.0f));
-            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 2), RemoveSelf::create(), nullptr));
+            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 1), RemoveSelf::create(), nullptr));
         }
         return false;
 #endif
@@ -2632,7 +2634,7 @@ void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 }
 
 // CKnockBackBuff
-const int CKnockBackBuff::CONST_ACT_TAG = CKeyGen::nextKey();
+const int CKnockBackBuff::CONST_ACT_TAG = CIdGen::nextId();
 
 CKnockBackBuff::CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance)
 : CStunBuff(pRootId, pName, fDuration, false)
@@ -2692,7 +2694,7 @@ void CKnockBackBuff::knockBack()
 }
 
 // CAttractBuff
-const int CAttractBuff::CONST_ACT_TAG = CKeyGen::nextKey();
+const int CAttractBuff::CONST_ACT_TAG = CIdGen::nextId();
 
 CAttractBuff::CAttractBuff(const char* pRootId, const char* pName, float fDuration, float fDistance)
 : CStunBuff(pRootId, pName, fDuration, false)
@@ -2772,6 +2774,11 @@ CReflectBuff* CReflectBuff::copy()
 
 bool CReflectBuff::onUnitProjectileArrive(CProjectile* pProjectile)
 {
+    if (pProjectile == nullptr || pProjectile->isRedirected())
+    {
+        return true;
+    }
+
     CUnit* o = getOwner();
     //pProjectile->setSrcUnit(o->getId());
     //pProjectile->setSrcAbility(this);

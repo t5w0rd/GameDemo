@@ -183,7 +183,7 @@ public:
     
 };
 
-/////////////////////// ActiveAbilitys ///////////////////////
+/////////////////////// ActiveAbilities ///////////////////////
 
 // 攻击，默认以单位作为目标
 class CAttackAct : public CActiveAbility
@@ -256,7 +256,7 @@ protected:
     CUnit* m_pTarget;
 };
 
-/////////////////////// PassiveAbilitys & BuffAbilitys ///////////////////////
+/////////////////////// PassiveAbilities & BuffAbilities ///////////////////////
 // 光环，范围型BUFF附加器
 class CAuraPas : public CPassiveAbility
 {

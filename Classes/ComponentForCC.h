@@ -491,16 +491,17 @@ CC_CONSTRUCTOR_ACCESS:
     virtual ~AbilityItem();
 
 public:
-    bool initWithAbility(CAbility* ability);
-    M_CREATE_INITWITH_FUNC_PARAM(Ability, AbilityItem, (CAbility* ability), ability);
+    bool initWithAbility(CAbility* ability, int id);
+    M_CREATE_INITWITH_FUNC_PARAM(Ability, AbilityItem, (CAbility* ability, int id), ability, id);
 
     static Color3B abilityGradeColor3B(CAbility::GRADE grade);
 
+    M_SYNTHESIZE(int, m_abilityId, AbilityId);
     M_SYNTHESIZE_READONLY(CAbility*, m_ability, Ability);
-    void setAbility(CAbility* ability);
+    void setAbility(CAbility* ability, int id);
 
     Sprite* starByIndex(int index, bool on);
-    void updateContent(CAbility* ability);
+    void updateContent(CAbility* ability, int id);
 
     void setEquipped(bool equipped);
     bool isEquipped() const;

@@ -20,6 +20,20 @@ function BetrayBuff:onUnitDelAbility()
     o:setForceByIndex(2)
 end
 
+CurseUpdate = class(LevelUpdate)
+function CurseUpdate:onChangeLevel(a, change)
+    cast(a, ActiveAbility)
+    local lvl = a:getLevel()
+    if lvl == 1 then
+        a:setCost(5)
+    elseif lvl == 2 then
+        a:setCost(7)
+    elseif lvl == 3 then
+        a:setCost(9)
+    end
+end
+CurseUpdate = CurseUpdate:new()
+
 CurseBuff = class(BuffAbility)
 function CurseBuff:ctor(duration, stackable, damage, interval, multiply)
     self:sctor("CurseBuff", "Curse", duration, stackable)
@@ -29,6 +43,10 @@ function CurseBuff:ctor(duration, stackable, damage, interval, multiply)
     self.multiply = multiply
     self.hp = 0
     self:setInterval(0.5)
+end
+
+function CurseBuff:onChangeLevel(changed)
+	--logf("CurseBuff Level Changed: Lv%d", self:getLevel())
 end
 
 function CurseBuff:onUnitAddAbility()
@@ -43,13 +61,13 @@ function CurseBuff:onUnitInterval()
     self.pass = self.pass + 0.5
     if self.pass >= self.interval then
         self.pass = self.pass - self.interval
-        damage = (self.hp - o:getHp()) * self.multiply
+        damage = (self.hp - o:getHp()) * self.multiply * (self:getLevel() * 0.5 + 1.0)
     end
 
     if damage < 0 then
         damage = 0
     end
-    damage = damage + self.damage
+    damage = damage + self.damage * (self:getLevel() + 1)
     --o:addBattleTip(string.format("-%d", damage), "fonts/Comic Book.fnt", 18, 255, 0, 0)
     local ad = AttackData:new()
     ad:setAttack(AttackValue.kMagical, damage)

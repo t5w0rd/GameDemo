@@ -15,13 +15,13 @@ int CAbilityLibrary::addTemplateAbility(CAbility* pAbility)
 
 int CAbilityLibrary::addTemplateAbility(int id, CAbility* pAbility)
 {
-    m_mapTemplateAbilitys.addObject(id, pAbility);
+    m_mapTemplateAbilities.addObject(id, pAbility);
     return id;
 }
 
 CAbility* CAbilityLibrary::copyAbility(int id) const
 {
-    CAbility* pAbility = m_mapTemplateAbilitys.getObject(id);
+    CAbility* pAbility = m_mapTemplateAbilities.getObject(id);
     if (pAbility == nullptr)
     {
         return nullptr;

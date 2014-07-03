@@ -10,11 +10,11 @@ public:
     CAbilityLibrary();
     M_SINGLETON(CAbilityLibrary);
 
-    typedef CMultiRefMap<CAbility*> MAP_ABILITYS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITYS, m_mapTemplateAbilitys, TemplateAbilitys);
+    typedef CMultiRefMap<CAbility*> MAP_ABILITIES;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_ABILITIES, m_mapTemplateAbilities, TemplateAbilities);
     int addTemplateAbility(CAbility* pAbility);
     int addTemplateAbility(int id, CAbility* pAbility);
-    void loadTemplateAbilitys();
+    void loadTemplateAbilities();
     virtual CAbility* copyAbility(int id) const;
 };
 

@@ -5,7 +5,7 @@
 
 
 // ProgressBar
-const float ProgressBar::CONST_MAX_PROCESS_BAR_PERCENT = 99.99999f;
+const float ProgressBar::CONST_MAX_PROCESS_BAR_PERCENT = 0.9999999f;
 
 ProgressBar::ProgressBar()
 {
@@ -28,7 +28,7 @@ bool ProgressBar::init(const Size& roSize, Sprite* pFill, Sprite* pBorder, float
         m_pPt->removeFromParentAndCleanup(true);
     }
 
-    addChild(m_pPt, bFillOnTop);
+    addChild(m_pPt, bFillOnTop ? 10 : 0);
     Size oSz = m_pPt->getContentSize();
     m_pPt->setPosition(getAnchorPointInPoints());
     m_pPt->setScaleX(oFillSz.width / oSz.width);
@@ -54,35 +54,37 @@ bool ProgressBar::init(const Size& roSize, Sprite* pFill, Sprite* pBorder, float
 
 void ProgressBar::setPercentage(float fPercent)
 {
+    assert(fPercent < 2);
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
     {
         fPercent = CONST_MAX_PROCESS_BAR_PERCENT;
     }
     //m_oHd.setPosition()
-    m_pPt->setPercentage(fPercent);
+    m_pPt->setPercentage(fPercent * 100);
 }
 
 void ProgressBar::setPercentage(float fPercent, float fDuration, FiniteTimeAction* pEndAction /*= nullptr*/)
 {
+    assert(fPercent < 2);
     m_pPt->stopAllActions();
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
     {
         fPercent = CONST_MAX_PROCESS_BAR_PERCENT;
     }
-    float fWidth = m_pPt->getScaleX() * m_pPt->getContentSize().width;
+    //float fWidth = m_pPt->getScaleX() * m_pPt->getContentSize().width;
     if (pEndAction)
     {
-        m_pPt->runAction(Sequence::create(ProgressTo::create(fDuration, fPercent), pEndAction, nullptr));
+        m_pPt->runAction(Sequence::create(ProgressTo::create(fDuration, fPercent * 100), pEndAction, nullptr));
     }
     else
     {
-        m_pPt->runAction(Sequence::create(ProgressTo::create(fDuration, fPercent), nullptr));
+        m_pPt->runAction(Sequence::create(ProgressTo::create(fDuration, fPercent * 100), nullptr));
     }
-
 }
 
 ActionInterval* ProgressBar::setPercentageAction(float fPercent, float fDuration, FiniteTimeAction* pEndAction /*= nullptr*/)
 {
+    assert(fPercent < 2);
     m_pPt->stopAllActions();
     if (fPercent > CONST_MAX_PROCESS_BAR_PERCENT)
     {
@@ -92,9 +94,9 @@ ActionInterval* ProgressBar::setPercentageAction(float fPercent, float fDuration
 
     if (pEndAction)
     {
-        return Sequence::create(ProgressTo::create(fDuration, fPercent), pEndAction, nullptr);
+        return Sequence::create(ProgressTo::create(fDuration, fPercent * 100), pEndAction, nullptr);
     }
-    return Sequence::create(ProgressTo::create(fDuration, fPercent), nullptr);
+    return Sequence::create(ProgressTo::create(fDuration, fPercent * 100), nullptr);
 }
 
 void ProgressBar::setFillColor(const Color3B& roColor)
@@ -626,7 +628,7 @@ void TouchMaskLayer::setMaskEnabled(bool enabled)
 
 // Effect
 Effect::Effect()
-: CONST_ACT_TAG(CKeyGen::nextKey())
+: CONST_ACT_TAG(CIdGen::nextId())
 , m_bLogicPositionMode(false)
 , m_fLogicHeight(0.0f)
 {
@@ -1882,7 +1884,8 @@ void Utils::tranFillAlpha(Color4B* c, GLushort x, GLushort y, GLushort w, GLusho
 
 // AbilityItem
 AbilityItem::AbilityItem()
-: m_ability(nullptr)
+: m_abilityId(0)
+, m_ability(nullptr)
 , m_aicost2(nullptr)
 , m_equipped(nullptr)
 {
@@ -1894,9 +1897,9 @@ AbilityItem::~AbilityItem()
     M_SAFE_RELEASE(m_ability);
 }
 
-bool AbilityItem::initWithAbility(CAbility* ability)
+bool AbilityItem::initWithAbility(CAbility* ability, int id)
 {
-    setAbility(ability);
+    setAbility(ability, id);
 
     auto aibg = Sprite::create("UI/Ability/AbilityItemBackground.png");
     setContentSize(aibg->getContentSize());
@@ -1972,7 +1975,7 @@ Color3B AbilityItem::abilityGradeColor3B(CAbility::GRADE grade)
     return Color3B::WHITE;
 }
 
-void AbilityItem::setAbility(CAbility* ability)
+void AbilityItem::setAbility(CAbility* ability, int id)
 {
     if (ability == m_ability)
     {
@@ -1982,6 +1985,7 @@ void AbilityItem::setAbility(CAbility* ability)
     M_SAFE_RELEASE(m_ability);
     M_SAFE_RETAIN(ability);
     m_ability = ability;
+    m_abilityId = id;
 }
 
 Sprite* AbilityItem::starByIndex(int index, bool on)
@@ -2005,9 +2009,9 @@ Sprite* AbilityItem::starByIndex(int index, bool on)
     return m_aistars[index];
 }
 
-void AbilityItem::updateContent(CAbility* ability)
+void AbilityItem::updateContent(CAbility* ability, int id)
 {
-    setAbility(ability);
+    setAbility(ability, id);
 
     char sz[1024];
     

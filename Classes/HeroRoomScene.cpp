@@ -165,7 +165,7 @@ bool HeroRoomSceneLayer::init()
     m_hpBar = ProgressBar::create(Size(300, sp->getContentSize().height * 0.7), sp2, Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_hpBar);
     m_hpBar->setPosition(sp->getPosition() + Point(m_hpBar->getContentSize().width * 0.5 + 50, -7));
-    m_hpBar->runActionForTimer(EaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroInfos[0].hp * 100 / m_maxVal.hp, 0.2f)));
+    m_hpBar->runActionForTimer(EaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroInfos[0].hp / m_maxVal.hp, 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroInfos[0].hp));
     m_hpLbl = Label::createWithTTF(szVal, FONT_COMIC_BOOK, 30);
@@ -186,7 +186,7 @@ bool HeroRoomSceneLayer::init()
     m_attackBar = ProgressBar::create(Size(300, sp->getContentSize().height * 0.7), sp2, Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_attackBar);
     m_attackBar->setPosition(sp->getPosition() + Point(m_attackBar->getContentSize().width * 0.5 + 50, -7));
-    m_attackBar->runActionForTimer(EaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroInfos[0].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.2f)));
+    m_attackBar->runActionForTimer(EaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroInfos[0].atkVal.getValue() / m_maxVal.atkVal.getValue(), 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroInfos[0].atkVal.getValue()));
     m_attackLbl = Label::createWithTTF(szVal, FONT_COMIC_BOOK, 30);
@@ -207,7 +207,7 @@ bool HeroRoomSceneLayer::init()
     m_armorBar = ProgressBar::create(Size(300, sp->getContentSize().height * 0.7), sp2, Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_armorBar);
     m_armorBar->setPosition(sp->getPosition() + Point(m_armorBar->getContentSize().width * 0.5 + 50, -7));
-    m_armorBar->runActionForTimer(EaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroInfos[0].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.2f)));
+    m_armorBar->runActionForTimer(EaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroInfos[0].armVal.getValue() / m_maxVal.armVal.getValue(), 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroInfos[0].armVal.getValue()));
     m_armorLbl = Label::createWithTTF(szVal, FONT_COMIC_BOOK, 30);
@@ -227,7 +227,7 @@ bool HeroRoomSceneLayer::init()
     m_attackSpeedBar = ProgressBar::create(Size(300, sp->getContentSize().height * 0.7), sp2, Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_attackSpeedBar);
     m_attackSpeedBar->setPosition(sp->getPosition() + Point(m_attackSpeedBar->getContentSize().width * 0.5 + 50, -7));
-    m_attackSpeedBar->runActionForTimer(EaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroInfos[0].attackSpeed * 100 / m_maxVal.attackSpeed, 0.2f)));
+    m_attackSpeedBar->runActionForTimer(EaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroInfos[0].attackSpeed / m_maxVal.attackSpeed, 0.2f)));
 
     sprintf(szVal, "%.2f", m_heroInfos[0].attackSpeed);
     m_attackSpeedLbl = Label::createWithTTF(szVal, FONT_COMIC_BOOK, 30);
@@ -247,7 +247,7 @@ bool HeroRoomSceneLayer::init()
     m_moveSpeedBar = ProgressBar::create(Size(300, sp->getContentSize().height * 0.7), sp2, Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
     info->addChild(m_moveSpeedBar);
     m_moveSpeedBar->setPosition(sp->getPosition() + Point(m_moveSpeedBar->getContentSize().width * 0.5 + 50, -7));
-    m_moveSpeedBar->runActionForTimer(EaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroInfos[0].moveSpeed * 100 / m_maxVal.moveSpeed, 0.2f)));
+    m_moveSpeedBar->runActionForTimer(EaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroInfos[0].moveSpeed / m_maxVal.moveSpeed, 0.2f)));
 
     sprintf(szVal, "%d", toInt(m_heroInfos[0].moveSpeed));
     m_moveSpeedLbl = Label::createWithTTF(szVal, FONT_COMIC_BOOK, 30);
@@ -333,11 +333,11 @@ void HeroRoomSceneLayer::onClickHeroPortrait(Ref* pNode)
 
     m_attackIcon->setSpriteFrame(gc->getfc()->getSpriteFrameByName(attackIcon[m_heroInfos[index].atkVal.getType()]));
     m_armorIcon->setSpriteFrame(gc->getfc()->getSpriteFrameByName(armorIcon[m_heroInfos[index].armVal.getType()]));
-    m_hpBar->runActionForTimer(EaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroInfos[index].hp * 100 / m_maxVal.hp, 0.3f)));
-    m_attackBar->runActionForTimer(EaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroInfos[index].atkVal.getValue() * 100 / m_maxVal.atkVal.getValue(), 0.3f)));
-    m_armorBar->runActionForTimer(EaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroInfos[index].armVal.getValue() * 100 / m_maxVal.armVal.getValue(), 0.3f)));
-    m_attackSpeedBar->runActionForTimer(EaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroInfos[index].attackSpeed * 100 / m_maxVal.attackSpeed, 0.3f)));
-    m_moveSpeedBar->runActionForTimer(EaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroInfos[index].moveSpeed * 100 / m_maxVal.moveSpeed, 0.3f)));
+    m_hpBar->runActionForTimer(EaseExponentialOut::create(m_hpBar->setPercentageAction(m_heroInfos[index].hp / m_maxVal.hp, 0.3f)));
+    m_attackBar->runActionForTimer(EaseExponentialOut::create(m_attackBar->setPercentageAction(m_heroInfos[index].atkVal.getValue() / m_maxVal.atkVal.getValue(), 0.3f)));
+    m_armorBar->runActionForTimer(EaseExponentialOut::create(m_armorBar->setPercentageAction(m_heroInfos[index].armVal.getValue() / m_maxVal.armVal.getValue(), 0.3f)));
+    m_attackSpeedBar->runActionForTimer(EaseExponentialOut::create(m_attackSpeedBar->setPercentageAction(m_heroInfos[index].attackSpeed / m_maxVal.attackSpeed, 0.3f)));
+    m_moveSpeedBar->runActionForTimer(EaseExponentialOut::create(m_moveSpeedBar->setPercentageAction(m_heroInfos[index].moveSpeed / m_maxVal.moveSpeed, 0.3f)));
 
     char szVal[64];
     sprintf(szVal, "%d", toInt(m_heroInfos[index].hp));

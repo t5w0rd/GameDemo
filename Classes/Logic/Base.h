@@ -47,10 +47,10 @@ public:
 };
 
 
-class CKeyGen
+class CIdGen
 {
 public:
-    static int nextKey();
+    static int nextId();
 };
 
 

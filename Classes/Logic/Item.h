@@ -57,10 +57,10 @@ protected:
     VEC_ABILITYIDS m_vecPasAbilityIds;
     
 public:
-    typedef CMultiRefVec<CActiveAbility*> VEC_ACT_ABILITYS;
-    typedef CMultiRefVec<CPassiveAbility*> VEC_PAS_ABILITYS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ACT_ABILITYS, m_vecActAbilitys, ActiveAbilitys);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_PAS_ABILITYS, m_vecPasAbilitys, PassiveAbilitys);
+    typedef CMultiRefVec<CActiveAbility*> VEC_ACT_ABILITIES;
+    typedef CMultiRefVec<CPassiveAbility*> VEC_PAS_ABILITIES;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ACT_ABILITIES, m_vecActAbilities, ActiveAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_PAS_ABILITIES, m_vecPasAbilities, PassiveAbilities);
     void addActiveAbility(int id);
     void addPassiveAbility(int id);
     M_SYNTHESIZE(CUnit*, m_pOwner, Owner);

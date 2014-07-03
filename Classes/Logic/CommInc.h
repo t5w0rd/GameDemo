@@ -32,9 +32,9 @@ extern "C"
 #include "lua/lua.h"
 #include "lua/lualib.h"
 #include "lua/lauxlib.h"
+#include "utils/strnormalize.h"
 }
 
-#include "utils/strnormalize.h"
 
 #include "CommDef.h"
 

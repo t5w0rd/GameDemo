@@ -15,7 +15,9 @@ public:
     void load(const char* name);
     void save(const char* name);
 
-    M_SINGLETON(CUserData)
+    M_SINGLETON(CUserData);
+    
+    
 
     struct HERO_INFO
     {
@@ -30,6 +32,8 @@ public:
         float moveSpeed;
         int exp;
         int energy;
+
+        map<int, int> m_mapAbilitiesEquipped;
     };
 
     typedef vector<HERO_INFO> VEC_HEROES;
@@ -51,7 +55,7 @@ public:
         int level;
     };
     typedef vector<ABILITY_INFO> VEC_ABILITY_INFOS;
-    VEC_ABILITY_INFOS m_vecAbilitys;
+    VEC_ABILITY_INFOS m_vecAbilities;
 };
 
 #endif

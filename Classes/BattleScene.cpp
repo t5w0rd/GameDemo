@@ -16,6 +16,7 @@
 #include "UserData.h"
 #include "LuaScriptEngine.h"
 #include "UnitLibraryForCC.h"
+#include "AbilityLibrary.h"
 
 
 // CBattleWorld
@@ -63,7 +64,31 @@ bool CBattleWorld::onInit()
     CForceResource* fr = new CForceResource(this, (FUNC_CALLFUNC_N)(&CBattleWorld::onChangeGold)); // 势力资源
     u->setResource(fr);
 
-    // add abilities
+    // add abilities from SAL(lua)
+    auto& mapAbilities = udt->getHeroSelected()->m_mapAbilitiesEquipped;
+    M_MAP_FOREACH(mapAbilities)
+    {
+        auto id = M_MAP_IT->first;
+        auto lv = M_MAP_EACH;
+        M_MAP_NEXT;
+
+        auto a = CAbilityLibrary::instance()->copyAbility(id);
+        assert(a != nullptr);  // Ability id == item.id was not found
+        a->setLevel(lv);
+
+        auto act = DCAST(a, CActiveAbility*);
+        if (act != nullptr)
+        {
+            u->addActiveAbility(act);
+        }
+        else
+        {
+            auto pas = DCAST(a, CPassiveAbility*);
+            assert(pas != nullptr);
+            u->addPassiveAbility(pas);
+        }
+    }
+
     m_pDragonStrikeBuff = new CStunBuff("DragonStrikeBuff", "DragonStrikeBuff", 5.0f, false);
     addTemplateAbility(m_pDragonStrikeBuff);
 
@@ -404,7 +429,7 @@ BattleSceneLayer::BattleSceneLayer()
 : m_ctrlLayer(nullptr)
 , m_ctrlLayer2(nullptr)
 , m_iMaxLogs(0)
-, m_iBaseLogId(CKeyGen::nextKey())
+, m_iBaseLogId(CIdGen::nextId())
 , m_iCurLogId(m_iBaseLogId)
 , m_pTargetAtk(nullptr)
 , m_pTargetDef(nullptr)
@@ -526,7 +551,7 @@ void BattleSceneLayer::onLoadingProgress()
         return;
     }
 
-    float per = gc->getLoaded() * 100 / gc->getLoadCount();
+    float per = gc->getLoaded() * 1.0f / gc->getLoadCount();
     auto pb = DCAST(getChildByTag(100)->getChildByTag(101), ProgressBar*);
     if (pb == nullptr)
     {
@@ -537,7 +562,7 @@ void BattleSceneLayer::onLoadingProgress()
     //pb->stopAllActions();
     //pb->runActionForTimer(EaseExponentialOut::create(pb->setPercentageAction(per, 0.1f, per < 100 ? nullptr : CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onLoadingDone, this)))));
     pb->setPercentage(per);
-    if (per >= 100)
+    if (per >= 1.0f)
     {
         pb->runAction(Sequence::createWithTwoActions(DelayTime::create(1.0f), CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onLoadingDone, this))));
     }
@@ -1086,14 +1111,14 @@ void BattleSceneLayer::updateHeroPortrait()
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* hero = w->getHero();
 
-    float fHpPer = hero->getHp() * 100 / hero->getRealMaxHp();
+    float fHpPer = hero->getHp() / hero->getRealMaxHp();
     if (fHpPer != m_stHeroInfo.fHpPer)
     {
         m_stHeroInfo.fHpPer = fHpPer;
         m_pHeroHpBar->setPercentage(fHpPer);
     }
 
-    float fExpPer = (hero->getExp() - hero->getBaseExp()) * 100 / (hero->getMaxExp() - hero->getBaseExp());
+    float fExpPer = (hero->getExp() - hero->getBaseExp()) * 1.0 / (hero->getMaxExp() - hero->getBaseExp());
     if (fExpPer != m_stHeroInfo.fExpPer)
     {
         m_stHeroInfo.fExpPer = fExpPer;
@@ -1160,7 +1185,7 @@ void BattleSceneLayer::updateHeroAbilityPanel()
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* hero = w->getHero();
 
-    CUnit::MAP_ACTIVE_ABILITYS& as = hero->getActiveAbilitys();
+    CUnit::MAP_ACTIVE_ABILITIES& as = hero->getActiveAbilities();
     M_MAP_FOREACH(as)
     {
         auto id = M_MAP_IT->first;

@@ -7,6 +7,7 @@
 #include "UserData.h"
 #include "GameData.h"
 #include "BattleScene.h"
+#include "AbilityScene.h"
 
 
 // StageSceneLayer
@@ -65,6 +66,14 @@ bool StageSceneLayer::init()
     vector<string> ts;
     ts.push_back("Global0");
     ts.push_back("Global1");
+    ts.push_back("Heroes0");
+    ts.push_back("Heroes1");
+    ts.push_back("Heroes2");
+    ts.push_back("Heroes3");
+    ts.push_back("Heroes4");
+    ts.push_back("Heroes5");
+    ts.push_back("Projectiles0");
+    ts.push_back("Battle0");
 
     vector<string> ot;
     ot.push_back("UI/Stage/MapBackground.png");
@@ -258,7 +267,8 @@ void StageSceneLayer::onClickPanelBattle(Ref* pObj)
     CUserData::instance()->m_stageSel = m_selIndex;
     
     //gc->replaceSceneWithLoading(&BattleSceneLayer::scene);
-    Director::getInstance()->replaceScene(BattleSceneLayer::scene());
+    //Director::getInstance()->replaceScene(BattleSceneLayer::scene());
+    Director::getInstance()->replaceScene(AbilitySceneLayer::scene());
     //Director::getInstance()->replaceScene(HeroRoomSceneLayer::scene());
 }
 

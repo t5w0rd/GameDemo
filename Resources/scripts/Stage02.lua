@@ -104,7 +104,7 @@ function initAbilityForLevelUp()
     c = c + 1
     aaa[c] = addTemplateAbility(a)
     
-    a = StunBuff:new("Stun", "Stun", 1, false)
+    a = StunBuff:new("Stun", "Stun", 0.2, false)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("StunAttack", 0.15, id, false, 1.0, 50.0, 0)
     c = c + 1

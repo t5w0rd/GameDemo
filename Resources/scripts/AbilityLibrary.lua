@@ -6,7 +6,7 @@ include("Ability.lua")
 function loadAbilityLibrary()
     local a, id
     
-    -- ActiveAbilitys
+    -- ActiveAbilities
     --  ThrowHammer
     a = StunBuff:new("Stun", "Stun", 2.0, false)
     id = addTemplateAbility(a)
@@ -236,7 +236,7 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
     AL.kBuffMaker = a
     
-    -- PassiveAbilitys
+    -- PassiveAbilities
     
     -- Rebirth
     a = RebirthPas:new("Rebirth", 120.0, 0.4, 0.0)
@@ -406,7 +406,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
     id = addTemplateAbility(a)
 	
-	a = StrikeBackPas:new("StrikeBack", 100, 0.2, id)
+	a = StrikeBackPas:new("StrikeBack", 100, 0.1, id)
 	addTemplateAbility(a)
 	AL.kStrikeBack = a
 	
@@ -414,7 +414,7 @@ function loadAbilityLibrary()
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 1.00, 0.0, Ability.kOnAttackTargetTrigger, true)
     id = addTemplateAbility(a)
 	
-	a = TransitiveLinkBuff:new("TransitiveAttack", 0.0, 200.0, 9, 1, UnitForce.kEnemy, PL.kArcherArrow)
+	a = TransitiveLinkBuff:new("TransitiveAttack", 0.2, 200.0, 9, 1, UnitForce.kEnemy, PL.kLightning)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
 	
@@ -430,7 +430,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
     id = addTemplateAbility(a)
 	
-	a = AttackBuffMakerPas:new("ChangeAttributeAttack", 0.20, id, true, 1.0, 0.0, 0)
+	a = AttackBuffMakerPas:new("ChangeAttributeAttack", 0.02, id, true, 1.0, 0.0, 0)
 	addTemplateAbility(a)
 	AL.kChangeAttributeAttack = a
 
@@ -441,6 +441,19 @@ function createAbilityLibrary01()
     local a, id
     
     return lib
+end
+
+SAL = {}
+SAL.STEP = 100
+SAL.id = SAL.STEP
+function SAL.add(ability)
+	local res = addTemplateAbility(SAL.id, ability)
+	SAL.id = SAL.id + SAL.STEP
+	return res
+end
+
+function SAL.addi(ability, index)
+	return addTemplateAbility(SAL.id + index, ability)
 end
 
 -- Curse
@@ -459,7 +472,8 @@ end
 CurseUpdate = CurseUpdate:new()
 
 a = CurseBuff:new(13, false, 20, 4, 40 / 100)
-id = addTemplateAbility(a)
+a:setMaxLevel(3)
+id = SAL.addi(a, 1)
 
 a = BuffMakerAct:new("群体诅咒", 5.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
 a:setCastRange(200.0)
@@ -470,12 +484,16 @@ a:addEffectSound("sounds/Effects/KRF_sfx_vodoo_kamikazelanza.mp3")
 a:setMaxLevel(3)
 a:setLevel(0)
 a:setDescribe("诅咒一片区域，受诅咒的英雄受到20点/秒的伤害，持续13秒，每隔4秒每损失100点的生命值就会受到40点的额外伤害")
+--a:setDescribe("Curses a region cursed hero 20 points of damage per second, 13 seconds every 4 seconds per 100 hit points of damage are 40 extra damage")
 a:setLevelInfo(1, 0, "每损失100的生命时所受到的伤害提高40点")
+--a:setLevelInfo(1, 0, "Injuries received when the loss of 100 lives per 40 points")
 a:setLevelInfo(2, 1, "同时降低单位15%的移动速度")
+--a:setLevelInfo(2, 1, "While reducing speed by 15%")
 a:setLevelInfo(3, 2, "诅咒效果持续17秒")
+--a:setLevelInfo(3, 2, "Curse lasts 17 seconds")
 a:setGrade(Ability.kEpic)
 a:setCost(3)
 a:setLevelUpdate(CurseUpdate)
---addTemplateAbility(AL.kCurse, a)
+id = SAL.add(a)
 
---addAbilityToUserData(AL.kCurse, 1)
+addAbilityToUserData(100, 1)

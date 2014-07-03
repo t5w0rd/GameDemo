@@ -8,6 +8,9 @@
 #include "GameData.h"
 #include "AbilityLibrary.h"
 #include "ActionForCC.h"
+#include "LuaBindingForCC.h"
+#include "LuaScriptEngine.h"
+#include "BattleScene.h"
 
 
 // AbilitySceneLayer
@@ -218,23 +221,28 @@ void AbilityDetails::updateContent(CAbility* ability)
     if (DCAST(ability, CActiveAbility*) != nullptr)
     {
         type = "主动";
+        //type = "Active";
     }
     else if (DCAST(ability, CPassiveAbility*) != nullptr)
     {
         type = "被动";
+        //type = "Passive";
     }
     else
     {
         type = "未知";
+        //type = "Unknown";
     }
 
     if (ability->getCoolDown() > 0.0f)
     {
         sprintf(str, "%s(%d秒)\n所需精力: %d", type, toInt(ability->getCoolDown()), ability->getCost());
+        //sprintf(str, "%s(%d sec)\nEnergy: %d", type, toInt(ability->getCoolDown()), ability->getCost());
     }
     else
     {
         sprintf(str, "%s\n所需精力: %d", type, ability->getCost());
+        //sprintf(str, "%s\nEnergy: %d", type, ability->getCost());
     }
     
     gbk_to_utf8(str, sz);
@@ -465,7 +473,7 @@ void AbilityDetails::onClickUpgrade(Ref* ref)
     m_ability->setLevel(m_ability->getLevel() + 1);
     updateContent(m_ability);
     
-    ai->updateContent(m_ability);
+    ai->updateContent(m_ability, ai->getAbilityId());
 }
 
 // on "init" you need to initialize your instance
@@ -478,16 +486,11 @@ bool AbilitySceneLayer::init()
         return false;
     }
 
-    // test data
-    CUserData::ABILITY_INFO info;
-    //info.id = 0;
-    //info.level = 1;
-    //CUserData::instance()->m_vecAbilitys.push_back(info);
-    info.id = 1;
-    info.level = 0;
-    CUserData::instance()->m_vecAbilitys.push_back(info);
+    auto L = CLuaScriptEngine::instance()->getLuaHandle();
+    luaL_includefilelog(L, "Init.lua");
 
-    CUserData::instance()->getHeroSelected()->energy = 12;
+    // test data
+    CUserData::instance()->getHeroSelected()->energy = 120;
 
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
@@ -522,12 +525,7 @@ bool AbilitySceneLayer::init()
     m_abilityItemsPanel->setOffsetPosition(Point(0, -9999));
 
     // Clipping Node
-    auto sn = LayerColor::create(Color4B(0, 0, 0, 255), sp->getContentSize().width, sp->getContentSize().height);
-    sn->ignoreAnchorPointForPosition(false);
-    sn->setContentSize(sp->getContentSize() - Size(10, 10));
-    sn->setPosition(sp->getPosition());
-
-    auto cn = ClippingNode::create(sn);
+    auto cn = ClippingNode::create();
     cn->setContentSize(getContentSize());
     cn->setInverted(true);
 
@@ -535,16 +533,23 @@ bool AbilitySceneLayer::init()
     cn->addChild(bg, 10);
     bg->setPosition(getAnchorPointInPoints());
 
+    auto sn = LayerColor::create(Color4B(0, 0, 0, 255), sp->getContentSize().width, sp->getContentSize().height);
+    sn->ignoreAnchorPointForPosition(false);
+    sn->setContentSize(sp->getContentSize() - Size(10, 10));
+    sn->setPosition(sp->getPosition());
+
+    cn->setStencil(sn);
+
     addChild(cn);
 
     // add ability items
-    CUserData::VEC_ABILITY_INFOS& vec = CUserData::instance()->m_vecAbilitys;
-    for (auto i = 0; i < (int)vec.size(); ++i)
+    CUserData::VEC_ABILITY_INFOS& vec = CUserData::instance()->m_vecAbilities;
+    for (auto& item : vec)
     {
-        auto& item = vec[i];
         auto a = CAbilityLibrary::instance()->copyAbility(item.id);
+        assert(a != nullptr);  // Ability id == item.id was not found
         a->setLevel(item.level);
-        auto ai = AbilityItem::create(a);
+        auto ai = AbilityItem::create(a, item.id);
         ai->setOnChangeEquippedCallback(CC_CALLBACK_2(AbilitySceneLayer::onChangeAbilityItemEquipped, this));
         m_abilityItemsPanel->addNodeEx(ai, WinFormPanel::kTopToBottom);
     }
@@ -583,7 +588,16 @@ bool AbilitySceneLayer::init()
     m_energy->setDimensions(m_energy->getContentSize().width * 1.5, m_energy->getContentSize().height);
     m_energy->setPosition(Point(m_energy->getContentSize().width * 0.5 + wsz.width * 0.5 - m_abilityEquippedPanel->getContentSize().width * 0.5 + 0, m_energy->getContentSize().height * 0.5 + m_abilityEquippedPanel->getPosition().y + m_abilityEquippedPanel->getContentSize().height * 0.5 + 40));
     
-    runAction(Shake::create(1.0f, 10, 20));
+    auto mn = Menu::create();
+    addChild(mn, 10);
+    mn->setPosition(Point::ZERO);
+    
+    auto mi = MenuItemFont::create("CONFIRM", [](Ref*){
+        Director::getInstance()->replaceScene(BattleSceneLayer::scene());
+    });
+
+    mn->addChild(mi);
+    mi->setPosition(Point(wsz.width - mi->getContentSize().width * 0.5 - 20, wsz.height - mi->getContentSize().height * 0.5 - 20));
 
     return true;
 }
@@ -652,6 +666,7 @@ void AbilitySceneLayer::onClickAbilityItemsEquipped(Ref* ref)
 
 void AbilitySceneLayer::onChangeAbilityItemEquipped(AbilityItem* ai, bool equipped)
 {
+    auto hero = CUserData::instance()->getHeroSelected();
     if (equipped == true)
     {
         auto btn = ButtonNormal::create(Sprite::create(ai->getAbility()->getImageName()), nullptr, nullptr, nullptr, nullptr, 0.0f, CC_CALLBACK_1(AbilitySceneLayer::onClickAbilityItemsEquipped, this), nullptr);
@@ -659,6 +674,7 @@ void AbilitySceneLayer::onChangeAbilityItemEquipped(AbilityItem* ai, bool equipp
         ai->setUserData(btn);
         btn->setUserData(ai);
         m_energyCost += ai->getAbility()->getCost();
+        hero->m_mapAbilitiesEquipped.insert(make_pair(ai->getAbilityId(), ai->getAbility()->getLevel()));
     }
     else
     {
@@ -667,11 +683,12 @@ void AbilitySceneLayer::onChangeAbilityItemEquipped(AbilityItem* ai, bool equipp
         m_abilityEquippedPanel->clearUpSlot(ButtonPanel::kTopToBottom);
         ai->setUserData(nullptr); 
         m_energyCost -= ai->getAbility()->getCost();
+        hero->m_mapAbilitiesEquipped.erase(ai->getAbilityId());
     }
 
     char str[1024];
     char sz[1024];
-    sprintf(str, "精力: %d/%d", CUserData::instance()->getHeroSelected()->energy - m_energyCost, CUserData::instance()->getHeroSelected()->energy);
+    sprintf(str, "确定: %d/%d", hero->energy - m_energyCost, hero->energy);
     gbk_to_utf8(str, sz);
     m_energy->setString(sz);
 

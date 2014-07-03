@@ -176,7 +176,7 @@ int g_addAbilityToUserData(lua_State* L)
     CUserData::ABILITY_INFO info;
     info.id = id;
     info.level = lvl;
-    CUserData::instance()->m_vecAbilitys.push_back(info);
+    CUserData::instance()->m_vecAbilities.push_back(info);
 
     return 0;
 }

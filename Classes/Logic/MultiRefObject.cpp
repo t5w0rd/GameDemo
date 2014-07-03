@@ -13,7 +13,7 @@
 // CMultiRefObject
 CMultiRefObject::CMultiRefObject()
 : m_iRefCount(0)
-, CONST_ID(CKeyGen::nextKey())
+, CONST_ID(CIdGen::nextId())
 {
     setDbgClassName("CMutiRefObject");
     CDbgMultiRefObjectManager::instance()->addObject(this);

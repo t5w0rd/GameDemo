@@ -22,15 +22,15 @@ void CDebugLog::Log(const char* pFormat, ...)
     fprintf(stdout, "\n");
 }
 
-// CKeyGen 
-int CKeyGen::nextKey()
+// CIdGen 
+int CIdGen::nextId()
 {
-    static int iKey = 0;
-    if (!iKey)
+    static int id = 0;
+    if (!id)
     {
         srand(time(nullptr));
-        iKey = 1000 + rand() % 9000;
+        id = 1000000 + rand() % 9000;
     }
     
-    return ++iKey;
+    return ++id;
 }

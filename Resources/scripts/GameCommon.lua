@@ -212,7 +212,7 @@ end
 function UnitCreator:createUnit()
 	local u = createUnit(self.id)
 	
-	--u:setName(self.nm)
+	u:setName(self.nm)
 	
 	u:setMaxLevel(self.l)
 	u:setLevel(self.l)

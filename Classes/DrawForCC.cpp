@@ -193,7 +193,7 @@ CUnitDrawForCC::CUnitDrawForCC(CSpriteInfo* si)
 , m_pSprite(nullptr)
 , m_oAnchorPoint(0.5f, 0.5f)
 , m_iMaxTips(6)
-, m_iBaseTipId(CKeyGen::nextKey() * m_iMaxTips)
+, m_iBaseTipId(CIdGen::nextId() * m_iMaxTips)
 , m_iCurTipId(m_iBaseTipId)
 , m_lastCtrlSoundPlayedId(-1)
 , m_lastCtrlSoundPlayedIndex(-1)
@@ -233,7 +233,7 @@ int CUnitDrawForCC::doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOI
         CallFuncN::create(CC_CALLBACK_1(UnitSprite::onMoveToDone, getSprite(), onMoveToDone)));
 
     Speed* spd = Speed::create(act, fSpeed);
-    int tag = CKeyGen::nextKey();
+    int tag = CIdGen::nextId();
     spd->setTag(tag);
 
     getSprite()->runAction(spd);
@@ -274,7 +274,7 @@ int CUnitDrawForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRep
     }
 
     Speed* spd = Speed::create(act, fSpeed);
-    int tag = CKeyGen::nextKey();
+    int tag = CIdGen::nextId();
     spd->setTag(tag);
 
     getSprite()->runAction(spd);
@@ -916,7 +916,7 @@ int CProjectileForCC::doLinkUnitToUnit(CUnit* pFromUnit, CUnit* pToUnit, ANI_ID 
             CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onAnimationDone, getSprite(), onAnimationDone)));
     }
 
-    int tag = CKeyGen::nextKey();
+    int tag = CIdGen::nextId();
     act->setTag(tag);
 
     getSprite()->runAction(act);
@@ -934,7 +934,7 @@ int CProjectileForCC::doMoveToUnit(CUnit* pToUnit, bool bFixRotation, float fMax
         act,
         CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onMoveToDone, getSprite(), onMoveToDone)));
 
-    int tag = CKeyGen::nextKey();
+    int tag = CIdGen::nextId();
     act->setTag(tag);
 
     getSprite()->runAction(act);
@@ -951,7 +951,7 @@ int CProjectileForCC::doMoveTo(const CPoint& rPos, float fDuration, const FUNC_V
         act,
         CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onMoveToDone, getSprite(), onMoveToDone)));
 
-    int tag = CKeyGen::nextKey();
+    int tag = CIdGen::nextId();
     act->setTag(tag);
 
     getSprite()->setRotation(-CC_RADIANS_TO_DEGREES((rPos - getPosition()).getAngle()));
@@ -983,7 +983,7 @@ int CProjectileForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iR
             CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onAnimationDone, getSprite(), onAnimationDone)));
     }
 
-    int tag = CKeyGen::nextKey();
+    int tag = CIdGen::nextId();
     act->setTag(tag);
 
     getSprite()->runAction(act);

@@ -203,7 +203,7 @@ void CStageMap::setStageStatus(int iIndex, CStage::STAGE_STATUS eStatus)
             setStageStatus(it->iIndex, CStage::kUnlocked);
             //DCAST(it->pPath, Sprite*)->setColor(Color3B(248, 168, 1));
             ProgressBar* pth2 = DCAST(it->pPath->getChildByTag(2), ProgressBar*);
-            pth2->runActionForTimer(EaseExponentialOut::create(pth2->setPercentageAction(100.0f, 0.3f)));
+            pth2->runActionForTimer(EaseExponentialOut::create(pth2->setPercentageAction(1.00f, 0.3f)));
         }
         break;
     }

@@ -5,7 +5,6 @@
 #include "ComponentForCC.h"
 #include "ActionForCC.h"
 #include "Ability.h"
-#include "utils/strnormalize.h"
 
 
 // EmptySceneLayer
@@ -138,23 +137,24 @@ bool EmptySceneLayer::init()
         return false;
     }
 
-    auto mn = MenuEx::create();
-    addChild(mn);
-    mn->setPosition(Point::ZERO);
+    static Size wsz = Director::getInstance()->getVisibleSize();
+    M_DEF_GC(gc);
 
-    auto eff = Effect::create("UI/Ability/ThunderCap.png");
-    addChild(eff);
+    gc->loadFrames("Global0");
+    gc->loadFrames("Global1");
 
-    eff->setPosition(getAnchorPointInPoints());
+    auto tx = Director::getInstance()->getTextureCache()->addImage("UI/Ability/AbilityItemBackground.png");
+    Size aiSz = tx->getContentSize();
 
-    auto mi = MenuItemFont::create("Restart", [this, eff](Ref* ref)
-    {
-        eff->setPosition(getAnchorPointInPoints());
-        eff->runAction(EaseInOut::create(LogicJumpTo::create(0.5f, getAnchorPointInPoints() + Point(500, 0), 400), 0.4f));
-    });
+    // ¹ö¶¯²ã
+    auto p = "ÖÐÎÄ²âÊÔ";
+    char sz[64] = {};
+    gbk_to_utf8(p, sz);
+    auto l = Label::createWithTTF(sz, "fonts/DFYuanW7-GB2312.ttf", 32);
 
-    mn->addChild(mi);
-    mi->setPosition(Point(wsz().width - mi->getContentSize().width * 0.5 - 20, wsz().height - mi->getContentSize().height * 0.5 - 20));
+    addChild(l);
+    l->setAnchorPoint(Point::ZERO);
+    l->setPosition(Point(300, 300));
 
     return true;
 }

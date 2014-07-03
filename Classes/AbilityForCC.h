@@ -24,15 +24,20 @@ public:
 
 public:
     ProgressBar* m_pHpBar;
+    ProgressBar* m_pHpDecBar;
     Label* m_pDps;
 
 protected:
     static const float CONST_INTERVAL;
     static const float CONST_DPS_INTERVAL;
+    static const float CONST_DPS_WINDOW;
     float m_fTotalDamage;
     float m_fDpsDuration;
     float m_fDpsUpdate;
     float m_f0DpsDuration;
+    float m_fFrontTotalDamage;
+    float m_fFrontDpsDuration;
+
 };
 
 #endif	/* __ABILITYFORCC_H__ */

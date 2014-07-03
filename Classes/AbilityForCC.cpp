@@ -10,15 +10,19 @@
 // CStatusShowPas
 const float CShowStatusPas::CONST_INTERVAL = 0.2f;
 const float CShowStatusPas::CONST_DPS_INTERVAL = 2.0f;
+const float CShowStatusPas::CONST_DPS_WINDOW = 10.0f;
 
 CShowStatusPas::CShowStatusPas()
 : CPassiveAbility("ShowStatusPas", "ShowStatus")
 , m_pHpBar(nullptr)
+, m_pHpDecBar(nullptr)
 , m_pDps(nullptr)
 , m_fTotalDamage(0.0f)
 , m_fDpsDuration(0.0f)
 , m_fDpsUpdate(0.0f)
 , m_f0DpsDuration(0.0f)
+, m_fFrontTotalDamage(0.0f)
+, m_fFrontDpsDuration(0.0f)
 {
     setDbgClassName("CStatusShowPas");
     setTriggerFlags(CUnit::kOnChangeHpTrigger | CUnit::kOnReviveTrigger | CUnit::kOnDyingTrigger | CUnit::kOnCalcDamageTargetTrigger);
@@ -44,19 +48,26 @@ void CShowStatusPas::onUnitAddAbility()
     m_pHpBar = ProgressBar::create(Size(fBarWidth * sp->getScale(), 10.0f), Sprite::createWithSpriteFrameName("UI/healthbar/healthbar_fill.png"), Sprite::createWithSpriteFrameName("UI/healthbar/healthbar_border.png"), 1.0f, 1.0f, true);
     sd->addChild(m_pHpBar);
     m_pHpBar->setPosition(sd->getAnchorPointInPoints() + Point(0.0f, fBarPosHeight * sp->getScale()));
+    
+    assert(m_pHpDecBar == nullptr);
+    m_pHpDecBar = ProgressBar::create(m_pHpBar->getContentSize(), Sprite::createWithSpriteFrameName("UI/healthbar/healthbar_fill_white.png"), nullptr, 1.0f, 1.0f, true);
+    m_pHpBar->addChild(m_pHpDecBar, m_pHpBar->m_pPt->getLocalZOrder() - 1);
+    m_pHpDecBar->setPosition(m_pHpBar->getAnchorPointInPoints());
+    
     onUnitChangeHp(0.0f);
 
     m_fTotalDamage = 0.0f;
     m_fDpsDuration = 0.0f;
     m_fDpsUpdate = 0.0f;
     m_f0DpsDuration = 0.0f;
+    m_fFrontTotalDamage = 0.0f;
+    m_fFrontDpsDuration = 0.0f;
     m_pDps = Label::createWithBMFont("fonts/SohoGothicProMedium.fnt", "DPS: 0");
     sd->addChild(m_pDps);
     m_pDps->setPosition(m_pHpBar->getPosition() + Point(0.0f, m_pHpBar->getContentSize().height * 0.5 + m_pDps->getContentSize().height * 0.5));
     m_pDps->setVisible(false);
     m_pDps->setScale(0.8f);
     m_pDps->setColor(Color3B(255, 100, 100));
-
 }
 
 void CShowStatusPas::onUnitDelAbility()
@@ -73,9 +84,22 @@ void CShowStatusPas::onUnitDelAbility()
 void CShowStatusPas::onUnitChangeHp(float fChanged)
 {
     CUnit* o = getOwner();
-    float fPer = o->getHp() * 100 / max(FLT_EPSILON, o->getRealMaxHp());
+    float fPer = o->getHp() / max(FLT_EPSILON, o->getRealMaxHp());
     m_pHpBar->setPercentage(fPer);
-    m_pHpBar->setFillColor(Color3B(min(255, (int)((100.0 - fPer) * 2.56 / 0.5)), min(255, (int)(2.56 / 0.5  * fPer)), 0));
+    m_pHpBar->setFillColor(Color3B(min(255, (int)((1.00f - fPer) * 256 / 0.5)), min(255, (int)(256 / 0.5 * fPer)), 0));
+
+    if (fPer < m_pHpDecBar->m_pPt->getPercentage() * 0.01f)
+    {
+        if (fChanged < 0.0f)
+        {
+            m_pHpDecBar->m_pPt->stopAllActions();
+            m_pHpDecBar->m_pPt->runAction(Sequence::create(DelayTime::create(fPer * 1.0 / (fPer + 1.0f)), ProgressTo::create(fPer * 1.0f, fPer), nullptr));
+        }
+    }
+    else
+    {
+        m_pHpDecBar->setPercentage(fPer);
+    }
 }
 
 void CShowStatusPas::onUnitRevive()
@@ -98,7 +122,6 @@ void CShowStatusPas::onUnitInterval()
 
     m_f0DpsDuration += getInterval();
     m_fDpsDuration += getInterval();
-    
 
     if (m_f0DpsDuration > CONST_DPS_INTERVAL)
     {
@@ -110,6 +133,22 @@ void CShowStatusPas::onUnitInterval()
     }
     else if (m_fDpsDuration > CONST_DPS_INTERVAL)
     {
+        // 输出持续到一定程度，开始显示DPS
+        if (m_fFrontDpsDuration == 0.0f)
+        {
+            // 如果是首次更新DPS
+            m_fFrontDpsDuration = m_fDpsDuration;
+            m_fFrontTotalDamage = m_fTotalDamage;
+        }
+        else if (m_fDpsDuration > CONST_DPS_WINDOW)
+        {
+            // 输出持续超过窗口大小，去掉最初统计
+            m_fDpsDuration -= m_fFrontDpsDuration;
+            m_fTotalDamage -= m_fFrontTotalDamage;
+            m_fFrontDpsDuration = 0.0f;
+            m_fFrontTotalDamage = 0.0f;
+        }
+
         m_fDpsUpdate += getInterval();
         if (m_fDpsUpdate >= CONST_DPS_INTERVAL)
         {

@@ -94,7 +94,7 @@ bool CItem::use()
     {
         // 直接可以使用
         LOG("%s使用了%s", o->getName(), getName());
-        if (m_vecActAbilitys.front()->cast() == false)
+        if (m_vecActAbilities.front()->cast() == false)
         {
             return false;
         }
@@ -127,15 +127,15 @@ bool CItem::checkConditions(const CCommandTarget& rTarget)
     else
     {
         // 直接可以使用
-        if (m_vecActAbilitys.empty())
+        if (m_vecActAbilities.empty())
         {
             // 无主动技能，直接返回
             return false;
         }
         
-        if (m_vecActAbilitys.front()->getCastTargetType() != CCommandTarget::kNoTarget ||
-            m_vecActAbilitys.front()->isCoolingDown() ||
-            m_vecActAbilitys.front()->checkConditions(rTarget) == false)
+        if (m_vecActAbilities.front()->getCastTargetType() != CCommandTarget::kNoTarget ||
+            m_vecActAbilities.front()->isCoolingDown() ||
+            m_vecActAbilities.front()->checkConditions(rTarget) == false)
         {
             return false;
         }
@@ -176,7 +176,7 @@ void CItem::addAbilityToOwner(CUnit* pOwner, bool bNotify)
 {
     CWorld* w = pOwner->getWorld();
 
-    if (m_vecActAbilitys.empty())
+    if (m_vecActAbilities.empty())
     {
         for (auto it = m_vecActAbilityIds.begin(); it != m_vecActAbilityIds.end(); ++it)
         {
@@ -184,19 +184,19 @@ void CItem::addAbilityToOwner(CUnit* pOwner, bool bNotify)
             w->copyAbility(*it)->dcast(pActAbility);
             if (pActAbility != nullptr)
             {
-                m_vecActAbilitys.addObject(pActAbility);
+                m_vecActAbilities.addObject(pActAbility);
             }
         }
     }
     
-    M_VEC_FOREACH(m_vecActAbilitys)
+    M_VEC_FOREACH(m_vecActAbilities)
     {
         CActiveAbility* pActAbility = M_VEC_EACH;
         pOwner->addActiveAbility(pActAbility, bNotify);
         M_VEC_NEXT;
     }
     
-    if (m_vecPasAbilitys.empty())
+    if (m_vecPasAbilities.empty())
     {
         for (auto it = m_vecPasAbilityIds.begin(); it != m_vecPasAbilityIds.end(); ++it)
         {
@@ -204,12 +204,12 @@ void CItem::addAbilityToOwner(CUnit* pOwner, bool bNotify)
             w->copyAbility(*it)->dcast(pPasAbility);
             if (pPasAbility != nullptr)
             {
-                m_vecPasAbilitys.addObject(pPasAbility);
+                m_vecPasAbilities.addObject(pPasAbility);
             }
         }
     }
     
-    M_VEC_FOREACH(m_vecPasAbilitys)
+    M_VEC_FOREACH(m_vecPasAbilities)
     {
         CPassiveAbility* pPasAbility = M_VEC_EACH;
         pOwner->addPassiveAbility(pPasAbility, bNotify);
@@ -221,14 +221,14 @@ void CItem::delAbilityFromOwner(bool bNotify)
 {
     CUnit* o = getOwner();
     
-    M_VEC_FOREACH(m_vecActAbilitys)
+    M_VEC_FOREACH(m_vecActAbilities)
     {
         CActiveAbility* pActAbility = M_VEC_EACH;
         o->delActiveAbility(pActAbility->getId(), bNotify);
         M_VEC_NEXT;
     }
     
-    M_VEC_FOREACH(m_vecPasAbilitys)
+    M_VEC_FOREACH(m_vecPasAbilities)
     {
         CPassiveAbility* pPasAbility = M_VEC_EACH;
         o->delPassiveAbility(pPasAbility->getId(), bNotify);

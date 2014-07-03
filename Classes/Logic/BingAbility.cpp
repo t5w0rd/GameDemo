@@ -34,7 +34,7 @@ CMultiRefObject* CIceLanceBuff::copy() const
 void CIceLanceBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
-    CUnit::MAP_BUFF_ABILITYS& buffs = o->getBuffAbilitys();
+    CUnit::MAP_BUFF_ABILITIES& buffs = o->getBuffAbilities();
     M_MAP_FOREACH(buffs)
     {
         CBuffAbility* buff = M_MAP_EACH;
