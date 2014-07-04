@@ -11,7 +11,7 @@ function loadAbilityLibrary()
     a = StunBuff:new("Stun", "Stun", 2.0, false)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 50.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 50.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -27,7 +27,7 @@ function loadAbilityLibrary()
     a = SpeedBuff:new("ThunderCap", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -67,7 +67,7 @@ function loadAbilityLibrary()
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -113,7 +113,7 @@ function loadAbilityLibrary()
     AL.kSpeedUp2 = a
     
     -- KnockBack
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     
     a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, 100)
@@ -135,7 +135,7 @@ function loadAbilityLibrary()
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -151,7 +151,7 @@ function loadAbilityLibrary()
     a = StunBuff:new("StunBuff", "Stun", 5.0, false)
     id = addTemplateAbility(a)    
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0, Ability.kNoMasked, true)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 0.0, 0.0, Ability.kNoMasked, true)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
 
@@ -185,7 +185,7 @@ function loadAbilityLibrary()
     AL.kWarCry = a
     
     -- MultiSlash
-    a = DamageBuff:new("dmg", AttackValue.kPhysical, 75.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kPhysical, 75.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     
     a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 10, 0, Sprite.kAniAct1, Sprite.kAniAct2)
@@ -210,7 +210,7 @@ function loadAbilityLibrary()
     AL.kChargeJump = a
 	
 	-- MagicalRain
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 0.75, 0.0, Ability.kMaskActiveTrigger)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
 	
 	a = RainAct:new("MagicalRain", 2.0, RainAct.kBolt, 5.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
@@ -309,7 +309,7 @@ function loadAbilityLibrary()
     a = SpeedBuff:new("ThunderCapBuff", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -327,7 +327,7 @@ function loadAbilityLibrary()
     a = StunBuff:new("StunBuff", "Stun", 5.0, false)
     id = addTemplateAbility(a)    
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
 
@@ -355,7 +355,7 @@ function loadAbilityLibrary()
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 1.0, false, 0.0, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
     a:setAppendBuff(id)
     id = addTemplateAbility(a)
     
@@ -387,7 +387,7 @@ function loadAbilityLibrary()
     AL.kDamageIncreaceAttack = a
     
     -- LightningAttack
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 0.75, 0.0, Ability.kMaskActiveTrigger)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger)
     id = addTemplateAbility(a)
     
     a = TransitiveLinkBuff:new("LightningAttack", 0.2, 150, 5, 100, UnitForce.kEnemy, PL.kTeslaRay)
@@ -402,7 +402,7 @@ function loadAbilityLibrary()
 	a = StunBuff:new("StunBuff", "Stun", 1, false)
     id = addTemplateAbility(a)
 	
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 1.00, 0.0, Ability.kOnDamagedDoneTrigger, true)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.00, 0.0, Ability.kOnDamagedDoneTrigger, true)
 	a:setAppendBuff(id)
     id = addTemplateAbility(a)
 	
@@ -411,7 +411,7 @@ function loadAbilityLibrary()
 	AL.kStrikeBack = a
 	
 	-- TransitiveAttack
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.0, false, 1.00, 0.0, Ability.kOnAttackTargetTrigger, true)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.00, 0.0, Ability.kOnAttackTargetTrigger, true)
     id = addTemplateAbility(a)
 	
 	a = TransitiveLinkBuff:new("TransitiveAttack", 0.2, 200.0, 9, 1, UnitForce.kEnemy, PL.kLightning)
@@ -456,24 +456,70 @@ function SAL.addi(ability, index)
 	return addTemplateAbility(SAL.id + index, ability)
 end
 
+-- CriticalAttack
+Update = class(LevelUpdate)
+function Update:onChangeLevel(a, change)
+    cast(a, AttackBuffMakerPas)
+    local lv = a:getLevel()
+    if lv == 1 then
+		a:setCost(5)
+        a:setExAttackValue(3.0, 0.0)
+    end
+end
+
+a = AttackBuffMakerPas:new("致命一击", 0.15, 0, true, 2.0, 0.0)
+a:setImageName("UI/Ability/CriticalAttack.png")
+a:setMaxLevel(1)
+a:setLevel(0)
+a:setCost(3)
+a:setDescribe("攻击时有15%的概率对目标造成200%的伤害")
+a:setLevelInfo(1, 0, "造成300%的伤害")
+a:setGrade(Ability.kNormal)
+a:setLevelUpdate(Update:new())
+id = SAL.add(a)
+	
 -- Curse
-CurseUpdate = class(LevelUpdate)
-function CurseUpdate:onChangeLevel(a, change)
-    cast(a, ActiveAbility)
-    local lvl = a:getLevel()
-    if lvl == 1 then
+Update = class(LevelUpdate)
+function Update:onChangeLevel(a, change)
+    cast(a, BuffMakerAct)
+    local lv = a:getLevel()
+    if lv == 1 then
         a:setCost(5)
-    elseif lvl == 2 then
+    elseif lv == 2 then
         a:setCost(7)
-    elseif lvl == 3 then
+    elseif lv == 3 then
         a:setCost(9)
     end
 end
-CurseUpdate = CurseUpdate:new()
+
+a = SpeedBuff:new("SlowDown", "SlowDown", 3.0, false, -0.15, 0.0, 0.0, 0.0)
+id = SAL.addi(a, 002)  -- 002
+
+CurseBuffUpdate = class(LevelUpdate)
+CurseBuffUpdate.id = id
+function CurseBuffUpdate:onChangeLevel(a, change)
+    cast(a, CurseBuff)
+    local lv = a:getLevel()
+	
+	if lv >= 1 then
+        a.multiply = 80 / 100
+    end
+	
+	if lv >= 2 then
+        a:setAppendBuff(self.id)
+	end
+	
+    if lv >= 3 then
+        a:setDuration(17.0)
+	end
+    
+end
+CurseBuffUpdate = CurseBuffUpdate:new()
 
 a = CurseBuff:new(13, false, 20, 4, 40 / 100)
+a:setLevelUpdate(CurseBuffUpdate)
 a:setMaxLevel(3)
-id = SAL.addi(a, 1)
+id = SAL.addi(a, 001)  -- 001
 
 a = BuffMakerAct:new("群体诅咒", 5.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
 a:setCastRange(200.0)
@@ -483,17 +529,193 @@ a:setImageName("UI/Ability/AbilityCurse.png")
 a:addEffectSound("sounds/Effects/KRF_sfx_vodoo_kamikazelanza.mp3")
 a:setMaxLevel(3)
 a:setLevel(0)
-a:setDescribe("诅咒一片区域，受诅咒的英雄受到20点/秒的伤害，持续13秒，每隔4秒每损失100点的生命值就会受到40点的额外伤害")
---a:setDescribe("Curses a region cursed hero 20 points of damage per second, 13 seconds every 4 seconds per 100 hit points of damage are 40 extra damage")
-a:setLevelInfo(1, 0, "每损失100的生命时所受到的伤害提高40点")
---a:setLevelInfo(1, 0, "Injuries received when the loss of 100 lives per 40 points")
-a:setLevelInfo(2, 1, "同时降低单位15%的移动速度")
---a:setLevelInfo(2, 1, "While reducing speed by 15%")
-a:setLevelInfo(3, 2, "诅咒效果持续17秒")
---a:setLevelInfo(3, 2, "Curse lasts 17 seconds")
-a:setGrade(Ability.kEpic)
 a:setCost(3)
-a:setLevelUpdate(CurseUpdate)
+a:setDescribe("诅咒一片区域，受诅咒的英雄受到20点/秒的伤害，持续13秒，每隔4秒每损失100点的生命值就会受到40点的额外伤害")
+a:setLevelInfo(1, 0, "每损失100的生命时所受到的伤害提高40点")
+a:setLevelInfo(2, 1, "同时降低单位15%的移动速度，持续3秒")
+a:setLevelInfo(3, 2, "诅咒效果持续17秒")
+a:setGrade(Ability.kEpic)
+a:setLevelUpdate(Update:new())
 id = SAL.add(a)
 
-addAbilityToUserData(100, 1)
+
+-- MultySlash
+Update = class(LevelUpdate)
+Update.buff = {}
+function Update:onChangeLevel(a, change)
+    cast(a, BuffMakerAct)
+    local lv = a:getLevel()
+    if lv == 1 then
+		a:setTemplateBuff(self.buff[lv])
+        a:setCost(7)
+    elseif lv == 2 then
+		a:setTemplateBuff(self.buff[lv])
+        a:setCost(10)
+    elseif lv == 3 then
+		a:setTemplateBuff(self.buff[lv])
+        a:setCost(16)
+    end
+end
+
+-- Lv1
+a = DamageBuff:new("dmg", AttackValue.kPhysical, 0.0, 1.0, 0.0, Ability.kMaskActiveTrigger, true)
+id = SAL.addi(a, 002)  -- 002
+
+a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 5, 0, Sprite.kAniAct1, Sprite.kAniAct2)
+a:setAppendBuff(id)
+Update.buff[1] = SAL.addi(a, 012)  -- 012
+
+-- Lv2
+a = DamageBuff:new("dmg", AttackValue.kPhysical, 0.0, 1.0, 0.0, Ability.kMaskActiveTrigger, true)
+id = SAL.addi(a, 003)  -- 003
+
+a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 9, 0, Sprite.kAniAct1, Sprite.kAniAct2)
+a:setAppendBuff(id)
+Update.buff[2] = SAL.addi(a, 013)  -- 013
+
+-- Lv3
+a = DamageBuff:new("dmg", AttackValue.kPhysical, 0.0, 1.0, 0.0, Ability.kNoMasked, true)
+id = SAL.addi(a, 004)  -- 004
+
+a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 9, 0, Sprite.kAniAct1, Sprite.kAniAct2)
+a:setAppendBuff(id)
+Update.buff[3] = SAL.addi(a, 014)  -- 014
+
+-- Lv0
+a = DamageBuff:new("dmg", AttackValue.kPhysical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger, true)
+id = SAL.addi(a, 001)  -- 001
+
+a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 5, 0, Sprite.kAniAct1, Sprite.kAniAct2)
+a:setAppendBuff(id)
+id = SAL.addi(a, 011)  -- 011
+
+a = BuffMakerAct:new("多重斩击", 20.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+a:setCastRange(300)
+a:setImageName("UI/Ability/Ability02.png")
+a:setMaxLevel(3)
+a:setLevel(0)
+a:setCost(5)
+a:setDescribe("快速跳跃式的随即斩击战场上的敌人，每次斩击继承75%攻击力，共斩击6次，享受攻击力加成")
+a:setLevelInfo(1, 0, "每次斩击继承100%攻击力")
+a:setLevelInfo(2, 1, "斩击次数提高至10次")
+a:setLevelInfo(3, 2, "每次斩击可以触发其他技能效果")
+a:setGrade(Ability.kLegend)
+
+a:setLevelUpdate(Update:new())
+id = SAL.add(a)
+
+
+-- MagicalRain
+Update = class(LevelUpdate)
+function Update:onChangeLevel(a, change)
+    cast(a, RainAct)
+    local lv = a:getLevel()
+    if lv == 1 then
+        a:setCost(7)
+		a:setCastTargetRadius(150)
+    elseif lv == 2 then
+        a:setCost(10)
+		a:setCastTargetRadius(150)
+		a.intensity = 8
+	elseif lv == 3 then
+        a:setCost(12)
+		a:setCastTargetRadius(150)
+		a.intensity = 8
+		a.duration = 5
+    end
+end
+
+a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.20, 0.0, Ability.kMaskActiveTrigger)
+id = SAL.addi(a, 001)  -- 001
+
+a = RainAct:new("魔法箭雨", 2.0, RainAct.kBolt, 5.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
+a:addCastAnimation(Sprite.kAniAct5)
+a:addEffectSound("sounds/Effects/LevelUp.mp3")
+a:setImageName("UI/Ability/Ability03.png")
+a:setCastRange(500)
+a:setCastTargetRadius(100)
+a:setMaxLevel(3)
+a:setLevel(0)
+a:setCost(5)
+a:setDescribe("召唤魔法箭雨袭击指定区域内敌人，在半径100内每秒降下5支魔法箭，每支魔法箭造成20%攻击力的伤害，持续3秒")
+a:setLevelInfo(1, 0, "降雨半径提升为150")
+a:setLevelInfo(2, 1, "魔法箭密度提升至每秒8支")
+a:setLevelInfo(3, 1, "降雨持续时间提升至5秒")
+a:setGrade(Ability.kRare)
+
+a:setLevelUpdate(Update:new())
+id = SAL.add(a)
+
+
+-- ThrowHammerEx
+Update = class(LevelUpdate)
+Update.stun = 0
+Update.buff = {}
+function Update:onChangeLevel(a, change)
+    cast(a, BuffMakerAct)
+    local lv = a:getLevel()
+    if lv == 1 then
+        a:setCost(10)
+		a:setTemplateBuff(self.buff[lv])
+    elseif lv == 2 then
+        a:setCost(18)
+		a:setTemplateBuff(self.buff[lv])
+    end
+end
+
+a = StunBuff:new("StunBuff", "Stun", 5.0, false)
+Update.stun = SAL.addi(a, 01)
+
+-- Lv1
+a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.00, 0.0, Ability.kMaskActiveTrigger, true)
+a:setAppendBuff(Update.stun)
+id = SAL.addi(a, 11)
+
+a = TransitiveLinkBuff:new("Chain", 0.1, 150.0, 4, 1, UnitForce.kEnemy, PL.kThorHammer)
+a:setAppendBuff(id)
+Update.buff[1] = SAL.addi(a, 12)
+
+-- Lv2
+a = DamageBuff:new("dmg", AttackValue.kHoly, 0.0, 1.00, 0.0, Ability.kMaskActiveTrigger, true, true)
+a:setAppendBuff(Update.stun)
+id = SAL.addi(a, 21)
+
+a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.00, 0.0, Ability.kMaskActiveTrigger, true)
+a:setAppendBuff(id)
+id = SAL.addi(a, 22)
+
+a = TransitiveLinkBuff:new("Chain", 0.1, 150.0, 4, 1, UnitForce.kEnemy, PL.kThorHammer)
+a:setAppendBuff(id)
+Update.buff[2] = SAL.addi(a, 23)
+
+-- Lv0
+a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.00, 0.0, Ability.kMaskActiveTrigger, true)
+a:setAppendBuff(Update.stun)
+id = SAL.addi(a, 02)
+
+a = TransitiveLinkBuff:new("Chain", 0.1, 150.0, 0, 1, UnitForce.kEnemy, PL.kThorHammer)
+a:setAppendBuff(id)
+id = SAL.addi(a, 03)
+
+a = BuffMakerAct:new("雷神之锤", 12.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+a:setCastRange(400.0)
+a:addCastAnimation(Sprite.kAniAct3)
+a:setTemplateProjectile(PL.kThorHammer)
+a:addEffectSound("sounds/Effects/LightningLink.mp3")
+a:setImageName("UI/Ability/ThrowHammer.png")
+a:setMaxLevel(2)
+a:setLevel(0)
+a:setCost(5)
+a:setDescribe("投掷雷神之锤，造成100%攻击力的伤害，并且击晕目标5秒")
+a:setLevelInfo(1, 0, "雷神之锤额外弹射4次")
+a:setLevelInfo(2, 3, "附加10%攻击力的神圣伤害")
+a:setGrade(Ability.kLegend)
+
+a:setLevelUpdate(Update:new())
+id = SAL.add(a)
+
+addAbilityToUserData(100, 0)
+addAbilityToUserData(200, 0)
+addAbilityToUserData(300, 0)
+addAbilityToUserData(400, 0)
+addAbilityToUserData(500, 0)

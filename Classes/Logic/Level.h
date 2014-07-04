@@ -21,8 +21,6 @@ public:
     virtual ~CLevelUpdate();
     virtual CLevelUpdate* copy() override;
 
-    M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
-
     virtual void updateExpRange(CLevelExp* pLevel);
     virtual void onChangeLevel(CLevelExp* pLevel, int iChanged);
     virtual int calcExp(int iLevel);

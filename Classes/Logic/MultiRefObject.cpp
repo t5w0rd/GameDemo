@@ -8,11 +8,14 @@
 #include "CommInc.h"
 #include "MultiRefObject.h"
 #include "Base.h"
+#include "LuaScriptEngine.h"
+#include "LuaBinding.h"
 
 
 // CMultiRefObject
 CMultiRefObject::CMultiRefObject()
 : m_iRefCount(0)
+, m_iScriptHandler(0)
 , CONST_ID(CIdGen::nextId())
 {
     setDbgClassName("CMutiRefObject");
@@ -25,6 +28,12 @@ CMultiRefObject::CMultiRefObject()
 CMultiRefObject::~CMultiRefObject()
 {
     assert(!m_iRefCount);
+
+    if (getScriptHandler() != 0)
+    {
+        lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+        luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
+    }
     
     CDbgMultiRefObjectManager::instance()->delObject(this);
     //printf("DBG | ~%s(), Global(%d)\n", getDbgClassName(), m_iGlobal);
@@ -52,6 +61,37 @@ void CMultiRefObject::tryRelease()
     {
         delete this;
     }
+}
+
+void CMultiRefObject::copyScriptHandler(int iScriptHandler)
+{
+    if (iScriptHandler == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+
+    // copy source lua obj
+    lua_getglobal(L, "table");
+    lua_getfield(L, -1, "copy");
+    luaL_getregistery(L, iScriptHandler);
+    if (lua_pcall(L, 1, 1, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+    else
+    {
+        lua_pushlightuserdata(L, this);
+        lua_setfield(L, -2, "_p");
+        setScriptHandler(luaL_ref(L, LUA_REGISTRYINDEX));
+    }
+
+    lua_pop(L, 1);  // pop "table"
 }
 
 CMultiRefObject* CMultiRefObject::copy()

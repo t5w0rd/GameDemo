@@ -290,8 +290,8 @@ function initForHero()
 	hero:setForceByIndex(0)
 	hero:setAlly(2 ^ 0 + 2 ^ 2)
 	
-	hero:addActiveAbility(AL.kThrowHammerEx:getId())
-	hero:addActiveAbility(AL.kMagicalRain:getId())
+	--hero:addActiveAbility(AL.kThrowHammerEx:getId())
+	--hero:addActiveAbility(AL.kMagicalRain:getId())
 	hero:addPassiveAbility(AL.kStrikeBack:getId())
 	
 	return hero

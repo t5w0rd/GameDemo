@@ -97,7 +97,7 @@ void MainMenuSceneLayer::onEnter()
 void MainMenuSceneLayer::CCRunStartAction()
 {
     Size wsz = Director::getInstance()->getWinSize();
-    m_pItemStart->runAction(EaseExponentialOut::create(MoveTo::create(0.5, Point(wsz.width/2, wsz.height/2))));
+    m_pItemStart->runAction(EaseExponentialOut::create(MoveTo::create(0.5f, Point(wsz.width/2, wsz.height/2))));
     m_pItemStart->setEnabled(true);
 }
 
@@ -106,7 +106,7 @@ void MainMenuSceneLayer::MenuItemStartCallback(Ref* sender)
     Size wsz = Director::getInstance()->getWinSize();
     Sprite* pSprite = (Sprite*)sender;
     pSprite->runAction(
-        Sequence::createWithTwoActions(EaseElasticIn::create(MoveTo::create(2, Point(wsz.width/2 , wsz.height *3/4))),
+        Sequence::createWithTwoActions(EaseExponentialOut::create(MoveTo::create(0.5f, Point(wsz.width / 2, wsz.height * 3 / 4))),
         CallFunc::create(CC_CALLBACK_0(MainMenuSceneLayer::CCCallSelectArchiveLayer, this))));
 }
 

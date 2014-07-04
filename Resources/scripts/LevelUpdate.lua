@@ -71,7 +71,7 @@ function HeroLevelUpdate:onChangeLevel(u, change)
     elseif lv == 14 then
         u:addPassiveAbility(AL.kRebirth:getId())
     elseif lv == 15 then
-        u:addActiveAbility(AL.kChargeJump:getId())
+        --u:addActiveAbility(AL.kChargeJump:getId())
     elseif lv == 16 then
         u:addPassiveAbility(AL.kCriticalAttack:getId())
     elseif lv == 17 then
@@ -81,7 +81,7 @@ function HeroLevelUpdate:onChangeLevel(u, change)
     elseif lv == 19 then
         u:addPassiveAbility(AL.kCutterAttack:getId())
     elseif lv == 20 then
-        u:addActiveAbility(AL.kMultiSlash:getId())
+        --u:addActiveAbility(AL.kMultiSlash:getId())
     end
 	--[[]]
     saveUserData()

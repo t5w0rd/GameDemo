@@ -14,13 +14,11 @@
 
 // CLevelUpdate
 CLevelUpdate::CLevelUpdate()
-: m_iScriptHandler(0)
 {
     setDbgClassName("CLevelUpdate");
 }
 
 CLevelUpdate::CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRange, const function<void(CLevelExp* pLevel, int iChanged)>& onChangeLevel, const function<int(int iLevel)>& calcExp)
-: m_iScriptHandler(0)
 {
     m_updateExpRange = updateExpRange;
     m_onChangeLevel = onChangeLevel;
@@ -30,11 +28,6 @@ CLevelUpdate::CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRan
 
 CLevelUpdate::~CLevelUpdate()
 {
-    if (getScriptHandler() != 0)
-    {
-        lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
-        luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
-    }
 }
 
 CLevelUpdate* CLevelUpdate::copy()

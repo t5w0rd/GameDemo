@@ -467,6 +467,9 @@ void AbilityDetails::onClickUpgrade(Ref* ref)
 {
     assert(m_ability->getLevel() < m_ability->getMaxLevel());
 
+    M_DEF_GC(gc);
+    gc->playSound("sounds/Effects/common_craft_success.mp3");
+
     auto ai = (AbilityItem*)getUserData();
     ai->setEquipped(false);
     
@@ -490,7 +493,8 @@ bool AbilitySceneLayer::init()
     luaL_includefilelog(L, "Init.lua");
 
     // test data
-    CUserData::instance()->getHeroSelected()->energy = 120;
+    auto hero = CUserData::instance()->getHeroSelected();
+    hero->energy = 120;
 
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
@@ -542,6 +546,8 @@ bool AbilitySceneLayer::init()
 
     addChild(cn);
 
+    // map id <-> ai
+    map<int, AbilityItem*> mapId2Node;
     // add ability items
     CUserData::VEC_ABILITY_INFOS& vec = CUserData::instance()->m_vecAbilities;
     for (auto& item : vec)
@@ -552,6 +558,8 @@ bool AbilitySceneLayer::init()
         auto ai = AbilityItem::create(a, item.id);
         ai->setOnChangeEquippedCallback(CC_CALLBACK_2(AbilitySceneLayer::onChangeAbilityItemEquipped, this));
         m_abilityItemsPanel->addNodeEx(ai, WinFormPanel::kTopToBottom);
+
+        mapId2Node[item.id] = ai;
     }
 
     m_abilityItemsPanel->setClickNodeCallback(bind(&AbilitySceneLayer::onClickAbilityItems, this, placeholders::_1));
@@ -587,6 +595,31 @@ bool AbilitySceneLayer::init()
     addChild(m_energy, 11);
     m_energy->setDimensions(m_energy->getContentSize().width * 1.5, m_energy->getContentSize().height);
     m_energy->setPosition(Point(m_energy->getContentSize().width * 0.5 + wsz.width * 0.5 - m_abilityEquippedPanel->getContentSize().width * 0.5 + 0, m_energy->getContentSize().height * 0.5 + m_abilityEquippedPanel->getPosition().y + m_abilityEquippedPanel->getContentSize().height * 0.5 + 40));
+
+    // 已装备上的技能，更新其图标状态
+    auto& mapAbilities = hero->m_mapAbilitiesEquipped;
+    M_MAP_FOREACH(mapAbilities)
+    {
+        auto id = M_MAP_IT->first;
+        auto lv = M_MAP_EACH;
+        M_MAP_NEXT;
+
+        auto nodeIt = mapId2Node.find(id);
+        if (nodeIt != mapId2Node.end() && nodeIt->second != nullptr)
+        {
+            auto a = nodeIt->second->getAbility();
+            a->setLevel(lv);
+            
+            nodeIt->second->updateContent(a, nodeIt->second->getAbilityId());
+            auto pop = DCAST(getChildByTag(101), AbilityDetails*);
+            if (pop != nullptr)
+            {
+                pop->updateContent(a);
+            }
+
+            nodeIt->second->setEquipped(true);
+        }
+    }
     
     auto mn = Menu::create();
     addChild(mn, 10);
@@ -604,6 +637,8 @@ bool AbilitySceneLayer::init()
 
 void AbilitySceneLayer::onClickAbilityItems(Node* abilityItem)
 {
+    M_DEF_GC(gc);
+
     auto ai = DCAST(abilityItem, AbilityItem*);
     auto a = ai->getAbility();
 
@@ -625,6 +660,8 @@ void AbilitySceneLayer::onClickAbilityItems(Node* abilityItem)
     if (pop->getUserData() != ai)
     {
         pop->setUserData(ai);
+
+        gc->playSound("sounds/Effects/common_popup_window.mp3");
     }
     else
     {
@@ -666,6 +703,8 @@ void AbilitySceneLayer::onClickAbilityItemsEquipped(Ref* ref)
 
 void AbilitySceneLayer::onChangeAbilityItemEquipped(AbilityItem* ai, bool equipped)
 {
+    M_DEF_GC(gc);
+
     auto hero = CUserData::instance()->getHeroSelected();
     if (equipped == true)
     {
@@ -675,6 +714,8 @@ void AbilitySceneLayer::onChangeAbilityItemEquipped(AbilityItem* ai, bool equipp
         btn->setUserData(ai);
         m_energyCost += ai->getAbility()->getCost();
         hero->m_mapAbilitiesEquipped.insert(make_pair(ai->getAbilityId(), ai->getAbility()->getLevel()));
+
+        gc->playSound("sounds/Effects/common_close_popup_window.mp3");
     }
     else
     {
@@ -684,11 +725,13 @@ void AbilitySceneLayer::onChangeAbilityItemEquipped(AbilityItem* ai, bool equipp
         ai->setUserData(nullptr); 
         m_energyCost -= ai->getAbility()->getCost();
         hero->m_mapAbilitiesEquipped.erase(ai->getAbilityId());
+
+        gc->playSound("sounds/Effects/common_popup_small.mp3");
     }
 
     char str[1024];
     char sz[1024];
-    sprintf(str, "确定: %d/%d", hero->energy - m_energyCost, hero->energy);
+    sprintf(str, "精力: %d/%d", hero->energy - m_energyCost, hero->energy);
     gbk_to_utf8(str, sz);
     m_energy->setString(sz);
 

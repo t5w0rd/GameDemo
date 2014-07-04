@@ -27,12 +27,8 @@ public:
     virtual const char* getDbgTag() const;
     virtual CAbility* copy() override;
     virtual void copyData(CAbility* from);
-
-protected:
-    void copyScriptHandler(int iScriptHandler);
     
 public:
-    M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
     
     const char* getRootId() const;
     M_SYNTHESIZE_STR(Name);
@@ -283,6 +279,7 @@ public:
     virtual ~CAttackBuffMakerPas();
     
     virtual CAttackBuffMakerPas* copy() override;
+    virtual void copyData(CAbility* from) override;
     
     virtual void onUnitAddAbility() override;
     virtual void onUnitDelAbility() override;
@@ -302,17 +299,18 @@ public:
 class CDamageBuff : public CBuffAbility
 {
 public:
-    CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf = false, const CExtraCoeff& roExAttackValue = CExtraCoeff(), uint32_t dwTriggerMask = CUnit::kMaskActiveTrigger, bool bAttack = false);
+    CDamageBuff(const char* pName, const CAttackValue& rDamage, const CExtraCoeff& roExAttackValue = CExtraCoeff(), uint32_t dwTriggerMask = CUnit::kMaskActiveTrigger, bool bAttack = false, bool bForceAttackType = false);
     virtual CDamageBuff* copy() override;
 
     virtual void onUnitAddAbility() override;
 
     M_SYNTHESIZE_PASS_BY_REF(CAttackValue, m_oDamage, Damage);
-    M_SYNTHESIZE(float, m_fChance, Chance);
-    M_SYNTHESIZE_BOOL(ToSelf);
+    //M_SYNTHESIZE(float, m_fChance, Chance);
+    //M_SYNTHESIZE_BOOL(ToSelf);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExAttackValue, ExAttackValue);
     M_SYNTHESIZE(uint32_t, m_dwTriggerMask, TriggerMask);
     M_SYNTHESIZE_BOOL(Attack);
+    M_SYNTHESIZE_BOOL(ForceAttackType);
 };
 
 // ÎüÑª
@@ -449,6 +447,7 @@ public:
     virtual void onUnitAddAbility() override;
     virtual void onUnitDelAbility() override;
     virtual void onUnitDead() override;
+    virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget) override;
 
     void TransmitNext();
 

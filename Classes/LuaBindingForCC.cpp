@@ -177,9 +177,56 @@ int g_addAbilityToUserData(lua_State* L)
     info.id = id;
     info.level = lvl;
     CUserData::instance()->m_vecAbilities.push_back(info);
+    
+    return 0;
+}
+
+int g_udsets(lua_State* L)
+{
+    auto k = lua_tostring(L, 1);
+    auto v = lua_tostring(L, 2);
+
+    auto ud = UserDefault::getInstance();
+    ud->setStringForKey(k, v);
 
     return 0;
 }
+
+int g_udgets(lua_State* L)
+{
+    auto k = lua_tostring(L, 1);
+
+    auto ud = UserDefault::getInstance();
+    auto v = ud->getStringForKey(k);
+
+    lua_pushstring(L, v.c_str());
+
+    return 1;
+}
+
+int g_udsetn(lua_State* L)
+{
+    auto k = lua_tostring(L, 1);
+    auto v = lua_tonumber(L, 2);
+
+    auto ud = UserDefault::getInstance();
+    ud->setDoubleForKey(k, v);
+
+    return 0;
+}
+
+int g_udgetn(lua_State* L)
+{
+    auto k = lua_tostring(L, 1);
+
+    auto ud = UserDefault::getInstance();
+    auto v = ud->getDoubleForKey(k);
+
+    lua_pushnumber(L, v);
+
+    return 1;
+}
+
 
 luaL_Reg Unit4CC_funcs[] = {
     { "ctor", Unit4CC_ctor },
@@ -597,6 +644,10 @@ int luaRegCommFuncsForCC(lua_State* L)
     lua_register(L, "addTemplateUnit", g_addTemplateUnit);
     lua_register(L, "addTemplateProjectile", g_addTemplateProjectile);
     lua_register(L, "addAbilityToUserData", g_addAbilityToUserData);
+    lua_register(L, "udsets", g_udsets);
+    lua_register(L, "udgets", g_udgets);
+    lua_register(L, "udsetn", g_udsetn);
+    lua_register(L, "udgetn", g_udgetn);
 
     // TODO: patch global class members
     M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);
@@ -748,7 +799,10 @@ int luaL_includefilelog(lua_State* L, const char* file)
         lua_getglobal(L, "_world");
         CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
         lua_pop(L, 1);  // pop _world
-        DCAST(w->getLayer(), BattleSceneLayer*)->log("%s", err);
+        if (w != nullptr)
+        {
+            DCAST(w->getLayer(), BattleSceneLayer*)->log("%s", err);
+        }
 
         return LUA_ERRERR;
     }

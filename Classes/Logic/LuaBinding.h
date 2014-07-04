@@ -330,7 +330,15 @@ int AttackAct_getRealAttackSpeed(lua_State* L);
 int AttackAct_setExAttackSpeed(lua_State* L);
 int AttackAct_getExAttackSpeed(lua_State* L);
 
+int BuffMakerAct_ctor(lua_State* L);
+int BuffMakerAct_setTemplateBuff(lua_State* L);
+
 int AttackBuffMakerPas_ctor(lua_State* L);
+int AttackBuffMakerPas_setChance(lua_State* L);
+int AttackBuffMakerPas_setTemplateBuff(lua_State* L);
+int AttackBuffMakerPas_setExAttackValue(lua_State* L);
+int AttackBuffMakerPas_setTemplateAct(lua_State* L);
+
 int AuraPas_ctor(lua_State* L);
 int VampirePas_ctor(lua_State* L);
 int StunBuff_ctor(lua_State* L);
@@ -341,7 +349,6 @@ int ChangeHpBuff_ctor(lua_State* L);
 int RebirthPas_ctor(lua_State* L);
 int EvadePas_ctor(lua_State* L);
 int EvadeBuff_ctor(lua_State* L);
-int BuffMakerAct_ctor(lua_State* L);
 int DamageBuff_ctor(lua_State* L);
 int TransitiveLinkBuff_ctor(lua_State* L);
 int TransitiveBlinkBuff_ctor(lua_State* L);
@@ -394,14 +401,22 @@ void luaL_pushobjptr(lua_State* L, const char* name, const PTYPE _p)
         return;
     }
 
-    lua_newtable(L);
-    int obj = lua_gettop(L);
+    auto mo = DCAST(_p, CMultiRefObject*);
+    if (mo != nullptr && mo->getScriptHandler() != 0)
+    {
+        luaL_getregistery(L, mo->getScriptHandler());
+    }
+    else
+    {
+        lua_newtable(L);
+        int obj = lua_gettop(L);
 
-    lua_getglobal(L, name);
-    lua_setmetatable(L, obj);
+        lua_getglobal(L, name);
+        lua_setmetatable(L, obj);
 
-    lua_pushlightuserdata(L, _p);
-    lua_setfield(L, obj, "_p");
+        lua_pushlightuserdata(L, _p);
+        lua_setfield(L, obj, "_p");
+    }
 }
 
 #endif  /* __LUABINDING_H__ */

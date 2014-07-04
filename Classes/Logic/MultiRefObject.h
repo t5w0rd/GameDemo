@@ -19,6 +19,8 @@ public:
     void release();
     
     virtual CMultiRefObject* copy();
+
+    M_SYNTHESIZE(int, m_iScriptHandler, ScriptHandler);
     
     M_SYNTHESIZE_READONLY(int, m_iRefCount, RefCount);
     M_SYNTHESIZE_STR(DbgClassName);
@@ -31,6 +33,9 @@ public:
     
 private:
     void tryRelease();
+
+protected:
+    void copyScriptHandler(int iScriptHandler);
     
 protected:
     const int CONST_ID;

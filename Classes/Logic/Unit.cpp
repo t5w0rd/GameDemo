@@ -532,17 +532,11 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
 
 // CUnitAI
 CUnitAI::CUnitAI()
-: m_iScriptHandler(0)
 {
 }
 
 CUnitAI::~CUnitAI()
 {
-    if (getScriptHandler() != 0)
-    {
-        lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
-        luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
-    }
 }
 
 void CUnitAI::onUnitChangeHp(CUnit* pUnit, float fChanged)

@@ -20,7 +20,6 @@
 // CAbility
 CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 : CONST_ROOT_ID(pRootId)
-, m_iScriptHandler(0)
 , m_sName(pName)
 , m_pOwner(nullptr)
 , m_fCoolDown(fCoolDown)
@@ -38,11 +37,6 @@ CAbility::CAbility(const char* pRootId, const char* pName, float fCoolDown)
 
 CAbility::~CAbility()
 {
-    if (getScriptHandler() != 0)
-    {
-        lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
-        luaL_unref(L, LUA_REGISTRYINDEX, getScriptHandler());
-    }
 }
 
 const char* CAbility::getDbgTag() const
@@ -80,37 +74,6 @@ void CAbility::copyData(CAbility* from)
     m_pUpdate = from->m_pUpdate ? from->m_pUpdate->copy() : nullptr;
     m_iMaxLvl = from->m_iMaxLvl;
     //setLevel(from->getLevel());
-}
-
-void CAbility::copyScriptHandler(int iScriptHandler)
-{
-    if (iScriptHandler == 0)
-    {
-        return;
-    }
-
-    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
-
-    // copy source lua obj
-    lua_getglobal(L, "table");
-    lua_getfield(L, -1, "copy");
-    luaL_getregistery(L, iScriptHandler);
-    if (lua_pcall(L, 1, 1, 0) != LUA_OK)
-    {
-        const char* err = lua_tostring(L, -1);
-        lua_getglobal(L, "log");
-        lua_pushvalue(L, -2);
-        lua_call(L, 1, 0);
-        lua_pop(L, 1);
-    }
-    else
-    {
-        lua_pushlightuserdata(L, this);
-        lua_setfield(L, -2, "_p");
-        setScriptHandler(luaL_ref(L, LUA_REGISTRYINDEX));
-    }
-
-    lua_pop(L, 1);  // pop "table"
 }
 
 const char* CAbility::getRootId() const
@@ -1512,9 +1475,16 @@ CAttackBuffMakerPas::~CAttackBuffMakerPas()
 CAttackBuffMakerPas* CAttackBuffMakerPas::copy()
 {
     CAttackBuffMakerPas* ret = new CAttackBuffMakerPas(getRootId(), getName(), m_fChance, m_iTemplateBuff, m_bToSelf, m_oExAttackValue);
-    ret->setCoolDown(getCoolDown());
-    ret->setTemplateAct(getTemplateAct());
+    ret->copyData(this);
     return ret;
+}
+
+void CAttackBuffMakerPas::copyData(CAbility* from)
+{
+    CPassiveAbility::copyData(from);
+    auto a = DCAST(from, CAttackBuffMakerPas*);
+    setCoolDown(a->getCoolDown());
+    setTemplateAct(a->getTemplateAct());
 }
 
 void CAttackBuffMakerPas::onUnitAddAbility()
@@ -1649,21 +1619,22 @@ bool CAttackBuffMakerPas::castInnerSpell(CUnit* pTarget)
 }
 
 // CDamageBuff
-CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, float fChance, bool bToSelf /*= false*/, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/, uint32_t dwTriggerMask /*= CUnit::kMaskActiveTrigger*/, bool bAttack /*= false*/)
-: CBuffAbility("DBM", pName, 0.0f, true)
+CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/, uint32_t dwTriggerMask /*= CUnit::kMaskActiveTrigger*/, bool bAttack /*= false*/, bool bForceAttackType /*= false*/)
+: CBuffAbility("DMG", pName, 0.0f, true)
 , m_oDamage(rDamage)
-, m_fChance(fChance)
-, m_bToSelf(bToSelf)
+//, m_fChance(fChance)
+//, m_bToSelf(bToSelf)
 , m_oExAttackValue(roExAttackValue)
 , m_dwTriggerMask(dwTriggerMask)
 , m_bAttack(bAttack)
+, m_bForceAttackType(bForceAttackType)
 {
     setDbgClassName("CDamageBuff");
 }
 
 CDamageBuff* CDamageBuff::copy()
 {
-    CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getChance(), isToSelf(), getExAttackValue(), m_dwTriggerMask, m_bAttack);
+    CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getExAttackValue(), m_dwTriggerMask, m_bAttack, m_bForceAttackType);
     ret->copyData(this);
     return ret;
 }
@@ -1674,7 +1645,6 @@ void CDamageBuff::onUnitAddAbility()
     CUnit* s = o->getUnit(getSrcUnit());
     //CUnit* sd = DCAST(s->getDraw(), CUnitDraw2D*);
     
-    
     CAttackData* ad = new CAttackData;
     if (getDamage().getValue() == 0.0f)
     {
@@ -1682,28 +1652,12 @@ void CDamageBuff::onUnitAddAbility()
         s->getActiveAbility(s->getAttackAbilityId())->dcast(atk);
         if (atk != nullptr)
         {
-            ad->setAttackValue(atk->getBaseAttack().getType(), getExAttackValue().getValue(atk->getRealAttackValue()));
+            ad->setAttackValue(m_bForceAttackType ? getDamage().getType() : atk->getBaseAttack().getType(), getExAttackValue().getValue(atk->getRealAttackValue()));
         }
     }
     else
     {
         ad->setAttackValue(getDamage());
-    }
-    
-    if (M_RAND_HIT(getChance()))
-    {
-        if (isToSelf())
-        {
-            if (s != nullptr && !s->isDead())
-            {
-                s->addBuffAbility(getAppendBuff(), getSrcUnit(), getLevel());
-            }
-        }
-        else
-        {
-            //ad->addAttackBuff(CAttackBuff(getTemplateBuff(), getLevel()));
-        }
-        
     }
 
     if (m_bAttack && s != nullptr)
@@ -1854,7 +1808,9 @@ CDoubleAttackPas::CDoubleAttackPas(const char* pRootId, const char* pName, float
 
 CDoubleAttackPas* CDoubleAttackPas::copy()
 {
-    return new CDoubleAttackPas(getRootId(), getName(), m_fChance, m_oExAttackValue);
+    auto ret = new CDoubleAttackPas(getRootId(), getName(), m_fChance, m_oExAttackValue);
+    ret->copyData(this);
+    return ret;
 }
 
 void CDoubleAttackPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
@@ -2166,7 +2122,7 @@ bool CEvadePas::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             sp->setOpacity(160);
             ccd->getSprite()->getShadow()->addChild(sp);
             sp->setPosition(ccd->getSprite()->getShadow()->getAnchorPointInPoints() + Point(-10.0f, 0.0f));
-            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 1), RemoveSelf::create(), nullptr));
+            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.1f, Point(20.0f, 0.0f)), MoveBy::create(0.1f, Point(-20.0f, 0.0f)), nullptr), 1), RemoveSelf::create(), nullptr));
         }
 #endif
         return false;
@@ -2215,7 +2171,7 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
             sp->setOpacity(160);
             ccd->getSprite()->getShadow()->addChild(sp);
             sp->setPosition(ccd->getSprite()->getShadow()->getAnchorPointInPoints() + Point(-10.0f, 0.0f));
-            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.03f, Point(20.0f, 0.0f)), MoveBy::create(0.03f, Point(-20.0f, 0.0f)), nullptr), 1), RemoveSelf::create(), nullptr));
+            sp->runAction(Sequence::create(Repeat::create(Sequence::create(MoveBy::create(0.1f, Point(20.0f, 0.0f)), MoveBy::create(0.1f, Point(-20.0f, 0.0f)), nullptr), 1), RemoveSelf::create(), nullptr));
         }
         return false;
 #endif
@@ -2273,6 +2229,18 @@ void CTransitiveLinkBuff::onUnitDelAbility()
 void CTransitiveLinkBuff::onUnitDead()
 {
     TransmitNext();
+}
+
+void CTransitiveLinkBuff::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
+{
+    if (pProjectile == nullptr || pTarget == nullptr)
+    {
+        return;
+    }
+    
+    auto buff = copy();
+    buff->setLevel(getLevel());
+    pTarget->addBuffAbility(buff, false);
 }
 
 void CTransitiveLinkBuff::TransmitNext()
@@ -2335,10 +2303,10 @@ void CTransitiveLinkBuff::TransmitNext()
 
     CUnit* s = w->getUnit(getSrcUnit());
 
-    CAttackData* pAtk = new CAttackData();
+    //CAttackData* pAtk = new CAttackData();
 
-    int buff = w->addTemplateAbility(this);
-    pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
+    //int buff = w->addTemplateAbility(this);
+    //pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
 
     CProjectile* p = w->copyProjectile(getTemplateProjectile());
     w->addProjectile(p);
@@ -2346,9 +2314,10 @@ void CTransitiveLinkBuff::TransmitNext()
     p->setFromToType(CProjectile::kUnitToUnit);
     p->setFromUnit(getFromUnit());
     p->setToUnit(getToUnit());
-    p->setAttackData(pAtk);
+    //p->setAttackData(pAtk);
+    //p->setTriggerMask(CUnit::kMaskActiveTrigger);
+    p->setSrcAbility(this);
     p->setEffectiveTypeFlags(getEffectiveTypeFlags());
-    p->setTriggerMask(CUnit::kMaskActiveTrigger);
     p->fire();
 }
 
@@ -2488,19 +2457,22 @@ void CTransitiveBlinkBuff::TransmitNext()
     setFromUnit(o->getId());
     setToUnit(t->getId());
 
-    auto atk = DCAST(s->getActiveAbility(s->getAttackAbilityId()), CAttackAct*);
+    //auto atk = DCAST(s->getActiveAbility(s->getAttackAbilityId()), CAttackAct*);
     
-    CAttackData* pAtk = new CAttackData();
-    pAtk->setAttackValue(atk->getBaseAttack().getType(), atk->getRealAttackValue());
-    s->attack(pAtk, t);
+    //CAttackData* pAtk = new CAttackData();
+    //pAtk->setAttackValue(atk->getBaseAttack().getType(), atk->getRealAttackValue());
+    //s->attack(pAtk, t);
     
-    int buff = w->addTemplateAbility(this);
-    pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
+    //int buff = w->addTemplateAbility(this);
+    //pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
 
-    if (t->damaged(pAtk, s, CUnit::kOnAttackedTrigger) == false)
-    {
-        resumeSourceUnit();
-    }
+    auto buff = copy();
+    buff->setLevel(getLevel());
+    t->addBuffAbility(buff, false);
+    //if (t->damaged(pAtk, s, CUnit::kOnAttackedTrigger) == false)
+    //{
+        //resumeSourceUnit();
+    //}
 }
 
 bool CTransitiveBlinkBuff::checkConditions(CUnit* pUnit)

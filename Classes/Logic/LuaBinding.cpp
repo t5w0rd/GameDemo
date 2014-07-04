@@ -2930,6 +2930,49 @@ int AttackAct_getExAttackSpeed(lua_State* L)
     return 2;
 }
 
+luaL_Reg BuffMakerAct_funcs[] = {
+    { "ctor", BuffMakerAct_ctor },
+    { "setTemplateBuff", BuffMakerAct_setTemplateBuff },
+    { nullptr, nullptr }
+};
+
+int BuffMakerAct_ctor(lua_State* L)
+{
+    const char* name = lua_tostring(L, 2);
+    float cd = lua_tonumber(L, 3);
+    int target = lua_tointeger(L, 4);
+    unsigned int effect = lua_tounsigned(L, 5);
+    float chance = lua_tonumber(L, 6);
+    int buff = lua_tointeger(L, 7);
+
+    CBuffMakerAct* _p = new CBuffMakerAct("BM", name, cd, (CCommandTarget::TARGET_TYPE)target, effect, chance, buff);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int BuffMakerAct_setTemplateBuff(lua_State* L)
+{
+    CBuffMakerAct* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    auto buff = lua_tointeger(L, 2);
+    
+    _p->setTemplateBuff(buff);
+
+    return 0;
+}
+
+luaL_Reg AttackBuffMakerPas_funcs[] = {
+    { "ctor", AttackBuffMakerPas_ctor },
+    { "setChance", AttackBuffMakerPas_setChance },
+    { "setTemplateBuff", AttackBuffMakerPas_setTemplateBuff },
+    { "setExAttackValue", AttackBuffMakerPas_setExAttackValue },
+    { "setTemplateAct", AttackBuffMakerPas_setTemplateAct },
+
+    { nullptr, nullptr }
+};
+
 int AttackBuffMakerPas_ctor(lua_State* L)
 {
     const char* name = lua_tostring(L, 2);
@@ -2943,6 +2986,51 @@ int AttackBuffMakerPas_ctor(lua_State* L)
     CAttackBuffMakerPas* _p = new CAttackBuffMakerPas("ABM", name, chance, buff, toself, CExtraCoeff(exAttackA, exAttackB), act);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int AttackBuffMakerPas_setChance(lua_State* L)
+{
+    CAttackBuffMakerPas* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    auto chance = lua_tonumber(L, 2);
+
+    _p->setChance(chance);
+
+    return 0;
+}
+
+int AttackBuffMakerPas_setTemplateBuff(lua_State* L)
+{
+    CAttackBuffMakerPas* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    auto buff = lua_tointeger(L, 2);
+
+    _p->setTemplateBuff(buff);
+
+    return 0;
+}
+
+int AttackBuffMakerPas_setExAttackValue(lua_State* L)
+{
+    CAttackBuffMakerPas* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    auto exAvA = lua_tonumber(L, 2);
+    auto exAvB = lua_tonumber(L, 3);
+
+    _p->setExAttackValue(CExtraCoeff(exAvA, exAvB));
+
+    return 0;
+}
+
+int AttackBuffMakerPas_setTemplateAct(lua_State* L)
+{
+    CAttackBuffMakerPas* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    auto act = lua_tointeger(L, 2);
+
+    _p->setTemplateAct(act);
 
     return 0;
 }
@@ -3098,35 +3186,18 @@ int EvadeBuff_ctor(lua_State* L)
     return 0;
 }
 
-int BuffMakerAct_ctor(lua_State* L)
-{
-    const char* name = lua_tostring(L, 2);
-    float cd = lua_tonumber(L, 3);
-    int target = lua_tointeger(L, 4);
-    unsigned int effect = lua_tounsigned(L, 5);
-    float chance = lua_tonumber(L, 6);
-    int buff = lua_tointeger(L, 7);
-
-    CBuffMakerAct* _p = new CBuffMakerAct("BM", name, cd, (CCommandTarget::TARGET_TYPE)target, effect, chance, buff);
-    lua_pushlightuserdata(L, _p);
-    lua_setfield(L, 1, "_p");
-
-    return 0;
-}
-
 int DamageBuff_ctor(lua_State* L)
 {
     const char* name = lua_tostring(L, 2);
     int damageType = lua_tointeger(L, 3);
     float damageValue = lua_tonumber(L, 4);
-    float chance = lua_tonumber(L, 5);
-    bool toself = lua_toboolean(L, 6) != 0;
-    float exAvA = lua_tonumber(L, 7);
-    float exAvB = lua_tonumber(L, 8);
-    uint32_t mask = lua_tounsigned(L, 9);
-    bool attack = lua_toboolean(L, 10) != 0;
+    float exAvA = lua_tonumber(L, 5);
+    float exAvB = lua_tonumber(L, 6);
+    uint32_t mask = lua_tounsigned(L, 7);
+    bool attack = lua_toboolean(L, 8) != 0;
+    bool forceAt = lua_toboolean(L, 9) != 0;
 
-    CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), chance, toself, CExtraCoeff(exAvA, exAvB), mask, attack);
+    CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), CExtraCoeff(exAvA, exAvB), mask, attack, forceAt);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3294,8 +3365,9 @@ int luaRegCommFuncs(lua_State* L)
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, PassiveAbility, Ability);
     M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, BuffAbility, Ability);
     M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, AttackAct, ActiveAbility);
-
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AttackBuffMakerPas, PassiveAbility);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, BuffMakerAct, ActiveAbility);
+    M_LUA_BIND_CLASS_WITH_FUNCS_EX(L, AttackBuffMakerPas, PassiveAbility);
+    
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, AuraPas, PassiveAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, VampirePas, PassiveAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, StunBuff, BuffAbility);
@@ -3306,7 +3378,6 @@ int luaRegCommFuncs(lua_State* L)
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, RebirthPas, PassiveAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, EvadePas, PassiveAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, EvadeBuff, BuffAbility);
-    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, BuffMakerAct, ActiveAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, DamageBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, TransitiveLinkBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, TransitiveBlinkBuff, BuffAbility);
