@@ -31,6 +31,7 @@ public:
     virtual void stopAllActions();
     
     virtual void setVisible(bool bVisible = true);
+    virtual bool isVisible() const;
 
     virtual void onUnitRevive();
     virtual void onUnitDying();

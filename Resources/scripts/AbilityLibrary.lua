@@ -221,18 +221,21 @@ function loadAbilityLibrary()
     AL.kMagicalRain = a
 	
 	-- BuffMaker
-	a = StunBuff:new("Stun", "Stun", 0.5, false)
-    id = addTemplateAbility(a)
+	--a = StunBuff:new("Stun", "Stun", 0.5, false)
+    --id = addTemplateAbility(a)
 	
-	a = WhenDamagedBuff:new("Buff", "Buff", 10.0, false, 0.02, 0.0, id)
+	--a = WhenDamagedBuff:new("Buff", "Buff", 10.0, false, 0.02, 0.0, id)
+	--id = addTemplateAbility(a)
+	
+	a = ChangeHpBuff:new("Heal", "Heal", 1.0, true, 0.05, 0.0125, 0.0, 0.0, -1.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("BuffMaker", 1.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("BuffMaker", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, 1.0, id)
     a:setCastRange(400.0)
     a:addCastAnimation(Sprite.kAniAct3)
-    a:setTemplateProjectile(PL.kLightning)
+    a:setTemplateProjectile(1)
     a:addEffectSound("sounds/Effects/LightningLink.mp3")
-    a:setImageName("UI/Ability/ThrowHammer.png")
+    a:setImageName("UI/Ability/Ability01.png")
 	addTemplateAbility(a)
     AL.kBuffMaker = a
     

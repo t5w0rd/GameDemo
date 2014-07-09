@@ -12,6 +12,7 @@
 #include "Ability.h"
 #include "MultiRefObject.h"
 #include "AbilityLibrary.h"
+#include "Archive.h"
 
 
 // common
@@ -222,6 +223,172 @@ int g_addTemplateAbility(lua_State* L)
     return 1;
 }
 
+static void _luaPushValue(lua_State* L, CValue* data)
+{
+    int type = data->getType();
+
+    switch (type & 0x0000FFFF)
+    {
+    case kVtStr:
+        {
+            auto& d = DCAST(data, CValueBase*)->getValue();
+            lua_pushlstring(L, d.c_str(), d.size());
+        }
+        break;
+
+    case kVtFLT:
+    case kVtINT:
+    case kVtUINT:
+        {
+            auto& d = DCAST(data, CValueBase*)->getValue();
+            lua_pushnumber(L, lua_str2number(d.c_str(), nullptr));
+        }
+        break;
+
+    case kVtBOOL:
+        {
+            auto& d = DCAST(data, CValueBase*)->getValue();
+            lua_pushboolean(L, d.at(0) == kVtbFalse ? false : true);
+        }
+        break;
+
+    case kVtMAP:
+        {
+            lua_newtable(L);
+            auto& vm = DCAST(data, CValueMap*)->getValue();
+            M_MAP_FOREACH(vm)
+            {
+                auto& eln = M_MAP_IT->first;
+                auto eld = M_MAP_EACH;
+                M_MAP_NEXT;
+
+                if (eld->getType() & kVtfArrayElement)
+                {
+                    lua_pushnumber(L, atof(eln.c_str()));
+                }
+                else
+                {
+                    lua_pushlstring(L, eln.c_str(), eln.size());
+                }
+                
+                _luaPushValue(L, eld);
+                lua_settable(L, -3);
+            }
+        }
+        break;
+
+    default:
+        assert(false);
+    }
+}
+
+int g_loadTableFromFile(lua_State* L)
+{
+    auto file = lua_tostring(L, 1);
+    
+    CArchive ar;
+    auto res = ar.loadFromFile(file);
+    if (res == false)
+    {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    auto vm = ar.getValueMap();
+    
+    _luaPushValue(L, vm);
+
+    return 1;
+}
+
+static CValue* _luaToValue(lua_State* L, int index)
+{
+    auto type = lua_type(L, index);
+    switch (type)
+    {
+    case LUA_TSTRING:
+        {
+            size_t len = 0;
+            auto buf = lua_tolstring(L, index, &len);
+            return new CValueBase(string(buf, len));
+        }
+        break;
+
+    case LUA_TNUMBER:
+        {
+            auto num = lua_tonumber(L, index);
+            char buf[32];
+            lua_number2str(buf, num);
+            return new CValueBase((lua_Number)(lua_Integer)num == num ? kVtINT : kVtFLT, buf);
+        }
+        break;
+
+    case LUA_TBOOLEAN:
+        {
+            bool b = lua_toboolean(L, index) != 0;
+            return new CValueBase(b);
+        }
+        break;
+
+    case LUA_TTABLE:
+        {
+            auto ret = new CValueMap();
+
+            lua_pushnil(L);  /* first key */
+            while (lua_next(L, index) != 0)
+            {
+                /* uses 'key' (at index -2) and 'value' (at index -1) */
+                if (lua_isnumber(L, -2))
+                {
+                    int k = (int)lua_tonumber(L, -2);
+                    auto v = _luaToValue(L, lua_gettop(L));
+                    if (v != nullptr)
+                    {
+                        v->setType(v->getType() | kVtfArrayElement);
+                        ret->setArrayElement(k, v);
+                    }
+                }
+                else if (lua_isstring(L, -2))
+                {
+                    size_t len = 0;
+                    auto k = lua_tolstring(L, -2, &len);
+                    auto v = _luaToValue(L, lua_gettop(L));
+                    if (v != nullptr)
+                    {
+                        ret->setValue(string(k, len), v);
+                    }
+                }
+                else
+                {
+                    assert(false);
+                }
+
+                /* removes 'value'; keeps 'key' for next iteration */
+                lua_pop(L, 1);
+            }
+
+        return ret;
+    }
+        break;
+    }
+
+    return nullptr;
+}
+
+int g_saveTableToFile(lua_State* L)
+{
+    auto v = _luaToValue(L, 1);
+    auto file = lua_tostring(L, 2);
+
+    CArchive ar;
+    CValueMap* vm = DCAST(v, CValueMap*);
+    ar.setValueMap(vm);
+    ar.saveToFile(file);
+
+    return 0;
+}
+
 // game
 
 CUnit* luaL_tounitptr(lua_State* L, int idx)
@@ -303,6 +470,7 @@ luaL_Reg LevelExp_funcs[] = {
     { "getLevel", LevelExp_getLevel },
     { "setMaxLevel", LevelExp_setMaxLevel },
     { "getMaxLevel", LevelExp_getMaxLevel },
+    { "getExp", LevelExp_getExp },
     { "addExp", LevelExp_addExp },
     { "setExpRange", LevelExp_setExpRange },
     { "setLevelUpdate", LevelExp_setLevelUpdate },
@@ -360,6 +528,16 @@ int LevelExp_addExp(lua_State* L)
     _p->addExp(exp);
 
     return 0;
+}
+
+int LevelExp_getExp(lua_State* L)
+{
+    CLevelExp* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushinteger(L, _p->getExp());
+
+    return 1;
 }
 
 int LevelExp_setExpRange(lua_State* L)
@@ -570,6 +748,8 @@ luaL_Reg Unit_funcs[] = {
     { "setGhost", Unit_setGhost },
     { "setEnergy", Unit_setEnergy },
     { "getEnergy", Unit_getEnergy },
+    { "setVisible", Unit_setVisible },
+    { "isVisible", Unit_isVisible },
 
     { "startDoing", Unit_startDoing },
     { "endDoing", Unit_endDoing },
@@ -1053,6 +1233,27 @@ int Unit_getEnergy(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
 
     lua_pushinteger(L, u->getEnergy());
+
+    return 1;
+}
+
+int Unit_setVisible(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    bool v = lua_toboolean(L, 2) != 0;
+
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    d->setVisible(v);
+
+    return 0;
+}
+
+int Unit_isVisible(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    lua_pushboolean(L, d->isVisible());
 
     return 1;
 }
@@ -1634,7 +1835,7 @@ int Unit2D_doAnimation(lua_State* L)
     float fSpeed = lua_gettop(L) < 4 ? 1.0f : lua_tonumber(L, 4);
 
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
-    d->doAnimation(id, nullptr, iRepeatTimes, nullptr, fSpeed);
+    auto tag = d->doAnimation(id, nullptr, iRepeatTimes, nullptr, fSpeed);
 
     return 0;
 }
@@ -2784,8 +2985,8 @@ int AttackAct_ctor(lua_State* L)
     float maxRange = lua_tonumber(L, 8);
     bool hor = (lua_toboolean(L, 9) != 0);
 
-    int anis = lua_gettop(L) + 1;
-    assert(anis > 9);
+    int lastArg = lua_gettop(L);
+    assert(lastArg >= 9);
 
 
     CAttackAct* _p = new CAttackAct("Attack", name, cd, CAttackValue(at, av), ar);
@@ -2796,7 +2997,7 @@ int AttackAct_ctor(lua_State* L)
     _p->setCastMinRange(minRange);
     _p->setCastRange(maxRange);
     _p->setCastHorizontal(hor);
-    for (int i = 11; i < anis; ++i)
+    for (int i = 10; i <= lastArg; ++i)
     {
         _p->addCastAnimation(lua_tointeger(L, i));
     }
@@ -3349,6 +3550,8 @@ int luaRegCommFuncs(lua_State* L)
     lua_register(L, "class", g_class);
     lua_register(L, "cast", g_cast);
     lua_register(L, "addTemplateAbility", g_addTemplateAbility);
+    lua_register(L, "loadTableFromFile", g_loadTableFromFile);
+    lua_register(L, "saveTableToFile", g_saveTableToFile);
 
     // TODO: reg global classes
     M_LUA_BIND_CLASS_WITH_FUNCS(L, MRObj);

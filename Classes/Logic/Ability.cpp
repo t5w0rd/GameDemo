@@ -893,9 +893,8 @@ void CActiveAbility::effect()
                 return;
             }
 
-            if (getTemplateProjectile() != 0)
+            if (getTemplateProjectile() != 0 && t->getId() != o->getId())
             {
-                
                 CProjectile* p = w->copyProjectile(getTemplateProjectile());
                 w->addProjectile(p);
                 p->setSrcUnit(o->getId());
@@ -1216,7 +1215,7 @@ CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCool
 , m_iTemplateBuff(iTemplateBuff)
 , m_bEffectFixed(false)
 , m_bEffectDead(false)
-, m_pTarget(nullptr)
+, m_iTargetId(0)
 {
     setDbgClassName("CBuffMakerAct");
 }
@@ -1230,7 +1229,9 @@ CBuffMakerAct* CBuffMakerAct::copy()
 
 bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
 {
-    m_pTarget = nullptr;
+    CUnit* pTarget = nullptr;
+    m_iTargetId = 0;
+
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
     assert(d != nullptr);
@@ -1238,23 +1239,26 @@ bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
     switch (getCastTargetType())
     {
     case CCommandTarget::kNoTarget:
-        m_pTarget = o;
+        pTarget = o;
         break;
         
     case CCommandTarget::kUnitTarget:
-        m_pTarget = o->getUnit(rTarget.getTargetUnit());
-        if (m_pTarget != nullptr && (m_pTarget->isDead()))
+        pTarget = o->getUnit(rTarget.getTargetUnit());
+        if (pTarget != nullptr && (pTarget->isDead()))
         {
-            m_pTarget = nullptr;
+            pTarget = nullptr;
         }
+        
         break;
         
     default:
         ;
     }
+
+    m_iTargetId = pTarget != nullptr ? pTarget->getId() : 0;
     
-    if (m_pTarget != nullptr &&
-        !o->canEffect(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags()))
+    if (pTarget != nullptr &&
+        !o->canEffect(DCAST(pTarget, CUnitForce*), getEffectiveTypeFlags()))
     {
         // 如果有待选目标(自身或命令目标)，但是无法作用
         if (getCastTargetRadius() <= FLT_EPSILON ||
@@ -1270,22 +1274,23 @@ bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
 
 void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
 {
+    CUnit* o = getOwner();
+    CUnit* pOrgTarget = o->getUnit(m_iTargetId);
+
     if (pTarget != nullptr)
     {
         // 抛射物被反弹后，m_pTarget需要更新
-        m_pTarget = pTarget;
+        pOrgTarget = pTarget;
     }
     
-    CUnit* o = getOwner();
-
     switch (getCastTargetType())
     {
     case CCommandTarget::kNoTarget:
     case CCommandTarget::kUnitTarget:
 
-        if (M_RAND_HIT(m_fChance) && (pProjectile != nullptr || o->canEffect(DCAST(m_pTarget, CUnitForce*), getEffectiveTypeFlags())))
+        if (pOrgTarget != nullptr && M_RAND_HIT(m_fChance) && (pProjectile != nullptr || o->canEffect(DCAST(pOrgTarget, CUnitForce*), getEffectiveTypeFlags())))
         {
-            m_pTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
+            pOrgTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
         break;
 
@@ -1322,7 +1327,7 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
 
-        if (M_RAND_HIT(m_fChance) == false || u == nullptr || u->isDead() || u == m_pTarget)
+        if (M_RAND_HIT(m_fChance) == false || u == nullptr || u->isDead() || u == pOrgTarget)
         {
             continue;
         }
@@ -1535,12 +1540,19 @@ void CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarge
     }
     
     pAttack->getAttackValue().setValue(m_oExAttackValue.getValue(pAttack->getAttackValue().getValue()));
+    CUnit* o = getOwner();
+    if (m_oExAttackValue.getMulriple() > 1.0f)
+    {
+        auto d = DCAST(o->getDraw(), CUnitDrawForCC*);
+        char sz[32];
+        sprintf(sz, "%d", toInt(pAttack->getAttackValue().getValue()));
+        d->addBattleTip(sz, "", 32, Color3B(250, 0, 0));
+    }
     
     if (m_iTemplateBuff != 0)
     {
         if (isToSelf())
         {
-            CUnit* o = getOwner();
             o->addBuffAbility(m_iTemplateBuff, o->getId(), getLevel());
         }
         else
@@ -1613,7 +1625,10 @@ bool CAttackBuffMakerPas::castInnerSpell(CUnit* pTarget)
         return false;
     }
 
+    auto orgTarget = od->getCastTarget();
+    od->setCastTarget(cmdTarget);
     m_pInnerAct->effect();
+    od->setCastTarget(orgTarget);
 
     return true;
 }
@@ -2378,7 +2393,7 @@ void CTransitiveBlinkBuff::onUnitAddAbility()
     m_iFromUnit = o->getId();
     m_mapTransmited[m_iFromUnit] = 0;
 
-    souceUnitRunActions(m_iTimesLeft == m_iMaxTimes);
+    sourceUnitRunActions(m_iTimesLeft == m_iMaxTimes);
 
     setTimesLeft(getTimesLeft() - 1);
 }
@@ -2494,7 +2509,7 @@ bool CTransitiveBlinkBuff::checkConditions(CUnit* pUnit)
     return true;
 }
 
-void CTransitiveBlinkBuff::souceUnitRunActions(bool bFirstTime)
+void CTransitiveBlinkBuff::sourceUnitRunActions(bool bFirstTime)
 {
     auto o = getOwner();
     auto s = o->getUnit(getSrcUnit());
@@ -2529,8 +2544,10 @@ void CTransitiveBlinkBuff::souceUnitRunActions(bool bFirstTime)
     sd->setFlippedX(to.x < from.x);
     float spd = 2.5f;
     sd->doMoveTo(to, 0.35f, nullptr, spd);
+    
     // unsafe
-    sd->doAnimation(getCastRandomAnimation(), nullptr, 1, bind(&CTransitiveBlinkBuff::TransmitNext, this), spd);
+    //sd->doAnimation(getCastRandomAnimation(), nullptr, 1, bind(&CTransitiveBlinkBuff::TransmitNext, this), spd);
+    sd->doAnimation(getCastRandomAnimation(), nullptr, 1, nullptr, spd);
 }
 
 void CTransitiveBlinkBuff::resumeSourceUnit()

@@ -44,6 +44,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/Logic/AbilityLibrary.cpp \
 ../../Classes/Logic/Action.cpp \
 ../../Classes/Logic/Application.cpp \
+../../Classes/Logic/Archive.cpp \
 ../../Classes/Logic/Base.cpp \
 ../../Classes/Logic/Draw.cpp \
 ../../Classes/Logic/Item.cpp \

@@ -290,8 +290,10 @@ function initForHero()
 	hero:setForceByIndex(0)
 	hero:setAlly(2 ^ 0 + 2 ^ 2)
 	
-	--hero:addActiveAbility(AL.kThrowHammerEx:getId())
-	--hero:addActiveAbility(AL.kMagicalRain:getId())
+	--local a = TeleportAct:new("TP", 1.0, Sprite.kAniAct6, Sprite.kAniAct7)
+	--a:setImageName("UI/Ability/Ability03.png")
+	--hero:addActiveAbility(a)
+	--hero:addActiveAbility(AL.kBuffMaker:getId())
 	hero:addPassiveAbility(AL.kStrikeBack:getId())
 	
 	return hero

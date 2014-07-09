@@ -58,6 +58,11 @@ void CUnitDraw::setVisible(bool bVisible /*= true*/)
 {
 }
 
+bool CUnitDraw::isVisible() const
+{
+    return true;
+}
+
 void CUnitDraw::onUnitRevive()
 {
 }
@@ -695,6 +700,10 @@ bool CUnitDraw2D::checkCastTargetDistance(CActiveAbility* pAbility, const CPoint
         return true;
 
     case CCommandTarget::kUnitTarget:
+        if (getId() == td->getId())
+        {
+            return true;
+        }
         roPos2 = td->getPosition();
         break;
 

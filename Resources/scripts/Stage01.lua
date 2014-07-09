@@ -6,7 +6,7 @@ local hero = nil
 
 local uc = nil
 uc = UnitCreator:new()
-uc.name = "T_T"
+uc.nm = "T_T"
 uc.hp = 220
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -19,8 +19,9 @@ uc.reward.e = 5
 
 
 uc = UnitCreator:new()
-uc.name = "T_T"
-uc.hp = 110000
+uc.id = SUL.kPriest
+uc.nm = "T_T"
+uc.hp = 2200
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
 uc.atk.v = 205.0
@@ -48,7 +49,7 @@ function Stage01:onInit()
 end
 
 function Stage01:onTick(dt)
-	if self.u:isDead() then
+	if self.u and self.u:isDead() then
 		endWithVictory(math.random(1, 3))
 	end
 end

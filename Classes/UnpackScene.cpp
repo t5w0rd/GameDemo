@@ -74,13 +74,13 @@ bool UnpackSceneLayer::init()
     addChild(mn);
     mn->setPosition(Point::ZERO);
     
-    MenuItemLabel* lbl = MenuItemLabel::create(Label::createWithTTF("Prev", "", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelPrev, this));
+    MenuItemLabel* lbl = MenuItemLabel::create(Label::createWithTTF("Prev", "fonts/Arial.ttf", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelPrev, this));
     mn->addChild(lbl);
     lbl->setPosition(Point(sz.width * 0.3, sz.height * 0.95));
-    lbl = MenuItemLabel::create(Label::createWithTTF("Next", "", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelNext, this));
+    lbl = MenuItemLabel::create(Label::createWithTTF("Next", "fonts/Arial.ttf", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelNext, this));
     mn->addChild(lbl);
     lbl->setPosition(Point(sz.width * 0.7, sz.height * 0.95));
-    lbl = MenuItemLabel::create(Label::createWithTTF("SaveAll", "", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelSave, this));
+    lbl = MenuItemLabel::create(Label::createWithTTF("SaveAll", "fonts/Arial.ttf", 64), CC_CALLBACK_1(UnpackSceneLayer::onLabelSave, this));
     mn->addChild(lbl);
     lbl->setPosition(Point(sz.width * 0.5, sz.height * 0.95));
 
@@ -248,14 +248,14 @@ void UnpackSceneLayer::onLabelSave(Ref*)
 bool UnpackSceneLayer::saveToPng(const char* name, const char* path, SpriteFrameCache* fc)
 {
     m_sp->setSpriteFrame(fc->getSpriteFrameByName(name));
-    Size sz = m_sp->getContentSize();
-    m_sp->setPosition(Point(sz.width * 0.5, sz.height * 0.5));
-    RenderTexture rt;
-    rt.initWithWidthAndHeight(sz.width, sz.height, Texture2D::PixelFormat::RGBA8888);
+    //Size sz = m_sp->getContentSize();
+    //m_sp->setPosition(Point(sz.width * 0.5, sz.height * 0.5));
+    //RenderTexture rt;
+    //rt.initWithWidthAndHeight(sz.width, sz.height, Texture2D::PixelFormat::RGBA8888);
 
-    rt.begin();
-    m_sp->visit();
-    rt.end();
+    //rt.begin();
+    //m_sp->visit();
+    //rt.end();
 
     char full[256];
     if (path != nullptr)
@@ -268,9 +268,9 @@ bool UnpackSceneLayer::saveToPng(const char* name, const char* path, SpriteFrame
     }
     
     preparePath(full);
-    Image* img = rt.newImage();
-    bool res = img->saveToFile(full, false);
-    delete img;
+    bool res = Utils::nodeToFile(m_sp, full);
+    //bool res = img->saveToFile(full, false);
+    //delete img;
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
     static HANDLE h = GetCurrentProcess();
@@ -292,6 +292,6 @@ bool UnpackSceneLayer::saveToPng(const char* name, const char* path, SpriteFrame
         PoolManager::getInstance()->getCurrentPool()->clear();
         rc = 0;
     }
-#endif
+#endif-
     return res;
 }

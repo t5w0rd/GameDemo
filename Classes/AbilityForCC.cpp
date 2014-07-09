@@ -85,20 +85,31 @@ void CShowStatusPas::onUnitChangeHp(float fChanged)
 {
     CUnit* o = getOwner();
     float fPer = o->getHp() / max(FLT_EPSILON, o->getRealMaxHp());
+    float fOrgPer = m_pHpBar->m_pPt->getPercentage() * 0.01f;
     m_pHpBar->setPercentage(fPer);
     m_pHpBar->setFillColor(Color3B(min(255, (int)((1.00f - fPer) * 256 / 0.5)), min(255, (int)(256 / 0.5 * fPer)), 0));
 
-    if (fPer < m_pHpDecBar->m_pPt->getPercentage() * 0.01f)
+    if (fPer > m_pHpDecBar->m_pPt->getPercentage() * 0.01f)
     {
-        if (fChanged < 0.0f)
-        {
-            m_pHpDecBar->m_pPt->stopAllActions();
-            m_pHpDecBar->m_pPt->runAction(Sequence::create(DelayTime::create(fPer * 1.0 / (fPer + 1.0f)), ProgressTo::create(fPer * 1.0f, fPer), nullptr));
-        }
-    }
-    else
-    {
+        // 如果血量大于当前拖影，则直接停止拖影动作，并更新拖影长度
+        m_pHpDecBar->m_pPt->stopActionByTag(getId());
         m_pHpDecBar->setPercentage(fPer);
+    }
+
+    if (fChanged < 0.0f)
+    {
+        float deltaPer = m_pHpDecBar->m_pPt->getPercentage() * 0.01f - fPer;
+        m_pHpDecBar->m_pPt->stopActionByTag(getId());
+        if (deltaPer < 0.03f)
+        {
+            m_pHpDecBar->setPercentage(fPer);
+        }
+        else
+        {
+            auto act = Sequence::create(DelayTime::create(deltaPer * 1.0 / (deltaPer + 1.0f)), ProgressTo::create(deltaPer * 1.0f, fPer * 100.0), nullptr);
+            act->setTag(getId());
+            m_pHpDecBar->m_pPt->runAction(act);
+        }
     }
 }
 

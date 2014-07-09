@@ -16,15 +16,14 @@ int g_include(lua_State* L);
 int g_addTemplateUnit(lua_State* L);
 int g_addTemplateProjectile(lua_State* L);
 int g_addAbilityToUserData(lua_State* L);
-int g_udsets(lua_State* L);
-int g_udgets(lua_State* L);
-int g_udsetn(lua_State* L);
-int g_udgetn(lua_State* L);
+int g_getWritablePath(lua_State* L);
+int g_isFileExist(lua_State* L);
 
 int Unit4CC_ctor(lua_State* L);
 int Unit4CC_addBattleTip(lua_State* L);
 int Unit4CC_setGeometry(lua_State* L);
 int Unit4CC_getAnchorPointInPoints(lua_State* L);
+int Unit4CC_addCtrlSound(lua_State* L);
 
 int Projectile4CC_ctor(lua_State* L);
 

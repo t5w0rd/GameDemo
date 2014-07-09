@@ -5,6 +5,11 @@
 #include "ComponentForCC.h"
 #include "ActionForCC.h"
 #include "Ability.h"
+#include "Archive.h"
+#include "LuaScriptEngine.h"
+#include "LuaBinding.h"
+#include "LuaBindingForCC.h"
+#include "GameData.h"
 
 
 // EmptySceneLayer
@@ -140,21 +145,29 @@ bool EmptySceneLayer::init()
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
 
-    gc->loadFrames("Global0");
-    gc->loadFrames("Global1");
+    CArchive ar;
 
-    auto tx = Director::getInstance()->getTextureCache()->addImage("UI/Ability/AbilityItemBackground.png");
-    Size aiSz = tx->getContentSize();
+//#if 0
+    ar.setValue("heroes_num", new CValueBase(kVtUINT, "1"));
 
-    // ¹ö¶¯²ã
-    auto p = "ÖÐÎÄ²âÊÔ";
-    char sz[64] = {};
-    gbk_to_utf8(p, sz);
-    auto l = Label::createWithTTF(sz, "fonts/DFYuanW7-GB2312.ttf", 32);
+    auto hero = new CValueMap();
+    hero->setValue("name", new CValueBase("Sword"));
+    hero->setValue("hp", new CValueBase(100.0));
+    auto def = new CValueMap();
+    def->setArrayElement(0, new CValueBase(50.0));
+    def->setArrayElement(1, new CValueBase(150.001));
+    def->setArrayElement(2, new CValueBase(250.133));
+    hero->setValue("def", def);
 
-    addChild(l);
-    l->setAnchorPoint(Point::ZERO);
-    l->setPosition(Point(300, 300));
+    ar.setValue("hero", hero);
 
+    ar.saveToFile("save.dat");
+
+//#else
+    CGameData::instance();
+    auto L = CLuaScriptEngine::instance()->getLuaHandle();
+    luaL_includefilelog(L, "Empty.lua");
+    //ar.loadFromFile("save.dat");
+//#endif
     return true;
 }

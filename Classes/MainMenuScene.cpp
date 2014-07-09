@@ -215,26 +215,27 @@ void SelectArchiveLayer::MenuItemCloseCallback(Ref* sender)
 void SelectArchiveLayer::onEnter()
 {
     Layer::onEnter();
-   string path = FileUtils::getInstance()->getWritablePath() + "save00";
-   CCLOG("path = %s", path.c_str());
-   if(FileUtils::getInstance()->isFileExist(path))
-   {
-       Data data = FileUtils::getInstance()->getDataFromFile(path);
-       CCLOG("%ld", data.getSize());
-       m_pLabel1->setString((const char*)data.getBytes());
-   }
-   else
-   {
-       CCLOG("File not Exist");
-       FILE* file = fopen(path.c_str(), "wb"); 
+    return;
 
-       if (file)
-       { 
-           fwrite("input sth", sizeof(unsigned char), 10, file);
-           fclose(file);  
-       }
-       
-   }
+    string path = FileUtils::getInstance()->getWritablePath() + "save00";
+    CCLOG("path = %s", path.c_str());
+    if(FileUtils::getInstance()->isFileExist(path))
+    {
+        Data data = FileUtils::getInstance()->getDataFromFile(path);
+        CCLOG("%ld", data.getSize());
+        m_pLabel1->setString((const char*)data.getBytes());
+    }
+    else
+    {
+        CCLOG("File not Exist");
+        FILE* file = fopen(path.c_str(), "wb"); 
+
+        if (file)
+        { 
+            fwrite("input sth", sizeof(unsigned char), 10, file);
+            fclose(file);  
+        }
+    }
 }
 /*
 

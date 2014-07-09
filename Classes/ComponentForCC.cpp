@@ -1852,7 +1852,8 @@ bool Utils::nodeToFile(Node* node, const char* file, const FUNC_TRAN& funcTransf
         transformImage(image, funcTransform);
     }
 
-    bool ret = image->saveToFile(FileUtils::getInstance()->fullPathForFilename(file).c_str(), false);
+    //bool ret = image->saveToFile(FileUtils::getInstance()->fullPathForFilename(file).c_str(), false);
+    bool ret = image->saveToFile(file, false);
     delete image;
 
     return ret;

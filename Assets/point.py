@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+#points(x, y) in photoshop.
 def point(w, h, ax, ay, hx, hy, fx, fy):
     anchorX = ax / w
     anchorY = (h - ay) / h

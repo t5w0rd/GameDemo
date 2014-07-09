@@ -3033,7 +3033,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act6/18.png</key>
+            <key>Sprites/Priest/act7/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{2,480},{84,156}}</string>
@@ -3046,7 +3046,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act6/19.png</key>
+            <key>Sprites/Priest/act7/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1186,1904},{92,138}}</string>
@@ -3059,7 +3059,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act6/20.png</key>
+            <key>Sprites/Priest/act7/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1954,230},{92,110}}</string>
@@ -3072,7 +3072,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act6/28.png</key>
+            <key>Sprites/Priest/act7/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1886,1848},{134,110}}</string>
@@ -3085,7 +3085,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act6/29.png</key>
+            <key>Sprites/Priest/act7/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1496,2},{136,110}}</string>
@@ -3098,7 +3098,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act6/30.png</key>
+            <key>Sprites/Priest/act7/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1138,722},{138,112}}</string>
@@ -3111,7 +3111,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act6/31.png</key>
+            <key>Sprites/Priest/act7/16.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{932,1328},{140,112}}</string>
@@ -3693,7 +3693,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:873a1497d89442eec8ba7290ff93c065:c3c0d858c00b50a76b48b925639fa8f5:cbc7ffaea9b3cb73f4655ba87628df80$</string>
+            <string>$TexturePacker:SmartUpdate:381e02ff347f401f1bb08f0ef2fcf840:a0e3d1d8f446511b58435d7cf1d9f870:cbc7ffaea9b3cb73f4655ba87628df80$</string>
             <key>textureFileName</key>
             <string>Heroes2.png</string>
         </dict>

@@ -507,9 +507,9 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
         }
     }
 
-    // 当前目标存在！   如果能打到之前的目标且  (目标非建筑  或(是建筑，且源也是建筑))
+    // 当前目标存在！   如果能打到之前的目标 或 之前的目标在仇视范围内    (目标非建筑  或(是建筑，且源也是建筑))
     // 果伤害源
-    if (td != nullptr && d->checkCastTargetDistance(atking, d->getPosition(), d->getCastTarget(), td))
+    if (td != nullptr && (d->getPosition().getDistance(td->getPosition()) < d->getHostilityRange() || d->checkCastTargetDistance(atking, d->getPosition(), d->getCastTarget(), td)))
     {
         // 如果能打到之前的目标，不改变攻击目标
         return;

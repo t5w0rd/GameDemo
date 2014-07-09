@@ -249,7 +249,7 @@ public:
     M_SYNTHESIZE_BOOL(EffectDead);
     
 protected:
-    CUnit* m_pTarget;
+    int m_iTargetId;
 };
 
 /////////////////////// PassiveAbilities & BuffAbilities ///////////////////////
@@ -500,7 +500,7 @@ public:
 
     bool checkConditions(CUnit* pUnit);
 
-    void souceUnitRunActions(bool bFirstTime);
+    void sourceUnitRunActions(bool bFirstTime);
     void resumeSourceUnit();
 
 protected:

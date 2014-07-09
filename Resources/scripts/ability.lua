@@ -1,6 +1,8 @@
 if __ABILITY__ then return end
 __ABILITY__ = true
 
+include("UnitLibrary.lua")
+
 BetrayBuff = class(BuffAbility)
 function BetrayBuff:ctor(duration)
     self:sctor("Betray", "Betray", duration, false)
@@ -386,6 +388,10 @@ function ChangeAttributeBuff:changeValueByDelta(dt)
     a, b = atk:getExAttackValue()
     atk:setExAttackValue(a + exAttackValueDeltaA, b + exAttackValueDeltaB)
 	
+	if self:getDuration() <= 0.5 and self.exAttackValueDeltaA * dt > 1 then
+		o:addBattleTip(math.ceil(atk:getRealAttackValue()), nil, 32, 250, 0, 0)
+	end
+	
 	a, b = o:getExArmorValue()
 	o:setExArmorValue(a + exArmorValueDeltaA, b + exArmorValueDeltaB)
 end
@@ -487,3 +493,22 @@ function WhenDamagedBuff:onUnitDamagedDone(damage, source)
 	end
 end
 
+TeleportAct = class(ActiveAbility)
+TeleportAct.INTERVAL = 0.001
+function TeleportAct:ctor(name, cd, startAct, endAct)
+	self:sctor("TeleportAct", name, cd, CommandTarget.kPointTarget, UnitForce.kSelf)
+	self:setCastRange(800)
+	--self:setCastTargetRadius(0)
+	self:addCastAnimation(startAct)
+	self:setInterval(TeleportAct.INTERVAL)
+	
+	self.endAct = endAct
+end
+
+function TeleportAct:onUnitAbilityEffect(proj, target)
+	local o = self:getOwner()
+	local ct = o:getCastTarget()
+	
+	o:setPosition(ct.x, ct.y)
+	o:doAnimation(self.endAct, 1)
+end

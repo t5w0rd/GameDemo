@@ -86,7 +86,8 @@ public:
     virtual void stopAllActions();
     virtual Action* getAction(int id);
 
-    virtual void setVisible(bool bVisible = true);
+    virtual void setVisible(bool bVisible = true) override;
+    virtual bool isVisible() const override;
 
     virtual void setFrame(int id) override;
     SpriteFrame* getFrameOfAnimation(int id, int index);

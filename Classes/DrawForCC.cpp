@@ -80,9 +80,11 @@ const CSpriteInfo::ANI_INFO* CSpriteInfo::getAnimationInfo(int id) const
 
 void CSpriteInfo::addAnimationSound(int id, const char* sound)
 {
+    M_DEF_GC(gc);
     auto it = m_mapAniInfos.find(id);
     assert(it != m_mapAniInfos.end());
     it->second.vecSounds.push_back(sound);
+    gc->preloadSound(sound);
 }
 
 void CSpriteInfo::prepareFrame(int id, const char* pName, const char* pFrameName)
@@ -326,6 +328,11 @@ Action* CUnitDrawForCC::getAction(int id)
 void CUnitDrawForCC::setVisible(bool bVisible /*= true*/)
 {
     getSprite()->setVisible(bVisible);
+}
+
+bool CUnitDrawForCC::isVisible() const
+{
+    return getSprite()->isVisible();
 }
 
 void CUnitDrawForCC::setFrame(int id)

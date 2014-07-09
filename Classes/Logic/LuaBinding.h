@@ -80,12 +80,14 @@ int g_class(lua_State* L);
 int g_cast(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
 
+int g_loadTableFromFile(lua_State* L);
+int g_saveTableToFile(lua_State* L);
+
 template <typename PTYPE>
 PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr);
 
 template <typename PTYPE>
 void luaL_pushobjptr(lua_State* L, const char* name, const PTYPE _p);
-
 
 CUnit* luaL_tounitptr(lua_State* L, int idx = 1);
 CAbility* luaL_toabilityptr(lua_State* L, int idx);
@@ -100,6 +102,7 @@ int LevelExp_getLevel(lua_State* L);
 int LevelExp_setMaxLevel(lua_State* L);
 int LevelExp_getMaxLevel(lua_State* L);
 int LevelExp_addExp(lua_State* L);
+int LevelExp_getExp(lua_State* L);
 int LevelExp_setExpRange(lua_State* L);
 int LevelExp_setLevelUpdate(lua_State* L);
 
@@ -158,6 +161,8 @@ int Unit_say(lua_State* L);
 int Unit_setGhost(lua_State* L);
 int Unit_setEnergy(lua_State* L);
 int Unit_getEnergy(lua_State* L);
+int Unit_setVisible(lua_State* L);
+int Unit_isVisible(lua_State* L);
 
 int Unit_startDoing(lua_State* L);
 int Unit_endDoing(lua_State* L);

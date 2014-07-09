@@ -61,7 +61,7 @@ function HeroLevelUpdate:onChangeLevel(u, change)
     
 	--[[]]
 	if lv == 10 then
-        u:addPassiveAbility(AL.kTransitiveAttack:getId())
+        --u:addPassiveAbility(AL.kTransitiveAttack:getId())
     elseif lv == 11 then
         u:addPassiveAbility(AL.kLightningAttack:getId())
     elseif lv == 12 then

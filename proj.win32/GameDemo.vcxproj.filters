@@ -222,6 +222,9 @@
     <ClCompile Include="..\Classes\Logic\LuaScriptEngine.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Archive.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -408,6 +411,9 @@
       <Filter>Classes</Filter>
     </ClInclude>
     <ClInclude Include="..\Classes\Logic\LuaScriptEngine.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Archive.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
   </ItemGroup>
