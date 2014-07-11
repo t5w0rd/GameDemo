@@ -32,7 +32,7 @@ function LuaSimpleAI:trySkill(unit, skill, castTarget)
     if skill and not skill:isCoolingDown() and not unit:isDoingCastingAction() then
         if castTarget then
             --logf("castTarget %d", castTarget)
-            unit:castSpellWithTargetUnit(castTarget, skill)
+            unit:castSpellWithTargetUnit(skill, castTarget)
         else
             unit:castSpellWithoutTarget(skill)
         end

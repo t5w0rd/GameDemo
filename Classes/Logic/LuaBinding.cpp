@@ -765,6 +765,7 @@ luaL_Reg Unit_funcs[] = {
     { "delBuffAbility", Unit_delBuffAbility },
     { "getAttackAbility", Unit_getAttackAbility },
     { "getActiveAbility", Unit_getActiveAbility },
+    { "getActiveAbilities", Unit_getActiveAbilities },
     { "getBuffAbility", Unit_getBuffAbility },
 
     { "setBaseMoveSpeed", Unit2D_setBaseMoveSpeed },
@@ -1432,6 +1433,34 @@ int Unit_getActiveAbility(lua_State* L)
     return 1;
 }
 
+int Unit_getActiveAbilities(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    lua_newtable(L);
+    int t = lua_gettop(L);
+
+    auto& am = u->getActiveAbilities();
+
+    int i = 1;
+    M_MAP_FOREACH(am)
+    {
+        CActiveAbility* a = M_MAP_EACH;
+        M_MAP_NEXT;
+
+        if (a->isTemporary())
+        {
+            continue;
+        }
+
+        luaL_pushobjptr(L, "ActiveAbility", a);
+        lua_rawseti(L, t, i);
+        ++i;
+    }
+
+    return 1;
+}
+
 int Unit_getBuffAbility(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
@@ -1665,8 +1694,8 @@ int Unit2D_castSpellWithoutTarget(lua_State* L)
 int Unit2D_castSpellWithTargetUnit(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    int t = luaL_tounitid(L, 2);
-    int id = luaL_toabilityid(L, 3);
+    int id = luaL_toabilityid(L, 2);
+    int t = luaL_tounitid(L, 3);
     bool ob = lua_gettop(L) < 4 ? true : (lua_toboolean(L, 4) != 0);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
@@ -1680,11 +1709,11 @@ int Unit2D_castSpellWithTargetUnit(lua_State* L)
 int Unit2D_castSpellWithTargetPoint(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    int id = luaL_toabilityid(L, 4);
+    int id = luaL_toabilityid(L, 2);
     bool ob = lua_gettop(L) < 5 ? true : (lua_toboolean(L, 5) != 0);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-    int res = d->cmdCastSpell(CCommandTarget(CPoint(lua_tonumber(L, 2), lua_tonumber(L, 3))), id, ob);
+    int res = d->cmdCastSpell(CCommandTarget(CPoint(lua_tonumber(L, 3), lua_tonumber(L, 4))), id, ob);
 
     lua_pushinteger(L, res);
 
@@ -1897,6 +1926,10 @@ luaL_Reg UnitAI_funcs[] = {
     { "onUnitTick", UnitAI_onUnitTick },
     { "onUnitDamagedDone", UnitAI_onUnitDamagedDone },
     { "onUnitDamageTargetDone", UnitAI_onUnitDamageTargetDone },
+    { "onUnitAddActiveAbility", UnitAI_onUnitAddActiveAbility },
+    { "onUnitDelActiveAbility", UnitAI_onUnitDelActiveAbility },
+    { "onUnitAddPassiveAbility", UnitAI_onUnitAddPassiveAbility },
+    { "onUnitDelPassiveAbility", UnitAI_onUnitDelPassiveAbility },
     { "onUnitAddBuffAbility", UnitAI_onUnitAddBuffAbility },
     { "onUnitDelBuffAbility", UnitAI_onUnitDelBuffAbility },
     { "onUnitAbilityReady", UnitAI_onUnitAbilityReady },
@@ -1929,6 +1962,26 @@ int UnitAI_onUnitDamagedDone(lua_State* L)
 }
 
 int UnitAI_onUnitDamageTargetDone(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitAddActiveAbility(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitDelActiveAbility(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitAddPassiveAbility(lua_State* L)
+{
+    return 0;
+}
+
+int UnitAI_onUnitDelPassiveAbility(lua_State* L)
 {
     return 0;
 }
@@ -2681,6 +2734,7 @@ luaL_Reg ActiveAbility_funcs[] = {
     { "getCastMinRange", ActiveAbility_getCastMinRange },
     { "setCastTargetRadius", ActiveAbility_setCastTargetRadius },
     { "getCastTargetRadius", ActiveAbility_getCastTargetRadius },
+    { "getCastTargetType", ActiveAbility_getCastTargetType },
     { "setTemplateProjectile", ActiveAbility_setTemplateProjectile },
     { "setCastHorizontal", ActiveAbility_setCastHorizontal },
     { "isCastHorizontal", ActiveAbility_isCastHorizontal },
@@ -2804,6 +2858,16 @@ int ActiveAbility_getCastTargetRadius(lua_State* L)
     luaL_toobjptr(L, 1, _p);
 
     lua_pushnumber(L, _p->getCastTargetRadius());
+
+    return 1;
+}
+
+int ActiveAbility_getCastTargetType(lua_State* L)
+{
+    CActiveAbility* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushinteger(L, _p->getCastTargetType());
 
     return 1;
 }

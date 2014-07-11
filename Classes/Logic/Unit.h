@@ -296,6 +296,10 @@ public:
     virtual void onUnitTick(CUnit* pUnit, float dt);
     virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource);
     virtual void onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget);
+    virtual void onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility);
+    virtual void onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility);
+    virtual void onUnitAddPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility);
+    virtual void onUnitDelPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility);
     virtual void onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility);
     virtual void onUnitDelBuffAbility(CUnit* pUnit, CBuffAbility* pAbility);
     virtual void onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility);

@@ -648,6 +648,109 @@ void CUnitAI::onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget
 
     lua_pop(L, 1);  // pop 'ai'
 }
+void CUnitAI::onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitAddActiveAbility");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    luaL_pushobjptr(L, "ActiveAbility", pAbility);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitDelActiveAbility");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    luaL_pushobjptr(L, "ActiveAbility", pAbility);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitAddPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility)
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitAddPassiveAbility");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    luaL_pushobjptr(L, "PassiveAbility", pAbility);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'ai'
+}
+
+void CUnitAI::onUnitDelPassiveAbility(CUnit* pUnit, CPassiveAbility* pAbility)
+{
+    if (getScriptHandler() == 0)
+    {
+        return;
+    }
+
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    int ai = luaL_getregistery(L, getScriptHandler());
+
+    lua_getfield(L, ai, "onUnitDelPassiveAbility");
+    lua_pushvalue(L, ai);
+    luaL_pushobjptr(L, "Unit", pUnit);
+    luaL_pushobjptr(L, "PassiveAbility", pAbility);
+    if (lua_pcall(L, 3, 0, 0) != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        lua_getglobal(L, "log");
+        lua_pushvalue(L, -2);
+        lua_call(L, 1, 0);
+        lua_pop(L, 1);
+    }
+
+    lua_pop(L, 1);  // pop 'ai'
+}
 
 void CUnitAI::onUnitAddBuffAbility(CUnit* pUnit, CBuffAbility* pAbility)
 {

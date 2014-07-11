@@ -1,46 +1,49 @@
 LuaAI = class(UnitAI)
 function LuaAI:ctor()
     self:sctor()
-    self.stunned = false
-    self.t = nil
-    self.atk = true
+    self.acts = {}
+
+    self.targetId = nil
+    self.canAttack = true
+end
+
+function LuaAI:tryCastSpell(unit, name, condFunc, params)
+    local a = unit:getActiveAbility(name)
+    if not a or a:isDoingCastingAction() or a:isCoolingDown() then
+        return false
+    end
+    
+	local castType = a:getCastTarget()
+    if castType == CommandTarget.kNoTarget then
+        if condFunc(unit, a, params) then
+            unit:castSpellWithoutTarget(a)
+            return true
+        end
+    elseif castType == CommandTarget.kUnitTarget then
+        local t = condFunc(unit, a, params)
+        if t then
+            unit:castSpellWithUnitTarget(a, t)
+            return true
+        end
+    elseif castType == CommandTarget.kPointTarget then
+        local x, y = condFunc(unit, a, params)
+        if x and y then
+            unit:castSpellWithPointTarget(a, x, y)
+            return true
+        end
+    end
+    return false
 end
 
 function LuaAI:onUnitTick(unit, dt)
-    atk = unit:getAttackAbility()
-    if unit:getBuffAbility("Stun") then
-        self.stunned = true
-    end
-    
-    su = unit:getBuffAbility("SpeedUp2")
-    if su then
-        --return
-    end
-    
-    t = unit:getAttackingTarget()
+    local atk = unit:getAttackAbility()
+    local t = unit:getAttackingTarget()
     if t then
-        tsu = t:getBuffAbility("SpeedUp")
-        self.t = t:getId()
-    end
-    a = unit:getActiveAbility("Cutter")
-    if t and a and not a:isCoolingDown() then
-        local x0, y0 = t:getPosition()
-        local x1, y1 = unit:getPosition()
-        local x, y = getForwardPoint(x1, y1, x0, y0, 100)
-        unit:castSpellWithTargetPoint(x, y, a)
-    end
-    
-    a = unit:getActiveAbility("KnockBack")
-    if t and a and unit:getDistance(t) < 100 and not a:isCoolingDown() then
-        unit:castSpellWithoutTarget(a)
-    end
-    
-    a = unit:getActiveAbility("Reflect")
-    if a and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-        unit:castSpellWithoutTarget(a)
+        self.targetId = t:getId()
     end
     
     if t and atk and (atk:isCoolingDown()) then
+		--攻击cd中
         local x0, y0 = t:getPosition()
         local x1, y1 = unit:getPosition()
         local dis = atk:getCastRange()
@@ -50,17 +53,24 @@ function LuaAI:onUnitTick(unit, dt)
 
         local x, y = getForwardPoint(x0, y0, x1, y1, dis)
         unit:move(x, y + math.random(-50, 50))
-        self.atk = false
+        self.canAttack = false
     end
     
-    if not self.atk and (self.t and not getUnit(self.t)) then
-        unit:stop()
-        self.t = nil
-    end
+	if not self.canAttack then
+		--如果不攻击
+		if self.targetId and not getUnit(self.targetId) then
+			-- 当前目标已不存在
+			unit:stop()
+			self.targetId = nil
+		end
+	end
+	
     
-    if not self.atk and not t and atk and not atk:isCoolingDown() then
-        unit:castSpellWithTargetUnit(self.t, atk)
-        self.atk = true
+    
+    if not t and atk and not atk:isCoolingDown() then
+        --如果不能攻击，但是 存在可攻击目标 且攻击没有cd
+		unit:castSpellWithTargetUnit(atk, self.targetId)
+        self.canAttack = true
     end
     
     if unit:isDoingOr(Unit.kObstinate) then
@@ -69,22 +79,6 @@ function LuaAI:onUnitTick(unit, dt)
     
     if not t then
         return
-    end
-    
-    a = unit:getActiveAbility("SpeedUp2")
-    if a and not unit:isDoingCastingAction() and not a:isCoolingDown() and unit:getDistance(t) < 400 and self.stunned then
-        unit:castSpellWithoutTarget(a)
-    end
-    
-    if unit:getHp() / unit:getRealMaxHp() < 0.5 and not unit:getBuffAbility("TowerHeal") then
-        a = unit:getActiveAbility("SpeedUp2")
-        if a and not unit:isDoingCastingAction() and not a:isCoolingDown() then
-            unit:castSpellWithoutTarget(a)
-        end
-        
-        if not unit:isDoingCastingAction() then
-            unit:move(100, 500)
-        end
     end
 end
 
