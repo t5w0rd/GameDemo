@@ -870,6 +870,7 @@ void CActiveAbility::effect()
 {
     CUnit* o = getOwner();
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
+
     CWorld* w = o->getWorld();
     // Ability
     
@@ -2357,7 +2358,7 @@ bool CTransitiveLinkBuff::checkConditions(CUnit* pUnit)
 
 // CTransitiveBlinkBuff
 CTransitiveBlinkBuff::CTransitiveBlinkBuff(const char* pName, float fRange, int iMaxTimes, int iMinIntervalTimes, int iCastAnimation)
-: CBuffAbility("LinkBuff", pName, 0.5f, true)
+: CBuffAbility("LinkBuff", pName, 0.3f, true)
 , m_fRange(fRange)
 , m_dwEffectiveTypeFlags(CUnitForce::kEnemy)
 , m_iMaxTimes(iMaxTimes)

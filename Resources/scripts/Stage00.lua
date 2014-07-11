@@ -16,7 +16,7 @@ lvl = 1
 taid2 = 0
 
 function spawnSoldier(id, force)
-    u = createUnit(0xff + id)
+    u = createUnit(id)
     u:setForceByIndex(force)
 
     if force == 1 then
@@ -37,12 +37,16 @@ function spawnSoldier(id, force)
     return u
 end
 
-function spawnHero(id)
+function spawnHero(id, force)
     if not id then
-        id = math.random(1, 12)
+        id = math.random(1, 12) + 0xff
     end
-    hero = spawnSoldier(id, 1)
-    hero:addPassiveAbility(OnDyingPas:new())
+	
+	if not force then
+		force = 1
+	end
+	
+    hero = spawnSoldier(id, force)
     hero:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
     if me:getLevel() > 15 and math.random() < 0.1 then
         hero:setExMaxHp(1 + kill / 10, 0.0)
@@ -58,18 +62,36 @@ function spawnHero(id)
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
 
-    if atk:getCastRange() > 100 then
-        --hero:addActiveAbility(AL.kReflect:getId())
-        hero:addActiveAbility(AL.kSpeedUp2:getId())
-        hero:addActiveAbility(AL.kKnockBack:getId())
-        hero:setAI(LuaAI:new())
+	if force == 1 then
+		hero:addPassiveAbility(OnDyingPas:new())
+		if atk:getCastRange() > 100 then
+			hero:setAI(LuaAI:new())
+			--hero:addActiveAbility(AL.kReflect:getId())
+			hero:addActiveAbility(AL.kSpeedUp2:getId())
+			hero:addActiveAbility(AL.kKnockBack:getId())
+			if id == UL.kMage then
+				hero:addActiveAbility(AL.kGravitySurf:getId())
+				hero:addActiveAbility(SAL.kMageRain, 3)
+			elseif id == UL.kFrost then
+				hero:addActiveAbility(AL.kSnowStorm:getId())
+			elseif id == UL.Archer then
+				hero:addActiveAbility(AL.kCutter:getId())
+			end
+			
+		else
+			hero:setAI(LuaAIWarrior:new())
+			hero:addActiveAbility(AL.kThrowHammer:getId())
+			hero:addActiveAbility(AL.kThunderCap:getId())
+			hero:addActiveAbility(AL.kSpeedUp:getId())
+			hero:addActiveAbility(AL.kChargeJump:getId())
+		end
     else
-        hero:addActiveAbility(AL.kThrowHammer:getId())
-        hero:addActiveAbility(AL.kThunderCap:getId())
-        hero:addActiveAbility(AL.kSpeedUp:getId())
-        hero:setAI(LuaAIWarrior:new())
-    end
-    
+		hero:setAI(LuaAI:new())
+		hero:addActiveAbility(AL.kKnockBack:getId())
+		hero:addActiveAbility(AL.kSweetDew:getId())
+		hero:addActiveAbility(AL.kWarCry:getId())
+	end
+	
     return hero
 end
 
@@ -154,7 +176,7 @@ tower2 = 0
 
 Stage00 = class(Battle)
 function Stage00:onInit()
-
+	self.healer = 0
 	initAbilityForLevelUp()
 	
 	me = initForHero()
@@ -177,9 +199,6 @@ function Stage00:onInit()
 	--me:addActiveAbility(AL.kMagicalRain:getId())
 	--me:addActiveAbility(AL.kWarCry:getId())
     
-    me:addPassiveAbility(AL.kStrikeBack:getId())
-	me:addPassiveAbility(AL.kDeadlyAttack:getId())
-	me:addPassiveAbility(AL.kChangeAttributeAttack:getId())
 	--me:addPassiveAbility(AL.kVampireAttack:getId())
     --me:addPassiveAbility(AL.kCriticalAttack:getId())
     --me:addPassiveAbility(AL.kRebirth:getId())
@@ -256,7 +275,7 @@ function Stage00:onTick(dt)
             el = el - 2
             playSound("sounds/Effects/OpenDoor.mp3")
             if uc == 4 then
-                u = spawnSoldier(2, 1)
+                u = spawnSoldier(UL.kMage, 1)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:addPassiveAbility(arid)
@@ -267,7 +286,7 @@ function Stage00:onTick(dt)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
                 
-                u = spawnSoldier(4, 0)
+                u = spawnSoldier(UL.kArcher, 0)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:setRewardGold(20)
@@ -275,15 +294,19 @@ function Stage00:onTick(dt)
                 u:setMaxHp(200 + lvl * 46)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
+				
+				if not getUnit(self.healer) then
+					self.healer = spawnHero(SUL.kPriest, 0):getId()
+				end
             else
-                u = spawnSoldier(22, 1)
+                u = spawnSoldier(UL.kSoldier, 1)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:setMaxHp(200 + lvl * 63)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.3)
                 
-                u = spawnSoldier(23, 0)
+                u = spawnSoldier(UL.kTemplar, 0)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:setMaxHp(200 + lvl * 63)
@@ -296,10 +319,9 @@ function Stage00:onTick(dt)
 				u:setLevel(lvl)
                 a = u:getAttackAbility()
                 if a:getCastRange() < 150 and math.random(0, 100) < 50 then
-                    u = spawnHero(4)
+                    u = spawnHero(UL.kArcher, 1)
 					u:setMaxLevel(lvl)
 					u:setLevel(lvl)
-                    hero:addActiveAbility(AL.kCutter:getId())
                     hero:setBaseMoveSpeed(85)
                     hero = u
                 end

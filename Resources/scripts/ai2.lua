@@ -67,11 +67,12 @@ end
 function LuaAIWarrior:onUnitTick(unit, dt)
     t = unit:getAttackingTarget()
     if t and t:getDistance(unit) < 200 then
-        self:tryCastSkill(unit, "ThrowHammer", t)
+        self:tryCastSkill(unit, "风暴战锤", t)
     end
 	if t and t:getHp() > 60 then
-		self:tryCastSkill(unit, "ThunderCap", nil, 100)
-		self:tryCastSkill(unit, "SpeedUp", nil, 100)
+		self:tryCastSkill(unit, "愤怒重踏", nil, 100)
+		self:tryCastSkill(unit, "加速", nil, 100)
+		self:tryCastSkill(unit, "英勇疾跃", nil, 100)
 	end
     
     if not unit:isDoingCastingAction() and unit:getHp() / unit:getRealMaxHp() < 0.5 and not unit:getBuffAbility("TowerHeal") then

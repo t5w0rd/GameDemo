@@ -1,3 +1,52 @@
+-- ConditionFunctions
+CF = {}
+
+function CF.checkAround(u, a)
+	local eff = a:getEffectiveTypeFlags()
+	local r = a:getCastTargetRadius()
+	if eff == UnitForce.kEnemy then
+		local t = u:getNearestEnemyInRange(r)
+		if not t then
+			return false
+		end
+	end
+	return true
+end
+
+function CF.getAttackingTarget(u, a)
+	return u:getAttackingTarget()
+end
+
+function CF.getAttackingTargetPoint(u, a)
+	local t = u:getAttackingTarget()
+	if not t then
+		return nil, nil
+	end
+	return t:getPosition()
+end
+
+function CF.getNearestEnemy(u, a)
+	local r = a:getCastRange()
+	return u:getNearestEnemyInRange(r)
+end
+
+function CF.getInjuredTargetUnit(u, a)
+	return u:getNearestEffectiveInjuredUnitInRange(a:getCastRange(), a:getEffectiveTypeFlags(), 0.75, 0.0)
+end
+
+ACF = {}
+ACF["疾速"] = CF.checkAround
+ACF["英勇疾跃"] = CF.checkAround
+ACF["击退"] = CF.checkAround
+ACF["圣愈之风"] = CF.checkAround
+
+ACF["致命匕首"] = CF.getAttackingTargetPoint
+ACF["引力法球"] = CF.getAttackingTargetPoint
+ACF["魔法箭雨"] = CF.getAttackingTargetPoint
+
+ACF["治疗甘露"] = CF.getInjuredTargetUnit
+
+
 LuaAI = class(UnitAI)
 function LuaAI:ctor()
     self:sctor()
@@ -7,28 +56,33 @@ function LuaAI:ctor()
     self.canAttack = true
 end
 
-function LuaAI:tryCastSpell(unit, name, condFunc, params)
-    local a = unit:getActiveAbility(name)
-    if not a or a:isDoingCastingAction() or a:isCoolingDown() then
+function LuaAI:tryCastSpell(unit, a)
+	if not a or unit:isDoingCastingAction() or a:isCoolingDown() then
         return false
     end
     
-	local castType = a:getCastTarget()
+	local castType = a:getCastTargetType()
+	local cf = ACF[a:getName()]
+	if not cf then
+		return false
+	end
+	
     if castType == CommandTarget.kNoTarget then
-        if condFunc(unit, a, params) then
+        if cf(unit, a) then
             unit:castSpellWithoutTarget(a)
             return true
         end
     elseif castType == CommandTarget.kUnitTarget then
-        local t = condFunc(unit, a, params)
+        local t = cf(unit, a)
         if t then
-            unit:castSpellWithUnitTarget(a, t)
+            unit:castSpellWithTargetUnit(a, t)
             return true
         end
     elseif castType == CommandTarget.kPointTarget then
-        local x, y = condFunc(unit, a, params)
+        local x, y = cf(unit, a)
         if x and y then
-            unit:castSpellWithPointTarget(a, x, y)
+            unit:castSpellWithTargetPoint(a, x, y)
+            log("pppp")
             return true
         end
     end
@@ -37,6 +91,16 @@ end
 
 function LuaAI:onUnitTick(unit, dt)
     local atk = unit:getAttackAbility()
+	
+	local a = unit:getCastingActiveAbility()
+	if a and not a:isCoolingDown() and unit:isDoingAnd(Unit.kCasting + Unit.kObstinate) then
+    	return
+    end
+	
+    for _, a in pairs(self.acts) do
+    	self:tryCastSpell(unit, a)
+    end
+    
     local t = unit:getAttackingTarget()
     if t then
         self.targetId = t:getId()
@@ -69,21 +133,20 @@ function LuaAI:onUnitTick(unit, dt)
     
     if not t and atk and not atk:isCoolingDown() then
         --如果不能攻击，但是 存在可攻击目标 且攻击没有cd
-		unit:castSpellWithTargetUnit(atk, self.targetId)
+        unit:castSpellWithTargetUnit(atk, self.targetId)
         self.canAttack = true
     end
     
-    if unit:isDoingOr(Unit.kObstinate) then
-        return
-    end
     
-    if not t then
-        return
-    end
+    
+end
+
+function LuaAI:onUnitAddActiveAbility(unit, a)
+	table.insert(self.acts, a)
 end
 
 function LuaAI:onUnitAbilityReady(unit, ability)
     if ability:getId() ~= unit:getAttackAbility():getId() then
-        unit:addBattleTip(ability:getName(), "fonts/Comic Book.fnt", 32, 0, 0, 0)
+        --unit:addBattleTip(ability:getName(), "fonts/Comic Book.fnt", 32, 0, 0, 0)
     end
 end

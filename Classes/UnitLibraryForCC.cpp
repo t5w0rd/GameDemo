@@ -501,7 +501,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         CAttackValue(CAttackValue::kPhysical, 30.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(180.0f);
+    atk->setCastRange(400.0f);
     atk->addCastAnimation(kAniAct1);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);

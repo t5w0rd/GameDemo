@@ -701,6 +701,12 @@ int g_createUnit(lua_State* L)
     lua_pop(L, 1);  // pop _world
 
     CUnit* _p = CUnitLibraryForCC::instance()->copyUnit(id);
+    if (_p == nullptr)
+    {
+        lua_pushnil(L);
+        return 1;
+    }
+
     w->addUnit(_p);
 
     luaL_pushobjptr(L, "Unit", _p);
@@ -717,6 +723,12 @@ int g_createProjectile(lua_State* L)
     lua_pop(L, 1);  // pop _world
 
     CProjectile* _p = CUnitLibraryForCC::instance()->copyProjectile(id);
+    if (_p == nullptr)
+    {
+        lua_pushnil(L);
+        return 1;
+    }
+
     w->addProjectile(_p);
 
     luaL_pushobjptr(L, "Projectile", _p);

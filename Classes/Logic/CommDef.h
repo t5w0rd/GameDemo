@@ -295,6 +295,11 @@ inline void cirDec(int& i, int min, int num)
     --i < min && (i = min + num - 1);
 }
 
+inline bool iszhch(char p)
+{
+    return (p >> 7) != 0;
+}
+
 #define M_SAFE_RETAIN(p) do { if (p) { (p)->retain(); } } while(0)
 #define M_SAFE_RELEASE(p) do { if (p) { (p)->release(); } } while(0)
 

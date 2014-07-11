@@ -4645,7 +4645,7 @@
                 <key>sourceSize</key>
                 <string>{92,92}</string>
             </dict>
-            <key>Sprites/Priest/act2/00.png</key>
+            <key>Sprites/Priest/act1/00.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{278,722},{58,66}}</string>
@@ -4658,7 +4658,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/01.png</key>
+            <key>Sprites/Priest/act1/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1260,792},{64,62}}</string>
@@ -4671,7 +4671,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/02.png</key>
+            <key>Sprites/Priest/act1/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1386,314},{74,60}}</string>
@@ -4684,7 +4684,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/03.png</key>
+            <key>Sprites/Priest/act1/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1538,338},{74,58}}</string>
@@ -4697,7 +4697,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/04.png</key>
+            <key>Sprites/Priest/act1/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1634,888},{68,58}}</string>
@@ -4710,7 +4710,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/16.png</key>
+            <key>Sprites/Priest/act1/16.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{76,334},{54,72}}</string>
@@ -6774,7 +6774,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:381e02ff347f401f1bb08f0ef2fcf840:a0e3d1d8f446511b58435d7cf1d9f870:cbc7ffaea9b3cb73f4655ba87628df80$</string>
+            <string>$TexturePacker:SmartUpdate:99a824dd17f5d1f137d663447ab9600d:f232f1cd76c4de3473380705babf0649:cbc7ffaea9b3cb73f4655ba87628df80$</string>
             <key>textureFileName</key>
             <string>Heroes5.png</string>
         </dict>

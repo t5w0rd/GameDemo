@@ -81,7 +81,7 @@ function HeroLevelUpdate:onChangeLevel(u, change)
     elseif lv == 19 then
         u:addPassiveAbility(AL.kCutterAttack:getId())
     elseif lv == 20 then
-        --u:addActiveAbility(AL.kMultiSlash:getId())
+        u:addPassiveAbility(AL.kStrikeBack:getId())
     end
 	--[[]]
     saveUserData()

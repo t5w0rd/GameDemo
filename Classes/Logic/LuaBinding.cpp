@@ -778,6 +778,7 @@ luaL_Reg Unit_funcs[] = {
     { "setPosition", Unit2D_setPosition },
     { "getPosition", Unit2D_getPosition },
     { "getNearestEnemyInRange", Unit2D_getNearestEnemyInRange },
+    { "getNearestUnitInRange", Unit2D_getNearestUnitInRange },
     { "move", Unit2D_move },
     { "moveAlongPath", Unit2D_moveAlongPath },
     { "setCastTarget", Unit2D_setCastTarget },
@@ -791,6 +792,7 @@ luaL_Reg Unit_funcs[] = {
     { "setFixed", Unit2D_setFixed },
     { "isFixed", Unit2D_isFixed },
     { "isDoingCastingAction", Unit2D_isDoingCastingAction },
+    { "getCastingActiveAbility", Unit2D_getCastingActiveAbility },
     { "getDistance", Unit2D_getDistance },
     { "getTouchDistance", Unit2D_getTouchDistance },
     { "getAttackingTarget", Unit2D_getAttackingTarget },
@@ -1319,7 +1321,7 @@ int Unit_addActiveAbility(lua_State* L)
     else
     {
         int id = lua_tointeger(L, 2);
-        u->addActiveAbility(id);
+        u->addActiveAbility(id, lua_gettop(L) == 3 ? lua_tointeger(L, 3) : 1);
     }
 
     return 0;
@@ -1336,7 +1338,7 @@ int Unit_addPassiveAbility(lua_State* L)
     else
     {
         int id = lua_tointeger(L, 2);
-        u->addPassiveAbility(id);
+        u->addPassiveAbility(id, lua_gettop(L) == 3 ? lua_tointeger(L, 3) : 1);
     }
 
     return 0;
@@ -1362,7 +1364,7 @@ int Unit_addBuffAbility(lua_State* L)
         {
             src = lua_tointeger(L, 3);
         }
-        u->addBuffAbility(id, src);
+        u->addBuffAbility(id, src, lua_gettop(L) == 4 ? lua_tointeger(L, 4) : 1);
     }
 
     return 0;
@@ -1594,6 +1596,51 @@ int Unit2D_getNearestEnemyInRange(lua_State* L)
     return 1;
 }
 
+int Unit2D_getNearestUnitInRange(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    float r = lua_tonumber(L, 2);
+    int matchfunc = 3;
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    CUnit* _p = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), r, [L, matchfunc](CUnit* u)->bool{
+        if (lua_isfunction(L, matchfunc))
+        {
+            lua_pushvalue(L, matchfunc);
+            luaL_pushobjptr(L, "Unit", u);
+
+            bool res = false;
+            if (lua_pcall(L, 1, 1, 0) != LUA_OK)
+            {
+                const char* err = lua_tostring(L, -1);
+                lua_getglobal(L, "log");
+                lua_pushvalue(L, -2);
+                lua_call(L, 1, 0);
+                lua_pop(L, 1);
+            }
+            else
+            {
+                res = lua_toboolean(L, -1) != 0;
+            }
+
+            lua_pop(L, 1);
+            
+            return res;
+        }
+        else
+        {
+            return true;
+        }
+    });
+    lua_pop(L, 1);
+
+    luaL_pushobjptr(L, "Unit", _p);
+
+    return 1;
+}
+
 int Unit2D_move(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
@@ -1781,6 +1828,24 @@ int Unit2D_isDoingCastingAction(lua_State* L)
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
     lua_pushboolean(L, d->getCastActionId());
+
+    return 1;
+}
+
+int Unit2D_getCastingActiveAbility(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+
+    CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
+    auto a = u->getActiveAbility(d->getCastActiveAbilityId());
+    if (a == nullptr)
+    {
+        lua_pushnil(L);
+    }
+    else
+    {
+        luaL_pushobjptr(L, "ActiveAbility", a);
+    }
 
     return 1;
 }

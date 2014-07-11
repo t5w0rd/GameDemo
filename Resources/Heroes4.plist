@@ -5152,98 +5152,7 @@
                 <key>sourceSize</key>
                 <string>{196,176}</string>
             </dict>
-            <key>Sprites/Priest/act1/00.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1054,1792},{80,70}}</string>
-                <key>offset</key>
-                <string>{-9,-57}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{29,156},{80,70}}</string>
-                <key>sourceSize</key>
-                <string>{156,268}</string>
-            </dict>
-            <key>Sprites/Priest/act1/01.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{354,1324},{86,66}}</string>
-                <key>offset</key>
-                <string>{-16,-59}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{19,160},{86,66}}</string>
-                <key>sourceSize</key>
-                <string>{156,268}</string>
-            </dict>
-            <key>Sprites/Priest/act1/02.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{88,1760},{84,74}}</string>
-                <key>offset</key>
-                <string>{-19,-54}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{17,151},{84,74}}</string>
-                <key>sourceSize</key>
-                <string>{156,268}</string>
-            </dict>
-            <key>Sprites/Priest/act1/03.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{88,1440},{84,72}}</string>
-                <key>offset</key>
-                <string>{-20,-56}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{16,154},{84,72}}</string>
-                <key>sourceSize</key>
-                <string>{156,268}</string>
-            </dict>
-            <key>Sprites/Priest/act1/04.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1038,1694},{78,54}}</string>
-                <key>offset</key>
-                <string>{7,-67}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{46,174},{78,54}}</string>
-                <key>sourceSize</key>
-                <string>{156,268}</string>
-            </dict>
-            <key>Sprites/Priest/act1/06.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{730,780},{94,56}}</string>
-                <key>offset</key>
-                <string>{18,-76}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{49,182},{94,56}}</string>
-                <key>sourceSize</key>
-                <string>{156,268}</string>
-            </dict>
-            <key>Sprites/Priest/act1/08.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{2000,70},{66,46}}</string>
-                <key>offset</key>
-                <string>{13,-71}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{58,182},{66,46}}</string>
-                <key>sourceSize</key>
-                <string>{156,268}</string>
-            </dict>
-            <key>Sprites/Priest/act2/05.png</key>
+            <key>Sprites/Priest/act1/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1576,1684},{60,80}}</string>
@@ -5256,7 +5165,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/06.png</key>
+            <key>Sprites/Priest/act1/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{804,1310},{60,86}}</string>
@@ -5269,7 +5178,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/07.png</key>
+            <key>Sprites/Priest/act1/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{286,896},{60,90}}</string>
@@ -5282,7 +5191,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/08.png</key>
+            <key>Sprites/Priest/act1/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{274,1016},{56,88}}</string>
@@ -5295,7 +5204,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/09.png</key>
+            <key>Sprites/Priest/act1/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1360,1378},{58,88}}</string>
@@ -5308,7 +5217,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/10.png</key>
+            <key>Sprites/Priest/act1/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{184,1016},{58,88}}</string>
@@ -5321,7 +5230,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/11.png</key>
+            <key>Sprites/Priest/act1/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{714,1362},{58,86}}</string>
@@ -5334,7 +5243,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/12.png</key>
+            <key>Sprites/Priest/act1/12.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1068,1340},{56,86}}</string>
@@ -5347,7 +5256,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/13.png</key>
+            <key>Sprites/Priest/act1/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{892,1312},{58,86}}</string>
@@ -5360,7 +5269,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/14.png</key>
+            <key>Sprites/Priest/act1/14.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{802,1372},{58,84}}</string>
@@ -5373,7 +5282,7 @@
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
-            <key>Sprites/Priest/act2/15.png</key>
+            <key>Sprites/Priest/act1/15.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{862,1882},{58,84}}</string>
@@ -5383,6 +5292,97 @@
                 <false/>
                 <key>sourceColorRect</key>
                 <string>{{41,141},{58,84}}</string>
+                <key>sourceSize</key>
+                <string>{156,268}</string>
+            </dict>
+            <key>Sprites/Priest/act2/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1054,1792},{80,70}}</string>
+                <key>offset</key>
+                <string>{-9,-57}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{29,156},{80,70}}</string>
+                <key>sourceSize</key>
+                <string>{156,268}</string>
+            </dict>
+            <key>Sprites/Priest/act2/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{354,1324},{86,66}}</string>
+                <key>offset</key>
+                <string>{-16,-59}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{19,160},{86,66}}</string>
+                <key>sourceSize</key>
+                <string>{156,268}</string>
+            </dict>
+            <key>Sprites/Priest/act2/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{88,1760},{84,74}}</string>
+                <key>offset</key>
+                <string>{-19,-54}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{17,151},{84,74}}</string>
+                <key>sourceSize</key>
+                <string>{156,268}</string>
+            </dict>
+            <key>Sprites/Priest/act2/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{88,1440},{84,72}}</string>
+                <key>offset</key>
+                <string>{-20,-56}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{16,154},{84,72}}</string>
+                <key>sourceSize</key>
+                <string>{156,268}</string>
+            </dict>
+            <key>Sprites/Priest/act2/04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1038,1694},{78,54}}</string>
+                <key>offset</key>
+                <string>{7,-67}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{46,174},{78,54}}</string>
+                <key>sourceSize</key>
+                <string>{156,268}</string>
+            </dict>
+            <key>Sprites/Priest/act2/06.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{730,780},{94,56}}</string>
+                <key>offset</key>
+                <string>{18,-76}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{49,182},{94,56}}</string>
+                <key>sourceSize</key>
+                <string>{156,268}</string>
+            </dict>
+            <key>Sprites/Priest/act2/08.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2000,70},{66,46}}</string>
+                <key>offset</key>
+                <string>{13,-71}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{58,182},{66,46}}</string>
                 <key>sourceSize</key>
                 <string>{156,268}</string>
             </dict>
@@ -7398,7 +7398,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:381e02ff347f401f1bb08f0ef2fcf840:a0e3d1d8f446511b58435d7cf1d9f870:cbc7ffaea9b3cb73f4655ba87628df80$</string>
+            <string>$TexturePacker:SmartUpdate:99a824dd17f5d1f137d663447ab9600d:f232f1cd76c4de3473380705babf0649:cbc7ffaea9b3cb73f4655ba87628df80$</string>
             <key>textureFileName</key>
             <string>Heroes4.png</string>
         </dict>

@@ -180,7 +180,7 @@ function SummonUnitAct:onUnitAbilityEffect(projectile, target)
     a = AuraPas:new("AttractAura", 0.5, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
     u:addPassiveAbility(a)
 
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 15.0, 0.0, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.25, 0.0)
     id = addTemplateAbility(a)
     a = AuraPas:new("DamageAura", 1.0, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
     u:addPassiveAbility(a)

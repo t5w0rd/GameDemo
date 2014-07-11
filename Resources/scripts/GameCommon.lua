@@ -156,6 +156,27 @@ function Unit:sayf(self, ...)
     self:say(string.format(table.unpack({...})))
 end
 
+function Unit:getEffectiveUnitsInRange(radius, forceFlags, func)
+	local us = getUnits(function (u, p)
+		return self:canEffect(u, forceFlags) and self:getTouchDistance(u) < radius and func(u)
+	end, nil)
+	
+	return us
+end
+
+function Unit:getNearestEffectiveUnitInRange(radius, forceFlags)
+	return self:getNearestUnitInRange(radius, function (u)
+		return self:canEffect(u, forceFlags)
+	end)
+end
+
+function Unit:getNearestEffectiveInjuredUnitInRange(radius, forceFlags, exMaxHpA, exMaxHpB)
+	return self:getNearestUnitInRange(radius, function (u)
+		local maxHp = u:getRealMaxHp()
+		return self:canEffect(u, forceFlags) and u:getHp() <= (exMaxHpA * maxHp + exMaxHpB)
+	end)
+end
+
 UnitCreator = class()
 function UnitCreator:ctor()
 	
@@ -294,7 +315,7 @@ function initForHero()
 	--a:setImageName("UI/Ability/Ability03.png")
 	--hero:addActiveAbility(a)
 	--hero:addActiveAbility(AL.kBuffMaker:getId())
-	hero:addPassiveAbility(AL.kStrikeBack:getId())
+	--hero:addPassiveAbility(AL.kStrikeBack:getId())
 	
 	return hero
 end

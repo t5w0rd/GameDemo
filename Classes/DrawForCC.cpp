@@ -442,6 +442,7 @@ void CUnitDrawForCC::setGeometry(float fHalfOfWidth, float fHalfOfHeight, const 
 void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFontSize, Color3B color)
 {
     //return;
+    auto pZhCh = "fonts/DFYuanW7-GB2312.ttf";
     if (pFont == nullptr || pFont[0] == 0)
     {
         pFont = "fonts/Comic Book.fnt";
@@ -461,11 +462,21 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
         lbl->removeFromParentAndCleanup(true);
     }
 
+    float scale;
     //lbl = Label::create(pTip, pFont, fFontSize);
-    char sz[1024];
-    lbl = Label::createWithBMFont(pFont, gbk_to_utf8(pTip, sz));
-    float scale = fFontSize / 32;
-    lbl->setScale(scale);
+    if (iszhch(pTip[0]))
+    {
+        char sz[1024];
+        lbl = Label::createWithTTF(gbk_to_utf8(pTip, sz), pZhCh, fFontSize);
+        scale = 1.0f;
+    }
+    else
+    {
+        lbl = Label::createWithBMFont(pFont, pTip);
+        scale = fFontSize / 32;
+        lbl->setScale(scale);
+    }
+    
     lbl->setColor(color);
     l->addChild(lbl, 1, getCurTipId());
 

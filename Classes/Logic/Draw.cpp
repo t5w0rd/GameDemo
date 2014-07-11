@@ -564,7 +564,7 @@ int CUnitDraw2D::cmdCastSpell(const CCommandTarget& rTarget, int iActiveAbilityI
         td = DCAST(t->getDraw(), CUnitDraw2D*);
         assert(td != nullptr);
 
-        bFlippedX = (td->getPosition().x < getPosition().x);
+        bFlippedX = u->getId() == rTarget.getTargetUnit() ? isFlippedX() : (td->getPosition().x < getPosition().x);
 
         break;
 
@@ -685,7 +685,7 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
     {
         onCastEffect();
         onCastDone();
-        setCastActionId(0);
+        //setCastActionId(0);
     }
 
     return 0;
@@ -756,6 +756,13 @@ void CUnitDraw2D::onCastEffect()
     }
 
     LOG("%s%s%s..", getUnit()->getName(), getUnit()->getAttackAbilityId() == pAbility->getId() ? "的" : "施放了", pAbility->getName());
+    
+    CUnitDrawForCC* _d = DCAST(this, CUnitDrawForCC*);
+    if (pAbility->getId() != u->getAttackAbilityId())
+    {
+        _d->addBattleTip(pAbility->getName(), "", 32, Color3B::BLACK);
+    }
+
     pAbility->effect();
 }
 
