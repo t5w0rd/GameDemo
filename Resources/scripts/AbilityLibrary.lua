@@ -225,7 +225,7 @@ function loadAbilityLibrary()
 	id = addTemplateAbility(a)
 	
 	a = BuffMakerAct:new("÷Œ¡∆∏ ¬∂", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, 1.0, id)
-    a:setCastRange(400.0)
+    a:setCastRange(300.0)
     a:addCastAnimation(Sprite.kAniAct3)
     a:setTemplateProjectile(SPL.kWizardProy)
     a:addEffectSound("sounds/Effects/sound_eff_impact_heal.mp3")

@@ -16,7 +16,7 @@ lvl = 1
 taid2 = 0
 
 function spawnSoldier(id, force)
-    u = createUnit(0xff + id)
+    u = createUnit(id)
     u:setForceByIndex(force)
 
     if force == 1 then
@@ -37,12 +37,16 @@ function spawnSoldier(id, force)
     return u
 end
 
-function spawnHero(id)
+function spawnHero(id, force)
     if not id then
-        id = math.random(1, 12)
+        id = math.random(1, 12) + 0xff
     end
-    hero = spawnSoldier(id, 1)
-    hero:addPassiveAbility(OnDyingPas:new())
+	
+	if not force then
+		force = 1
+	end
+	
+    hero = spawnSoldier(id, force)
     hero:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
     if me:getLevel() > 15 and math.random() < 0.1 then
         hero:setExMaxHp(1 + kill / 10, 0.0)
@@ -58,18 +62,36 @@ function spawnHero(id)
         hero:addPassiveAbility(aaa[math.random(1, c)])
     end
 
-    if atk:getCastRange() > 100 then
-        --hero:addActiveAbility(AL.kReflect:getId())
-        hero:addActiveAbility(AL.kSpeedUp2:getId())
-        hero:addActiveAbility(AL.kKnockBack:getId())
-        hero:setAI(LuaAI:new())
+	if force == 1 then
+		hero:addPassiveAbility(OnDyingPas:new())
+		if atk:getCastRange() > 100 then
+			hero:setAI(LuaAI:new())
+			--hero:addActiveAbility(AL.kReflect:getId())
+			hero:addActiveAbility(AL.kSpeedUp2:getId())
+			hero:addActiveAbility(AL.kKnockBack:getId())
+			if id == UL.kMage then
+				hero:addActiveAbility(AL.kGravitySurf:getId())
+				hero:addActiveAbility(SAL.kMageRain, 3)
+			elseif id == UL.kFrost then
+				hero:addActiveAbility(AL.kSnowStorm:getId())
+			elseif id == UL.kArcher then
+				hero:addActiveAbility(AL.kCutter:getId())
+			end
+			
+		else
+			hero:setAI(LuaAIWarrior:new())
+			hero:addActiveAbility(AL.kThrowHammer:getId())
+			hero:addActiveAbility(AL.kThunderCap:getId())
+			hero:addActiveAbility(AL.kSpeedUp:getId())
+			hero:addActiveAbility(AL.kChargeJump:getId())
+		end
     else
-        hero:addActiveAbility(AL.kThrowHammer:getId())
-        hero:addActiveAbility(AL.kThunderCap:getId())
-        hero:addActiveAbility(AL.kSpeedUp:getId())
-        hero:setAI(LuaAIWarrior:new())
-    end
-    
+		hero:setAI(LuaAI:new())
+		hero:addActiveAbility(AL.kKnockBack:getId())
+		hero:addActiveAbility(AL.kWarCry:getId())
+		hero:addActiveAbility(AL.kSweetDew:getId())
+	end
+	
     return hero
 end
 
@@ -104,7 +126,7 @@ function initAbilityForLevelUp()
     c = c + 1
     aaa[c] = addTemplateAbility(a)
     
-    a = StunBuff:new("Stun", "Stun", 0.2, false)
+    a = StunBuff:new("Stun", "Stun", 1, false)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("StunAttack", 0.15, id, false, 1.0, 50.0, 0)
     c = c + 1
@@ -154,7 +176,7 @@ tower2 = 0
 
 Stage02 = class(Battle)
 function Stage02:onInit()
-
+	self.healer = 0
 	initAbilityForLevelUp()
 	
 	me = initForHero()
@@ -177,9 +199,6 @@ function Stage02:onInit()
 	--me:addActiveAbility(AL.kMagicalRain:getId())
 	--me:addActiveAbility(AL.kWarCry:getId())
     
-    me:addPassiveAbility(AL.kStrikeBack:getId())
-	me:addPassiveAbility(AL.kDeadlyAttack:getId())
-	me:addPassiveAbility(AL.kChangeAttributeAttack:getId())
 	--me:addPassiveAbility(AL.kVampireAttack:getId())
     --me:addPassiveAbility(AL.kCriticalAttack:getId())
     --me:addPassiveAbility(AL.kRebirth:getId())
@@ -256,7 +275,7 @@ function Stage02:onTick(dt)
             el = el - 2
             playSound("sounds/Effects/OpenDoor.mp3")
             if uc == 4 then
-                u = spawnSoldier(2, 1)
+                u = spawnSoldier(UL.kMage, 1)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:addPassiveAbility(arid)
@@ -267,7 +286,7 @@ function Stage02:onTick(dt)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
                 
-                u = spawnSoldier(4, 0)
+                u = spawnSoldier(UL.kArcher, 0)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:setRewardGold(20)
@@ -275,15 +294,19 @@ function Stage02:onTick(dt)
                 u:setMaxHp(200 + lvl * 46)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
+				
+				if not getUnit(self.healer) then
+					self.healer = spawnHero(SUL.kPriest, 0):getId()
+				end
             else
-                u = spawnSoldier(22, 1)
+                u = spawnSoldier(UL.kSoldier, 1)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:setMaxHp(200 + lvl * 63)
                 atk = u:getAttackAbility()
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.3)
                 
-                u = spawnSoldier(23, 0)
+                u = spawnSoldier(UL.kTemplar, 0)
 				u:setMaxLevel(lvl)
 				u:setLevel(lvl)
                 u:setMaxHp(200 + lvl * 63)
@@ -296,10 +319,9 @@ function Stage02:onTick(dt)
 				u:setLevel(lvl)
                 a = u:getAttackAbility()
                 if a:getCastRange() < 150 and math.random(0, 100) < 50 then
-                    spawnHero(4)
+                    u = spawnHero(UL.kArcher, 1)
 					u:setMaxLevel(lvl)
 					u:setLevel(lvl)
-                    hero:addActiveAbility(AL.kCutter:getId())
                     hero:setBaseMoveSpeed(85)
                     hero = u
                 end
@@ -316,3 +338,95 @@ function Stage02:onTick(dt)
 end
 
 Stage02:new():run()
+
+pass = 0
+interval = 0
+angle = 0
+
+Barrage = class()
+function Barrage:ctor(interval)
+    self.interval = interval
+end
+
+function Barrage:getInterval()
+    return self.interval
+end
+
+function Barrage:onInterval()
+end
+
+B01 = class(Barrage)
+function B01:onInterval()
+    angle = angle + interval * 10
+    local a = math.pi * 0.5 * math.sin(angle)
+    local x, y = me:getPosition()
+    local dis = 1000
+    local speed = 500
+    local x1, y1 = getDirectionPoint(x, y, a, dis)
+    fireStraight(x, y, x1, y1, speed)
+    local x1, y1 = getDirectionPoint(x, y, a + math.pi, dis)
+    fireStraight(x, y, x1, y1, speed)
+end
+
+B02 = class(Barrage)
+function B02:onInterval()
+    local x, y = me:getPosition()
+    local dis = 1000
+    local speed = 500
+    local b = math.random(0, 360)
+    for i = 0 + b, 360 + b, 5 do
+        local x1, y1 = getDirectionPoint(x, y, i, dis)
+        fireStraight(x, y, x1, y1, speed)
+    end
+end
+
+B03 = class(Barrage)
+function B03:onInterval()
+    angle = angle + interval * 20
+    local x, y = me:getPosition()
+    local dis = 1000
+    local speed = 500
+    local a = 100
+    y = y + math.sin(angle) * a
+    local x1, y1 = getForwardPoint(x, y, x - 10, y, dis)
+    fireStraight(x, y, x1, y1, speed)
+end
+
+B04 = class(Barrage)
+function B04:onInterval()
+    local tx, ty = 1000, 500
+    local x, y = me:getPosition()
+    local a = math.atan2(ty - y, tx - x)
+    local dis = 1000
+    local speed = 400
+    local dt = math.random(-300, 300)
+    
+    x, y = getDirectionPoint(x, y, a + math.pi / 2, dt)
+    local x0, y0 = getDirectionPoint(x, y, a, -dis / 2)
+    local x1, y1 = getDirectionPoint(x0, y0, a, dis)
+    fireStraight(x0, y0, x1, y1, speed)
+end
+
+local brg = nil
+function test()
+    --brg = B01:new(0.01)
+    brg = B02:new(2.0)
+    --brg = B03:new(0.01)
+    --brg = B04:new(0.05)
+    interval = brg:getInterval()
+    --interval = 0.01
+    --p:setPenaltyFlags(Projectile.kOnContact)
+    --p:setFireType(Projectile.kFireStraight)
+end
+
+function test_tick(dt)
+    pass = pass + dt
+    if pass >= interval then
+        pass = 0
+        test_interval()
+    end
+end
+
+function test_interval()
+    --brg:onInterval()
+end

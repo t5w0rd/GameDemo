@@ -43,6 +43,7 @@ ACF["圣愈之风"] = CF.checkAround
 ACF["致命匕首"] = CF.getAttackingTargetPoint
 ACF["引力法球"] = CF.getAttackingTargetPoint
 ACF["魔法箭雨"] = CF.getAttackingTargetPoint
+ACF["冰锥术"] = CF.getAttackingTargetPoint
 
 ACF["治疗甘露"] = CF.getInjuredTargetUnit
 
@@ -82,7 +83,6 @@ function LuaAI:tryCastSpell(unit, a)
         local x, y = cf(unit, a)
         if x and y then
             unit:castSpellWithTargetPoint(a, x, y)
-            log("pppp")
             return true
         end
     end

@@ -74,7 +74,7 @@ function spawnHero(id, force)
 				hero:addActiveAbility(SAL.kMageRain, 3)
 			elseif id == UL.kFrost then
 				hero:addActiveAbility(AL.kSnowStorm:getId())
-			elseif id == UL.Archer then
+			elseif id == UL.kArcher then
 				hero:addActiveAbility(AL.kCutter:getId())
 			end
 			
@@ -88,8 +88,8 @@ function spawnHero(id, force)
     else
 		hero:setAI(LuaAI:new())
 		hero:addActiveAbility(AL.kKnockBack:getId())
-		hero:addActiveAbility(AL.kSweetDew:getId())
 		hero:addActiveAbility(AL.kWarCry:getId())
+		hero:addActiveAbility(AL.kSweetDew:getId())
 	end
 	
     return hero
