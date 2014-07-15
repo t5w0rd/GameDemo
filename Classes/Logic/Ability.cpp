@@ -1099,8 +1099,11 @@ void CAttackAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget)
     CAttackData* ad = new CAttackData();
     ad->setAttackValue(getBaseAttack().getType(), getRealAttackValue());
 
-    o->attack(ad, pTarget);
-
+    if (o->attack(ad, pTarget) == false)
+    {
+        return;
+    }
+    
     if (pTarget != nullptr)
     {
         pTarget->damaged(ad, o);
@@ -1678,7 +1681,10 @@ void CDamageBuff::onUnitAddAbility()
 
     if (m_bAttack && s != nullptr)
     {
-        s->attack(ad, o, m_dwTriggerMask);
+        if (s->attack(ad, o, m_dwTriggerMask) == false)
+        {
+            return;
+        }
     }
     o->damaged(ad, s, m_dwTriggerMask);
 }
@@ -2629,13 +2635,23 @@ const int CKnockBackBuff::CONST_ACT_TAG = CIdGen::nextId();
 CKnockBackBuff::CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance)
 : CStunBuff(pRootId, pName, fDuration, false)
 , m_fDistance(fDistance)
+, m_bUsingSrcUnitPosition(true)
+{
+    setDbgClassName("CKnockBackBuff");
+}
+
+CKnockBackBuff::CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance, const CPoint& rRefPosition)
+: CStunBuff(pRootId, pName, fDuration, false)
+, m_fDistance(fDistance)
+, m_bUsingSrcUnitPosition(false)
+, m_oRefPos(rRefPosition)
 {
     setDbgClassName("CKnockBackBuff");
 }
 
 CKnockBackBuff* CKnockBackBuff::copy()
 {
-    CKnockBackBuff* ret = new CKnockBackBuff(getRootId(), getName(), getDuration(), getDistance());
+    CKnockBackBuff* ret = m_bUsingSrcUnitPosition ? new CKnockBackBuff(getRootId(), getName(), getDuration(), getDistance()) : new CKnockBackBuff(getRootId(), getName(), getDuration(), getDistance(), getRefPosition());
     ret->copyData(this);
     return ret;
 }
@@ -2668,13 +2684,21 @@ void CKnockBackBuff::knockBack()
         return;
     }
 
-    CUnit* s = o->getUnit(getSrcUnit());
-    CUnitDraw2D* sd = DCAST(s->getDraw(), CUnitDraw2D*);
-
-    const CPoint& p1 = sd->getPosition();
+    CPoint tp;
     const CPoint& p2 = d->getPosition();
 
-    CPoint tp = p2.getForwardPoint(p1, -m_fDistance);
+    if (m_bUsingSrcUnitPosition)
+    {
+        CUnit* s = o->getUnit(getSrcUnit());
+        CUnitDraw2D* sd = DCAST(s->getDraw(), CUnitDraw2D*);
+        const CPoint& p1 = sd->getPosition();
+        tp = p2.getForwardPoint(p1, -m_fDistance);
+    }
+    else
+    {
+        tp = p2.getForwardPoint(m_oRefPos, -m_fDistance);
+    }
+    
     Point cctp(tp.x, tp.y);
 
     d->stopAction(CONST_ACT_TAG);
@@ -2837,7 +2861,7 @@ void CLimitedLifeBuff::onUnitDelAbility()
 
 // CChargeJumpBuff
 CChargeJumpBuff::CChargeJumpBuff(const char* pName, float fDuration, const CExtraCoeff& rExTotalSpeedDelta, float fDamageCoeff, int iTemplateBuff)
-: CBuffAbility("ChargeJumpBuff", pName, fDuration + 1.0f, false)
+: CBuffAbility("ChargeJumpBuff", pName, fDuration + 2.0f, false)
 , m_oExTotalSpeedDelta(0.0f, 0.0f)
 , m_fDamageCoeff(fDamageCoeff)
 , m_iTemplateBuff(iTemplateBuff)
@@ -2853,7 +2877,7 @@ CChargeJumpBuff::CChargeJumpBuff(const char* pName, float fDuration, const CExtr
 CChargeJumpBuff* CChargeJumpBuff::copy()
 {
     float times = getDuration() / getInterval();
-    auto ret = new CChargeJumpBuff(getName(), getDuration() - 1.0f, CExtraCoeff(m_oExSpeedDelta.getMulriple() * times, m_oExSpeedDelta.getAddend() * times), m_fDamageCoeff, m_iTemplateBuff);
+    auto ret = new CChargeJumpBuff(getName(), getDuration() - 2.0f, CExtraCoeff(m_oExSpeedDelta.getMulriple() * times, m_oExSpeedDelta.getAddend() * times), m_fDamageCoeff, m_iTemplateBuff);
     ret->copyData(this);
     return ret;
 }

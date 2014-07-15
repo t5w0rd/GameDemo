@@ -427,7 +427,7 @@ public:
     // 内部会自行调用中层、底层攻击函数，对攻击数据进行传递并处理，通常返回处理后的攻击数据，也可以返回 nullptr
     // 内部会根据人物属性对攻击数据进行一次变换，如力量加成等
     // 触发 onAttackTarget，
-    void attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
+    bool attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
     
     // 底层攻击函数，目前无逻辑，只是将传递过来的攻击数据返回给上层
     void attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask = kNoMasked);
@@ -439,7 +439,7 @@ public:
     // 遍历攻击数据携带的BUFF链，根据附着概率对单位自身进行BUFF附加
     // 根据单位属性，进行攻击数据变换，如抗性对攻击数据的影响
     // 根据单位护甲，进行攻击数据中的攻击数值变换
-    bool damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
+    void damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     // 底层伤害函数，直接扣除指定量的HP值
     // 触发伤害源的 onDamaeTarget

@@ -1,4 +1,4 @@
---if __LEVEL_UPDATE__ then return end
+if __LEVEL_UPDATE__ then return end
 __LEVEL_UPDATE__ = true
 
 HeroLevelUpdate = class(LevelUpdate)

@@ -325,6 +325,7 @@ int PassiveAbility_ctor(lua_State* L);
 
 int BuffAbility_ctor(lua_State* L);
 int BuffAbility_onUnitDisplaceAbility(lua_State* L);
+int BuffAbility_setSrcUnit(lua_State* L);
 int BuffAbility_getSrcUnit(lua_State* L);
 int BuffAbility_setAppendBuff(lua_State* L);
 int BuffAbility_setDuration(lua_State* L);

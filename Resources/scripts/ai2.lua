@@ -1,3 +1,5 @@
+if __AI2__ then return end
+__AI2__ = true
 
 LuaSimpleAI = class(UnitAI)
 function LuaSimpleAI:ctor()
@@ -70,8 +72,9 @@ function LuaAIWarrior:onUnitTick(unit, dt)
         self:tryCastSkill(unit, "风暴战锤", t)
     end
 	if t and t:getHp() > 60 then
+		self:tryCastSkill(unit, "狂暴", nil, 100)
 		self:tryCastSkill(unit, "愤怒重踏", nil, 100)
-		self:tryCastSkill(unit, "加速", nil, 100)
+		self:tryCastSkill(unit, "连环爆轰", nil, 100)
 		self:tryCastSkill(unit, "英勇疾跃", nil, 100)
 	end
     

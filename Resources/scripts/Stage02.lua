@@ -31,7 +31,7 @@ function spawnSoldier(id, force)
         up:addPoint(100 + math.random(-50, 50), 500 + math.random(-50, 50))
     end
     
-    u:setExArmorValue(1.0, 2)
+    --u:setExArmorValue(1.0, 2)
     u:moveAlongPath(up, false)
 
     return u
@@ -53,7 +53,8 @@ function spawnHero(id, force)
     end
     hero:setRewardGold(50 + kill * 20 / 1.5)
     hero:setRewardExp(20 + kill * 10 / 1.5)
-    hero:setExArmorValue(1.0, kill * 0.7)
+	local at, av = hero:getBaseArmor()
+    hero:setBaseArmor(at, av + kill * 0.7)
     atk = hero:getAttackAbility()
     t, v = atk:getBaseAttack()
     atk:setBaseAttack(t, v * (1 + kill / 5.0) + kill * 4)
@@ -69,25 +70,29 @@ function spawnHero(id, force)
 			--hero:addActiveAbility(AL.kReflect:getId())
 			hero:addActiveAbility(AL.kSpeedUp2:getId())
 			hero:addActiveAbility(AL.kKnockBack:getId())
-			if id == UL.kMage then
-				hero:addActiveAbility(AL.kGravitySurf:getId())
-				hero:addActiveAbility(SAL.kMageRain, 3)
-			elseif id == UL.kFrost then
-				hero:addActiveAbility(AL.kSnowStorm:getId())
-			elseif id == UL.kArcher then
-				hero:addActiveAbility(AL.kCutter:getId())
-			end
-			
 		else
-			hero:setAI(LuaAIWarrior:new())
+			hero:setAI(LuaAI:new())
 			hero:addActiveAbility(AL.kThrowHammer:getId())
 			hero:addActiveAbility(AL.kThunderCap:getId())
 			hero:addActiveAbility(AL.kSpeedUp:getId())
 			hero:addActiveAbility(AL.kChargeJump:getId())
 		end
     else
+		hero:setExMaxHp(0.20, 0.0)
 		hero:setAI(LuaAI:new())
 		hero:addActiveAbility(AL.kKnockBack:getId())
+	end
+	
+	if id == UL.kMage then
+		hero:addActiveAbility(AL.kGravitySurf:getId())
+		hero:addActiveAbility(SAL.kMageRain, 3)
+	elseif id == UL.kFrost then
+		hero:addActiveAbility(AL.kSnowStorm:getId())
+	elseif id == UL.kArcher then
+		hero:addActiveAbility(AL.kCutter:getId())
+	elseif id == UL.kElemental then
+		hero:addActiveAbility(AL.kSerialExplode:getId())
+	elseif id == SUL.kPriest then
 		hero:addActiveAbility(AL.kWarCry:getId())
 		hero:addActiveAbility(AL.kSweetDew:getId())
 	end
@@ -132,7 +137,7 @@ function initAbilityForLevelUp()
     c = c + 1
     aaa[c] = addTemplateAbility(a)
     
-    a = ArmorBuff:new("ArmorBreak", "ArmorBreak", 12, true, -0.0, -1.0)
+    a = ArmorBuff:new("ArmorBreak", "ArmorBreak", 12, true, -0.0, -2.0)
     id = addTemplateAbility(a)
     a = AttackBuffMakerPas:new("Critical", 0.5, id, false, 1.0, 0.0, 0)
     c = c + 1
@@ -296,7 +301,10 @@ function Stage02:onTick(dt)
                 atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
 				
 				if not getUnit(self.healer) then
-					self.healer = spawnHero(SUL.kPriest, 0):getId()
+					u = spawnHero(SUL.kPriest, 0)
+					self.healer = u:getId()
+					u:setMaxLevel(lvl)
+					u:setLevel(lvl)
 				end
             else
                 u = spawnSoldier(UL.kSoldier, 1)
@@ -319,7 +327,7 @@ function Stage02:onTick(dt)
 				u:setLevel(lvl)
                 a = u:getAttackAbility()
                 if a:getCastRange() < 150 and math.random(0, 100) < 50 then
-                    u = spawnHero(UL.kArcher, 1)
+                    u = spawnHero()
 					u:setMaxLevel(lvl)
 					u:setLevel(lvl)
                     hero:setBaseMoveSpeed(85)

@@ -1185,6 +1185,16 @@ void BattleSceneLayer::updateHeroAbilityPanel()
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* hero = w->getHero();
 
+    int n = m_bp->getCount();
+    for (int i = 0; i < n; ++i)
+    {
+        auto btn = m_bp->getButton(i);
+        if (btn != nullptr && hero->getActiveAbility((int)btn->getUserData()) == nullptr)
+        {
+            m_bp->delButton(i);
+        }
+    }
+
     CUnit::MAP_ACTIVE_ABILITIES& as = hero->getActiveAbilities();
     M_MAP_FOREACH(as)
     {
@@ -1196,26 +1206,17 @@ void BattleSceneLayer::updateHeroAbilityPanel()
             continue;
         }
 
-        if (m_bp->getButton([id](ButtonBase* btn)
+        if (m_bp->getCount() < m_bp->getMaxCount() && m_bp->getButton([id](ButtonBase* btn)
         {
             return btn->getUserData() == (void*)id;
         }) == nullptr)
         {
+            // 按钮没满，且面板中不存在该技能的按钮
             auto btn = createAbilityButton(a);
             if (btn != nullptr)
             {
                 m_bp->addButtonEx(btn, ButtonPanel::kTopToBottom);
             }
-        }
-    }
-
-    int n = m_bp->getCount();
-    for (int i = 0; i < n; ++i)
-    {
-        auto btn = m_bp->getButton(i);
-        if (btn != nullptr && hero->getActiveAbility((int)btn->getUserData()) == nullptr)
-        {
-            m_bp->delButton(i);
         }
     }
 }

@@ -1108,9 +1108,9 @@ int Unit_attack(lua_State* L)
     CUnit* t = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
 
-    u->attack(ad, t, mask);
+    lua_pushboolean(L, u->attack(ad, t, mask));
 
-    return 0;
+    return 1;
 }
 
 int Unit_damaged(lua_State* L)
@@ -1121,9 +1121,9 @@ int Unit_damaged(lua_State* L)
     CUnit* s = luaL_tounitptr(L, 3);
     unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
 
-    lua_pushboolean(L, u->damaged(ad, s, mask));
+    u->damaged(ad, s, mask);
 
-    return 1;
+    return 0;
 }
 
 int Unit_attackLow(lua_State* L)
@@ -1316,12 +1316,12 @@ int Unit_addActiveAbility(lua_State* L)
     if (lua_istable(L, 2))
     {
         CActiveAbility* a = DCAST(luaL_toabilityptr(L, 2), CActiveAbility*);
-        u->addActiveAbility(a);
+        u->addActiveAbility(a, lua_gettop(L) >= 3 ? (lua_toboolean(L, 3) != 0) : true);
     }
     else
     {
         int id = lua_tointeger(L, 2);
-        u->addActiveAbility(id, lua_gettop(L) == 3 ? lua_tointeger(L, 3) : 1);
+        u->addActiveAbility(id, lua_gettop(L) >= 3 ? lua_tointeger(L, 3) : 1, lua_gettop(L) >= 4 ? (lua_toboolean(L, 4) != 0) : true);
     }
 
     return 0;
@@ -1333,12 +1333,12 @@ int Unit_addPassiveAbility(lua_State* L)
     if (lua_istable(L, 2))
     {
         CPassiveAbility* a = DCAST(luaL_toabilityptr(L, 2), CPassiveAbility*);
-        u->addPassiveAbility(a);
+        u->addPassiveAbility(a, lua_gettop(L) >= 3 ? (lua_toboolean(L, 3) != 0) : true);
     }
     else
     {
         int id = lua_tointeger(L, 2);
-        u->addPassiveAbility(id, lua_gettop(L) == 3 ? lua_tointeger(L, 3) : 1);
+        u->addPassiveAbility(id, lua_gettop(L) >= 3 ? lua_tointeger(L, 3) : 1, lua_gettop(L) >= 4 ? (lua_toboolean(L, 4) != 0) : true);
     }
 
     return 0;
@@ -1350,21 +1350,13 @@ int Unit_addBuffAbility(lua_State* L)
     if (lua_istable(L, 2))
     {
         CBuffAbility* a = DCAST(luaL_toabilityptr(L, 2), CBuffAbility*);
-        u->addBuffAbility(a);
+        u->addBuffAbility(a, lua_gettop(L) >= 3 ? (lua_toboolean(L, 3) != 0) : true);
     }
     else
     {
         int id = lua_tointeger(L, 2);
-        int src = 0;
-        if (lua_istable(L, 3))
-        {
-            src = luaL_tounitptr(L, 3)->getId();
-        }
-        else
-        {
-            src = lua_tointeger(L, 3);
-        }
-        u->addBuffAbility(id, src, lua_gettop(L) == 4 ? lua_tointeger(L, 4) : 1);
+        int src = luaL_tounitid(L, 3);
+        u->addBuffAbility(id, src, lua_gettop(L) >= 4 ? lua_tointeger(L, 4) : 1, lua_gettop(L) >= 5 ? (lua_toboolean(L, 5) != 0) : true);
     }
 
     return 0;
@@ -3007,6 +2999,7 @@ int PassiveAbility_ctor(lua_State* L)
 luaL_Reg BuffAbility_funcs[] = {
     { "ctor", BuffAbility_ctor },
     { "onUnitDisplaceAbility", BuffAbility_onUnitDisplaceAbility },
+    { "setSrcUnit", BuffAbility_setSrcUnit },
     { "getSrcUnit", BuffAbility_getSrcUnit },
     { "setAppendBuff", BuffAbility_setAppendBuff },
     { "setDuration", BuffAbility_setDuration },
@@ -3033,6 +3026,17 @@ int BuffAbility_ctor(lua_State* L)
 
 int BuffAbility_onUnitDisplaceAbility(lua_State* L)
 {
+    return 0;
+}
+
+int BuffAbility_setSrcUnit(lua_State* L)
+{
+    CBuffAbility* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    int s = luaL_tounitid(L, 2);
+    
+    _p->setSrcUnit(s);
+
     return 0;
 }
 
@@ -3524,8 +3528,8 @@ int DamageBuff_ctor(lua_State* L)
     float exAvA = lua_tonumber(L, 5);
     float exAvB = lua_tonumber(L, 6);
     uint32_t mask = lua_tounsigned(L, 7);
-    bool attack = lua_toboolean(L, 8) != 0;
-    bool forceAt = lua_toboolean(L, 9) != 0;
+    bool attack = lua_gettop(L) >= 8 ? (lua_toboolean(L, 8) != 0) : false;
+    bool forceAt = lua_gettop(L) >= 9 ? (lua_toboolean(L, 9) != 0) : false;
 
     CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), CExtraCoeff(exAvA, exAvB), mask, attack, forceAt);
     lua_pushlightuserdata(L, _p);
@@ -3596,8 +3600,20 @@ int KnockBackBuff_ctor(lua_State* L)
     const char* name = lua_tostring(L, 3);
     float duration = lua_tonumber(L, 4);
     float distance = lua_tonumber(L, 5);
-
-    CKnockBackBuff* _p = new CKnockBackBuff(root, name, duration, distance);
+    bool usingRefPos = lua_gettop(L) == 5;
+    
+    CKnockBackBuff* _p = nullptr;
+    if (usingRefPos)
+    {
+        _p = new CKnockBackBuff(root, name, duration, distance);
+    }
+    else
+    {
+        float x = lua_tonumber(L, 6);
+        float y = lua_tonumber(L, 7);
+        _p = new CKnockBackBuff(root, name, duration, distance, CPoint(x, y));
+    }
+    
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 

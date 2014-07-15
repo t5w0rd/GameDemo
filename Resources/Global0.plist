@@ -1954,6 +1954,45 @@
                 <key>sourceSize</key>
                 <string>{128,152}</string>
             </dict>
+            <key>Sprites/None/default.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{114,1940},{1,1}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{1,1}}</string>
+                <key>sourceSize</key>
+                <string>{1,1}</string>
+            </dict>
+            <key>Sprites/None/die/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{114,1940},{1,1}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{1,1}}</string>
+                <key>sourceSize</key>
+                <string>{1,1}</string>
+            </dict>
+            <key>Sprites/None/move/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{114,1940},{1,1}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{0,0},{1,1}}</string>
+                <key>sourceSize</key>
+                <string>{1,1}</string>
+            </dict>
             <key>Sprites/Wizard/act3/06.png</key>
             <dict>
                 <key>frame</key>
@@ -2289,7 +2328,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:1d6521aaf1eca942838f35b9f36d8ac7:e4e000292014c14076e03d06961fdbb4:6b10dddd3703c0167c193d86a3f92921$</string>
+            <string>$TexturePacker:SmartUpdate:9ae97623f1ddb675542a664b09f3e1de:0ad180c73e5a5c069211f45f5c63249a:6b10dddd3703c0167c193d86a3f92921$</string>
             <key>textureFileName</key>
             <string>Global0.png</string>
         </dict>

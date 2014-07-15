@@ -494,7 +494,7 @@ void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
             else
             {
                 // 当前攻击目标已经不存在
-                CCLOG("setCastTarget(CCommandTarget())");
+                //CCLOG("setCastTarget(CCommandTarget())");
                 d->setCastTarget(CCommandTarget());
                 pUnit->endDoing(CUnit::kCasting);
                 d->setCastActiveAbilityId(0);
@@ -1364,21 +1364,29 @@ void CUnit::setEventAdapter(CUnitEventAdapter* pEventAdapter)
     m_pEventAdapter = pEventAdapter;
 }
 
-void CUnit::attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
+bool CUnit::attack(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
     onAttackTarget(pAttack, pTarget, dwTriggerMask);
+    
+    if (pTarget == nullptr || pTarget->onAttacked(pAttack, this, dwTriggerMask) == false)
+    {
+        return false;
+    }
+
     attackLow(pAttack, pTarget, dwTriggerMask);
+
+    return true;
 }
 
 void CUnit::attackLow(CAttackData* pAttack, CUnit* pTarget, uint32_t dwTriggerMask)
 {
 }
 
-bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
+void CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask)
 {
     if (isDead())
     {
-        return false;
+        return;
     }
 
     while (pSource != nullptr && pSource->isGhost())
@@ -1389,11 +1397,6 @@ bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
             break;
         }
         pSource = go;
-    }
-
-    if (onAttacked(pAttack, pSource, dwTriggerMask) == false)
-    {
-        return false;
     }
     
     onDamaged(pAttack, pSource, dwTriggerMask);
@@ -1413,8 +1416,6 @@ bool CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
         addBuffAbility(pAb->getTemplateBuff(), pSource->getId(), pAb->getBuffLevel());
         M_MAP_NEXT;
     }
-    
-    return true;
 }
 
 void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
@@ -2037,7 +2038,7 @@ void CUnit::triggerOnTick(float dt)
     M_MAP_FOREACH(m_mapOnTickTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAbility->onUnitTick(dt);
+        //pAbility->onUnitTick(dt);
         if (pAbility->getInterval() > 0.0f)
         {
             pAbility->setIntervalElapsed(pAbility->getIntervalElapsed() + dt);

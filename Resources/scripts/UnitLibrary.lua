@@ -16,8 +16,7 @@ function SPL.add(proj)
 end
 
 -- WizardProy
-loadAnimation("Sprites/WizardProy/move", "Sprites/WizardProy/move", 0.1)
-loadAnimation("Sprites/WizardProy/die", "Sprites/WizardProy/die", 0.1)
+loadAnimations("WizardProy", {move = 0.1, die = 0.1})
 sp = Sprite:new("WizardProy")
 sp:prepareFrame(Sprite.kFrmDefault, "default")
 sp:prepareAnimation(Sprite.kAniMove, "move", -1)
@@ -31,8 +30,7 @@ p:addFireSound("sounds/Effects/MageShot.mp3")
 SPL.kWizardProy = SPL.add(p)
 
 -- PriestBolt
-loadAnimation("Sprites/PriestBolt/move", "Sprites/PriestBolt/move", 0.1)
-loadAnimation("Sprites/PriestBolt/die", "Sprites/PriestBolt/die", 0.1)
+loadAnimations("PriestBolt", {move = 0.1, die = 0.1})
 sp = Sprite:new("PriestBolt")
 sp:prepareFrame(Sprite.kFrmDefault, "default")
 sp:prepareAnimation(Sprite.kAniMove, "move", -1)
@@ -46,6 +44,20 @@ p:addFireSound("sounds/Effects/MageShot.mp3")
 SPL.kPriestBolt = SPL.add(p)
 
 
+loadAnimations("VoodooProy", {move = 0.1, die = 0.1})
+sp = Sprite:new("VoodooProy")
+sp:prepareFrame(Sprite.kFrmDefault, "default")
+sp:prepareAnimation(Sprite.kAniMove, "move", -1)
+sp:prepareAnimation(Sprite.kAniDie, "die", 0)
+p = Projectile:new(sp, "VoodooProy")
+p:setMoveSpeed(400.0)
+p:setMaxHeightDelta(0.0)
+p:setPenaltyFlags(Projectile.kOnDying)
+p:setFireType(Projectile.kFireFollow)
+p:addFireSound("sounds/Effects/MageShot.mp3")
+SPL.kVoodooProy = SPL.add(p)
+
+
 -- static unit library
 SUL = {}
 SUL.STEP = 1
@@ -57,16 +69,23 @@ function SUL.add(unit)
 	return id
 end
 
+-- None
+loadAnimations("None", {move = 1.0, die = 1.0})
+sp = Sprite:new("None")
+sp:prepareFrame(Sprite.kFrmDefault, "default")
+sp:prepareAnimation(Sprite.kAniMove, "move", -1)
+sp:prepareAnimation(Sprite.kAniDie, "die", 0)
+u = Unit:new(sp, "None")
+u:setGeometry(1.0, 1.0, 0.0, 0.0, 0.0, 0.0)
+u:setMaxHp(1.0)
+u:setGhost(true)
+u:setBaseArmor(ArmorValue.kHoly, 0.0)
+u:setBaseMoveSpeed(0.0)
+u:setHostilityRange(0.0)
+SUL.kNone = SUL.add(u)
+
 -- Priest
-loadAnimation("Sprites/Priest/move", "Sprites/Priest/move", 0.1)
-loadAnimation("Sprites/Priest/die", "Sprites/Priest/die", 0.1)
-loadAnimation("Sprites/Priest/act1", "Sprites/Priest/act1", 0.08)
-loadAnimation("Sprites/Priest/act2", "Sprites/Priest/act2", 0.08)
-loadAnimation("Sprites/Priest/act3", "Sprites/Priest/act3", 0.08)
-loadAnimation("Sprites/Priest/act4", "Sprites/Priest/act4", 0.08)
-loadAnimation("Sprites/Priest/act5", "Sprites/Priest/act5", 0.08)
-loadAnimation("Sprites/Priest/act6", "Sprites/Priest/act6", 0.05)
-loadAnimation("Sprites/Priest/act7", "Sprites/Priest/act7", 0.05)
+loadAnimations("Priest", {move = 0.1, die = 0.1, act1 = 0.08, act2 = 0.08, act3 = 0.08, act4 = 0.08, act5 = 0.08, act6 = 0.08, act7 = 0.08})
 sp = Sprite:new("Priest")
 sp:prepareFrame(Sprite.kFrmDefault, "default")
 sp:prepareAnimation(Sprite.kAniMove, "move", -1)
@@ -87,7 +106,7 @@ u:addCtrlSound("sounds/Sprites/Priest/move/03.mp3", 1.906)
 u:addCtrlSound("sounds/Sprites/Priest/move/04.mp3", 1.410)
 u:setMaxHp(500.0)
 u:setBaseArmor(ArmorValue.kCrystal, 0.0)
-atk = AttackAct:new("¹¥»÷", 1.75, AttackValue.kMagical, 50.0, 0.15, 0.0, 200.0, false, Sprite.kAniAct1)
+atk = AttackAct:new("¹¥»÷", 1.75, AttackValue.kMagical, 20.0, 0.15, 0.0, 200.0, false, Sprite.kAniAct1)
 atk:setTemplateProjectile(SPL.kPriestBolt)
 u:addActiveAbility(atk)
 u:setBaseMoveSpeed(50.0)
@@ -95,8 +114,6 @@ u:setHostilityRange(300.0)
 SUL.kPriest = SUL.add(u)
 
 -- Orb
-loadAnimation("Sprites/VoodooProy/move", "Sprites/VoodooProy/move", 0.1)
-loadAnimation("Sprites/VoodooProy/die", "Sprites/VoodooProy/die", 0.1)
 sp = Sprite:new("VoodooProy")
 sp:prepareFrame(Sprite.kFrmDefault, "default")
 sp:prepareAnimation(Sprite.kAniMove, "move", -1)
@@ -107,8 +124,7 @@ u:setFixed()
 SUL.kOrb = SUL.add(u)
 
 -- Orb2
-loadAnimation("Sprites/AlienProy/move", "Sprites/AlienProy/move", 0.1)
-loadAnimation("Sprites/AlienProy/die", "Sprites/AlienProy/die", 0.1)
+loadAnimations("AlienProy", {move = 0.1, die = 0.1})
 sp = Sprite:new("AlienProy")
 sp:prepareFrame(Sprite.kFrmDefault, "default")
 sp:prepareAnimation(Sprite.kAniMove, "move", -1)

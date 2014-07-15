@@ -1,8 +1,7 @@
+#include "CommHeader.h"
 #include "main.h"
 #include "AppDelegate.h"
-#include "cocos2d.h"
 
-USING_NS_CC;
 
 int APIENTRY _tWinMain(HINSTANCE hInstance,
                        HINSTANCE hPrevInstance,
@@ -27,13 +26,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         glview = GLView::create("GameDemo");
         director->setOpenGLView(glview);
 
-        auto wsz = Size(1920, 1080);
-        //auto wsz = Size(2048, 1536);
-        //auto wsz = Size(800, 600);
+        const auto wsz = Size(1794, 1080);
+        //const auto wsz = Size(2048, 1536);
+        //const auto wsz = Size(800, 480);
 
-        glview->setDesignResolutionSize(wsz.width, wsz.height, ResolutionPolicy::SHOW_ALL);
+        const auto ssz = Size(1200, 700);
         glview->setFrameSize(wsz.width, wsz.height);
-        glview->setFrameZoomFactor(0.4f);
+        float zoom = min(ssz.width / wsz.height, ssz.height / wsz.height);
+        glview->setFrameZoomFactor(zoom);
     }
     
     // create the application instance

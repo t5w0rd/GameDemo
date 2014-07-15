@@ -4,6 +4,19 @@ __GAME_COMMON__ = true
 
 include("Common.lua")
 
+
+function loadAnimations(name, anis)
+	for n, d in pairs(anis) do
+		local p = string.format("Sprites/%s/%s", name, n)
+		loadAnimation(p, p, d)
+	end
+end
+
+function logf(...)
+    log(string.format(table.unpack({...})))
+end
+
+
 CommandTarget = {}
 CommandTarget.kNoTarget = 0
 CommandTarget.kUnitTarget = 1
@@ -147,11 +160,6 @@ AL = {}
 --AL.kCurse = AL.BASE_ID + 0
 loadAbilityLibrary()
 
-
-function logf(...)
-    log(string.format(table.unpack({...})))
-end
-
 function Unit:sayf(self, ...)
     self:say(string.format(table.unpack({...})))
 end
@@ -176,6 +184,24 @@ function Unit:getNearestEffectiveInjuredUnitInRange(radius, forceFlags, exMaxHpA
 		return self:canEffect(u, forceFlags) and u:getHp() <= (exMaxHpA * maxHp + exMaxHpB)
 	end)
 end
+
+function Projectile:fireStraight(x, y, x1, y1, speed)
+    self:setPenaltyFlags(Projectile.kOnContact)
+    self:setFireType(Projectile.kFireStraight)
+    self:setMoveSpeed(speed)
+    self:setPosition(x, y)
+    self:setFromToType(Projectile.kPointToPoint)
+    self:setFromPoint(self:getPosition())
+    self:setToPoint(x1, y1)
+    --self:setSrcUnit(me:getId())
+    --self:setContactLeft(1)
+    --local ad = AttackData:new()
+    --ad:setAttack(AttackValue.kMagical, 20)
+    --self:setAttackData(ad)
+    self:fire()
+    
+end
+
 
 UnitCreator = class()
 function UnitCreator:ctor()
@@ -316,6 +342,9 @@ function initForHero()
 	--hero:addActiveAbility(a)
 	--hero:addActiveAbility(AL.kBuffMaker:getId())
 	--hero:addPassiveAbility(AL.kStrikeBack:getId())
+	hero:addActiveAbility(AL.kSerialExplode:getId())
+	--hero:addActiveAbility(AL.kArrowRain:getId())
+	
 	
 	return hero
 end

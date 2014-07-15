@@ -531,6 +531,7 @@ protected:
 
 public:
     CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance);
+    CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance, const CPoint& rRefPosition);
     virtual CKnockBackBuff* copy() override;
 
     virtual void onUnitAddAbility() override;
@@ -540,6 +541,8 @@ public:
     void knockBack();
 
     M_SYNTHESIZE(float, m_fDistance, Distance);
+    M_SYNTHESIZE_BOOL(UsingSrcUnitPosition);
+    M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oRefPos, RefPosition);
 
 };
 

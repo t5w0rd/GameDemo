@@ -39,10 +39,10 @@ function loadAbilityLibrary()
 	AL.kThunderCap = a
     
     -- SpeedUp
-    a = SpeedBuff:new("SpeedUpBuff", "SpeedUp", 5.0, false, 0.8, 0.0, 0.8, 0.0)
-    id = addTemplateAbility(a)
+	a = ChangeAttributeBuff:new("RageBuff", "Rage", 5.0, true, 0.0, 0.0, 0.8, 0.0, 0.8, 0.0, 2.0, 0.0, -0.75, 0.0)
+	id = addTemplateAbility(a)
     
-    a = BuffMakerAct:new("加速", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+    a = BuffMakerAct:new("狂暴", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
     a:addCastAnimation(Sprite.kAniAct5)
     a:addEffectSound("sounds/Effects/LevelUp.mp3")
     a:addEffectSound("sounds/Effects/LevelUp.mp3")
@@ -74,7 +74,7 @@ function loadAbilityLibrary()
     a = BuffMakerAct:new("致命匕首", 10.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastRange(600.0)
     a:addCastAnimation(Sprite.kAniAct2)
-    a:setImageName("UI/Ability/AbilityFireBall.png")
+    a:setImageName("UI/Ability/FireBall.png")
     a:setTemplateProjectile(PL.kPirateProy)
 	addTemplateAbility(a)
     AL.kCutter = a
@@ -220,6 +220,17 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
     AL.kMagicalRain = a
 	
+	-- ArrowRain
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger)
+    id = addTemplateAbility(a)
+	
+	a = ProjectileRainAct:new("ArrowRain", 2.0, SPL.kVoodooProy, 10.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
+	a:addCastAnimation(Sprite.kAniAct5)
+    --a:addEffectSound("sounds/Effects/LevelUp.mp3")
+    a:setImageName("UI/Ability/Ability03.png")
+	addTemplateAbility(a)
+    AL.kArrowRain = a
+	
 	-- SweetDew
 	a = ChangeHpBuff:new("Heal", "Heal", 2.0, true, 0.05, 0.00625, 0.0, 0.0, -1.0)
 	id = addTemplateAbility(a)
@@ -242,13 +253,29 @@ function loadAbilityLibrary()
     id = addTemplateAbility(a)
 
 	a = RainAct:new("冰锥术", 12.0, RainAct.kSharpIce, 10.0, 1.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
-	a:addCastAnimation(Sprite.kAniAct5)
+	a:addCastAnimation(Sprite.kAniAct4)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	--a:setImageName("UI/Ability/Ability03.png")
 	a:setCastRange(500)
 	a:setCastTargetRadius(75)
 	addTemplateAbility(a)
     AL.kSnowStorm = a
+	
+	-- SerialExplode
+	a = DamageIncreaceBuff:new("SE.DI", "DamageIncreace", 1.0, AttackValue.kMagical, 0.0, 1.50, 0.0)
+    id = addTemplateAbility(a)
+	
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.50, 0.0, Ability.kMaskActiveTrigger)
+    a:setAppendBuff(id)
+    id = addTemplateAbility(a)
+
+	a = SerialExplodeAct:new("连环爆轰", 2.0, 100, 5, 0.2, 50, id)
+	a:addCastAnimation(Sprite.kAniAct2)
+	a:addEffectSound("sounds/Effects/LevelUp.mp3")
+	a:setImageName("UI/Ability/SerialExplode.png")
+	--a:setCastRange(500)
+	addTemplateAbility(a)
+    AL.kSerialExplode = a
 	
 	-- BuffMaker
 	--a = StunBuff:new("Stun", "Stun", 0.5, false)
@@ -268,6 +295,13 @@ function loadAbilityLibrary()
     a:setImageName("UI/Ability/Ability01.png")
 	addTemplateAbility(a)
     AL.kBuffMaker = a
+	
+	-- TestAct
+	a = TestAct:new("Test", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly)
+	a:setCastRange(400.0)
+	a:setImageName("UI/Ability/Ability01.png")
+	addTemplateAbility(a)
+    AL.kTest = a
     
     -- PassiveAbilities
     
@@ -395,7 +429,7 @@ function loadAbilityLibrary()
     a = BuffMakerAct:new("Cutter", 1.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
     a:setCastRange(150.0)
     a:addCastAnimation(Sprite.kAniAct2)
-    a:setImageName("UI/Ability/AbilityFireBall.png")
+    a:setImageName("UI/Ability/FireBall.png")
     a:setTemplateProjectile(PL.kPirateProy)
     id = addTemplateAbility(a)
     
@@ -439,7 +473,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
     id = addTemplateAbility(a)
 	
-	a = StrikeBackPas:new("StrikeBack", 100, 0.1, id)
+	a = StrikeBackPas:new("StrikeBack", 100, 0.05, id)
 	addTemplateAbility(a)
 	AL.kStrikeBack = a
 	
@@ -622,7 +656,7 @@ a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 5, 0, Sprite.kAniAct1, Sprit
 a:setAppendBuff(id)
 id = SAL.addi(a, 011)  -- 011
 
-a = BuffMakerAct:new("多重斩击", 20.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+a = BuffMakerAct:new("多重斩击", 30.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
 a:setCastRange(300)
 a:setImageName("UI/Ability/Ability02.png")
 a:setMaxLevel(3)

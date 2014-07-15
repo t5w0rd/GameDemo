@@ -85,6 +85,27 @@ bool StageSceneLayer::init()
 
 void StageSceneLayer::onLoadingProgress()
 {
+    M_DEF_GC(gc);
+    if (gc->getLoaded() < 2)
+    {
+        return;
+    }
+
+    float per = gc->getLoaded() * 1.0f / gc->getLoadCount();
+    auto pb = DCAST(getChildByTag(100)->getChildByTag(101), ProgressBar*);
+    if (pb == nullptr)
+    {
+        pb = ProgressBar::create(Size(wsz().width * 0.5, 50.0f), Sprite::createWithSpriteFrameName("UI/status/HpBarFill.png"), Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png"), 0.0f, 0.0f, true);
+        getChildByTag(100)->addChild(pb, 1, 101);
+        pb->setPosition(Point(wsz().width * 0.5, wsz().height * 0.3));
+    }
+    //pb->stopAllActions();
+    //pb->runActionForTimer(EaseExponentialOut::create(pb->setPercentageAction(per, 0.1f, per < 100 ? nullptr : CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onLoadingDone, this)))));
+    pb->setPercentage(per);
+    if (per >= 1.0f)
+    {
+        pb->runAction(Sequence::createWithTwoActions(DelayTime::create(1.0f), CallFunc::create(CC_CALLBACK_0(StageSceneLayer::onLoadingDone, this))));
+    }
 }
 
 void StageSceneLayer::onLoadingDone()

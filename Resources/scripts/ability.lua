@@ -3,6 +3,33 @@ __ABILITY__ = true
 
 include("UnitLibrary.lua")
 
+TestAct = class(ActiveAbility)
+function TestAct:ctor(name, cd, castTarget, effectFlags)
+	self:sctor("RainAct", name, cd, castTarget, effectFlags)
+end
+
+function TestAct:onUnitAbilityEffect(proj, target)
+	local o = self:getOwner()
+	local p = createProjectile(SPL.kPriestBolt)
+    p:setPenaltyFlags(Projectile.kOnDying)
+	--p:setPenaltyFlags(Projectile.kOnContact)
+	p:setFireType(Projectile.kFireFollow)
+    --p:setFireType(Projectile.kFireStraight)
+    p:setMoveSpeed(400.0)
+    p:setPosition(x, y)
+    p:setFromToType(Projectile.kPointToUnit)
+    p:setFromPoint(p:getPosition())
+    --p:setToPoint(x1, y1)
+	local t = o:getCastTarget()
+	p:setToUnit(t.unit)
+    p:setSrcUnit(o:getId())
+    --p:setContactLeft(1)
+    local ad = AttackData:new()
+    ad:setAttack(AttackValue.kMagical, 50)
+    p:setAttackData(ad)
+    p:fire()
+end
+
 BetrayBuff = class(BuffAbility)
 function BetrayBuff:ctor(duration)
     self:sctor("Betray", "Betray", duration, false)
@@ -98,7 +125,7 @@ function ArmorBuff:ctor(root, name, dur, stackable, exA, exB)
 end
 
 function ArmorBuff:onUnitAddAbility()
-    o = self:getOwner()
+    local o = self:getOwner()
     local exA, exB = o:getExArmorValue()
     local av = o:getRealArmorValue()
     --local s = string.format()
@@ -109,8 +136,7 @@ function ArmorBuff:onUnitAddAbility()
 	if self.change < 0 then
 		local eff = Effect:new("Effects/ArmorBreak", 0.08, 0.5, 0.5, o)
 		local x, y = o:getAnchorPointInPoints()
-		y = y + o:getHalfOfHeight()
-		eff:setPosition(x, y)
+		eff:setPosition(x, y + o:getHalfOfHeight())
 		eff:playRelease()
 	end
 end
@@ -134,8 +160,10 @@ function OnDyingPas:onUnitDying()
         return
     end
 
-    me:say(OnDyingPas.words[math.random(1, #OnDyingPas.words)])
-
+	if math.random() < 0.3 then
+		me:say(OnDyingPas.words[math.random(1, #OnDyingPas.words)])
+	end
+	
     lvl = me:getLevel()
     kill = kill + 1
     local atk = me:getAttackAbility()
@@ -272,6 +300,11 @@ function PressureBombBuff:buffEffect(per)
     end
     
     local o = self:getOwner()
+	local x, y = o:getAnchorPointInPoints()
+	eff = Effect:new("Effects/Burn", 0.05, 0.5, 22 / 92, o)
+	eff:setPosition(x, y + o:getHalfOfHeight())
+	eff:playRelease()
+	
     local ad = AttackData:new()
     ad:setAttack(self.dt, self.dv * per)
     o:damaged(ad, s, Ability.kMaskActiveTrigger)
@@ -290,11 +323,29 @@ function PressureBombBuff:onUnitDamagedDone(damage, source)
 end
 
 DamageIncreaceBuff = class(BuffAbility)
-function DamageIncreaceBuff:ctor(root, name, duration, damageType, damageIncreace)
+function DamageIncreaceBuff:ctor(root, name, duration, damageType, damageIncreace, exAtkA, exAtkB)
     self:sctor(root, name, duration, false)
     self.dt = damageType
-    self.dv = damageIncreace
-    self.damage = damageIncreace
+	self.dvi = damageIncreace
+    self.damage = 0
+	self.exAtkA = exAtkA
+	self.exAtkB = exAtkB
+end
+
+function DamageIncreaceBuff:onUnitAddAbility()
+	local s = self:getSrcUnit()
+    if not s then
+        return
+    end
+	
+	if self.dvi == 0 then
+		local atk = s:getAttackAbility()
+		local av = atk:getRealAttackValue()
+		av = av * self.exAtkA + self.exAtkB
+		self.dvi = av
+	end
+	
+	self.damage = self.dvi
 end
 
 function DamageIncreaceBuff:onUnitDisplaceAbility(new)
@@ -306,9 +357,9 @@ function DamageIncreaceBuff:onUnitDisplaceAbility(new)
     local o = self:getOwner()
     local ad = AttackData:new()
     ad:setAttack(self.dt, self.damage)
-    o:damaged(ad, s)--, Ability.kMaskActiveTrigger)
+    o:damaged(ad, s, Ability.kMaskActiveTrigger)
     
-    self.damage = self.damage + self.dv
+    self.damage = self.damage + self.dvi
 end
 
 StrikeBackPas = class(PassiveAbility)
@@ -403,6 +454,7 @@ RainAct.kIce = 1
 RainAct.kSharpIce = 2
 function RainAct:ctor(name, cd, effect, intensity, duration, buff, castTarget, effectFlags)
 	self:sctor("RainAct", name, cd, castTarget, effectFlags)
+	self:setTriggerFlags(Ability.kOnTickTrigger)
 	self:setCastRange(500)
 	self:setCastTargetRadius(100)
 	
@@ -411,19 +463,17 @@ function RainAct:ctor(name, cd, effect, intensity, duration, buff, castTarget, e
 	self.y = 0.0
 	self.intensity = intensity
 	self.duration = duration
-	self.play = false
 	self.elapsed = 0.0
 	self.buff = buff
-	
-	self:setInterval(RainAct.INTERVAL)
+	self.total = 0
 end
 
 function RainAct:onUnitAbilityEffect(proj, target)
 	self.x, self.y = self:getAbilityEffectPoint(proj, target)
 	self:setInterval(RainAct.INTERVAL)
-	self.play = true
 	self.elapsed = 0.0
 	self.total = 1
+	self:onUnitInterval()
 end
 
 function RainAct:spawnEffect(index)
@@ -440,10 +490,6 @@ function RainAct:spawnEffect(index)
 end
 
 function RainAct:onUnitInterval()
-	if not self.play then
-		return
-	end
-	
 	self.elapsed = self.elapsed + RainAct.INTERVAL
 	
 	local intensity = self.total / self.elapsed
@@ -468,7 +514,81 @@ function RainAct:onUnitInterval()
 	
 	if self.elapsed >= self.duration then
 		self:setInterval(0.0)
-		self.play = false
+	end
+end
+
+ProjectileRainAct = class(ActiveAbility)
+ProjectileRainAct.INTERVAL = 0.1
+function ProjectileRainAct:ctor(name, cd, proj, intensity, duration, buff, castTarget, effectFlags)
+	self:sctor("ProjectileRainAct", name, cd, castTarget, effectFlags)
+	self:setTriggerFlags(Ability.kOnTickTrigger)
+	self:setCastRange(800)
+	self:setCastTargetRadius(150)
+	self.proj = proj
+	self.x = 0.0
+	self.y = 0.0
+	self.intensity = intensity
+	self.duration = duration
+	--self.play = false
+	self.elapsed = 0.0
+	self.buff = buff
+	self.total = 0
+end
+
+function ProjectileRainAct:onUnitAbilityEffect(proj, target)
+	if not proj then
+		self.x, self.y = self:getAbilityEffectPoint(proj, target)
+		self:setInterval(ProjectileRainAct.INTERVAL)
+		self.elapsed = 0.0
+		self.total = 1
+		self:onUnitInterval()
+		return
+	end
+	
+	if target then
+		target:addBuffAbility(self.buff, self:getOwner())
+	end
+end
+
+function ProjectileRainAct:onUnitInterval()
+	self.elapsed = self.elapsed + ProjectileRainAct.INTERVAL
+	
+	local intensity = self.total / self.elapsed
+	if intensity <= self.intensity then
+		self.total = self.total + 1
+		
+		local o = self:getOwner()
+		local targets = getUnits(function (u, p)
+			return p:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(self.x, self.y) < self:getCastTargetRadius()
+		end, o)
+
+		if #targets == 0 then
+			return
+		end
+		
+		local t = targets[math.random(#targets)]
+		
+		local p = createProjectile(self.proj)
+		p:setPenaltyFlags(Projectile.kOnDying)
+		--p:setPenaltyFlags(Projectile.kOnContact)
+		p:setFireType(Projectile.kFireFollow)
+		--p:setFireType(Projectile.kFireStraight)
+		p:setMoveSpeed(300.0)
+		p:setPosition(self.x, self.y)
+		p:setHeight(300.0)
+		p:setFromToType(Projectile.kPointToUnit)
+		p:setFromPoint(p:getPosition())
+		--p:setToPoint(x1, y1)
+		p:setToUnit(t)
+		p:setSrcUnit(o:getId())
+		--p:setContactLeft(1)
+		p:setSrcAbility(self)
+		p:fire()
+		
+	end
+	
+	if self.elapsed >= self.duration then
+		self:setInterval(0.0)
 	end
 end
 
@@ -494,13 +614,11 @@ function WhenDamagedBuff:onUnitDamagedDone(damage, source)
 end
 
 TeleportAct = class(ActiveAbility)
-TeleportAct.INTERVAL = 0.001
 function TeleportAct:ctor(name, cd, startAct, endAct)
 	self:sctor("TeleportAct", name, cd, CommandTarget.kPointTarget, UnitForce.kSelf)
 	self:setCastRange(800)
 	--self:setCastTargetRadius(0)
 	self:addCastAnimation(startAct)
-	self:setInterval(TeleportAct.INTERVAL)
 	
 	self.endAct = endAct
 end
@@ -512,3 +630,65 @@ function TeleportAct:onUnitAbilityEffect(proj, target)
 	o:setPosition(ct.x, ct.y)
 	o:doAnimation(self.endAct, 1)
 end
+
+SerialExplodeAct = class(ActiveAbility)
+function SerialExplodeAct:ctor(name, cd, dis, count, interval, range, buff)
+	self:sctor("SerialExplodeAct", name, cd, CommandTarget.kPointTarget, UnitForce.kEnemy)
+	self:setTriggerFlags(Ability.kOnTickTrigger)
+	self:setCastRange(dis * count)
+	--self:setCastTargetRadius(0)
+	self.dis = dis
+	self.count = count
+	self.index = 0
+	self.interval = interval
+	
+	self.range = range
+	self.buff = buff
+	
+	self.sx = 0
+	self.sy = 0
+	self.angle = 0
+end
+
+function SerialExplodeAct:onUnitAbilityEffect(proj, target)
+	if not proj then
+		local o = self:getOwner()
+		self.sx, self.sy = o:getPosition()
+		local tx, ty = self:getAbilityEffectPoint(proj, target)
+		self.angle = math.atan2(ty - self.sy, tx - self.sx)
+		
+		self.index = 0
+		self:setInterval(self.interval)
+		self:onUnitInterval()
+		return
+	end
+end
+
+function SerialExplodeAct:onUnitInterval()
+	self.index = self.index + 1
+	
+	local x, y = getDirectionPoint(self.sx, self.sy, self.angle, self.dis * self.index)
+	eff = Effect:new("Effects/Explosion", 0.05, 0.5, 42 / 168)
+	eff:setLogicPosition(x, y)
+	eff:playRelease()
+	playSound("sounds/Effects/Sound_FireballHit.mp3")
+	
+	local o = self:getOwner()
+	local targets = getUnits(function (u, p)
+		return o:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(x, y) < self.range
+	end, nil)
+	
+	for _, u in ipairs(targets) do
+		local buff = KnockBackBuff:new("SE.KB", "KnockBack", 0.5, 100, x, y)
+		buff:setAppendBuff(self.buff)
+		buff:setSrcUnit(o)
+		buff:setLevel(self:getLevel())
+		u:addBuffAbility(buff)
+	end
+	
+	if self.index >= self.count then
+		self:setInterval(0.0)
+	end
+end
+
+
