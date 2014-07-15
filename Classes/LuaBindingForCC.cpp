@@ -112,9 +112,9 @@ int g_setSearchPath(lua_State* L)
     if (lua_gettop(L) == 0)
     {
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-        g_sLuaSearchPath = "/sdcard/ts/gamedemo";
+        g_sLuaSearchPath = "/sdcard/ts/gamedemo/scripts";
 #elif CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-        g_sLuaSearchPath = "/var/mobile/Documents";
+        g_sLuaSearchPath = "/var/mobile/Documents/scripts";
 #else
         g_sLuaSearchPath = "scripts";
 #endif
@@ -237,12 +237,24 @@ int Unit4CC_addBattleTip(lua_State* L)
     const char* tip = lua_tostring(L, 2);
     const char* font = lua_isnil(L, 3) ? nullptr : lua_tostring(L, 3);
     float fontSize = lua_tonumber(L, 4);
-    unsigned int r = lua_tounsigned(L, 5);
-    unsigned int g = lua_tounsigned(L, 6);
-    unsigned int b = lua_tounsigned(L, 7);
-
+    bool ignoreColor = lua_gettop(L) < 5;
+    
     CUnitDrawForCC* d = DCAST(_p->getDraw(), CUnitDrawForCC*);
-    d->addBattleTip(tip, font, fontSize, Color3B(r, g, b));
+    if (ignoreColor == false)
+    {
+        unsigned int r = lua_tounsigned(L, 5);
+        unsigned int g = lua_tounsigned(L, 6);
+        unsigned int b = lua_tounsigned(L, 7);
+        d->addBattleTip(tip, font, fontSize, Color3B(r, g, b));
+    }
+    else
+    {
+        d->addBattleTip(tip, font, fontSize, Color3B(), true);
+    }
+    
+
+    
+    
 
     return 0;
 }

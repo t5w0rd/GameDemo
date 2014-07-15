@@ -797,6 +797,7 @@ luaL_Reg Unit_funcs[] = {
     { "getTouchDistance", Unit2D_getTouchDistance },
     { "getAttackingTarget", Unit2D_getAttackingTarget },
     { "doAnimation", Unit2D_doAnimation },
+    { "stopAction", Unit2D_stopAction },
 
     { nullptr, nullptr }
 };
@@ -1923,6 +1924,19 @@ int Unit2D_doAnimation(lua_State* L)
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     auto tag = d->doAnimation(id, nullptr, iRepeatTimes, nullptr, fSpeed);
 
+    lua_pushinteger(L, tag);
+
+    return 1;
+}
+
+int Unit2D_stopAction(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    int tag = lua_tointeger(L, 2);
+
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    d->stopAction(tag);
+
     return 0;
 }
 
@@ -2443,6 +2457,7 @@ luaL_Reg Ability_funcs[] = {
     { "setCost", Ability_setCost },
     { "getCost", Ability_getCost },
     { "addCastAnimation", Ability_addCastAnimation },
+    { "getCastRandomAnimation", Ability_getCastRandomAnimation },
     { nullptr, nullptr }
 };
 
@@ -2778,6 +2793,15 @@ int Ability_addCastAnimation(lua_State* L)
     return 0;
 }
 
+int Ability_getCastRandomAnimation(lua_State* L)
+{
+    CAbility* _p = luaL_toabilityptr(L, 1);
+
+    lua_pushinteger(L, _p->getCastRandomAnimation());
+
+    return 1;
+}
+
 luaL_Reg ActiveAbility_funcs[] = {
     { "ctor", ActiveAbility_ctor },
     { "checkConditions", ActiveAbility_checkConditions },
@@ -2793,6 +2817,7 @@ luaL_Reg ActiveAbility_funcs[] = {
     { "getCastTargetRadius", ActiveAbility_getCastTargetRadius },
     { "getCastTargetType", ActiveAbility_getCastTargetType },
     { "setTemplateProjectile", ActiveAbility_setTemplateProjectile },
+    { "getTemplateProjectile", ActiveAbility_getTemplateProjectile },
     { "setCastHorizontal", ActiveAbility_setCastHorizontal },
     { "isCastHorizontal", ActiveAbility_isCastHorizontal },
     { "getAbilityEffectPoint", ActiveAbility_getAbilityEffectPoint },
@@ -2938,6 +2963,16 @@ int ActiveAbility_setTemplateProjectile(lua_State* L)
     _p->setTemplateProjectile(proj);
 
     return 0;
+}
+
+int ActiveAbility_getTemplateProjectile(lua_State* L)
+{
+    CActiveAbility* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushinteger(L, _p->getTemplateProjectile());
+
+    return 1;
 }
 
 int ActiveAbility_setCastHorizontal(lua_State* L)
@@ -3678,11 +3713,26 @@ int ChargeJumpBuff_ctor(lua_State* L)
 
 int LimitedPasBuff_ctor(lua_State* L)
 {
-    const char* name = lua_tostring(L, 2);
+    auto name = lua_tostring(L, 2);
     float duration = lua_tonumber(L, 3);
     int pas = lua_tointeger(L, 4);
 
     CLimitedPasBuff* _p = new CLimitedPasBuff(name, duration, pas);
+    lua_pushlightuserdata(L, _p);
+    lua_setfield(L, 1, "_p");
+
+    return 0;
+}
+
+int FastMoveToBackBuff_ctor(lua_State* L)
+{
+    auto name = lua_tostring(L, 2);
+    float duration = lua_tonumber(L, 3);
+    float cd = lua_tonumber(L, 4);
+    float r = lua_tonumber(L, 5);
+    float buff = lua_tointeger(L, 6);
+
+    auto _p = new CFastMoveToBackBuff(name, duration, cd, r, buff);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3736,6 +3786,7 @@ int luaRegCommFuncs(lua_State* L)
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, LimitedLifeBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, ChargeJumpBuff, BuffAbility);
     M_LUA_BIND_CLASS_WITH_CTOR_EX(L, LimitedPasBuff, BuffAbility);
+    M_LUA_BIND_CLASS_WITH_CTOR_EX(L, FastMoveToBackBuff, BuffAbility);
 
     return 0;
 }
@@ -3805,7 +3856,7 @@ int g_getUnit(lua_State* L)
 int g_getUnits(lua_State* L)
 {
     int matchfunc = 1;
-    int matchparam = 2;
+    //int matchparam = 2;
 
     lua_newtable(L);
     int t = lua_gettop(L);
@@ -3829,10 +3880,10 @@ int g_getUnits(lua_State* L)
         {
             lua_pushvalue(L, matchfunc);
             luaL_pushobjptr(L, "Unit", u);
-            lua_pushvalue(L, matchparam);
+            //lua_pushvalue(L, matchparam);
 
             bool res = false;
-            if (lua_pcall(L, 2, 1, 0) != LUA_OK)
+            if (lua_pcall(L, 1, 1, 0) != LUA_OK)
             {
                 const char* err = lua_tostring(L, -1);
                 lua_getglobal(L, "log");

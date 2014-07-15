@@ -667,7 +667,7 @@ int CUnitDraw2D::castSpell(CActiveAbility* pAbility)
     {
         CAttackAct* atk = nullptr;
         u->getActiveAbility(getCastActiveAbilityId())->dcast(atk);
-        spd = atk->getBaseAttackInterval() / max(FLT_EPSILON, atk->getRealAttackInterval());
+        spd = atk->getRealAttackSpeedMulriple();
     }
 
     int aniId = pAbility->getCastRandomAnimation();

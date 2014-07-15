@@ -439,7 +439,7 @@ void CUnitDrawForCC::setGeometry(float fHalfOfWidth, float fHalfOfHeight, const 
     }
 }
 
-void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFontSize, Color3B color)
+void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFontSize, Color3B color, bool ignoreColor /* = false */)
 {
     //return;
     auto pZhCh = "fonts/DFYuanW7-GB2312.ttf";
@@ -477,7 +477,11 @@ void CUnitDrawForCC::addBattleTip(const char* pTip, const char* pFont, float fFo
         lbl->setScale(scale);
     }
     
-    lbl->setColor(color);
+    if (ignoreColor == false)
+    {
+        lbl->setColor(color);
+    }
+    
     l->addChild(lbl, 1, getCurTipId());
 
     lbl->setPosition(p);

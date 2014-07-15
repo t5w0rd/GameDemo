@@ -992,12 +992,13 @@ void BattleSceneLayer::updateTargetInfo(int id)
             m_stTargetInfo.iAtk0 = iAtk0;
             m_stTargetInfo.iAtk1 = iAtk1;
 
-            if (iAtkEx)
+            if (iAtkEx != 0)
             {
-                sprintf(szBuf, " +%d", iAtkEx);
+                sprintf(szBuf, iAtkEx < 0 ? " %d" : " +%d", iAtkEx);
                 m_pTargetAtkEx->setString(szBuf);
                 //m_pTargetAtkEx->setPosition(m_pTargetAtk->getPosition() + Point(m_pTargetAtk->getTextureRect().size.width, 0));
                 m_pTargetAtkEx->setPosition(m_pTargetAtk->getPosition() + Point(m_pTargetAtk->getContentSize().width, 0));
+                m_pTargetAtkEx->setColor(iAtkEx < 0 ? Color3B(220, 40, 40) : Color3B(40, 220, 40));
             }
             else
             {

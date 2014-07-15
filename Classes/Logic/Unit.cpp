@@ -1663,6 +1663,12 @@ void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel, bool bNotify)
     CWorld* w = getWorld();
     CBuffAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
+    if (pAbility == nullptr)
+    {
+        CCLOG("ERR | add buff(null)");
+        return;
+    }
+
     pAbility->setSrcUnit(iSrcUnit);
     pAbility->setLevel(iLevel);
     addBuffAbility(pAbility, bNotify);
@@ -1755,6 +1761,11 @@ void CUnit::updateBuffAbilityElapsed(float dt)
         pBuff->setElapsed(pBuff->getElapsed() + dt);
         if (pBuff->isDone())
         {
+            if (pBuff->isCoolingDown())
+            {
+                getWorld()->delAbilityCD(pBuff->getId());
+            }
+
             pBuff->onDelFromUnit();
             delAbilityFromTriggers(pBuff);
             pBuff->release();

@@ -214,6 +214,7 @@ public:
     
     float getRealAttackInterval() const;
     float getRealAttackSpeed() const;
+    float getRealAttackSpeedMulriple() const;
     
     void setExAttackSpeed(const CExtraCoeff& roExAttackSpeed);
     const CExtraCoeff& getExAttackSpeed() const;
@@ -623,6 +624,18 @@ public:
 
     M_SYNTHESIZE_READONLY(int, m_iTemplatePas, TemplatePas);
     M_SYNTHESIZE_READONLY(CPassiveAbility*, m_pInnerPas, PassiveAbility);
+};
+
+class CFastMoveToBackBuff : public CBuffAbility
+{
+public:
+    CFastMoveToBackBuff(const char* name, float duration, float cd, float maxRange, int buff);
+    virtual CFastMoveToBackBuff* copy() override;
+
+    virtual bool onUnitAttacked(CAttackData* pAttack, CUnit* pSource) override;
+
+    M_SYNTHESIZE(float, m_range, MaxRange);
+    M_SYNTHESIZE(int, m_buff, TemplateBuff);
 };
 
 

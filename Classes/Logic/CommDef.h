@@ -324,7 +324,8 @@ enum ANI_ID
     kAniAct5,
     kAniAct6,
     kAniAct7,
-    kAniAct8
+    kAniAct8,
+    kAniAct9
 };
 
 enum FRM_ID

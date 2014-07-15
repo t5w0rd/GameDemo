@@ -165,9 +165,9 @@ function Unit:sayf(self, ...)
 end
 
 function Unit:getEffectiveUnitsInRange(radius, forceFlags, func)
-	local us = getUnits(function (u, p)
-		return self:canEffect(u, forceFlags) and self:getTouchDistance(u) < radius and func(u)
-	end, nil)
+	local us = getUnits(function (u)
+		return self:canEffect(u, forceFlags) and self:getTouchDistance(u) < radius and (not func or func(u))
+	end)
 	
 	return us
 end
@@ -183,6 +183,32 @@ function Unit:getNearestEffectiveInjuredUnitInRange(radius, forceFlags, exMaxHpA
 		local maxHp = u:getRealMaxHp()
 		return self:canEffect(u, forceFlags) and u:getHp() <= (exMaxHpA * maxHp + exMaxHpB)
 	end)
+end
+
+UnitGroup = class()
+function UnitGroup:ctor()
+	self.units = {}
+end
+
+function UnitGroup.getEffectiveUnitsInRange(x, y, unit, radius, forceFlags, func)
+	local ug = UnitGroup:new()
+	ug.units = getUnits(function (u)
+		return unit:canEffect(u, forceFlags) and u:getTouchDistance(x, y) < radius and (not func or func(u))
+	end)
+	
+	return ug
+end
+
+function UnitGroup:addBuffAbility(buff, src, level)
+	for _, u in ipairs(self.units) do
+		u:addBuffAbility(buff, src, level)
+	end
+end
+
+function UnitGroup:damaged(ad, src, mask)
+	for _, u in ipairs(self.units) do
+		u:damaged(ad, src, mask)
+	end
 end
 
 function Projectile:fireStraight(x, y, x1, y1, speed)
@@ -341,7 +367,8 @@ function initForHero()
 	--a:setImageName("UI/Ability/Ability03.png")
 	--hero:addActiveAbility(a)
 	--hero:addActiveAbility(AL.kBuffMaker:getId())
-	--hero:addPassiveAbility(AL.kStrikeBack:getId())
+	--hero:addActiveAbility(AL.kChangeAttack:getId())
+	--hero:addActiveAbility(AL.kFastMoveToBack:getId())
 	hero:addActiveAbility(AL.kSerialExplode:getId())
 	--hero:addActiveAbility(AL.kArrowRain:getId())
 	

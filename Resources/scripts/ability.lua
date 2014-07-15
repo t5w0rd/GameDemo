@@ -1,4 +1,4 @@
-if __ABILITY__ then return end
+if not DEBUG and __ABILITY__ then return end
 __ABILITY__ = true
 
 include("UnitLibrary.lua")
@@ -279,13 +279,14 @@ function BerserkerBloodPas:changeValueByDelta(dt)
 end
 
 PressureBombBuff = class(BuffAbility)
-function PressureBombBuff:ctor(name, duration, maxDamage, damageType, damageValue)
+function PressureBombBuff:ctor(name, duration, maxDamage, damageType, damageValue, range)
     self:sctor("PressureBombBuff", name, duration, true)
     self:setTriggerFlags(Ability.kOnDamagedDoneTrigger)    
     self.maxDamage = maxDamage
     self.dt = damageType
     self.dv = damageValue
     self.effected = false
+	self.range = range
 end
 
 function PressureBombBuff:buffEffect(per)
@@ -307,7 +308,11 @@ function PressureBombBuff:buffEffect(per)
 	
     local ad = AttackData:new()
     ad:setAttack(self.dt, self.dv * per)
-    o:damaged(ad, s, Ability.kMaskActiveTrigger)
+	
+	x, y = o:getPosition()
+	local s = self:getSrcUnit()
+	local ug = UnitGroup.getEffectiveUnitsInRange(x, y, s, self.range, UnitForce.kEnemy)
+    ug:damaged(ad, s, Ability.kMaskActiveTrigger)
 end
 
 function PressureBombBuff:onUnitDelAbility()
@@ -377,13 +382,9 @@ function StrikeBackPas:onUnitAttacked(ad, s)
 	end
 	
 	local o = self:getOwner()
-	local targets = getUnits(function (u, p)
-		return p:isMyEnemy(u) and p:getTouchDistance(u) < self.range
-	end, o)
-	
-	for _, u in ipairs(targets) do
-		u:addBuffAbility(self.buff, o)
-	end
+	local x, y = o:getPosition()
+	local ug = UnitGroup.getEffectiveUnitsInRange(x, y, o, self.range, UnitForce.kEnemy)
+	ug:addBuffAbility(self.buff, o)
 	
 	return true
 end
@@ -440,7 +441,7 @@ function ChangeAttributeBuff:changeValueByDelta(dt)
     atk:setExAttackValue(a + exAttackValueDeltaA, b + exAttackValueDeltaB)
 	
 	if self:getDuration() <= 0.5 and self.exAttackValueDeltaA * dt > 1 then
-		o:addBattleTip(math.ceil(atk:getRealAttackValue()), nil, 32, 250, 0, 0)
+		o:addBattleTip(math.ceil(atk:getRealAttackValue()), "fonts/orange.fnt", 32)
 	end
 	
 	a, b = o:getExArmorValue()
@@ -448,7 +449,7 @@ function ChangeAttributeBuff:changeValueByDelta(dt)
 end
 
 RainAct = class(ActiveAbility)
-RainAct.INTERVAL = 0.1
+RainAct.INTERVAL = 0.05
 RainAct.kBolt = 0
 RainAct.kIce = 1
 RainAct.kSharpIce = 2
@@ -466,13 +467,17 @@ function RainAct:ctor(name, cd, effect, intensity, duration, buff, castTarget, e
 	self.elapsed = 0.0
 	self.buff = buff
 	self.total = 0
+	self.act = 0
 end
 
 function RainAct:onUnitAbilityEffect(proj, target)
+	local o = self:getOwner()
 	self.x, self.y = self:getAbilityEffectPoint(proj, target)
 	self:setInterval(RainAct.INTERVAL)
 	self.elapsed = 0.0
 	self.total = 1
+	o:suspend()
+	self.act = o:doAnimation(self:getCastRandomAnimation(), INFINITE)
 	self:onUnitInterval()
 end
 
@@ -491,7 +496,7 @@ end
 
 function RainAct:onUnitInterval()
 	self.elapsed = self.elapsed + RainAct.INTERVAL
-	
+	local o = self:getOwner()
 	local intensity = self.total / self.elapsed
 	if intensity <= self.intensity then
 		self.total = self.total + 1
@@ -501,24 +506,20 @@ function RainAct:onUnitInterval()
 		eff:setLogicPosition(x, y)
 		eff:playRelease()
 		
-		local o = self:getOwner()
-		local targets = getUnits(function (u, p)
-			return p:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(self.x, self.y) < self:getCastTargetRadius()
-		end, o)
-		
-		for _, u in ipairs(targets) do
-			u:addBuffAbility(self.buff, o)
-		end
+		local ug = UnitGroup.getEffectiveUnitsInRange(self.x, self.y, o, self:getCastTargetRadius(), self:getEffectiveTypeFlags())
+		ug:addBuffAbility(self.buff, o)
 		
 	end
 	
 	if self.elapsed >= self.duration then
 		self:setInterval(0.0)
+		o:stopAction(self.act)
+		o:resume()
 	end
 end
 
 ProjectileRainAct = class(ActiveAbility)
-ProjectileRainAct.INTERVAL = 0.1
+ProjectileRainAct.INTERVAL = 0.05
 function ProjectileRainAct:ctor(name, cd, proj, intensity, duration, buff, castTarget, effectFlags)
 	self:sctor("ProjectileRainAct", name, cd, castTarget, effectFlags)
 	self:setTriggerFlags(Ability.kOnTickTrigger)
@@ -533,34 +534,38 @@ function ProjectileRainAct:ctor(name, cd, proj, intensity, duration, buff, castT
 	self.elapsed = 0.0
 	self.buff = buff
 	self.total = 0
+	self.act = 0
 end
 
 function ProjectileRainAct:onUnitAbilityEffect(proj, target)
+	local o = self:getOwner()
 	if not proj then
 		self.x, self.y = self:getAbilityEffectPoint(proj, target)
 		self:setInterval(ProjectileRainAct.INTERVAL)
 		self.elapsed = 0.0
 		self.total = 1
+		o:suspend()
+		self.act = o:doAnimation(self:getCastRandomAnimation(), INFINITE)
 		self:onUnitInterval()
 		return
 	end
 	
 	if target then
-		target:addBuffAbility(self.buff, self:getOwner())
+		target:addBuffAbility(self.buff, o)
 	end
 end
 
 function ProjectileRainAct:onUnitInterval()
 	self.elapsed = self.elapsed + ProjectileRainAct.INTERVAL
+	local o = self:getOwner()
 	
 	local intensity = self.total / self.elapsed
 	if intensity <= self.intensity then
 		self.total = self.total + 1
 		
-		local o = self:getOwner()
-		local targets = getUnits(function (u, p)
-			return p:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(self.x, self.y) < self:getCastTargetRadius()
-		end, o)
+		local targets = getUnits(function (u)
+			return o:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(self.x, self.y) < self:getCastTargetRadius()
+		end)
 
 		if #targets == 0 then
 			return
@@ -573,12 +578,10 @@ function ProjectileRainAct:onUnitInterval()
 		--p:setPenaltyFlags(Projectile.kOnContact)
 		p:setFireType(Projectile.kFireFollow)
 		--p:setFireType(Projectile.kFireStraight)
-		p:setMoveSpeed(300.0)
-		p:setPosition(self.x, self.y)
-		p:setHeight(300.0)
-		p:setFromToType(Projectile.kPointToUnit)
-		p:setFromPoint(p:getPosition())
-		--p:setToPoint(x1, y1)
+		p:setMoveSpeed(500.0)
+		p:setMaxHeightDelta(math.random(-100, 100))
+		p:setFromToType(Projectile.kUnitToUnit)
+		p:setFromUnit(o)
 		p:setToUnit(t)
 		p:setSrcUnit(o:getId())
 		--p:setContactLeft(1)
@@ -589,6 +592,8 @@ function ProjectileRainAct:onUnitInterval()
 	
 	if self.elapsed >= self.duration then
 		self:setInterval(0.0)
+		o:stopAction(self.act)
+		o:resume()
 	end
 end
 
@@ -674,11 +679,9 @@ function SerialExplodeAct:onUnitInterval()
 	playSound("sounds/Effects/Sound_FireballHit.mp3")
 	
 	local o = self:getOwner()
-	local targets = getUnits(function (u, p)
-		return o:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(x, y) < self.range
-	end, nil)
+	local ug = UnitGroup.getEffectiveUnitsInRange(x, y, o, self.range, self:getEffectiveTypeFlags())
 	
-	for _, u in ipairs(targets) do
+	for _, u in ipairs(ug.units) do
 		local buff = KnockBackBuff:new("SE.KB", "KnockBack", 0.5, 100, x, y)
 		buff:setAppendBuff(self.buff)
 		buff:setSrcUnit(o)
@@ -691,4 +694,68 @@ function SerialExplodeAct:onUnitInterval()
 	end
 end
 
+ChangeAttackBuff = class(BuffAbility)
+function ChangeAttackBuff:ctor(name, duration, atkType, interval, minRange, maxRange, horizontal, proj)
+	self:sctor("ChangeAttributeBuff", name, duration, false)
+	self.at = atkType
+	self.interval = interval  -- 基础攻击间隔不会随等级提升而改变，所以可以更改
+	self.mr = minRange
+	self.r = maxRange
+	self.hor = horizontal
+	self.proj = proj
+end
 
+function ChangeAttackBuff:onUnitAddAbility()
+	self:swapAttackAttribute()
+end
+
+function ChangeAttackBuff:onUnitDelAbility()
+	self:swapAttackAttribute()
+end
+
+function ChangeAttackBuff:swapAttackAttribute()
+	local o = self:getOwner()
+	local atk = o:getAttackAbility()
+	if not atk then
+		return
+	end
+	
+	local tmp, tmp2
+	
+	if self.at ~= nil then
+		tmp, tmp2 = atk:getBaseAttack()
+		atk:setBaseAttack(self.at, tmp2)
+		self.at = tmp
+	end
+	
+	if self.interval ~= nil then
+		tmp = atk:getBaseAttackInterval()
+		atk:setBaseAttackInterval(self.interval)
+		self.interval = tmp
+	end
+	
+	if self.mr ~= nil then
+		tmp = atk:getCastMinRange()
+		atk:setCastMinRange(self.mr)
+		self.mr = tmp
+	end
+	
+	if self.r ~= nil then
+		tmp = atk:getCastRange()
+		atk:setCastRange(self.r)
+		self.r = tmp
+	end
+	
+	if self.hor ~= nil then
+		tmp = atk:isCastHorizontal()
+		atk:setCastHorizontal(self.hor)
+		self.hor = tmp
+	end
+	
+	if self.proj ~= nil then
+		tmp = atk:getTemplateProjectile()
+		atk:setTemplateProjectile(self.proj)
+		self.proj = tmp
+	end
+	
+end

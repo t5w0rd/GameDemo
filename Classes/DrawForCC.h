@@ -111,7 +111,7 @@ public:
     M_SYNTHESIZE(int, m_iMaxTips, MaxTips);
     M_SYNTHESIZE(int, m_iBaseTipId, BaseTipId);
     M_SYNTHESIZE(int, m_iCurTipId, CurTipId);
-    void addBattleTip(const char* pTip, const char* pFont, float fFontSize, Color3B color);
+    void addBattleTip(const char* pTip, const char* pFont, float fFontSize, Color3B color, bool ignoreColor = false);
     
     struct CTRL_SOUND
     {

@@ -210,6 +210,7 @@ int Unit2D_getDistance(lua_State* L);
 int Unit2D_getTouchDistance(lua_State* L);
 int Unit2D_getAttackingTarget(lua_State* L);
 int Unit2D_doAnimation(lua_State* L);
+int Unit2D_stopAction(lua_State* L);
 
 int UnitPath_ctor(lua_State* L);
 int UnitPath_addPoint(lua_State* L);
@@ -302,6 +303,7 @@ int Ability_getGrade(lua_State* L);
 int Ability_setCost(lua_State* L);
 int Ability_getCost(lua_State* L);
 int Ability_addCastAnimation(lua_State* L);
+int Ability_getCastRandomAnimation(lua_State* L);
 
 int ActiveAbility_ctor(lua_State* L);
 int ActiveAbility_checkConditions(lua_State* L);
@@ -317,6 +319,7 @@ int ActiveAbility_setCastTargetRadius(lua_State* L);
 int ActiveAbility_getCastTargetRadius(lua_State* L);
 int ActiveAbility_getCastTargetType(lua_State* L);
 int ActiveAbility_setTemplateProjectile(lua_State* L);
+int ActiveAbility_getTemplateProjectile(lua_State* L);
 int ActiveAbility_setCastHorizontal(lua_State* L);
 int ActiveAbility_isCastHorizontal(lua_State* L);
 int ActiveAbility_getAbilityEffectPoint(lua_State* L);
@@ -373,6 +376,7 @@ int ReflectBuff_ctor(lua_State* L);
 int LimitedLifeBuff_ctor(lua_State* L);
 int ChargeJumpBuff_ctor(lua_State* L);
 int LimitedPasBuff_ctor(lua_State* L);
+int FastMoveToBackBuff_ctor(lua_State* L);
 
 int luaRegCommFuncs(lua_State* L);
 

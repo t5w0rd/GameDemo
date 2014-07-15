@@ -1153,19 +1153,20 @@ float CAttackAct::getRealAttackInterval() const
 {
     float fAttackInterval = getBaseAttackInterval();
     // 取攻击速度系数，不得小于最小值
-    float fMulriple = m_oExAttackSpeed.getMulriple();
-    fMulriple = max(fMulriple, CONST_MIN_ATTACK_SPEED_MULRIPLE);
-    // 计算两种最短攻击间隔中的最大值作为最短攻击间隔
-    float fMinAttackSpeedInterval = fAttackInterval / CONST_MAX_ATTACK_SPEED_MULRIPLE;
-    fMinAttackSpeedInterval = max(CONST_MIN_ATTACK_SPEED_INTERVAL, fMinAttackSpeedInterval);
-    // 计算实际攻击间隔，不得小于上述最短攻击间隔
-    float fRealAttackInterval = fAttackInterval / fMulriple;
-    return max(fRealAttackInterval, fMinAttackSpeedInterval);
+    float fMulriple = min(CONST_MAX_ATTACK_SPEED_MULRIPLE, max(CONST_MIN_ATTACK_SPEED_MULRIPLE, m_oExAttackSpeed.getMulriple()));
+    float fRealAttackInterval = max(CONST_MIN_ATTACK_SPEED_INTERVAL, fAttackInterval / fMulriple);
+    
+    return fRealAttackInterval;
 }
 
 float CAttackAct::getRealAttackSpeed() const
 {
     return 1 / getRealAttackInterval();
+}
+
+float CAttackAct::getRealAttackSpeedMulriple() const
+{
+    return min(CONST_MAX_ATTACK_SPEED_MULRIPLE, max(CONST_MIN_ATTACK_SPEED_MULRIPLE, m_oExAttackSpeed.getMulriple()));
 }
 
 void CAttackAct::setExAttackSpeed(const CExtraCoeff& roExAttackSpeed)
@@ -1187,8 +1188,9 @@ void CAttackAct::updateAttackSpeed()
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
     if (d->getCastActiveAbilityId() == o->getAttackAbilityId())
     {
-        float spd = getBaseAttackInterval() / max(FLT_EPSILON, getRealAttackInterval());
-        LOG("ATK SPD: %.1f", spd);
+        // float spd = getBaseAttackInterval() / max(FLT_EPSILON, getRealAttackInterval());
+        float spd = min(CONST_MAX_ATTACK_SPEED_MULRIPLE, max(CONST_MIN_ATTACK_SPEED_MULRIPLE, m_oExAttackSpeed.getMulriple()));
+        CCLOG("ATK SPD: %.2g", spd);
         d->setActionSpeed(d->getCastActionId(), spd);
     }
     
@@ -1550,7 +1552,7 @@ void CAttackBuffMakerPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarge
         auto d = DCAST(o->getDraw(), CUnitDrawForCC*);
         char sz[32];
         sprintf(sz, "%d", toInt(pAttack->getAttackValue().getValue()));
-        d->addBattleTip(sz, "", 32, Color3B(250, 0, 0));
+        d->addBattleTip(sz, "fonts/orange.fnt", 32, Color3B(), true);
     }
     
     if (m_iTemplateBuff != 0)
@@ -1775,22 +1777,20 @@ void CStunBuff::onUnitAddAbility()
         M_DEF_GC(gc);
 
         Node* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
-        Sprite* sp = DCAST(sn->getChildByTag(4242), Sprite*);
-        if (sp == nullptr)
+        auto eff = DCAST(sn->getChildByTag(4242), Effect*);
+        if (eff == nullptr)
         {
-            sp = Sprite::createWithSpriteFrameName("Effects/Stun/Big/00.png");
-            sn->addChild(sp, M_BASE_Z - sn->getPosition().y, 4242);
+            eff = Effect::create("Effects/Stun/Big", 0.1f);
+            eff->setTag(4242);
+            sn->addChild(eff);
+            eff->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, eff->getContentSize().height * 0.5));
         }
         else
         {
-            sp->stopAllActions();
+            eff->stopAllActions();
         }
 
-        Animation* pAni = gc->getAnimation("Effects/Stun/Big");
-        pAni->setLoops(2);
-        
-        sp->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, sp->getContentSize().height * 0.5));
-        sp->runAction(Sequence::create(Animate::create(pAni), RemoveSelf::create(), nullptr));
+        eff->playRelease();
     }
 #endif
 }
@@ -2004,6 +2004,40 @@ void CChangeHpBuff::onUnitAddAbility()
     CUnit* o = getOwner();
     float change = getChangeHp().getValue(o->getRealMaxHp());
     LOG("%s获得%s状态(%.1f/s)\n", o->getName(), getName(), change);
+    if (change > 0.0f)
+    {
+
+#ifdef DEBUG_FOR_CC
+        // for cocos2d
+        CUnitDrawForCC* ccd = nullptr;
+        o->getDraw()->dcast(ccd);
+
+        if (ccd != nullptr)
+        {
+            //char sz[64];
+            //sprintf(sz, "%s!", getName());
+            //ccd->addBattleTip(sz, "", 18, Color3B(250, 104, 16));
+
+            M_DEF_GC(gc);
+
+            Node* sn = DCAST(o->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow();
+            auto eff = DCAST(sn->getChildByTag(4243), Effect*);
+            if (eff == nullptr)
+            {
+                eff = Effect::create("Effects/Heal/Big", 0.1f);
+                eff->setTag(4243);
+                sn->addChild(eff);
+                eff->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, eff->getContentSize().height * 0.5));
+            }
+            else
+            {
+                eff->stopAllActions();
+            }
+
+            eff->playRelease();
+        }
+#endif
+    }
 }
 
 void CChangeHpBuff::onUnitDelAbility()
@@ -2969,7 +3003,6 @@ void CChargeJumpBuff::onJumpDone()
     auto& atk = a->getBaseAttack();
     auto ad = new CAttackData;
     ad->setAttackValue(atk.getType(), a->getRealAttackValue() * (1.0f + m_fDamageCoeff * m_oStartPosition.getDistance(od->getPosition()) / 100));
-
     ug->damaged(ad, o);
 }
 
@@ -3020,4 +3053,65 @@ void CLimitedPasBuff::onUnitDelAbility()
 
     //M_SAFE_RELEASE(m_pInnerPas);
     m_pInnerPas = nullptr;
+}
+
+// CFastMoveToBackBuff
+CFastMoveToBackBuff::CFastMoveToBackBuff(const char* name, float duration, float cd, float maxRange, int buff)
+: CBuffAbility("FastMoveToBackBuff", name, duration, false)
+, m_range(maxRange)
+, m_buff(buff)
+{
+    setDbgClassName("CFastMoveToBack");
+    setTriggerFlags(CUnit::kOnAttackedTrigger);
+    setCoolDown(cd);
+}
+
+CFastMoveToBackBuff* CFastMoveToBackBuff::copy()
+{
+    auto res = new CFastMoveToBackBuff(getName(), getDuration(), getCoolDown(), getMaxRange(), getTemplateBuff());
+    res->copyData(this);
+    return res;
+}
+
+bool CFastMoveToBackBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
+{
+    if (isCoolingDown() || pSource == nullptr)
+    {
+        return true;
+    }
+    auto o = getOwner();
+    auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
+    auto sd = DCAST(pSource->getDraw(), CUnitDraw2D*);
+    auto& op = od->getPosition();
+    auto& sp = sd->getPosition();
+    if (op.getDistance(sp) > getMaxRange() || o->isSuspended() || o->isDead() || od->isFixed() || pSource->isDead())
+    {
+        return true;
+    }
+
+    coolDown();
+
+    auto eff = Effect::createWithSpriteFrame(od->getCurrentFrame());
+    eff->setAnchorPoint(od->getAnchorPoint());
+    od->getSprite()->getParent()->addChild(eff);
+    eff->setLogicPosition(od->getPosition());
+    eff->setLogicHeight(od->getHeight());
+    eff->setFlippedX(od->isFlippedX());
+    eff->runAction(
+        Sequence::createWithTwoActions(
+            Spawn::createWithTwoActions(
+                FadeOut::create(0.5f),
+                Sequence::createWithTwoActions(
+                    DelayTime::create(0.2f),
+                    ScaleBy::create(0.3f, 2.0f, 1.5f))),
+            RemoveSelf::create()));
+
+    auto atk = o->getActiveAbility(o->getAttackAbilityId());
+    float dis = sd->getHalfOfWidth() + od->getHalfOfWidth() + (atk->getCastMinRange() + atk->getCastRange()) * 0.5;
+    od->setPosition(CPoint(sp.x + ((op.x < sp.x) ? dis : -dis), sp.y));
+    o->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
+    od->stop();
+    atk->resetCD();
+    od->cmdCastSpell(CCommandTarget(pSource->getId()), o->getAttackAbilityId());
+    return false;
 }
