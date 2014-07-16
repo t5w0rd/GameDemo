@@ -237,13 +237,12 @@ protected:
 class CBuffMakerAct : public CActiveAbility
 {
 public:
-    CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, float fChance, int iTemplateBuff);
+    CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, int iTemplateBuff);
     virtual CBuffMakerAct* copy() override;
     
     virtual bool checkConditions(const CCommandTarget& rTarget) override;
     virtual void onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget) override;
     
-    M_SYNTHESIZE(float, m_fChance, Chance);
     M_SYNTHESIZE(int, m_iTemplateBuff, TemplateBuff);
 
     M_SYNTHESIZE_BOOL(EffectFixed);
@@ -300,7 +299,7 @@ public:
 class CDamageBuff : public CBuffAbility
 {
 public:
-    CDamageBuff(const char* pName, const CAttackValue& rDamage, const CExtraCoeff& roExAttackValue = CExtraCoeff(), uint32_t dwTriggerMask = CUnit::kMaskActiveTrigger, bool bAttack = false, bool bForceAttackType = false);
+    CDamageBuff(const char* pName, const CAttackValue& rDamage, const CExtraCoeff& roExAttackValue = CExtraCoeff(), uint32_t dwTriggerMask = CUnit::kMaskActiveTrigger, bool bAttack = false, bool bForceAttackType = false, float fEffectRadius = 0.0f);
     virtual CDamageBuff* copy() override;
 
     virtual void onUnitAddAbility() override;
@@ -312,6 +311,7 @@ public:
     M_SYNTHESIZE(uint32_t, m_dwTriggerMask, TriggerMask);
     M_SYNTHESIZE_BOOL(Attack);
     M_SYNTHESIZE_BOOL(ForceAttackType);
+    M_SYNTHESIZE(float, m_fEffectRadius, EffectRadius);
 };
 
 // ÎüÑª

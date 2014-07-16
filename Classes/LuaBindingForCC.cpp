@@ -205,6 +205,8 @@ luaL_Reg Unit4CC_funcs[] = {
     { "setGeometry", Unit4CC_setGeometry },
     { "getAnchorPointInPoints", Unit4CC_getAnchorPointInPoints },
     { "addCtrlSound", Unit4CC_addCtrlSound },
+    { "doRotateBy", Unit4CC_doRotateBy },
+    
     
     { nullptr, nullptr }
 };
@@ -297,6 +299,22 @@ int Unit4CC_addCtrlSound(lua_State* L)
     d->addCtrlSound(sound, dur);
 
     return 0;
+}
+
+int Unit4CC_doRotateBy(lua_State* L)
+{
+    CUnit* u = luaL_tounitptr(L);
+    float delta = lua_tonumber(L, 2);
+    float dur = lua_tonumber(L, 3);
+    int times = luaL_tointegerdef(L, 4, 1);
+    float spd = luaL_tonumberdef(L, 5, 1.0f);
+
+    CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
+    int tag = d->doRotateBy(delta, dur, times, nullptr, spd);
+
+    lua_pushinteger(L, tag);
+
+    return tag;
 }
 
 luaL_Reg Projectile4CC_funcs[] = {
@@ -402,6 +420,7 @@ int Sprite_prepareAnimation(lua_State* L)
 luaL_Reg Effect_funcs[] = {
     { "ctor", Effect_ctor },
     { "addAnimation", Effect_addAnimation },
+    { "addAnimationSound", Effect_addAnimationSound },
     { "play", Effect_play },
     { "playRelease", Effect_playRelease },
     { "playForever", Effect_playForever },
@@ -425,16 +444,17 @@ int Effect_ctor(lua_State* L)
 {
     auto path = lua_tostring(L, 2);
     auto delay = lua_tonumber(L, 3);
-    auto x = lua_gettop(L) < 4 ? 0.5f : lua_tonumber(L, 4);
-    auto y = lua_gettop(L) < 5 ? 0.5f : lua_tonumber(L, 5);
+    auto x = luaL_tonumberdef(L, 4, 0.5f);
+    auto y = luaL_tonumberdef(L, 5, 0.5f);
+    auto sound = luaL_tostringdef(L, 6, nullptr);
 
-    Effect* eff = Effect::create(path, delay);
+    Effect* eff = Effect::create(path, delay, sound);
     lua_pushlightuserdata(L, eff);
     lua_setfield(L, 1, "_p");
 
     eff->setAnchorPoint(Point(x, y));
 
-    if (lua_gettop(L) < 6)
+    if (lua_gettop(L) < 7)
     {
         lua_getglobal(L, "_world");
         CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
@@ -443,7 +463,7 @@ int Effect_ctor(lua_State* L)
     }
     else
     {
-        CUnit* u = luaL_tounitptr(L, 6);
+        CUnit* u = luaL_tounitptr(L, 7);
         CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
         d->getSprite()->getShadow()->addChild(eff);
     }
@@ -457,8 +477,21 @@ int Effect_addAnimation(lua_State* L)
     luaL_toobjptr(L, 1, eff);
     auto path = lua_tostring(L, 2);
     auto delay = lua_tonumber(L, 3);
+    auto sound = luaL_tostringdef(L, 4, nullptr);
 
-    eff->addAnimation(path, delay);
+    eff->addAnimation(path, delay, sound);
+
+    return 0;
+}
+
+int Effect_addAnimationSound(lua_State* L)
+{
+    Effect* eff = nullptr;
+    luaL_toobjptr(L, 1, eff);
+    auto index = lua_tointeger(L, 2);
+    auto sound = lua_tostring(L, 3);
+
+    eff->addAnimationSound(index, sound);
 
     return 0;
 }
@@ -467,9 +500,9 @@ int Effect_play(lua_State* L)
 {
     Effect* eff = nullptr;
     luaL_toobjptr(L, 1, eff);
-    auto index = lua_gettop(L) < 2 ? 0 : lua_tointeger(L, 2);
-    auto speed = lua_gettop(L) < 3 ? 1.0f : lua_tonumber(L, 3);
-    auto times = lua_gettop(L) < 4 ? 1 : lua_tointeger(L, 4);
+    auto index = luaL_tointegerdef(L, 2, 0);
+    auto speed = luaL_tonumberdef(L, 3, 1.0f);
+    auto times = luaL_tointegerdef(L, 4, 1);
 
     eff->play(index, speed, times);
 
@@ -480,9 +513,9 @@ int Effect_playRelease(lua_State* L)
 {
     Effect* eff = nullptr;
     luaL_toobjptr(L, 1, eff);
-    auto index = lua_gettop(L) < 2 ? 0 : lua_tointeger(L, 2);
-    auto speed = lua_gettop(L) < 3 ? 1.0f : lua_tonumber(L, 3);
-    auto times = lua_gettop(L) < 4 ? 1 : lua_tointeger(L, 4);
+    auto index = luaL_tointegerdef(L, 2, 0);
+    auto speed = luaL_tonumberdef(L, 3, 1.0f);
+    auto times = luaL_tointegerdef(L, 4, 1);
 
     eff->playRelease(index, speed, times);
 
@@ -493,8 +526,8 @@ int Effect_playForever(lua_State* L)
 {
     Effect* eff = nullptr;
     luaL_toobjptr(L, 1, eff);
-    auto index = lua_gettop(L) < 2 ? 0 : lua_tointeger(L, 2);
-    auto speed = lua_gettop(L) < 3 ? 1.0f : lua_tonumber(L, 3);
+    auto index = luaL_tointegerdef(L, 2, 0);
+    auto speed = luaL_tonumberdef(L, 3, 1.0f);
 
     eff->playForever(index, speed);
 

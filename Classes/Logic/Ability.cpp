@@ -1190,7 +1190,7 @@ void CAttackAct::updateAttackSpeed()
     {
         // float spd = getBaseAttackInterval() / max(FLT_EPSILON, getRealAttackInterval());
         float spd = min(CONST_MAX_ATTACK_SPEED_MULRIPLE, max(CONST_MIN_ATTACK_SPEED_MULRIPLE, m_oExAttackSpeed.getMulriple()));
-        CCLOG("ATK SPD: %.2g", spd);
+        //CCLOG("ATK SPD: %.2g", spd);
         d->setActionSpeed(d->getCastActionId(), spd);
     }
     
@@ -1215,9 +1215,8 @@ void CAttackAct::onTestAttackEffect(CMultiRefObject* pObj, void* pData)
 }
 
 // CBuffMakerAct
-CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, float fChance, int iTemplateBuff)
+CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCoolDown, CCommandTarget::TARGET_TYPE eCastType, uint32_t dwEffectiveTypeFlags, int iTemplateBuff)
 : CActiveAbility(pRootId, pName, fCoolDown, eCastType, dwEffectiveTypeFlags)
-, m_fChance(fChance)
 , m_iTemplateBuff(iTemplateBuff)
 , m_bEffectFixed(false)
 , m_bEffectDead(false)
@@ -1228,7 +1227,7 @@ CBuffMakerAct::CBuffMakerAct(const char* pRootId, const char* pName, float fCool
 
 CBuffMakerAct* CBuffMakerAct::copy()
 {
-    CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getCastTargetType(), getEffectiveTypeFlags(), getChance(), getTemplateBuff());
+    CBuffMakerAct* pRet = new CBuffMakerAct(getRootId(), getName(), getCoolDown(), getCastTargetType(), getEffectiveTypeFlags(), getTemplateBuff());
     pRet->copyData(this);
     return pRet;
 }
@@ -1294,7 +1293,7 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
     case CCommandTarget::kNoTarget:
     case CCommandTarget::kUnitTarget:
 
-        if (pOrgTarget != nullptr && M_RAND_HIT(m_fChance) && (pProjectile != nullptr || o->canEffect(DCAST(pOrgTarget, CUnitForce*), getEffectiveTypeFlags())))
+        if (pOrgTarget != nullptr && (pProjectile != nullptr || o->canEffect(DCAST(pOrgTarget, CUnitForce*), getEffectiveTypeFlags())))
         {
             pOrgTarget->addBuffAbility(getTemplateBuff(), o->getId(), getLevel());
         }
@@ -1308,7 +1307,7 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
     if (pProjectile != nullptr && pProjectile->hasPenaltyType(CProjectile::kOnContact) && pTarget != nullptr)
     {
         // 接触型抛射物，接触单位
-        if (M_RAND_HIT(m_fChance) && o->canEffect(DCAST(pTarget, CUnitForce*), m_dwEffectiveTypeFlags))
+        if (o->canEffect(DCAST(pTarget, CUnitForce*), m_dwEffectiveTypeFlags))
         {
             CBuffAbility* pBuff = DCAST(w->copyAbility(getTemplateBuff()), CBuffAbility*);
             pBuff->setSrcUnit(o->getId());
@@ -1333,7 +1332,7 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
 
-        if (M_RAND_HIT(m_fChance) == false || u == nullptr || u->isDead() || u == pOrgTarget)
+        if (u == nullptr || u->isDead() || u == pOrgTarget)
         {
             continue;
         }
@@ -1640,7 +1639,7 @@ bool CAttackBuffMakerPas::castInnerSpell(CUnit* pTarget)
 }
 
 // CDamageBuff
-CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/, uint32_t dwTriggerMask /*= CUnit::kMaskActiveTrigger*/, bool bAttack /*= false*/, bool bForceAttackType /*= false*/)
+CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, const CExtraCoeff& roExAttackValue /*= CExtraCoeff()*/, uint32_t dwTriggerMask /*= CUnit::kMaskActiveTrigger*/, bool bAttack /*= false*/, bool bForceAttackType /*= false*/, float fEffectRadius /*= 0.0f*/)
 : CBuffAbility("DMG", pName, 0.0f, true)
 , m_oDamage(rDamage)
 //, m_fChance(fChance)
@@ -1649,13 +1648,14 @@ CDamageBuff::CDamageBuff(const char* pName, const CAttackValue& rDamage, const C
 , m_dwTriggerMask(dwTriggerMask)
 , m_bAttack(bAttack)
 , m_bForceAttackType(bForceAttackType)
+, m_fEffectRadius(fEffectRadius)
 {
     setDbgClassName("CDamageBuff");
 }
 
 CDamageBuff* CDamageBuff::copy()
 {
-    CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getExAttackValue(), m_dwTriggerMask, m_bAttack, m_bForceAttackType);
+    CDamageBuff* ret = new CDamageBuff(getName(), getDamage(), getExAttackValue(), m_dwTriggerMask, m_bAttack, m_bForceAttackType, m_fEffectRadius);
     ret->copyData(this);
     return ret;
 }
@@ -1664,8 +1664,11 @@ void CDamageBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     CUnit* s = o->getUnit(getSrcUnit());
-    //CUnit* sd = DCAST(s->getDraw(), CUnitDraw2D*);
-    
+    if (s == nullptr)
+    {
+        return;
+    }
+
     CAttackData* ad = new CAttackData;
     if (getDamage().getValue() == 0.0f)
     {
@@ -1681,14 +1684,24 @@ void CDamageBuff::onUnitAddAbility()
         ad->setAttackValue(getDamage());
     }
 
-    if (m_bAttack && s != nullptr)
+    if (m_bAttack)
     {
         if (s->attack(ad, o, m_dwTriggerMask) == false)
         {
             return;
         }
     }
-    o->damaged(ad, s, m_dwTriggerMask);
+
+    auto d = DCAST(o->getDraw(), CUnitDraw2D*);
+    if (m_fEffectRadius > 0.0f)
+    {
+        auto ug = new CUnitGroup(o->getWorld(), d->getPosition(), m_fEffectRadius, INFINITE, CUnitGroup::matchLivingEnemy(s));
+        ug->damaged(ad, s, m_dwTriggerMask);
+    }
+    else
+    {
+        o->damaged(ad, s, m_dwTriggerMask);
+    }
 }
 
 // CVampirePas
@@ -1969,14 +1982,22 @@ void CChangeHpPas::onUnitDelAbility()
 void CChangeHpPas::onUnitInterval()
 {
     CUnit* o = getOwner();
-    float fNewHp = o->getHp();
+    float fOrgHp = o->getHp();
     float fChangeHp = getChangeHp().getValue(o->getRealMaxHp());
-    fNewHp += fChangeHp;
+    float fNewHp = fOrgHp + fChangeHp;
 
-    float fMinHp = getMinHp().getValue(o->getRealMaxHp());
-    if (fNewHp < fMinHp)
+    if (fChangeHp < 0.0f)
     {
-        fNewHp = fMinHp;
+        float fMinHp = getMinHp().getValue(o->getRealMaxHp());
+        if (fOrgHp < fMinHp)
+        {
+            return;
+        }
+        
+        if (fNewHp < fMinHp)
+        {
+            fNewHp = fMinHp;
+        }
     }
 
     o->setHp(fNewHp);
@@ -2027,7 +2048,7 @@ void CChangeHpBuff::onUnitAddAbility()
                 eff = Effect::create("Effects/Heal/Big", 0.1f);
                 eff->setTag(4243);
                 sn->addChild(eff);
-                eff->setPosition(Point(sn->getContentSize().width * sn->getAnchorPoint().x, eff->getContentSize().height * 0.5));
+                eff->setPosition(sn->getAnchorPointInPoints() + Point(0.0f, ccd->getHalfOfHeight() + 10.0f));
             }
             else
             {
@@ -2051,16 +2072,26 @@ void CChangeHpBuff::onUnitInterval()
     CUnit* o = getOwner();
     float fOrgHp = o->getHp();
     float fChangeHp = getChangeHp().getValue(o->getRealMaxHp());
+    float fNewHp = fOrgHp + fChangeHp;
 
     if (fChangeHp < 0.0f)
     {
-        float fNewHp = max(getMinHp().getValue(o->getRealMaxHp()), fOrgHp + fChangeHp);
+        float fMinHp = m_oMinHp.getValue(o->getRealMaxHp());
+        if (fOrgHp < fMinHp)
+        {
+            return;
+        }
+
+        if (fNewHp < fMinHp)
+        {
+            fNewHp = fMinHp;
+        }
         CUnit* s = o->getUnit(getSrcUnit());
         o->damagedLow(fOrgHp - fNewHp, s, CUnit::kMaskActiveTrigger);
     }
     else
     {
-        o->setHp(fOrgHp + fChangeHp);
+        o->setHp(fNewHp);
     }
 }
 
@@ -2311,7 +2342,7 @@ void CTransitiveLinkBuff::TransmitNext()
         m_bTransmited = true;
     }
 
-    if (getTimesLeft() <= 0)
+    if (getTimesLeft() < 0)
     {
         return;
     }
@@ -2370,6 +2401,7 @@ void CTransitiveLinkBuff::TransmitNext()
     p->setFromToType(CProjectile::kUnitToUnit);
     p->setFromUnit(getFromUnit());
     p->setToUnit(getToUnit());
+    p->setUsingFirePoint(false);
     //p->setAttackData(pAtk);
     //p->setTriggerMask(CUnit::kMaskActiveTrigger);
     p->setSrcAbility(this);
@@ -2461,7 +2493,7 @@ void CTransitiveBlinkBuff::TransmitNext()
         m_bTransmited = true;
     }
 
-    if (getTimesLeft() <= 0)
+    if (getTimesLeft() < 0)
     {
         // 终止继续传递
         resumeSourceUnit();

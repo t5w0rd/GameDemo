@@ -10,13 +10,19 @@
 
 
 // common
-int luaModuleLoader4cc(lua_State *L);
-void luaL_insertloader(lua_State *L, lua_CFunction loader);
+int luaModuleLoader4cc(lua_State* L);
+void luaL_insertloader(lua_State* L, lua_CFunction loader);
 void luaL_addpath(lua_State *L, const char* pPath);
 bool luaL_loadscript(lua_State *L, const char* name, string& err);
 int luaL_setregistry(lua_State* L, int idx);
 int luaL_getregistery(lua_State* L, int key);
 const char* luaL_toutf8string(lua_State* L, int idx, char* buf);
+
+lua_Number luaL_tonumberdef(lua_State* L, int index, lua_Number def);
+lua_Integer luaL_tointegerdef(lua_State* L, int index, lua_Integer def);
+lua_Unsigned luaL_tounsigneddef(lua_State* L, int index, lua_Unsigned def);
+const char* luaL_tostringdef(lua_State* L, int index, const char* def);
+bool luaL_tobooleandef(lua_State* L, int index, bool def);
 
 
 class CUnit;
@@ -395,6 +401,32 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 
 
 ///////////////////////////////// Inline //////////////////////////////////////
+inline lua_Number luaL_tonumberdef(lua_State* L, int index, lua_Number def)
+{
+    return lua_gettop(L) < index ? def : lua_tonumber(L, index);
+}
+
+inline lua_Integer luaL_tointegerdef(lua_State* L, int index, lua_Integer def)
+{
+    return lua_gettop(L) < index ? def : lua_tointeger(L, index);
+}
+
+inline lua_Unsigned luaL_tounsigneddef(lua_State* L, int index, lua_Unsigned def)
+{
+    return lua_gettop(L) < index ? def : lua_tounsigned(L, index);
+}
+
+inline const char* luaL_tostringdef(lua_State* L, int index, const char* def)
+{
+    return lua_gettop(L) < index ? def : lua_tostring(L, index);
+}
+
+inline bool luaL_tobooleandef(lua_State* L, int index, bool def)
+{
+    return lua_gettop(L) < index ? def : (lua_toboolean(L, index) != 0);
+}
+
+
 template <typename PTYPE>
 PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr)
 {

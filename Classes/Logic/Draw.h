@@ -273,6 +273,7 @@ public:
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oFromPoint, FromPoint);
     M_SYNTHESIZE(int, m_iToUnit, ToUnit);  // 目标位点
     M_SYNTHESIZE_PASS_BY_REF(CPoint, m_oToPoint, ToPoint);
+    M_SYNTHESIZE_BOOL(UsingFirePoint);
 
     M_SYNTHESIZE_READONLY(CAttackData*, m_pAttackData, AttackData);
     void setAttackData(CAttackData* pAttackData);

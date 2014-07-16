@@ -46,58 +46,59 @@ function spawnHero(id, force)
 		force = 1
 	end
 	
-	hero = spawnSoldier(id, force)
-	hero:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
+	local u = spawnSoldier(id, force)
+	u:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
 	if me:getLevel() > 15 and math.random() < 0.1 then
-		hero:setExMaxHp(1 + kill / 10, 0.0)
+		u:setExMaxHp(1 + kill / 10, 0.0)
 	end
-	hero:setRewardGold(50 + kill * 20 / 1.5)
-	hero:setRewardExp(20 + kill * 10 / 1.5)
-	local at, av = hero:getBaseArmor()
-	hero:setBaseArmor(at, av + kill * 0.7)
-	atk = hero:getAttackAbility()
+	u:setRewardGold(50 + kill * 20 / 1.5)
+	u:setRewardExp(20 + kill * 10 / 1.5)
+	local at, av = u:getBaseArmor()
+	u:setBaseArmor(at, av + kill * 0.7)
+	atk = u:getAttackAbility()
 	t, v = atk:getBaseAttack()
 	atk:setBaseAttack(t, v * (1 + kill / 5.0) + kill * 4)
 	atk:setExAttackSpeed(1.0 + kill / 30, 0.0)
 	for i = 1, (3 + kill / 2) do
-		hero:addPassiveAbility(aaa[math.random(1, c)])
+		u:addPassiveAbility(aaa[math.random(1, c)])
 	end
 
 	if force == 1 then
-		hero:addPassiveAbility(OnDyingPas:new())
+		hero = u
+		u:addPassiveAbility(OnDyingPas:new())
 		if atk:getCastRange() > 100 then
-			hero:setAI(LuaAI:new())
-			--hero:addActiveAbility(AL.kReflect:getId())
-			hero:addActiveAbility(AL.kSpeedUp2:getId())
-			hero:addActiveAbility(AL.kKnockBack:getId())
+			u:setAI(LuaAI:new())
+			--u:addActiveAbility(AL.kReflect:getId())
+			u:addActiveAbility(AL.kSpeedUp2:getId())
+			u:addActiveAbility(AL.kKnockBack:getId())
 		else
-			hero:setAI(LuaAI:new())
-			hero:addActiveAbility(AL.kThrowHammer:getId())
-			hero:addActiveAbility(AL.kThunderCap:getId())
-			hero:addActiveAbility(AL.kSpeedUp:getId())
-			hero:addActiveAbility(AL.kChargeJump:getId())
+			u:setAI(LuaAI:new())
+			u:addActiveAbility(AL.kThrowHammer:getId())
+			u:addActiveAbility(AL.kThunderCap:getId())
+			u:addActiveAbility(AL.kSpeedUp:getId())
+			u:addActiveAbility(AL.kChargeJump:getId())
 		end
 	else
-		hero:setExMaxHp(0.20, 0.0)
-		hero:setAI(LuaAI:new())
-		hero:addActiveAbility(AL.kKnockBack:getId())
+		u:setExMaxHp(0.20, 0.0)
+		u:setAI(LuaAI:new())
+		u:addActiveAbility(AL.kKnockBack:getId())
 	end
 	
 	if id == UL.kMage then
-		hero:addActiveAbility(AL.kGravitySurf:getId())
-		hero:addActiveAbility(SAL.kMageRain, 3)
+		u:addActiveAbility(AL.kGravitySurf:getId())
+		u:addActiveAbility(SAL.kMageRain, 3)
 	elseif id == UL.kFrost then
-		hero:addActiveAbility(AL.kSnowStorm:getId())
+		u:addActiveAbility(AL.kSnowStorm:getId())
 	elseif id == UL.kArcher then
-		hero:addActiveAbility(AL.kCutter:getId())
+		u:addActiveAbility(AL.kCutter:getId())
 	elseif id == UL.kElemental then
-		hero:addActiveAbility(AL.kSerialExplode:getId())
+		u:addActiveAbility(AL.kSerialExplode:getId())
 	elseif id == SUL.kPriest then
-		hero:addActiveAbility(AL.kWarCry:getId())
-		hero:addActiveAbility(AL.kSweetDew:getId())
+		u:addActiveAbility(AL.kWarCry:getId())
+		u:addActiveAbility(AL.kSweetDew:getId())
 	end
 	
-	return hero
+	return u
 end
 
 function initAbilityForLevelUp()

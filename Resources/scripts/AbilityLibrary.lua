@@ -15,7 +15,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("·ç±©Õ½´¸", 18.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("·ç±©Õ½´¸", 20.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 	a:setCastRange(300.0)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:setTemplateProjectile(PL.kThorHammer)
@@ -31,18 +31,18 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("·ßÅ­ÖØÌ¤", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
-	a:setCastTargetRadius(150.0)
+	a = BuffMakerAct:new("À×öªÕðµØ", 15.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
+	a:setCastTargetRadius(80.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:addEffectSound("sounds/Effects/ThunderCap.mp3")
 	addTemplateAbility(a)
 	AL.kThunderCap = a
 	
 	-- SpeedUp
-	a = ChangeAttributeBuff:new("RageBuff", "Rage", 5.0, true, 0.0, 0.0, 0.8, 0.0, 0.8, 0.0, 2.0, 0.0, -0.75, 0.0)
+	a = ChangeAttributeBuff:new("RageBuff", "Rage", 8.0, true, 0.0, 0.0, 0.8, 0.0, 0.8, 0.0, 2.0, 0.0, -0.75, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("¿ñ±©", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+	a = BuffMakerAct:new("¿ñ±©", 15.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct5)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
@@ -53,7 +53,7 @@ function loadAbilityLibrary()
 	a = ReflectBuff:new("Reflect", "Reflect", 5.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("Reflect", 15.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+	a = BuffMakerAct:new("Reflect", 15.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct4)
 	a:addEffectSound("sounds/Effects/LevelUp2.mp3")
 	addTemplateAbility(a)
@@ -71,7 +71,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ÖÂÃüØ°Ê×", 10.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("ÖÂÃüØ°Ê×", 10.0, CommandTarget.kPointTarget, UnitForce.kEnemy, id)
 	a:setCastRange(600.0)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:setImageName("UI/Ability/FireBall.png")
@@ -83,7 +83,7 @@ function loadAbilityLibrary()
 	a = CurseBuff:new(13, false, 20, 4, 40 / 100)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("Curse", 25.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("Curse", 25.0, CommandTarget.kPointTarget, UnitForce.kEnemy, id)
 	a:setCastRange(200.0)
 	a:setCastTargetRadius(100.0)
 	a:addCastAnimation(Sprite.kAniAct4)
@@ -93,7 +93,7 @@ function loadAbilityLibrary()
 	AL.kCurse = a
 
 	-- GravitySurf
-	a = SummonUnitAct:new("ÒýÁ¦·¨Çò", 18.0, CommandTarget.kPointTarget, SUL.kOrb, 10.0)
+	a = SummonUnitAct:new("ÒýÁ¦·¨Çò", 28.0, CommandTarget.kPointTarget, SUL.kBlackHole, 10.0)
 	a:setCastRange(200.0)
 	a:setCastTargetRadius(150.0)
 	a:addCastAnimation(Sprite.kAniAct4)
@@ -106,7 +106,7 @@ function loadAbilityLibrary()
 	a = SpeedBuff:new("SpeedUp2", "SpeedUp2", 2.0, false, 3.0, 0.0, 3.0, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("¼²ËÙ", 10.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+	a = BuffMakerAct:new("¼²ËÙ", 20.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct5)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	addTemplateAbility(a)
@@ -120,7 +120,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("»÷ÍË", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("»÷ÍË", 8.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
 	a:setCastTargetRadius(75.0)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:addEffectSound("sounds/Effects/KidnapGrab.mp3")
@@ -139,7 +139,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("KnockBackEx", 5.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("KnockBackEx", 5.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
 	a:setCastTargetRadius(150.0)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:addEffectSound("sounds/Effects/ThunderCap.mp3")
@@ -159,7 +159,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ThrowHammerEx", 12.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("ThrowHammerEx", 12.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 	a:setCastRange(400.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:setTemplateProjectile(PL.kThorHammer)
@@ -176,7 +176,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("Ê¥ÓúÖ®·ç", 40.0, CommandTarget.kNoTarget, UnitForce.kAlly, 1.0, id)
+	a = BuffMakerAct:new("Ê¥ÓúÖ®·ç", 40.0, CommandTarget.kNoTarget, UnitForce.kAlly, id)
 	a:setCastTargetRadius(200.0)
 	a:addCastAnimation(Sprite.kAniAct4)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
@@ -192,7 +192,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("MultiSlash", 20.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("MultiSlash", 20.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 	a:setCastRange(300)
 	a:setImageName("UI/Ability/Ability02.png")
 	addTemplateAbility(a)
@@ -202,7 +202,7 @@ function loadAbilityLibrary()
 	a = ChargeJumpBuff:new("ChargeJump", 2.0, 2.0, 0.0, 1.0, 0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("Ó¢ÓÂ¼²Ô¾", 28.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+	a = BuffMakerAct:new("Ó¢ÓÂ¼²Ô¾", 28.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct5)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:setImageName("UI/Ability/ChargeJump.png")
@@ -232,10 +232,14 @@ function loadAbilityLibrary()
 	AL.kArrowRain = a
 	
 	-- SweetDew
-	a = ChangeHpBuff:new("Heal", "Heal", 2.0, true, 0.05, 0.00625, 0.0, 0.0, -1.0)
+	a = ChangeAttributeBuff:new("H.CAB", "ChangeAttributeAttack", 5.0, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 2.0, 10.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ÖÎÁÆ¸ÊÂ¶", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, 1.0, id)
+	a = ChangeHpBuff:new("HealBuff", "Heal", 2.0, true, 0.05, 0.00625, 0.0, 0.0, -1.0)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("ÖÎÁÆ¸ÊÂ¶", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, id)
 	a:setCastRange(300.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:setTemplateProjectile(SPL.kWizardProy)
@@ -269,7 +273,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 
-	a = SerialExplodeAct:new("Á¬»·±¬ºä", 2.0, 100, 5, 0.2, 50, id)
+	a = SerialExplodeAct:new("Á¬»·±¬ºä", 20.0, 100, 5, 0.2, 50, id)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:setImageName("UI/Ability/SerialExplode.png")
@@ -284,27 +288,48 @@ function loadAbilityLibrary()
 	a = FastMoveToBackBuff:new("FastMoveToBack", 15, 3.0, 500.0, id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ÓÄÁé", 28.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+	a = BuffMakerAct:new("ÓÄÁé", 28.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct5)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:setImageName("UI/Ability/ChargeJump.png")
 	addTemplateAbility(a)
 	AL.kFastMoveToBack = a
 	
-	-- ChangeAttack
-	a = ChangeAttributeBuff:new("CA.CAB", "ChangeAttributeAttack", 30.0, false, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, -0.99, 0.0, 0.0, 0.0)
+	-- SwordWave
+	a = ChangeAttributeBuff:new("CA.CAB", "ChangeAttributeAttack", 20.0, false, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, -0.99, 0.0, 0.0, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = ChangeAttackBuff:new("ChangeAttack", 30.0, AttackValue.kMagical, 0.0, nil, 400.0, false, SPL.kVoodooProy)
+	a = ChangeAttackBuff:new("ChangeAttack", 20.0, AttackValue.kMagical, 0.0, nil, 400.0, false, SPL.kGreenWave)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("Ä§½£", 40.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+	a = BuffMakerAct:new("½£Æø", 60.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:setImageName("UI/Ability/AttackValue.png")
 	addTemplateAbility(a)
-	AL.kChangeAttack = a
+	AL.kSwordWave = a
+	
+	-- BouncingFireBall
+	a = EffectBuff:new("Effects/Explosion/Short", 0.08, 0.5, 40 / 132, "sounds/Effects/Sound_FireballHit.mp3", false)
+	id = addTemplateAbility(a)
+	
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 2.00, 0.0, Ability.kMaskActiveTrigger, false, true, 80)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+
+	a = TransitiveLinkBuff:new("FireBall.TLB", 0.0, 200.0, 8, 1, UnitForce.kEnemy, SPL.kFireBall)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("±¬ÁÑÖ®Çò", 20.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
+	a:setCastRange(400.0)
+	a:addCastAnimation(Sprite.kAniAct3)
+	a:setTemplateProjectile(SPL.kFireBall)
+	--a:addEffectSound("sounds/Effects/sound_eff_impact_heal.mp3")
+	a:setImageName("UI/Ability/FireBall.png")
+	addTemplateAbility(a)
+	AL.kBouncingFireBall = a
 	
 	-- BuffMaker
 	--a = StunBuff:new("Stun", "Stun", 0.5, false)
@@ -316,7 +341,7 @@ function loadAbilityLibrary()
 	a = ChangeHpBuff:new("Heal", "Heal", 1.0, true, 0.05, 0.0125, 0.0, 0.0, -1.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("BuffMaker", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, 1.0, id)
+	a = BuffMakerAct:new("BuffMaker", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, id)
 	a:setCastRange(400.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:setTemplateProjectile(1)
@@ -379,7 +404,7 @@ function loadAbilityLibrary()
 	a = ReflectBuff:new("FastReflectBuff", "FastReflect", 0.2)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("FastReflect", 2.0, CommandTarget.kNoTarget, UnitForce.kSelf, 1.0, id)
+	a = BuffMakerAct:new("FastReflect", 2.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:setImageName("UI/Ability/ThunderCap.png")
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:addEffectSound("sounds/Effects/KidnapGrab.mp3")
@@ -396,6 +421,11 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kAutoHeal = a
 	
+	-- AutoDamaged
+	a = ChangeHpPas:new("AutoDamaged", 0.2, -0.005, 0.0, 0.2, 0.0)
+	addTemplateAbility(a)
+	AL.kAutoDamaged = a
+	
 	-- DoubleAttack
 	a = DoubleAttackPas:new("DA", 0.2, 0.5, 0.0)
 	addTemplateAbility(a)
@@ -409,7 +439,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ThunderCap", 2.0, CommandTarget.kNoTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("ThunderCap", 2.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
 	a:setCastTargetRadius(150.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:addEffectSound("sounds/Effects/ThunderCap.mp3")
@@ -431,7 +461,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ThrowHammerEx", 1.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("ThrowHammerEx", 1.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 	a:setCastRange(400.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:setTemplateProjectile(PL.kThorHammer)
@@ -455,7 +485,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("Cutter", 1.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+	a = BuffMakerAct:new("Cutter", 1.0, CommandTarget.kPointTarget, UnitForce.kEnemy, id)
 	a:setCastRange(150.0)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:setImageName("UI/Ability/FireBall.png")
@@ -619,7 +649,7 @@ a:setLevelUpdate(CurseBuffUpdate)
 a:setMaxLevel(3)
 id = SAL.addi(a, 001)  -- 001
 
-a = BuffMakerAct:new("ÈºÌå×çÖä", 30.0, CommandTarget.kPointTarget, UnitForce.kEnemy, 1.0, id)
+a = BuffMakerAct:new("ÈºÌå×çÖä", 30.0, CommandTarget.kPointTarget, UnitForce.kEnemy, id)
 a:setCastRange(200.0)
 a:setCastTargetRadius(100.0)
 a:addCastAnimation(Sprite.kAniAct4)
@@ -687,7 +717,7 @@ a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 5, 0, Sprite.kAniAct1, Sprit
 a:setAppendBuff(id)
 id = SAL.addi(a, 011)  -- 011
 
-a = BuffMakerAct:new("¶àÖØÕ¶»÷", 30.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+a = BuffMakerAct:new("¶àÖØÕ¶»÷", 30.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 a:setCastRange(300)
 a:setImageName("UI/Ability/Ability02.png")
 a:setMaxLevel(3)
@@ -726,7 +756,7 @@ end
 a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.20, 0.0, Ability.kMaskActiveTrigger)
 id = SAL.addi(a, 001)  -- 001
 
-a = RainAct:new("Ä§·¨¼ýÓê", 12.0, RainAct.kBolt, 5.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
+a = RainAct:new("Ä§·¨¼ýÓê", 22.0, RainAct.kBolt, 5.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
 a:addCastAnimation(Sprite.kAniAct3)
 a:addEffectSound("sounds/Effects/LevelUp.mp3")
 a:setImageName("UI/Ability/Ability03.png")
@@ -795,7 +825,7 @@ a = TransitiveLinkBuff:new("Chain", 0.1, 150.0, 0, 1, UnitForce.kEnemy, PL.kThor
 a:setAppendBuff(id)
 id = SAL.addi(a, 03)
 
-a = BuffMakerAct:new("À×ÉñÖ®´¸", 12.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, 1.0, id)
+a = BuffMakerAct:new("À×ÉñÖ®´¸", 12.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 a:setCastRange(400.0)
 a:addCastAnimation(Sprite.kAniAct3)
 a:setTemplateProjectile(PL.kThorHammer)

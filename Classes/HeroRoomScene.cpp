@@ -92,6 +92,7 @@ bool HeroRoomSceneLayer::init()
 
     gc->loadFrames("Global0");
     gc->loadFrames("Global1");
+    gc->loadFrames("Global2");
     gc->preloadSound("sounds/Effects/UIMove.mp3");
     gc->preloadSound("sounds/Effects/LevelUp.mp3");
     gc->preloadSound("sounds/Effects/GUITransitionOpen.mp3");

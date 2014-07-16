@@ -73,9 +73,7 @@ void CSpriteInfo::prepareAnimation(int id, const char* pName, int iNotifyFrameIn
 const CSpriteInfo::ANI_INFO* CSpriteInfo::getAnimationInfo(int id) const
 {
     auto it = m_mapAniInfos.find(id);
-    assert(it != m_mapAniInfos.end());
-
-    return &it->second;
+    return it != m_mapAniInfos.end() ? &it->second : nullptr;
 }
 
 void CSpriteInfo::addAnimationSound(int id, const char* sound)
@@ -255,13 +253,33 @@ void CUnitDrawForCC::updateMoveTo(const CPoint& rPos)
 int CUnitDrawForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone, float fSpeed /*= 1.0f*/)
 {
     const CSpriteInfo::ANI_INFO* pAniInfo = m_si->getAnimationInfo(id);
-    assert(pAniInfo != nullptr);
+    //assert(pAniInfo != nullptr);
 
-    ActionInterval* act = NotifyAnimate::create(
-        pAniInfo->pAni,
-        pAniInfo->iNotifyFrameIndex,
-        CC_CALLBACK_1(UnitSprite::onNotifyFrame, getSprite(), onNotifyFrame),
-        pAniInfo->vecSounds.empty() ? nullptr : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
+    ActionInterval* act = nullptr;
+    if (pAniInfo == nullptr)
+    {
+        if (id == kAniDie)
+        {
+            act = FadeOut::create(0.2f);
+        }
+        else
+        {
+            act = DelayTime::create(0.2f);
+        }
+
+        if (onNotifyFrame)
+        {
+            act = Sequence::createWithTwoActions(act, CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame)));
+        }
+    }
+    else
+    {
+        act = NotifyAnimate::create(
+            pAniInfo->pAni,
+            pAniInfo->iNotifyFrameIndex,
+            CC_CALLBACK_1(UnitSprite::onNotifyFrame, getSprite(), onNotifyFrame),
+            pAniInfo->vecSounds.empty() ? nullptr : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
+    }
 
     if (iRepeatTimes == INFINITE)
     {
@@ -273,6 +291,30 @@ int CUnitDrawForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRep
         act = Sequence::createWithTwoActions(
             act,
             CallFuncN::create(CC_CALLBACK_1(UnitSprite::onAnimationDone, getSprite(), onAnimationDone)));
+    }
+
+    Speed* spd = Speed::create(act, fSpeed);
+    int tag = CIdGen::nextId();
+    spd->setTag(tag);
+
+    getSprite()->runAction(spd);
+
+    return tag;
+}
+
+int CUnitDrawForCC::doRotateBy(float delta, float fDuration, int iRepeatTimes, const FUNC_VOID& onRotateDone, float fSpeed /*= 1.0f*/)
+{
+    ActionInterval* act = RotateBy::create(fDuration, delta);
+    if (iRepeatTimes == INFINITE)
+    {
+        act = RepeatForever::create(act);
+    }
+    else
+    {
+        act = Repeat::create(act, iRepeatTimes);
+        /*act = Sequence::createWithTwoActions( \
+            act, \
+            CallFuncN::create(CC_CALLBACK_1(UnitSprite::onAnimationDone, getSprite(), onAnimationDone)));*/
     }
 
     Speed* spd = Speed::create(act, fSpeed);
@@ -985,13 +1027,32 @@ int CProjectileForCC::doMoveTo(const CPoint& rPos, float fDuration, const FUNC_V
 int CProjectileForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone)
 {
     const CSpriteInfo::ANI_INFO* pAniInfo = m_si->getAnimationInfo(id);
-    assert(pAniInfo != nullptr);
+    //assert(pAniInfo != nullptr);
+    ActionInterval* act = nullptr;
+    if (pAniInfo == nullptr)
+    {
+        if (id == kAniDie)
+        {
+            act = FadeOut::create(0.2f);
+        }
+        else
+        {
+            act = DelayTime::create(0.2f);
+        }
 
-    ActionInterval* act = NotifyAnimate::create(
-        pAniInfo->pAni,
-        pAniInfo->iNotifyFrameIndex,
-        CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame),
-        pAniInfo->vecSounds.empty() ? nullptr : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
+        if (onNotifyFrame)
+        {
+            act = Sequence::createWithTwoActions(act, CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame)));
+        }
+    }
+    else
+    {
+        act = NotifyAnimate::create(
+            pAniInfo->pAni,
+            pAniInfo->iNotifyFrameIndex,
+            CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame),
+            pAniInfo->vecSounds.empty() ? nullptr : pAniInfo->vecSounds[rand() % pAniInfo->vecSounds.size()].c_str());
+    }
 
     if (iRepeatTimes == INFINITE)
     {

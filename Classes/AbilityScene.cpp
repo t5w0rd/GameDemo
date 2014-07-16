@@ -501,6 +501,7 @@ bool AbilitySceneLayer::init()
 
     gc->loadFrames("Global0");
     gc->loadFrames("Global1");
+    gc->loadFrames("Global2");
 
     auto tx = Director::getInstance()->getTextureCache()->addImage("UI/Ability/AbilityItemBackground.png");
     Size aiSz = tx->getContentSize();

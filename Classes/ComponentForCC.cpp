@@ -2,6 +2,7 @@
 
 #include "ComponentForCC.h"
 #include "Ability.h"
+#include "GameControl.h"
 
 
 // ProgressBar
@@ -638,7 +639,7 @@ Effect::~Effect()
 {
 }
 
-bool Effect::initWithPath(const char* path, float delay)
+bool Effect::initWithPath(const char* path, float delay, const char* sound /*= nullptr*/)
 {
     SpriteFrameCache* fc = SpriteFrameCache::getInstance();
     SpriteFrame* sf = nullptr;
@@ -667,7 +668,14 @@ bool Effect::initWithPath(const char* path, float delay)
 
     pAni->setDelayPerUnit(delay);
     AnimationCache::getInstance()->addAnimation(pAni, path);
-    m_vecAnis.push_back(path);
+    
+    ANIS_INFO ai;
+    ai.path = path;
+    if (sound != nullptr)
+    {
+        ai.sounds.push_back(sound);
+    }
+    m_vecAnis.push_back(ai);
 
     return res;
 }
@@ -678,7 +686,8 @@ void Effect::play(int index /*= 0*/, float speed /*= 1.0f*/, int times /*= 1.0*/
     {
         return;
     }
-    Animation* pAni = AnimationCache::getInstance()->getAnimation(m_vecAnis[index]);
+    auto& ai = m_vecAnis[index];
+    Animation* pAni = AnimationCache::getInstance()->getAnimation(ai.path);
 
     ActionInterval* actInner = Repeat::create(Animate::create(pAni), times);
     if (done != nullptr)
@@ -690,6 +699,12 @@ void Effect::play(int index /*= 0*/, float speed /*= 1.0f*/, int times /*= 1.0*/
     act->setTag(CONST_ACT_TAG);
     stop();
     runAction(act);
+
+    M_DEF_GC(gc);
+    if (!ai.sounds.empty())
+    {
+        gc->playSound(ai.sounds[rand() % ai.sounds.size()].c_str());
+    }
 }
 
 void Effect::playRelease(int index, float speed /*= 1.0f*/, int times /*= 1.0*/)
@@ -698,12 +713,19 @@ void Effect::playRelease(int index, float speed /*= 1.0f*/, int times /*= 1.0*/)
     {
         return;
     }
-    Animation* pAni = AnimationCache::getInstance()->getAnimation(m_vecAnis[index]);
+    auto& ai = m_vecAnis[index];
+    Animation* pAni = AnimationCache::getInstance()->getAnimation(ai.path);
 
     Action* act = Speed::create(Sequence::createWithTwoActions(Repeat::create(Animate::create(pAni), times), RemoveSelf::create()), speed);
     act->setTag(CONST_ACT_TAG);
     stop();
     runAction(act);
+
+    M_DEF_GC(gc);
+    if (!ai.sounds.empty())
+    {
+        gc->playSound(ai.sounds[rand() % ai.sounds.size()].c_str());
+    }
 }
 
 void Effect::playForever(int index, float speed /*= 1.0f*/)
@@ -712,15 +734,22 @@ void Effect::playForever(int index, float speed /*= 1.0f*/)
     {
         return;
     }
-    Animation* pAni = AnimationCache::getInstance()->getAnimation(m_vecAnis[index]);
+    auto& ai = m_vecAnis[index];
+    Animation* pAni = AnimationCache::getInstance()->getAnimation(ai.path);
 
     Action* act = Speed::create(RepeatForever::create(Animate::create(pAni)), speed);
     act->setTag(CONST_ACT_TAG);
     stop();
     runAction(act);
+
+    M_DEF_GC(gc);
+    if (!ai.sounds.empty())
+    {
+        gc->playSound(ai.sounds[rand() % ai.sounds.size()].c_str());
+    }
 }
 
-Animation* Effect::addAnimation(const char* path, float delay)
+Animation* Effect::addAnimation(const char* path, float delay, const char* sound /*= nullptr*/)
 {
     SpriteFrameCache* fc = SpriteFrameCache::getInstance();
     SpriteFrame* sf = nullptr;
@@ -748,9 +777,25 @@ Animation* Effect::addAnimation(const char* path, float delay)
 
     pAni->setDelayPerUnit(delay);
     AnimationCache::getInstance()->addAnimation(pAni, path);
-    m_vecAnis.push_back(path);
+    ANIS_INFO ai;
+    ai.path = path;
+    if (sound != nullptr)
+    {
+        ai.sounds.push_back(sound);
+    }
+    m_vecAnis.push_back(ai);
 
     return pAni;
+}
+
+void Effect::addAnimationSound(int index, const char* sound)
+{
+    if (index >= (int)m_vecAnis.size())
+    {
+        return;
+    }
+
+    m_vecAnis[index].sounds.push_back(sound);
 }
 
 void Effect::stop()

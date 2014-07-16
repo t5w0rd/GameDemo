@@ -52,7 +52,7 @@ ACF["Ó¢ÓÂ¼²Ô¾"] = CF.checkAround
 ACF["»÷ÍË"] = CF.checkAround
 ACF["Ê¥ÓúÖ®·ç"] = CF.checkAround
 ACF["¿ñ±©"] = CF.checkAround
-ACF["·ßÅ­ÖØÌ¤"] = CF.checkAround
+ACF["À×öªÕğµØ"] = CF.checkAround
 ACF["Ó¢ÓÂ¼²Ô¾"] = CF.checkAround
 
 ACF["ÖÂÃüØ°Ê×"] = CF.getNearestEnemyPoint

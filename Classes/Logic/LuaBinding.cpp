@@ -1107,7 +1107,7 @@ int Unit_attack(lua_State* L)
     CAttackData* ad = nullptr;
     luaL_toobjptr(L, 2, ad);
     CUnit* t = luaL_tounitptr(L, 3);
-    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+    unsigned int mask = luaL_tounsigneddef(L, 4, 0);
 
     lua_pushboolean(L, u->attack(ad, t, mask));
 
@@ -1120,7 +1120,7 @@ int Unit_damaged(lua_State* L)
     CAttackData* ad = nullptr;
     luaL_toobjptr(L, 2, ad);
     CUnit* s = luaL_tounitptr(L, 3);
-    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+    unsigned int mask = luaL_tounsigneddef(L, 4, 0);
 
     u->damaged(ad, s, mask);
 
@@ -1133,7 +1133,7 @@ int Unit_attackLow(lua_State* L)
     CAttackData* ad = nullptr;
     luaL_toobjptr(L, 2, ad);
     CUnit* t = luaL_tounitptr(L, 3);
-    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+    unsigned int mask = luaL_tounsigneddef(L, 4, 0);
 
     u->attackLow(ad, t, mask);
 
@@ -1145,7 +1145,7 @@ int Unit_damagedLow(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
     float dmg = lua_tonumber(L, 2);
     CUnit* s = luaL_tounitptr(L, 3);
-    unsigned int mask = lua_gettop(L) < 4 ? 0 : lua_tounsigned(L, 4);
+    unsigned int mask = luaL_tounsigneddef(L, 4, 0);
 
     u->damagedLow(dmg, s, mask);
 
@@ -1215,7 +1215,7 @@ int Unit_say(lua_State* L)
 int Unit_setGhost(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    bool ghost = lua_gettop(L) < 2 ? true : lua_toboolean(L, 2) != 0;
+    bool ghost = luaL_tobooleandef(L, 2, true);
 
     u->setGhost(ghost);
 
@@ -1317,12 +1317,12 @@ int Unit_addActiveAbility(lua_State* L)
     if (lua_istable(L, 2))
     {
         CActiveAbility* a = DCAST(luaL_toabilityptr(L, 2), CActiveAbility*);
-        u->addActiveAbility(a, lua_gettop(L) >= 3 ? (lua_toboolean(L, 3) != 0) : true);
+        u->addActiveAbility(a, luaL_tobooleandef(L, 3, true));
     }
     else
     {
         int id = lua_tointeger(L, 2);
-        u->addActiveAbility(id, lua_gettop(L) >= 3 ? lua_tointeger(L, 3) : 1, lua_gettop(L) >= 4 ? (lua_toboolean(L, 4) != 0) : true);
+        u->addActiveAbility(id, luaL_tointegerdef(L, 3, 1), luaL_tobooleandef(L, 4, true));
     }
 
     return 0;
@@ -1334,12 +1334,12 @@ int Unit_addPassiveAbility(lua_State* L)
     if (lua_istable(L, 2))
     {
         CPassiveAbility* a = DCAST(luaL_toabilityptr(L, 2), CPassiveAbility*);
-        u->addPassiveAbility(a, lua_gettop(L) >= 3 ? (lua_toboolean(L, 3) != 0) : true);
+        u->addPassiveAbility(a, luaL_tobooleandef(L, 3, true));
     }
     else
     {
         int id = lua_tointeger(L, 2);
-        u->addPassiveAbility(id, lua_gettop(L) >= 3 ? lua_tointeger(L, 3) : 1, lua_gettop(L) >= 4 ? (lua_toboolean(L, 4) != 0) : true);
+        u->addPassiveAbility(id, luaL_tointegerdef(L, 3, 1), luaL_tobooleandef(L, 4, true));
     }
 
     return 0;
@@ -1351,13 +1351,13 @@ int Unit_addBuffAbility(lua_State* L)
     if (lua_istable(L, 2))
     {
         CBuffAbility* a = DCAST(luaL_toabilityptr(L, 2), CBuffAbility*);
-        u->addBuffAbility(a, lua_gettop(L) >= 3 ? (lua_toboolean(L, 3) != 0) : true);
+        u->addBuffAbility(a, luaL_tobooleandef(L, 3, true));
     }
     else
     {
         int id = lua_tointeger(L, 2);
         int src = luaL_tounitid(L, 3);
-        u->addBuffAbility(id, src, lua_gettop(L) >= 4 ? lua_tointeger(L, 4) : 1, lua_gettop(L) >= 5 ? (lua_toboolean(L, 5) != 0) : true);
+        u->addBuffAbility(id, src, luaL_tointegerdef(L, 4, 1), luaL_tobooleandef(L, 5, true));
     }
 
     return 0;
@@ -1639,7 +1639,7 @@ int Unit2D_move(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
     float x = lua_tonumber(L, 2);
     float y = lua_tonumber(L, 3);
-    bool ob = lua_gettop(L) < 4 ? true : (lua_toboolean(L, 4) != 0);
+    bool ob = luaL_tobooleandef(L, 4, true);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     d->cmdMove(CPoint(x, y), ob);
@@ -1652,8 +1652,8 @@ int Unit2D_moveAlongPath(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
     CUnitPath* up = nullptr;
     luaL_toobjptr(L, 2, up);
-    bool ob = lua_gettop(L) < 3 ? true : (lua_toboolean(L, 3) != 0);
-    float ba = lua_gettop(L) < 4 ? 5.0f : lua_tonumber(L, 4);
+    bool ob = luaL_tobooleandef(L, 3, true);
+    float ba = luaL_tonumberdef(L, 4, 5.0f);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     d->cmdMoveAlongPath(up, ob, ba);
@@ -1721,7 +1721,7 @@ int Unit2D_castSpellWithoutTarget(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     int id = luaL_toabilityid(L, 2);
-    bool ob = lua_gettop(L) < 3 ? true : (lua_toboolean(L, 3) != 0);
+    bool ob = luaL_tobooleandef(L, 3, true);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     int res = d->cmdCastSpell(CCommandTarget(), id, ob);
@@ -1736,7 +1736,7 @@ int Unit2D_castSpellWithTargetUnit(lua_State* L)
     CUnit* u = luaL_tounitptr(L);
     int id = luaL_toabilityid(L, 2);
     int t = luaL_tounitid(L, 3);
-    bool ob = lua_gettop(L) < 4 ? true : (lua_toboolean(L, 4) != 0);
+    bool ob = luaL_tobooleandef(L, 4, true);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     int res = d->cmdCastSpell(CCommandTarget(t), id, ob);
@@ -1750,7 +1750,7 @@ int Unit2D_castSpellWithTargetPoint(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
     int id = luaL_toabilityid(L, 2);
-    bool ob = lua_gettop(L) < 5 ? true : (lua_toboolean(L, 5) != 0);
+    bool ob = luaL_tobooleandef(L, 5, true);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     int res = d->cmdCastSpell(CCommandTarget(CPoint(lua_tonumber(L, 3), lua_tonumber(L, 4))), id, ob);
@@ -1795,7 +1795,7 @@ int Unit2D_getHostilityRange(lua_State* L)
 int Unit2D_setFixed(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    bool fx = lua_gettop(L) < 2 ? true : (lua_toboolean(L, 2) != 0);
+    bool fx = luaL_tobooleandef(L, 2, true);
 
     CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
     d->setFixed(fx);
@@ -1919,7 +1919,7 @@ int Unit2D_doAnimation(lua_State* L)
     CUnit* _p = luaL_tounitptr(L);
     int id = lua_tointeger(L, 2);
     int iRepeatTimes = lua_tointeger(L, 3);
-    float fSpeed = lua_gettop(L) < 4 ? 1.0f : lua_tonumber(L, 4);
+    float fSpeed = luaL_tonumberdef(L, 4, 1.0f);
 
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     auto tag = d->doAnimation(id, nullptr, iRepeatTimes, nullptr, fSpeed);
@@ -2405,7 +2405,7 @@ int Projectile_decContactLeft(lua_State* L)
 {
     CProjectile* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
-    int dec = lua_gettop(L) > 1 ? lua_tointeger(L, 2) : 1;
+    int dec = luaL_tointegerdef(L, 2, 1);
 
     _p->decContactLeft(dec);
 
@@ -3201,7 +3201,7 @@ int AttackAct_getRealAttackValue(lua_State* L)
 {
     CAttackAct* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
-    bool rnd = (lua_gettop(L) < 2) || (lua_toboolean(L, 2) != 0);
+    bool rnd = luaL_tobooleandef(L, 2, true);
 
     lua_pushnumber(L, _p->getRealAttackValue(rnd));
 
@@ -3311,10 +3311,9 @@ int BuffMakerAct_ctor(lua_State* L)
     float cd = lua_tonumber(L, 3);
     int target = lua_tointeger(L, 4);
     unsigned int effect = lua_tounsigned(L, 5);
-    float chance = lua_tonumber(L, 6);
-    int buff = lua_tointeger(L, 7);
+    int buff = lua_tointeger(L, 6);
 
-    CBuffMakerAct* _p = new CBuffMakerAct("BM", name, cd, (CCommandTarget::TARGET_TYPE)target, effect, chance, buff);
+    CBuffMakerAct* _p = new CBuffMakerAct("BM", name, cd, (CCommandTarget::TARGET_TYPE)target, effect, buff);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3563,10 +3562,11 @@ int DamageBuff_ctor(lua_State* L)
     float exAvA = lua_tonumber(L, 5);
     float exAvB = lua_tonumber(L, 6);
     uint32_t mask = lua_tounsigned(L, 7);
-    bool attack = lua_gettop(L) >= 8 ? (lua_toboolean(L, 8) != 0) : false;
-    bool forceAt = lua_gettop(L) >= 9 ? (lua_toboolean(L, 9) != 0) : false;
+    bool attack = luaL_tobooleandef(L, 8, false);
+    bool forceAt = luaL_tobooleandef(L, 9, false);
+    float effRadius = luaL_tonumberdef(L, 10, 0.0f);
 
-    CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), CExtraCoeff(exAvA, exAvB), mask, attack, forceAt);
+    CDamageBuff* _p = new CDamageBuff(name, CAttackValue(damageType, damageValue), CExtraCoeff(exAvA, exAvB), mask, attack, forceAt, effRadius);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3581,7 +3581,7 @@ int TransitiveLinkBuff_ctor(lua_State* L)
     int maxTimes = lua_tointeger(L, 5);
     int minIvl = lua_tointeger(L, 6);
     uint32_t eff = lua_tounsigned(L, 7);
-    int projectile = lua_gettop(L) < 8 ? 0 : lua_tointeger(L, 8);
+    int projectile = luaL_tointegerdef(L, 8, 0);
 
     CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, minIvl, eff);
     _p->setTemplateProjectile(projectile);

@@ -24,6 +24,7 @@ int Unit4CC_addBattleTip(lua_State* L);
 int Unit4CC_setGeometry(lua_State* L);
 int Unit4CC_getAnchorPointInPoints(lua_State* L);
 int Unit4CC_addCtrlSound(lua_State* L);
+int Unit4CC_doRotateBy(lua_State* L);
 
 int Projectile4CC_ctor(lua_State* L);
 
@@ -36,6 +37,7 @@ int Sprite_prepareAnimation(lua_State* L);
 
 int Effect_ctor(lua_State* L);
 int Effect_addAnimation(lua_State* L);
+int Effect_addAnimationSound(lua_State* L);
 int Effect_play(lua_State* L);
 int Effect_playRelease(lua_State* L);
 int Effect_playForever(lua_State* L);

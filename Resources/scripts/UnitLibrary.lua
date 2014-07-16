@@ -43,19 +43,44 @@ p:setFireType(Projectile.kFireFollow)
 p:addFireSound("sounds/Effects/MageShot.mp3")
 SPL.kPriestBolt = SPL.add(p)
 
-
+-- VoodooProy
 loadAnimations("VoodooProy", {move = 0.1, die = 0.1})
 sp = Sprite:new("VoodooProy")
 sp:prepareFrame(Sprite.kFrmDefault, "default")
 sp:prepareAnimation(Sprite.kAniMove, "move", -1)
 sp:prepareAnimation(Sprite.kAniDie, "die", 0)
 p = Projectile:new(sp, "VoodooProy")
-p:setMoveSpeed(50.0)
+p:setMoveSpeed(500.0)
 p:setMaxHeightDelta(0.0)
 p:setPenaltyFlags(Projectile.kOnDying)
 p:setFireType(Projectile.kFireFollow)
 p:addFireSound("sounds/Effects/MageShot.mp3")
 SPL.kVoodooProy = SPL.add(p)
+
+-- GreenWave
+loadAnimations("GreenWave", {})
+sp = Sprite:new("GreenWave")
+sp:prepareFrame(Sprite.kFrmDefault, "default")
+p = Projectile:new(sp, "GreenWave")
+p:setMoveSpeed(500.0)
+p:setMaxHeightDelta(0.0)
+p:setPenaltyFlags(Projectile.kOnDying)
+p:setFireType(Projectile.kFireFollow)
+--p:addFireSound("sounds/Effects/MageShot.mp3")
+SPL.kGreenWave = SPL.add(p)
+
+-- FireBall
+loadAnimations("FireBall", {move = 0.1})
+sp = Sprite:new("FireBall")
+sp:prepareFrame(Sprite.kFrmDefault, "default")
+sp:prepareAnimation(Sprite.kAniMove, "move", -1)
+p = Projectile:new(sp, "FireBall")
+p:setMoveSpeed(400.0)
+p:setMaxHeightDelta(0.0)
+p:setPenaltyFlags(Projectile.kOnDying)
+p:setFireType(Projectile.kFireFollow)
+--p:addFireSound("sounds/Effects/MageShot.mp3")
+SPL.kFireBall = SPL.add(p)
 
 
 -- static unit library
@@ -133,6 +158,17 @@ u = Unit:new(sp, "Orb2")
 u:setGeometry(16.0, 16.0, 0.5, 0.5, 0, 0);
 u:setFixed()
 SUL.kOrb2 = SUL.add(u)
+
+-- BlackHole
+loadAnimations("BlackHole", {move = 0.1, die = 0.1})
+sp = Sprite:new("BlackHole")
+sp:prepareFrame(Sprite.kFrmDefault, "default")
+sp:prepareAnimation(Sprite.kAniMove, "move", -1)
+sp:prepareAnimation(Sprite.kAniDie, "die", 0)
+u = Unit:new(sp, "BlackHole")
+u:setGeometry(33.0, 33.0, 0.5, 0.5, 0, 0);
+u:setFixed()
+SUL.kBlackHole = SUL.add(u)
 
 
 

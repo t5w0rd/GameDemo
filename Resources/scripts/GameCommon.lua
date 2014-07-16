@@ -306,11 +306,11 @@ function UnitCreator:createUnit()
 	u:setBaseArmor(self.arm.t, self.arm.v)
 	
 	for _, act in ipairs(self.act) do
-		u:addActiveAbility(AL[act]:getId())
+		u:addActiveAbility(act)
 	end
 	
 	for _, pas in ipairs(self.pas) do
-		u:addPassiveAbility(AL[pas]:getId())
+		u:addPassiveAbility(pas)
 	end
 	
 	u:setRewardGold(self.reward.g)
@@ -370,7 +370,8 @@ function initForHero()
 	--hero:addActiveAbility(AL.kChangeAttack:getId())
 	--hero:addActiveAbility(AL.kFastMoveToBack:getId())
 	hero:addActiveAbility(AL.kSerialExplode:getId())
-	--hero:addActiveAbility(AL.kArrowRain:getId())
+	hero:addActiveAbility(AL.kSwordWave:getId())
+	hero:addActiveAbility(AL.kBouncingFireBall:getId())
 	
 	
 	return hero

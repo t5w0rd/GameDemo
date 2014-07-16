@@ -66,6 +66,7 @@ bool StageSceneLayer::init()
     vector<string> ts;
     ts.push_back("Global0");
     ts.push_back("Global1");
+    ts.push_back("Global2");
     ts.push_back("Heroes0");
     ts.push_back("Heroes1");
     ts.push_back("Heroes2");

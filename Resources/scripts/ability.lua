@@ -134,7 +134,7 @@ function ArmorBuff:onUnitAddAbility()
     o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Comic Book.fnt", 18, 0, 0, 0)
 	
 	if self.change < 0 then
-		local eff = Effect:new("Effects/ArmorBreak", 0.08, 0.5, 0.5, o)
+		local eff = Effect:new("Effects/ArmorBreak", 0.08, 0.5, 0.5, nil, o)
 		local x, y = o:getAnchorPointInPoints()
 		eff:setPosition(x, y + o:getHalfOfHeight())
 		eff:playRelease()
@@ -162,6 +162,11 @@ function OnDyingPas:onUnitDying()
 
 	if math.random() < 0.3 then
 		me:say(OnDyingPas.words[math.random(1, #OnDyingPas.words)])
+	end
+	
+	local o = self:getOwner()
+	if me:getDistance(o) > 400 then
+		me:addExp(o:getRewardExp())
 	end
 	
     lvl = me:getLevel()
@@ -200,6 +205,7 @@ function SummonUnitAct:onUnitAbilityEffect(projectile, target)
     u:setLevel(self:getLevel())
     u:setGhost()
     u:doAnimation(Sprite.kAniMove, INFINITE)
+	u:doRotateBy(360, 1.0, INFINITE)
 
     u:addBuffAbility(LimitedLifeBuff:new("LimitedLife", "LimitedLife", self.duration))
 
@@ -302,7 +308,7 @@ function PressureBombBuff:buffEffect(per)
     
     local o = self:getOwner()
 	local x, y = o:getAnchorPointInPoints()
-	eff = Effect:new("Effects/Burn", 0.05, 0.5, 22 / 92, o)
+	eff = Effect:new("Effects/Burn", 0.05, 0.5, 22 / 92, nil, o)
 	eff:setPosition(x, y + o:getHalfOfHeight())
 	eff:playRelease()
 	
@@ -476,6 +482,7 @@ function RainAct:onUnitAbilityEffect(proj, target)
 	self:setInterval(RainAct.INTERVAL)
 	self.elapsed = 0.0
 	self.total = 1
+	o:stop()
 	o:suspend()
 	self.act = o:doAnimation(self:getCastRandomAnimation(), INFINITE)
 	self:onUnitInterval()
@@ -515,6 +522,7 @@ function RainAct:onUnitInterval()
 		self:setInterval(0.0)
 		o:stopAction(self.act)
 		o:resume()
+		o:stop()
 	end
 end
 
@@ -544,6 +552,7 @@ function ProjectileRainAct:onUnitAbilityEffect(proj, target)
 		self:setInterval(ProjectileRainAct.INTERVAL)
 		self.elapsed = 0.0
 		self.total = 1
+		o:stop()
 		o:suspend()
 		self.act = o:doAnimation(self:getCastRandomAnimation(), INFINITE)
 		self:onUnitInterval()
@@ -594,6 +603,7 @@ function ProjectileRainAct:onUnitInterval()
 		self:setInterval(0.0)
 		o:stopAction(self.act)
 		o:resume()
+		o:stop()
 	end
 end
 
@@ -641,7 +651,6 @@ function SerialExplodeAct:ctor(name, cd, dis, count, interval, range, buff)
 	self:sctor("SerialExplodeAct", name, cd, CommandTarget.kPointTarget, UnitForce.kEnemy)
 	self:setTriggerFlags(Ability.kOnTickTrigger)
 	self:setCastRange(dis * count)
-	--self:setCastTargetRadius(0)
 	self.dis = dis
 	self.count = count
 	self.index = 0
@@ -673,10 +682,9 @@ function SerialExplodeAct:onUnitInterval()
 	self.index = self.index + 1
 	
 	local x, y = getDirectionPoint(self.sx, self.sy, self.angle, self.dis * self.index)
-	eff = Effect:new("Effects/Explosion", 0.05, 0.5, 42 / 168)
+	eff = Effect:new("Effects/Explosion/Normal", 0.05, 0.5, 42 / 168, "sounds/Effects/Sound_FireballHit.mp3")
 	eff:setLogicPosition(x, y)
 	eff:playRelease()
-	playSound("sounds/Effects/Sound_FireballHit.mp3")
 	
 	local o = self:getOwner()
 	local ug = UnitGroup.getEffectiveUnitsInRange(x, y, o, self.range, self:getEffectiveTypeFlags())
@@ -758,4 +766,31 @@ function ChangeAttackBuff:swapAttackAttribute()
 		self.proj = tmp
 	end
 	
+end
+
+EffectBuff = class(BuffAbility)
+function EffectBuff:ctor(epath, delay, ax, ay, sound, attached)
+	self:sctor("EffectBuff", "", 0.0, true)
+	self.epath = epath
+	self.delay = delay
+	self.ax = ax
+	self.ay = ay
+	self.attached = attached
+	self.sound = sound
+end
+
+function EffectBuff:onUnitAddAbility()
+	local o = self:getOwner()
+	local eff
+	if self.attached then
+		eff = Effect:new(self.epath, self.delay, self.ax, self.ay, self.sound, o)
+		local x, y = o:getAnchorPointInPoints()
+		eff:setPosition(x, y + o:getHalfOfHeight())
+	else
+		eff = Effect:new(self.epath, self.delay, self.ax, self.ay, self.sound)
+		local x, y = o:getPosition()
+		eff:setLogicPosition(x, y)
+	end
+	
+	eff:playRelease()
 end

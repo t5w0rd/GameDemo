@@ -228,6 +228,8 @@ void GameControler::onLoadingProgressing(Ref* obj)
             addTexturesLoadedToFramesCache();
             m_onLoadingDone();
         }
+        m_loaded = 0;
+        m_loadFrames.clear();
         
         return;
     }

@@ -80,6 +80,7 @@ public:
     virtual int doMoveTo(const CPoint& rPos, float fDuration, const FUNC_VOID& onMoveToDone, float fSpeed = 1.0f) override;
     virtual void updateMoveTo(const CPoint& rPos);
     virtual int doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRepeatTimes, const FUNC_VOID& onAnimationDone, float fSpeed = 1.0f) override;
+    virtual int doRotateBy(float delta, float fDuration, int iRepeatTimes, const FUNC_VOID& onRotateDone, float fSpeed = 1.0f);
     virtual void stopAction(int tag);
     virtual void setActionSpeed(int tag, float fSpeed);
     virtual bool isDoingAction(int id);

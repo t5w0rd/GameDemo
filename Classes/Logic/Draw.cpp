@@ -1111,6 +1111,7 @@ CProjectile::CProjectile()
 , m_eFireType(kFireFollow)
 , m_iContactLeft(-1)
 , m_bRedirected(false)
+, m_bUsingFirePoint(true)
 {
     setDbgClassName("CProjectile");
 }
@@ -1438,8 +1439,16 @@ void CProjectile::fire()
                 CUnit* u = w->getUnit(getFromUnit());
                 CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
-                setHeight(d->getHeight() + d->getFirePoint().y);
-                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlippedX() ? -d->getFirePoint().x : d->getFirePoint().x, 0)));
+                if (m_bUsingFirePoint)
+                {
+                    setHeight(d->getHeight() + d->getFirePoint().y);
+                    setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlippedX() ? -d->getFirePoint().x : d->getFirePoint().x, 0)));
+                }
+                else
+                {
+                    setHeight(d->getHeight() + d->getHalfOfHeight());
+                    setFromPoint(d->getPosition()); 
+                }
             }
 
             CUnit* t = w->getUnit(getToUnit());
@@ -1475,8 +1484,17 @@ void CProjectile::fire()
                 CUnit* u = w->getUnit(getFromUnit());
                 CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
 
-                setHeight(d->getHeight() + d->getFirePoint().y);
-                setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlippedX() ? -d->getFirePoint().x : d->getFirePoint().x, 0.0f)));
+                if (m_bUsingFirePoint)
+                {
+                    setHeight(d->getHeight() + d->getFirePoint().y);
+                    setFromPoint(CPoint(d->getPosition() + CPoint(d->isFlippedX() ? -d->getFirePoint().x : d->getFirePoint().x, 0.0f)));
+                }
+                else
+                {
+                    setHeight(d->getHeight() + d->getHalfOfHeight());
+                    setFromPoint(d->getPosition()); 
+                }
+                
             }
 
             float fDis = getFromPoint().getDistance(getToPoint());

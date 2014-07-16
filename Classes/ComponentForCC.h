@@ -188,8 +188,8 @@ public:
     Effect();
     virtual ~Effect();
 
-    bool initWithPath(const char* path, float delay);
-    M_CREATE_INITWITH_FUNC_PARAM(Path, Effect, (const char* path, float delay), path, delay);
+    bool initWithPath(const char* path, float delay, const char* sound = nullptr);
+    M_CREATE_INITWITH_FUNC_PARAM(Path, Effect, (const char* path, float delay, const char* sound = nullptr), path, delay, sound);
     
     M_CREATE_INITWITH_FUNC_PARAM(File, Effect, (const std::string& filename), filename);
     M_CREATEWITH_FUNC_PARAM(Texture, Effect, (Texture2D* texture), texture);
@@ -200,11 +200,18 @@ public:
     void playRelease(int index = 0, float speed = 1.0f, int times = 1.0);
     void playForever(int index = 0, float speed = 1.0f);
 
-    Animation* addAnimation(const char* path, float delay);
+    Animation* addAnimation(const char* path, float delay, const char* sound = nullptr);
+    void addAnimationSound(int index, const char* sound);
+
     void stop();
 
-    typedef vector<string> VEC_ANIS;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ANIS, m_vecAnis, AnimationNames);
+    struct ANIS_INFO
+    {
+        string path;
+        vector<string> sounds;
+    };
+    typedef vector<ANIS_INFO> VEC_ANIS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_ANIS, m_vecAnis, AnimationInfos);
 
     M_SYNTHESIZE_BOOL(LogicPositionMode);
     M_SYNTHESIZE_READONLY(float, m_fLogicHeight, LogicHeight);

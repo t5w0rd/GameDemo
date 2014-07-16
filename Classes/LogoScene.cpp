@@ -164,6 +164,7 @@ void LogoSceneLayer::onEffectUpdate(Node* pNode)
     case 6:
         gc->loadFrames("Global0");
         gc->loadFrames("Global1");
+        gc->loadFrames("Global2");
         gc->loadFrames("Heroes0");
         gc->loadFrames("Heroes1");
         gc->loadFrames("Heroes2");

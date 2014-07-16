@@ -489,6 +489,7 @@ bool BattleSceneLayer::initWithWorld(CWorldForCC* pWorld)
     vector<string> ts;
     ts.push_back("Global0");
     ts.push_back("Global1");
+    ts.push_back("Global2");
     ts.push_back("Heroes0");
     ts.push_back("Heroes1");
     ts.push_back("Heroes2");
@@ -1103,7 +1104,7 @@ void BattleSceneLayer::initHeroPortrait()
     m_pHeroLevel = Label::createWithTTF("1", FONT_ARIAL, 24, Size(28, 28), TextHAlignment::CENTER);
     //m_pHeroPortrait->addChild(m_pHeroLevel);
     btn->addChild(m_pHeroLevel);
-    m_pHeroLevel->setPosition(Point(94, 40));
+    m_pHeroLevel->setPosition(Point(94, 37));
     m_stHeroInfo.iLevel = 1;
 }
 
