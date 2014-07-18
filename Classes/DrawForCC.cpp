@@ -260,7 +260,7 @@ int CUnitDrawForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iRep
     {
         if (id == kAniDie)
         {
-            act = FadeOut::create(0.2f);
+            act = FadeOut::create(0.1f);
         }
         else
         {
@@ -725,6 +725,8 @@ void CWorldForCC::onAddUnit(CUnit* pUnit)
     {
         pSprite = pDraw->createSprite();
         pUnit->addSystemAbility(new CShowStatusPas());
+        pUnit->setAI(CBaseAI::instance());
+
         if (!pUnit->isGhost())
         {
             onAddNormalAttributes(pUnit);
@@ -780,14 +782,14 @@ void CWorldForCC::onDelProjectile(CProjectile* pProjectile)
 void CWorldForCC::onAddNormalAttributes(CUnit* pUnit)
 {
     //pUnit->addSystemAbility(new CShowStatusPas());
-    pUnit->setAI(CBaseAI::instance());
+    //pUnit->setAI(CBaseAI::instance());
     DCAST(pUnit->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow()->setVisible(true);
 }
 
 void CWorldForCC::onDelNormalAttributes(CUnit *pUnit)
 {
     //pUnit->delSystemAbility("ShowStatus");
-    pUnit->setAI(nullptr);
+    //pUnit->setAI(nullptr);
     DCAST(pUnit->getDraw(), CUnitDrawForCC*)->getSprite()->getShadow()->setVisible(false);
 }
 
@@ -1033,7 +1035,7 @@ int CProjectileForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iR
     {
         if (id == kAniDie)
         {
-            act = FadeOut::create(0.2f);
+            act = FadeOut::create(0.1f);
         }
         else
         {

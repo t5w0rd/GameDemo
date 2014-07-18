@@ -82,6 +82,18 @@ p:setFireType(Projectile.kFireFollow)
 --p:addFireSound("sounds/Effects/MageShot.mp3")
 SPL.kFireBall = SPL.add(p)
 
+-- Missile
+loadAnimations("Missile", {move = 0.1})
+sp = Sprite:new("Missile")
+sp:prepareFrame(Sprite.kFrmDefault, "default")
+sp:prepareAnimation(Sprite.kAniMove, "move", -1)
+p = Projectile:new(sp, "Missile")
+p:setMoveSpeed(600.0)
+p:setMaxHeightDelta(50.0)
+p:setPenaltyFlags(Projectile.kOnDying)
+p:setFireType(Projectile.kFireFollow)
+--p:addFireSound("sounds/Effects/Sound_RocketLaunt.mp3")
+SPL.kMissile = SPL.add(p)
 
 -- static unit library
 SUL = {}

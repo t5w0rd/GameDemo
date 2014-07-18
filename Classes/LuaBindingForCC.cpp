@@ -8,6 +8,25 @@
 #include "BattleScene.h"
 
 
+
+int luaL_throwerror(lua_State* L, bool tellWhere, const char* format, ...)
+{
+    va_list argp;
+    va_start(argp, format);
+    if (tellWhere)
+    {
+        luaL_where(L, 1);
+    }
+    lua_pushvfstring(L, format, argp);
+    va_end(argp);
+    if (tellWhere)
+    {
+        lua_concat(L, 2);
+    }
+
+    return lua_error(L);
+}
+
 int luaModuleLoader4cc(lua_State *L)
 {
     std::string filename(luaL_checkstring(L, 1));
@@ -98,11 +117,23 @@ int g_showDebug(lua_State* L)
 
 int g_playSound(lua_State* L)
 {
-    const char* eff = lua_tostring(L, 1);
+    const char* sound = lua_tostring(L, 1);
+    float dur = luaL_tonumberdef(L, 2, 0.0f);
+    
+    M_DEF_GC(gc);
+    lua_pushinteger(L, gc->playSound(sound, dur));
 
-    SimpleAudioEngine::getInstance()->playEffect(eff);
+    return 1;
+}
 
-    return 0;
+int g_isSoundPlaying(lua_State* L)
+{
+    int sid = lua_tointeger(L, 1);
+
+    M_DEF_GC(gc);
+    lua_pushboolean(L, gc->isSoundPlaying(sid));
+
+    return 1;
 }
 
 string g_sLuaSearchPath;
@@ -444,15 +475,20 @@ int Effect_ctor(lua_State* L)
 {
     auto path = lua_tostring(L, 2);
     auto delay = lua_tonumber(L, 3);
-    auto x = luaL_tonumberdef(L, 4, 0.5f);
-    auto y = luaL_tonumberdef(L, 5, 0.5f);
+    auto ax = luaL_tonumberdef(L, 4, 0.5f);
+    auto ay = luaL_tonumberdef(L, 5, 0.5f);
     auto sound = luaL_tostringdef(L, 6, nullptr);
 
     Effect* eff = Effect::create(path, delay, sound);
+    if (eff == nullptr)
+    {
+        return luaL_throwerror(L, true, "effect(%s) is not exist", path);
+    }
+
     lua_pushlightuserdata(L, eff);
     lua_setfield(L, 1, "_p");
 
-    eff->setAnchorPoint(Point(x, y));
+    eff->setAnchorPoint(Point(ax, ay));
 
     if (lua_gettop(L) < 7)
     {
@@ -676,6 +712,7 @@ int luaRegCommFuncsForCC(lua_State* L)
     lua_register(L, "loadAnimation", g_loadAnimation);
     lua_register(L, "showDebug", g_showDebug);
     lua_register(L, "playSound", g_playSound);
+    lua_register(L, "isSoundPlaying", g_isSoundPlaying);
     lua_register(L, "setSearchPath", g_setSearchPath);
     lua_register(L, "include", g_include);
     lua_register(L, "addTemplateUnit", g_addTemplateUnit);
@@ -723,7 +760,12 @@ int g_log(lua_State* L)
     {
         lua_pushvalue(L, i);
     }
-    lua_call(L, n, 1);
+
+    if (lua_pcall(L, n, 1, 0) != LUA_OK)
+    {
+        auto err = lua_tostring(L, -1);
+        return luaL_throwerror(L, true, err);
+    }
 
     const char* log = lua_tostring(L, -1);
     CCLOG("%s", log);

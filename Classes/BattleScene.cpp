@@ -853,7 +853,6 @@ void BattleSceneLayer::initTargetInfo()
     m_pTargetAtk->setHorizontalAlignment(TextHAlignment::LEFT);
     m_pTargetAtk->setString("105 - 110");
     m_pTargetAtk->setPosition(Point(fBaseX, fBaseY));
-    m_pTargetAtk->setString("150 - 110");
 
     //fBaseX += m_pTargetAtk->getTextureRect().size.width;
     fBaseX += m_pTargetAtk->getContentSize().width;
@@ -863,7 +862,6 @@ void BattleSceneLayer::initTargetInfo()
     m_pTargetAtkEx->setHorizontalAlignment(TextHAlignment::LEFT);
     m_pTargetAtkEx->setString(" +15000");
     m_pTargetAtkEx->setPosition(Point(fBaseX, fBaseY));
-    m_pTargetAtk->setString("151 - 167");
     m_pTargetAtkEx->setColor(Color3B(40, 220, 40));
 
     // »¤¼×
@@ -875,11 +873,21 @@ void BattleSceneLayer::initTargetInfo()
     m_pTargetDefIcon->setPosition(Point(fBaseX, fBaseY));
 
     fW0 = fW1;
-    fW1 = 64;
+    fW1 = 0;
     fBaseX += M_FIX_BASE_X(fW0, fW1, 10);
     m_pTargetDef = Label::createWithTTF("32", FONT_COMIC_BOOK, fFontSize, Size(fW1, 32), TextHAlignment::LEFT);
+    m_pTargetDef->setAnchorPoint(Point(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pTargetDef);
     m_pTargetDef->setPosition(Point(fBaseX, fBaseY));
+
+    fBaseX += m_pTargetDef->getContentSize().width;
+    m_pTargetDefEx = Label::createWithTTF("", FONT_COMIC_BOOK, fFontSize);
+    m_pTargetDefEx->setAnchorPoint(Point(0.0, 0.5));
+    m_pTargetInfoPanel->addChild(m_pTargetDefEx);
+    m_pTargetDefEx->setHorizontalAlignment(TextHAlignment::LEFT);
+    m_pTargetDefEx->setString(" +50");
+    m_pTargetDefEx->setPosition(Point(fBaseX, fBaseY));
+    m_pTargetDefEx->setColor(Color3B(40, 220, 40));
 
     m_iTargetInfoUnitId = 0;
 }
@@ -981,10 +989,10 @@ void BattleSceneLayer::updateTargetInfo(int id)
         int iAtkEx = 0;
 
         fAtk = atkAct->getBaseAttackValue();
-        fAtkRnd = atkAct->getAttackValueRandomRange() * 0.5;
+        fAtkRnd = atkAct->getAttackValueRandomRange() * 0.5f;
         iAtk0 = toInt(fAtk * (1 - fAtkRnd));
         iAtk1 = toInt(fAtk * (1 + fAtkRnd));
-        iAtkEx = toInt(fAtk * (atkAct->getExAttackValue().getMulriple() - 1.0) + atkAct->getExAttackValue().getAddend());
+        iAtkEx = toInt(fAtk * (atkAct->getExAttackValue().getMulriple() - 1.0f) + atkAct->getExAttackValue().getAddend());
 
         if ((iAtk0 != m_stTargetInfo.iAtk0) || (iAtk1 != m_stTargetInfo.iAtk1) || (iAtkEx != m_stTargetInfo.iAtkEx))
         {
@@ -1010,7 +1018,8 @@ void BattleSceneLayer::updateTargetInfo(int id)
     }
     
     // »¤¼×
-    switch (pUnit->getBaseArmor().getType())
+    auto& armor = pUnit->getBaseArmor();
+    switch (armor.getType())
     {
     case CArmorValue::kHeavy:
         m_pTargetDefIcon->setSpriteFrame(fc->getSpriteFrameByName("UI/status/HeavyArmor.png"));
@@ -1021,12 +1030,29 @@ void BattleSceneLayer::updateTargetInfo(int id)
         break;
     }
 
-    int iDef = toInt(pUnit->getRealArmorValue());
-    if (iDef != m_stTargetInfo.iDef)
+    
+    float fDef = armor.getValue();
+    int iDef = toInt(fDef);
+    int iDefEx = toInt(fDef * (pUnit->getExArmorValue().getMulriple() - 1.0f) + pUnit->getExArmorValue().getAddend());
+    if (iDef != m_stTargetInfo.iDef || iDefEx != m_stTargetInfo.iDefEx)
     {
         sprintf(szBuf, "%d", iDef);
         m_pTargetDef->setString(szBuf);
         m_stTargetInfo.iDef = iDef;
+
+        if (iDefEx != 0)
+        {
+            sprintf(szBuf, iDefEx < 0 ? " %d" : " +%d", iDefEx);
+            m_pTargetDefEx->setString(szBuf);
+            //m_pTargetDefEx->setPosition(m_pTargetDef->getPosition() + Point(m_pTargetDef->getTextureRect().size.width, 0));
+            m_pTargetDefEx->setPosition(m_pTargetDef->getPosition() + Point(m_pTargetDef->getContentSize().width, 0));
+            m_pTargetDefEx->setColor(iDefEx < 0 ? Color3B(220, 40, 40) : Color3B(40, 220, 40));
+        }
+        else
+        {
+            m_pTargetDefEx->setString("");
+        }
+        m_stTargetInfo.iDefEx = iDefEx;
     }
 
     if (pUnit->isDead())
@@ -1048,17 +1074,17 @@ void BattleSceneLayer::showTargetInfo(bool bShow /*= true*/)
     Point to(from.x, 0.0f);
     if (bShow)
     {
-        to.y = m_pTargetInfoPanel->getContentSize().height * 0.5;
+        to.y = m_pTargetInfoPanel->getContentSize().height * 0.5f;
     }
     else
     {
-        to.y = -m_pTargetInfoPanel->getContentSize().height * 0.5;
+        to.y = -m_pTargetInfoPanel->getContentSize().height * 0.5f;
     }
 
     // DemoTemp
     static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
     ae->playEffect("sounds/Effects/UIMove.mp3");
-    m_pTargetInfoPanel->runAction(MoveTo::create(to.getDistance(from) * 0.002, to));
+    m_pTargetInfoPanel->runAction(MoveTo::create(to.getDistance(from) * 0.002f, to));
 
     m_bShowTargetInfo = bShow;
 }

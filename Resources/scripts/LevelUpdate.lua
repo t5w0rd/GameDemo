@@ -67,7 +67,7 @@ function HeroLevelUpdate:onChangeLevel(u, change)
     elseif lv == 12 then
         u:addPassiveAbility(AL.kDamageIncreaceAttack:getId())
     elseif lv == 13 then
-        u:addPassiveAbility(AL.kPressureBombAttack:getId())
+        --u:addPassiveAbility(AL.kPressureBombAttack:getId())
     elseif lv == 14 then
         u:addPassiveAbility(AL.kRebirth:getId())
     elseif lv == 15 then
@@ -82,6 +82,8 @@ function HeroLevelUpdate:onChangeLevel(u, change)
         u:addPassiveAbility(AL.kCutterAttack:getId())
     elseif lv == 20 then
         u:addPassiveAbility(AL.kStrikeBack:getId())
+	elseif lv == 50 then
+		u:addPassiveAbility(AL.kPressureBombAttack:getId())
     end
 	--[[]]
     saveUserData()

@@ -52,13 +52,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     addProjectile(kFrostBolt, p);
 
     // ArcherArrow
-    gc->loadAnimation("Sprites/ArcherArrow/move", "Sprites/ArcherArrow/move", 0.1f);
-    gc->loadAnimation("Sprites/ArcherArrow/die", "Sprites/ArcherArrow/die", 0.1f);
-    
     si = new CSpriteInfo("ArcherArrow");
     si->prepareFrame(CProjectile::kFrmDefault, "default");
-    si->prepareAnimation(CProjectile::kAniMove, "move", -1);
-    si->prepareAnimation(CProjectile::kAniDie, "die", 0);
     
     p = new CProjectileForCC(si);
     p->setMoveSpeed(300.0f);
@@ -70,13 +65,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     addProjectile(kArcherArrow, p);
 
     // ArcherArrow2
-    gc->loadAnimation("Sprites/ArcherArrow/move", "Sprites/ArcherArrow2/move", 0.1f);
-    gc->loadAnimation("Sprites/ArcherArrow/die", "Sprites/ArcherArrow2/die", 0.1f);
-
     si = new CSpriteInfo("ArcherArrow2");
     si->prepareFrame(CProjectile::kFrmDefault, "default", "ArcherArrow");
-    si->prepareAnimation(CProjectile::kAniMove, "move", -1);
-    si->prepareAnimation(CProjectile::kAniDie, "die", 0);
 
     p = new CProjectileForCC(si);
     p->setMoveSpeed(600.0f);
@@ -100,13 +90,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     addProjectile(kLightning, p);
 
     // ThorHammer
-    gc->loadAnimation("Sprites/ThorHammer/move", "Sprites/ThorHammer/move", 0.1f);
-    gc->loadAnimation("Sprites/ThorHammer/die", "Sprites/ThorHammer/die", 0.1f);
-
     si = new CSpriteInfo("ThorHammer");
     si->prepareFrame(CProjectile::kFrmDefault, "default");
-    si->prepareAnimation(CProjectile::kAniMove, "move", -1);
-    si->prepareAnimation(CProjectile::kAniDie, "die", 0);
 
     p = new CProjectileForCC(si);
     p->setMoveSpeed(800.0f);
@@ -222,12 +207,10 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     addProjectile(kVoodooProy, p);
     
     // MirageProy
-    gc->loadAnimation("Sprites/MirageProy/move", "Sprites/MirageProy/move", 0.1f);
     gc->loadAnimation("Sprites/MirageProy/die", "Sprites/MirageProy/die", 0.1f);
 
     si = new CSpriteInfo("MirageProy");
     si->prepareFrame(CProjectile::kFrmDefault, "default");
-    si->prepareAnimation(CProjectile::kAniMove, "move", -1);
     si->prepareAnimation(CProjectile::kAniDie, "die", 0);
 
     p = new CProjectileForCC(si);
@@ -261,7 +244,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Malik/die", "Sprites/Malik/die", 0.1f);
     gc->loadAnimation("Sprites/Malik/act1", "Sprites/Malik/act1", 0.1f);
     gc->loadAnimation("Sprites/Malik/act2", "Sprites/Malik/act2", 0.1f);
-    gc->loadAnimation("Sprites/Malik/act3", "Sprites/Malik/act3", 0.1f);
+    gc->loadAnimation("Sprites/Malik/act3", "Sprites/Malik/act3", 0.08f);
     gc->loadAnimation("Sprites/Malik/act4", "Sprites/Malik/act4", 0.1f);
     gc->loadAnimation("Sprites/Malik/act5", "Sprites/Malik/act5", 0.1f);
 
@@ -342,8 +325,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Barracks/die", "Sprites/Barracks/die", 0.1f);
     gc->loadAnimation("Sprites/Barracks/act1", "Sprites/Barracks/act1", 0.1f);
     gc->loadAnimation("Sprites/Barracks/act2", "Sprites/Barracks/act2", 0.1f);
-    gc->loadAnimation("Sprites/Barracks/act3", "Sprites/Barracks/act3", 0.1f);
-    gc->loadAnimation("Sprites/Barracks/act4", "Sprites/Barracks/act4", 0.1f);
+    gc->loadAnimation("Sprites/Barracks/act3", "Sprites/Barracks/act3", 0.07f);
+    gc->loadAnimation("Sprites/Barracks/act4", "Sprites/Barracks/act4", 0.07f);
     gc->loadAnimation("Sprites/Barracks/act5", "Sprites/Barracks/act5", 0.1f);
 
     si = new CSpriteInfo("Barracks");
@@ -390,8 +373,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Archer/die", "Sprites/Archer/die", 0.1f);
     gc->loadAnimation("Sprites/Archer/act1", "Sprites/Archer/act1", 0.1f);
     gc->loadAnimation("Sprites/Archer/act2", "Sprites/Archer/act2", 0.1f);
-    gc->loadAnimation("Sprites/Archer/act3", "Sprites/Archer/act3", 0.1f);
-    gc->loadAnimation("Sprites/Archer/act4", "Sprites/Archer/act4", 0.1f);
+    gc->loadAnimation("Sprites/Archer/act3", "Sprites/Archer/act3", 0.07f);
+    gc->loadAnimation("Sprites/Archer/act4", "Sprites/Archer/act4", 0.07f);
     gc->loadAnimation("Sprites/Archer/act5", "Sprites/Archer/act5", 0.1f);
     
     si = new CSpriteInfo("Archer");
@@ -443,8 +426,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniMove, "move", -1);
     si->prepareAnimation(kAniDie, "die", -1);
     si->prepareAnimation(kAniAct1, "act1", 4);
-    si->prepareAnimation(kAniAct2, "act2", 6);
-    si->prepareAnimation(kAniAct3, "act3", 5);
+    si->prepareAnimation(kAniAct2, "act2", 5);
+    si->prepareAnimation(kAniAct3, "act3", 6);
     si->prepareAnimation(kAniAct4, "act4", 7);
     si->prepareAnimation(kAniAct5, "act5", 6);
     
@@ -483,9 +466,9 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniMove, "move", -1);
     si->prepareAnimation(kAniDie, "die", -1);
     si->prepareAnimation(kAniAct1, "act1", 4, "sounds/Effects/ShootGun.mp3");
-    si->prepareAnimation(kAniAct2, "act2", 8);
+    si->prepareAnimation(kAniAct2, "act2", 3);
     si->prepareAnimation(kAniAct3, "act3", 2);
-    si->prepareAnimation(kAniAct4, "act4", 3);
+    si->prepareAnimation(kAniAct4, "act4", 8);
     si->prepareAnimation(kAniAct5, "act5", 6);
     
     d = new CUnitDrawForCC(si);
@@ -501,7 +484,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         CAttackValue(CAttackValue::kPhysical, 30.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(300.0f);
+    atk->setCastRange(200.0f);
     atk->addCastAnimation(kAniAct1);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
@@ -549,8 +532,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Oni/move", "Sprites/Oni/move", 0.08f);
     gc->loadAnimation("Sprites/Oni/die", "Sprites/Oni/die", 0.1f);
     gc->loadAnimation("Sprites/Oni/act1", "Sprites/Oni/act1", 0.08f);
-    gc->loadAnimation("Sprites/Oni/act2", "Sprites/Oni/act2", 0.1f);
-    gc->loadAnimation("Sprites/Oni/act3", "Sprites/Oni/act3", 0.1f);
+    gc->loadAnimation("Sprites/Oni/act2", "Sprites/Oni/act2", 0.06f);
+    gc->loadAnimation("Sprites/Oni/act3", "Sprites/Oni/act3", 0.06f);
     gc->loadAnimation("Sprites/Oni/act5", "Sprites/Oni/act5", 0.1f);
     
     si = new CSpriteInfo("Oni");
@@ -709,8 +692,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Alric/die", "Sprites/Alric/die", 0.1f);
     gc->loadAnimation("Sprites/Alric/act1", "Sprites/Alric/act1", 0.1f);
     gc->loadAnimation("Sprites/Alric/act2", "Sprites/Alric/act2", 0.1f);
-    gc->loadAnimation("Sprites/Alric/act3", "Sprites/Alric/act3", 0.1f);
-    gc->loadAnimation("Sprites/Alric/act4", "Sprites/Alric/act4", 0.1f);
+    gc->loadAnimation("Sprites/Alric/act3", "Sprites/Alric/act3", 0.08f);
+    gc->loadAnimation("Sprites/Alric/act4", "Sprites/Alric/act4", 0.05f);
     gc->loadAnimation("Sprites/Alric/act5", "Sprites/Alric/act5", 0.1f);
     
     si = new CSpriteInfo("Alric");

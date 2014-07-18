@@ -806,7 +806,7 @@ void Effect::stop()
 void Effect::setLogicPosition(const CPoint& roPos)
 {
     Sprite::setPosition(Point(roPos.x, roPos.y + m_fLogicHeight));
-    setLocalZOrder(M_BASE_Z - roPos.y);
+    setLocalZOrder(M_BASE_Z - roPos.y + 1.0f);
 }
 
 CPoint Effect::getLogicPosition() const
@@ -826,7 +826,7 @@ void Effect::setLogicHeight(float fLogicHeight)
     m_fLogicHeight = fLogicHeight;
 
     Sprite::setPosition(Point(p.x, p.y + m_fLogicHeight));
-    setLocalZOrder(M_BASE_Z - p.y);
+    setLocalZOrder(M_BASE_Z - p.y + 1.0f);
 }
 
 void Effect::setPosition(const Point& roPos)
@@ -834,12 +834,12 @@ void Effect::setPosition(const Point& roPos)
     if (isLogicPositionMode())
     {
         Sprite::setPosition(Point(roPos.x, roPos.y + m_fLogicHeight));
-        setLocalZOrder(M_BASE_Z - roPos.y);
+        setLocalZOrder(M_BASE_Z - roPos.y + 1.0f);
         return;
     }
 
     Sprite::setPosition(roPos);
-    setLocalZOrder(M_BASE_Z + m_fLogicHeight - roPos.y);
+    setLocalZOrder(M_BASE_Z + m_fLogicHeight - roPos.y + 1.0f);
 }
 
 const Point& Effect::getPosition() const

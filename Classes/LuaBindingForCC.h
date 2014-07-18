@@ -11,6 +11,7 @@ int g_loadFrames(lua_State* L);
 int g_loadAnimation(lua_State* L);
 int g_showDebug(lua_State* L);
 int g_playSound(lua_State* L);
+int g_isSoundPlaying(lua_State* L);
 int g_setSearchPath(lua_State* L);
 int g_include(lua_State* L);
 int g_addTemplateUnit(lua_State* L);

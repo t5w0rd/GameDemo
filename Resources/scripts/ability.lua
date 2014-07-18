@@ -2,6 +2,8 @@ if not DEBUG and __ABILITY__ then return end
 __ABILITY__ = true
 
 include("UnitLibrary.lua")
+include("EffectLibrary.lua")
+
 
 TestAct = class(ActiveAbility)
 function TestAct:ctor(name, cd, castTarget, effectFlags)
@@ -101,7 +103,7 @@ end
 
 DamageBackPas = class(PassiveAbility)
 function DamageBackPas:ctor(per)
-    self:sctor("DamageBack", "DamageBack", 0)
+    self:sctor("DamageBackPas", "DamageBack", 0)
     self:setTriggerFlags(Ability.kOnDamagedDoneTrigger)
     self.per = per
 end
@@ -134,9 +136,7 @@ function ArmorBuff:onUnitAddAbility()
     o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Comic Book.fnt", 18, 0, 0, 0)
 	
 	if self.change < 0 then
-		local eff = Effect:new("Effects/ArmorBreak", 0.08, 0.5, 0.5, nil, o)
-		local x, y = o:getAnchorPointInPoints()
-		eff:setPosition(x, y + o:getHalfOfHeight())
+		local eff = SEL.createEffectOnUnit(SEL.kArmorBreak, o)
 		eff:playRelease()
 	end
 end
@@ -209,14 +209,14 @@ function SummonUnitAct:onUnitAbilityEffect(projectile, target)
 
     u:addBuffAbility(LimitedLifeBuff:new("LimitedLife", "LimitedLife", self.duration))
 
-    a = AttractBuff:new("Attract", "Attract", 1, 10.0)
+    a = AttractBuff:new("Attract", 1, 10.0)
     id = addTemplateAbility(a)
     a = AuraPas:new("AttractAura", 0.5, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
     u:addPassiveAbility(a)
 
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.25, 0.0)
+    a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.50, 0.0)
     id = addTemplateAbility(a)
-    a = AuraPas:new("DamageAura", 1.0, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
+    a = AuraPas:new("DamageAura", 0.5, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
     u:addPassiveAbility(a)
 end
 
@@ -307,9 +307,7 @@ function PressureBombBuff:buffEffect(per)
     end
     
     local o = self:getOwner()
-	local x, y = o:getAnchorPointInPoints()
-	eff = Effect:new("Effects/Burn", 0.05, 0.5, 22 / 92, nil, o)
-	eff:setPosition(x, y + o:getHalfOfHeight())
+	eff = SEL.createEffectOnUnit(SEL.kBurn, o)
 	eff:playRelease()
 	
     local ad = AttackData:new()
@@ -456,16 +454,13 @@ end
 
 RainAct = class(ActiveAbility)
 RainAct.INTERVAL = 0.05
-RainAct.kBolt = 0
-RainAct.kIce = 1
-RainAct.kSharpIce = 2
-function RainAct:ctor(name, cd, effect, intensity, duration, buff, castTarget, effectFlags)
+function RainAct:ctor(name, cd, eff, intensity, duration, buff, castTarget, effectFlags)
 	self:sctor("RainAct", name, cd, castTarget, effectFlags)
 	self:setTriggerFlags(Ability.kOnTickTrigger)
 	self:setCastRange(500)
 	self:setCastTargetRadius(100)
 	
-	self.effect = effect
+	self.eff = eff
 	self.x = 0.0
 	self.y = 0.0
 	self.intensity = intensity
@@ -488,34 +483,21 @@ function RainAct:onUnitAbilityEffect(proj, target)
 	self:onUnitInterval()
 end
 
-function RainAct:spawnEffect(index)
-	local eff
-	if index == 0 then
-		eff = Effect:new("Effects/Rain", 0.03, 0.5, 25 / 320)
-	elseif index == 1 then
-		eff = Effect:new("Effects/Rain2", 0.05, 0.5, 40 / 208)
-	elseif index == 2 then
-		eff = Effect:new("Effects/Rain3", 0.05, 0.5, 40 / 172)
-	end
-	
-	return eff
-end
-
 function RainAct:onUnitInterval()
 	self.elapsed = self.elapsed + RainAct.INTERVAL
 	local o = self:getOwner()
 	local intensity = self.total / self.elapsed
-	if intensity <= self.intensity then
+	while intensity <= self.intensity do
 		self.total = self.total + 1
 	
-		local eff = self:spawnEffect(self.effect)
 		local x, y = getDirectionPoint(self.x, self.y, math.random(2 * math.pi), math.random(self:getCastTargetRadius()))
-		eff:setLogicPosition(x, y)
+		eff = SEL.createEffectAtPosition(self.eff, x, y, 0.0)
 		eff:playRelease()
 		
 		local ug = UnitGroup.getEffectiveUnitsInRange(self.x, self.y, o, self:getCastTargetRadius(), self:getEffectiveTypeFlags())
 		ug:addBuffAbility(self.buff, o)
 		
+		intensity = self.total / self.elapsed
 	end
 	
 	if self.elapsed >= self.duration then
@@ -528,10 +510,10 @@ end
 
 ProjectileRainAct = class(ActiveAbility)
 ProjectileRainAct.INTERVAL = 0.05
-function ProjectileRainAct:ctor(name, cd, proj, intensity, duration, buff, castTarget, effectFlags)
+function ProjectileRainAct:ctor(name, cd, proj, intensity, duration, buff, castTarget, effectFlags, sound, dur)
 	self:sctor("ProjectileRainAct", name, cd, castTarget, effectFlags)
 	self:setTriggerFlags(Ability.kOnTickTrigger)
-	self:setCastRange(800)
+	self:setCastRange(500)
 	self:setCastTargetRadius(150)
 	self.proj = proj
 	self.x = 0.0
@@ -543,6 +525,10 @@ function ProjectileRainAct:ctor(name, cd, proj, intensity, duration, buff, castT
 	self.buff = buff
 	self.total = 0
 	self.act = 0
+	
+	self.sound = sound
+	self.dur = dur
+	self.sid = 0
 end
 
 function ProjectileRainAct:onUnitAbilityEffect(proj, target)
@@ -569,34 +555,108 @@ function ProjectileRainAct:onUnitInterval()
 	local o = self:getOwner()
 	
 	local intensity = self.total / self.elapsed
-	if intensity <= self.intensity then
+	while intensity <= self.intensity do
 		self.total = self.total + 1
 		
-		local targets = getUnits(function (u)
-			return o:canEffect(u, self:getEffectiveTypeFlags()) and u:getTouchDistance(self.x, self.y) < self:getCastTargetRadius()
-		end)
+		local ug = UnitGroup.getEffectiveUnitsInRange(self.x, self.y, o, self:getCastTargetRadius(), self:getEffectiveTypeFlags())
 
-		if #targets == 0 then
-			return
+		local t = ug:getRandomUnit()
+		if t then
+			local p = createProjectile(self.proj)
+			p:setPenaltyFlags(Projectile.kOnDying)
+			p:setFireType(Projectile.kFireFollow)
+			p:setMaxHeightDelta(math.random(-100, 100))
+			p:setMoveSpeed(p:getMoveSpeed() * (math.random(1.0, 2.0) - 0.3))
+			p:setFromToType(Projectile.kUnitToUnit)
+			p:setFromUnit(o)
+			p:setToUnit(t)
+			p:setSrcUnit(o:getId())
+			--p:setContactLeft(1)
+			p:setSrcAbility(self)
+			p:fire()
+			
+			if not isSoundPlaying(self.sid) then
+				self.sid = playSound(self.sound, self.dur)
+			end
 		end
 		
-		local t = targets[math.random(#targets)]
+		intensity = self.total / self.elapsed
+	end
+	
+	if self.elapsed >= self.duration then
+		self:setInterval(0.0)
+		o:stopAction(self.act)
+		o:resume()
+		o:stop()
+	end
+end
+
+ProjectileWindAct = class(ActiveAbility)
+ProjectileWindAct.INTERVAL = 0.05
+function ProjectileWindAct:ctor(name, cd, proj, intensity, width, speed, duration, buff, effectFlags)
+	self:sctor("ProjectileWindAct", name, cd, CommandTarget.kPointTarget, effectFlags)
+	self:setTriggerFlags(Ability.kOnTickTrigger)
+	self:setCastRange(400)
+	
+	self.proj = proj
+	self.intensity = intensity
+	self.width = width
+	self.speed = speed
+	self.duration = duration
+	self.buff = buff
+	
+	self.x = 0
+	self.y = 0
+	self.elapsed = 0.0
+	self.buff = buff
+	self.total = 0
+	self.act = 0
+	
+end
+function ProjectileWindAct:onUnitAbilityEffect(proj, target)
+	local o = self:getOwner()
+	if not proj then
+		self.x, self.y = self:getAbilityEffectPoint(proj, target)
+		self:setInterval(ProjectileWindAct.INTERVAL)
+		self.elapsed = 0.0
+		self.total = 1
+		o:stop()
+		o:suspend()
+		self.act = o:doAnimation(self:getCastRandomAnimation(), INFINITE)
+		self:onUnitInterval()
+		return
+	end
+	
+	if target then
+		target:addBuffAbility(self.buff, o)
+	end
+end
+
+function ProjectileWindAct:onUnitInterval()
+	self.elapsed = self.elapsed + ProjectileWindAct.INTERVAL
+	local o = self:getOwner()
+	
+	local intensity = self.total / self.elapsed
+	while intensity <= self.intensity do
+		self.total = self.total + 1
+		
+		local x, y = o:getPosition()
+		local a = math.atan2(self.y - y, self.x - x)
+		local dis = self:getCastRange()
+		local speed = 400
+		local dt = math.random(-self.width * 0.5, self.width * 0.5)
+		
+		x, y = getDirectionPoint(x, y, a + math.pi / 2, dt)
+		local x0, y0 = getDirectionPoint(x, y, a, -dis + math.random(-100, 100))
+		local x1, y1 = getDirectionPoint(x0, y0, a, dis * 2 + math.random(-100, 100))
 		
 		local p = createProjectile(self.proj)
-		p:setPenaltyFlags(Projectile.kOnDying)
-		--p:setPenaltyFlags(Projectile.kOnContact)
-		p:setFireType(Projectile.kFireFollow)
-		--p:setFireType(Projectile.kFireStraight)
-		p:setMoveSpeed(500.0)
-		p:setMaxHeightDelta(math.random(-100, 100))
-		p:setFromToType(Projectile.kUnitToUnit)
-		p:setFromUnit(o)
-		p:setToUnit(t)
 		p:setSrcUnit(o:getId())
-		--p:setContactLeft(1)
+		p:setEffectiveTypeFlags(self:getEffectiveTypeFlags())
+		p:setContactLeft(1)
 		p:setSrcAbility(self)
-		p:fire()
-		
+		p:fireStraight(x0, y0, x1, y1, speed)
+		intensity = self.total / self.elapsed
 	end
 	
 	if self.elapsed >= self.duration then
@@ -682,15 +742,14 @@ function SerialExplodeAct:onUnitInterval()
 	self.index = self.index + 1
 	
 	local x, y = getDirectionPoint(self.sx, self.sy, self.angle, self.dis * self.index)
-	eff = Effect:new("Effects/Explosion/Normal", 0.05, 0.5, 42 / 168, "sounds/Effects/Sound_FireballHit.mp3")
-	eff:setLogicPosition(x, y)
+	eff = SEL.createEffectAtPosition(SEL.kExplosionNormal, x, y, 0.0)
 	eff:playRelease()
 	
 	local o = self:getOwner()
 	local ug = UnitGroup.getEffectiveUnitsInRange(x, y, o, self.range, self:getEffectiveTypeFlags())
 	
 	for _, u in ipairs(ug.units) do
-		local buff = KnockBackBuff:new("SE.KB", "KnockBack", 0.5, 100, x, y)
+		local buff = KnockBackBuff:new("KnockBack", 0.5, 100, x, y)
 		buff:setAppendBuff(self.buff)
 		buff:setSrcUnit(o)
 		buff:setLevel(self:getLevel())
@@ -769,28 +828,50 @@ function ChangeAttackBuff:swapAttackAttribute()
 end
 
 EffectBuff = class(BuffAbility)
-function EffectBuff:ctor(epath, delay, ax, ay, sound, attached)
+function EffectBuff:ctor(eff, attached)
 	self:sctor("EffectBuff", "", 0.0, true)
-	self.epath = epath
-	self.delay = delay
-	self.ax = ax
-	self.ay = ay
+	self.eff = eff
 	self.attached = attached
-	self.sound = sound
 end
 
 function EffectBuff:onUnitAddAbility()
 	local o = self:getOwner()
 	local eff
 	if self.attached then
-		eff = Effect:new(self.epath, self.delay, self.ax, self.ay, self.sound, o)
-		local x, y = o:getAnchorPointInPoints()
-		eff:setPosition(x, y + o:getHalfOfHeight())
+		eff = SEL.createEffectOnUnit(self.eff, o)
 	else
-		eff = Effect:new(self.epath, self.delay, self.ax, self.ay, self.sound)
 		local x, y = o:getPosition()
-		eff:setLogicPosition(x, y)
+		eff = SEL.createEffectAtPosition(self.eff, x, y, 0.0)
 	end
 	
 	eff:playRelease()
+end
+
+BackStabBuff = class(BuffAbility)
+function BackStabBuff:ctor(root, name, duration, stackable, buffForSelf, buffForTarget)
+    self:sctor(root, name, duration, stackable)
+    self:setTriggerFlags(Ability.kOnAttackTargetTrigger)
+    self.buffForSelf = buffForSelf
+	self.buffForTarget = buffForTarget
+end
+
+function BackStabBuff:onUnitAttackTarget(ad, t)
+    local o = self:getOwner()
+    if not t then
+		return
+	end
+	local x, y = o:getPosition()
+	local tx, ty = t:getPosition()
+	local back = (x > tx) == (t:isFlippedX()) and not t:isFixed()
+	if not back then
+		return
+	end
+	
+	if self.buffForSelf > 0 then
+		o:addBuffAbility(self.buffForSelf, o, self:getLevel())
+	end
+	
+	if self.buffForTarget > 0 then
+		ad:addAttackBuff(self.buffForTarget, self:getLevel())
+	end
 end

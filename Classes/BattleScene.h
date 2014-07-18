@@ -96,6 +96,7 @@ public:
         int iAtk1;
         int iAtkEx;
         int iDef;
+        int iDefEx;
 
         TARGET_INFO() { memset(this, 0, sizeof(TARGET_INFO)); }
     };
@@ -106,6 +107,7 @@ public:
     Label* m_pTargetAtkEx;
     Sprite* m_pTargetAtkIcon;
     Label* m_pTargetDef;
+    Label* m_pTargetDefEx;
     Sprite* m_pTargetDefIcon;
     TARGET_INFO m_stTargetInfo;
     bool m_bShowTargetInfo;

@@ -186,7 +186,7 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Sprites/Artillery/act2/09.png</key>
+            <key>Sprites/Artillery/act4/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1328,1294},{74,124}}</string>
@@ -1122,7 +1122,7 @@
                 <key>sourceSize</key>
                 <string>{180,220}</string>
             </dict>
-            <key>Sprites/Lumberjack/act2/13.png</key>
+            <key>Sprites/Lumberjack/act3/13.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1938,1598},{94,108}}</string>
@@ -2978,7 +2978,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:99a824dd17f5d1f137d663447ab9600d:f232f1cd76c4de3473380705babf0649:cbc7ffaea9b3cb73f4655ba87628df80$</string>
+            <string>$TexturePacker:SmartUpdate:cba5522a44d11959c5e34cf5e275aea1:9c94e6415318ea1d904dcdf29427c1e4:cbc7ffaea9b3cb73f4655ba87628df80$</string>
             <key>textureFileName</key>
             <string>Heroes1.png</string>
         </dict>

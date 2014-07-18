@@ -1331,6 +1331,10 @@ void CBuffMakerAct::onUnitAbilityEffect(CProjectile* pProjectile, CUnit* pTarget
     {
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
+        if (u->isGhost())
+        {
+            continue;
+        }
 
         if (u == nullptr || u->isDead() || u == pOrgTarget)
         {
@@ -1431,7 +1435,7 @@ void CAuraPas::onUnitInterval()
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
         
-        if (u == nullptr || u->isDead())
+        if (u == nullptr || u->isDead() || u->isGhost())
         {
             continue;
         }
@@ -2672,10 +2676,11 @@ void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     M_MAP_FOREACH(units)
     {
         CUnit* pUnit = M_MAP_EACH;
+        M_MAP_NEXT;
+
         CUnitDraw2D* pDraw = DCAST(pUnit->getDraw(), CUnitDraw2D*);
         if (!pUnit || pUnit->isGhost())
         {
-            M_MAP_NEXT;
             continue;
         }
 
@@ -2691,23 +2696,22 @@ void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
                 pUnit->damagedLow(m_oExFarDamage.getValue(fDamage), o, dwTriggerMask);
             }
         }
-        M_MAP_NEXT;
     }
 }
 
 // CKnockBackBuff
 const int CKnockBackBuff::CONST_ACT_TAG = CIdGen::nextId();
 
-CKnockBackBuff::CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance)
-: CStunBuff(pRootId, pName, fDuration, false)
+CKnockBackBuff::CKnockBackBuff(const char* pName, float fDuration, float fDistance)
+: CStunBuff("KnockBackBuff", pName, fDuration, false)
 , m_fDistance(fDistance)
 , m_bUsingSrcUnitPosition(true)
 {
     setDbgClassName("CKnockBackBuff");
 }
 
-CKnockBackBuff::CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance, const CPoint& rRefPosition)
-: CStunBuff(pRootId, pName, fDuration, false)
+CKnockBackBuff::CKnockBackBuff(const char* pName, float fDuration, float fDistance, const CPoint& rRefPosition)
+: CStunBuff("KnockBackBuff", pName, fDuration, false)
 , m_fDistance(fDistance)
 , m_bUsingSrcUnitPosition(false)
 , m_oRefPos(rRefPosition)
@@ -2717,7 +2721,7 @@ CKnockBackBuff::CKnockBackBuff(const char* pRootId, const char* pName, float fDu
 
 CKnockBackBuff* CKnockBackBuff::copy()
 {
-    CKnockBackBuff* ret = m_bUsingSrcUnitPosition ? new CKnockBackBuff(getRootId(), getName(), getDuration(), getDistance()) : new CKnockBackBuff(getRootId(), getName(), getDuration(), getDistance(), getRefPosition());
+    CKnockBackBuff* ret = m_bUsingSrcUnitPosition ? new CKnockBackBuff(getName(), getDuration(), getDistance()) : new CKnockBackBuff(getName(), getDuration(), getDistance(), getRefPosition());
     ret->copyData(this);
     return ret;
 }
@@ -2776,8 +2780,8 @@ void CKnockBackBuff::knockBack()
 // CAttractBuff
 const int CAttractBuff::CONST_ACT_TAG = CIdGen::nextId();
 
-CAttractBuff::CAttractBuff(const char* pRootId, const char* pName, float fDuration, float fDistance)
-: CStunBuff(pRootId, pName, fDuration, false)
+CAttractBuff::CAttractBuff(const char* pName, float fDuration, float fDistance)
+: CStunBuff("AttractBuff", pName, fDuration, false)
 , m_fDistance(fDistance)
 {
     setDbgClassName("CAttractBuff");
@@ -2785,7 +2789,7 @@ CAttractBuff::CAttractBuff(const char* pRootId, const char* pName, float fDurati
 
 CAttractBuff* CAttractBuff::copy()
 {
-    CAttractBuff* ret = new CAttractBuff(getRootId(), getName(), getDuration(), getDistance());
+    CAttractBuff* ret = new CAttractBuff(getName(), getDuration(), getDistance());
     ret->copyData(this);
     return ret;
 }
@@ -3040,7 +3044,7 @@ void CChargeJumpBuff::onJumpDone()
 
 // 
 CLimitedPasBuff::CLimitedPasBuff(const char* pName, float fDuration, int iTemplatePas)
-: CBuffAbility("LimitedPasBuf", pName, fDuration, false)
+: CBuffAbility("LimitedPasBuff", pName, fDuration, true)
 , m_iTemplatePas(iTemplatePas)
 , m_pInnerPas(nullptr)
 {
@@ -3114,6 +3118,11 @@ bool CFastMoveToBackBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
     auto o = getOwner();
     auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
     auto sd = DCAST(pSource->getDraw(), CUnitDraw2D*);
+    if (sd->isFixed())
+    {
+        return true;
+    }
+
     auto& op = od->getPosition();
     auto& sp = sd->getPosition();
     if (op.getDistance(sp) > getMaxRange() || o->isSuspended() || o->isDead() || od->isFixed() || pSource->isDead())
@@ -3145,5 +3154,6 @@ bool CFastMoveToBackBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
     od->stop();
     atk->resetCD();
     od->cmdCastSpell(CCommandTarget(pSource->getId()), o->getAttackAbilityId());
+
     return false;
 }

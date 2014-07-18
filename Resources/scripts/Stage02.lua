@@ -45,9 +45,6 @@ function spawnHero(id, force)
 	if not force then
 		force = 1
 	end
-	if force == 1 and id >= UL.kElemental then
-		id = math.random(8, 12) + 0xff
-	end
 	
 	hero = spawnSoldier(id, force)
 	hero:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
@@ -77,25 +74,13 @@ function spawnHero(id, force)
 		hero:addActiveAbility(AL.kKnockBack:getId())
 	else
 		hero:setAI(LuaAI:new())
-		hero:addActiveAbility(AL.kThrowHammer:getId())
-		hero:addActiveAbility(AL.kThunderCap:getId())
+		--hero:addActiveAbility(AL.kThrowHammer:getId())
+		--hero:addActiveAbility(AL.kThunderCap:getId())
 		hero:addActiveAbility(AL.kSpeedUp:getId())
-		hero:addActiveAbility(AL.kChargeJump:getId())
+		--hero:addActiveAbility(AL.kChargeJump:getId())
 	end
 	
-	if id == UL.kMage then
-		hero:addActiveAbility(AL.kGravitySurf:getId())
-		hero:addActiveAbility(SAL.kMageRain, 3)
-	elseif id == UL.kFrost then
-		hero:addActiveAbility(AL.kSnowStorm:getId())
-	elseif id == UL.kArcher then
-		hero:addActiveAbility(AL.kCutter:getId())
-	elseif id == UL.kElemental then
-		hero:addActiveAbility(AL.kSerialExplode:getId())
-	elseif id == SUL.kPriest then
-		hero:addActiveAbility(AL.kWarCry:getId())
-		hero:addActiveAbility(AL.kSweetDew:getId())
-	end
+	addAbilitiesForUnit(u, id)
 	
 	return hero
 end
@@ -125,7 +110,7 @@ function initAbilityForLevelUp()
 	c = c + 1
 	aaa[c] = addTemplateAbility(a)
 
-	a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, 30)
+	a = KnockBackBuff:new("KnockBack", 0.5, 30)
 	id = addTemplateAbility(a)
 	a = AttackBuffMakerPas:new("KnockBackAttack", 0.2, id, false, 1.5, 0.0, 0)
 	c = c + 1

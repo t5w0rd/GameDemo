@@ -10,6 +10,7 @@
 
 
 // common
+int luaL_throwerror(lua_State* L, bool tellWhere, const char* format, ...);
 int luaModuleLoader4cc(lua_State* L);
 void luaL_insertloader(lua_State* L, lua_CFunction loader);
 void luaL_addpath(lua_State *L, const char* pPath);
@@ -196,6 +197,8 @@ int Unit2D_getHalfOfWidth(lua_State* L);
 int Unit2D_getHalfOfHeight(lua_State* L);
 int Unit2D_setPosition(lua_State* L);
 int Unit2D_getPosition(lua_State* L);
+int Unit2D_setFlippedX(lua_State* L);
+int Unit2D_isFlippedX(lua_State* L);
 int Unit2D_getNearestEnemyInRange(lua_State* L);
 int Unit2D_getNearestUnitInRange(lua_State* L);
 int Unit2D_move(lua_State* L);
@@ -244,6 +247,8 @@ int Projectile_setToPoint(lua_State* L);
 int Projectile_setFromToType(lua_State* L);
 int Projectile_setFireType(lua_State* L);
 int Projectile_setPenaltyFlags(lua_State* L);
+int Projectile_setEffectiveTypeFlags(lua_State* L);
+int Projectile_getEffectiveTypeFlags(lua_State* L);
 int Projectile_fire(lua_State* L);
 int Projectile_redirect(lua_State* L);
 int Projectile_die(lua_State* L);
@@ -352,6 +357,11 @@ int AttackAct_getRealAttackInterval(lua_State* L);
 int AttackAct_getRealAttackSpeed(lua_State* L);
 int AttackAct_setExAttackSpeed(lua_State* L);
 int AttackAct_getExAttackSpeed(lua_State* L);
+int AttackAct_setAttackValueRandomRange(lua_State* L);
+int AttackAct_getAttackValueRandomRange(lua_State* L);
+int AttackAct_setExAttackValueRandomRange(lua_State* L);
+int AttackAct_getExAttackValueRandomRange(lua_State* L);
+
 
 int BuffMakerAct_ctor(lua_State* L);
 int BuffMakerAct_setTemplateBuff(lua_State* L);

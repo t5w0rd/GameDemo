@@ -938,17 +938,21 @@ CUnitGroup::CUnitGroup(CWorld* pWorld, const CPoint& roPos, float fRadius, int i
     M_MAP_FOREACH(units)
     {
         CUnit* u = M_MAP_EACH;
+        M_MAP_NEXT;
+        if (u->isGhost())
+        {
+            continue;
+        }
+
         CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
         if (m_vecUnits.size() >= (size_t)iMaxCount)
         {
             return;
         }
-        if (d->getPosition().getDistance(roPos) < fRadius && (!match || (match(u))))
+        if (d->getPosition().getDistance(roPos) - d->getHalfOfWidth() < fRadius && (!match || (match(u))))
         {
             m_vecUnits.addObject(u);
         }
-
-        M_MAP_NEXT;
     }
 }
 
@@ -960,6 +964,12 @@ CUnitGroup::CUnitGroup(CWorld* pWorld, int iMaxCount /*= INFINITE*/, const FUNC_
     M_MAP_FOREACH(units)
     {
         CUnit* u = M_MAP_EACH;
+        M_MAP_NEXT;
+        if (u->isGhost())
+        {
+            continue;
+        }
+
         if ((int)m_vecUnits.size() >= (size_t)iMaxCount)
         {
             return;
@@ -969,8 +979,6 @@ CUnitGroup::CUnitGroup(CWorld* pWorld, int iMaxCount /*= INFINITE*/, const FUNC_
         {
             m_vecUnits.addObject(u);
         }
-
-        M_MAP_NEXT;
     }
 }
 
@@ -998,8 +1006,13 @@ CUnit* CUnitGroup::getNearestUnitInRange(const CPoint& roPos, float fRadius, con
 
     for (auto& u : m_vecUnits)
     {
+        if (u->isGhost())
+        {
+            continue;
+        }
+
         CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-        if ((fDis = d->getPosition().getDistance(roPos)) < fRadius && fMinDis > fDis && (!match || (match(u))))
+        if ((fDis = d->getPosition().getDistance(roPos) - d->getHalfOfWidth()) < fRadius && fMinDis > fDis && (!match || (match(u))))
         {
             pTarget = u;
             fMinDis = fDis;
@@ -1024,19 +1037,18 @@ CUnit* CUnitGroup::getNearestUnitInRange(CWorld* pWorld, const CPoint& roPos, fl
     M_MAP_FOREACH(units)
     {
         CUnit* u = M_MAP_EACH;
+        M_MAP_NEXT;
         if (u->isGhost())
         {
-            M_MAP_NEXT;
             continue;
         }
 
         CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
-        if ((fDis = d->getPosition().getDistance(roPos)) < fRadius && fMinDis > fDis && (!match || (match(u))))
+        if ((fDis = d->getPosition().getDistance(roPos) - d->getHalfOfWidth()) < fRadius && fMinDis > fDis && (!match || (match(u))))
         {
             pTarget = u;
             fMinDis = fDis;
         }
-        M_MAP_NEXT;
     }
 
     return pTarget;
@@ -1059,6 +1071,11 @@ void CUnitGroup::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTrigge
     {
         auto u = M_VEC_EACH;
         M_VEC_NEXT;
+        if (u->isGhost())
+        {
+            continue;
+        }
+
         ad = ad ? ad->copy() : pAttack;
         u->damaged(ad, pSource, dwTriggerMask);
     }
@@ -1205,11 +1222,7 @@ void CProjectile::effect(CUnit* pTarget)
         return;
     }
 
-    if (pTarget != nullptr && getAttackData() != nullptr && pTarget->canEffect(DCAST(s, CUnitForce*), getEffectiveTypeFlags()))
-    {
-        pTarget->damaged(getAttackData(), s, getTriggerMask());
-        decContactLeft();
-    }
+    decContactLeft();
 
     if (getSrcAbility() != nullptr)
     {
@@ -1229,16 +1242,28 @@ void CProjectile::onTick(float dt)
 {
     if (hasPenaltyType(kOnContact))
     {
+        auto s = getWorld()->getUnit(getSrcUnit());
+        if (s == nullptr)
+        {
+            return;
+        }
+
         CWorld::MAP_UNITS& units = getWorld()->getUnits();
         M_MAP_FOREACH(units)
         {
             CUnit* u = M_MAP_EACH;
+            M_MAP_NEXT;
+
+            if (u->isGhost() || !s->canEffect(DCAST(u, CUnitForce*), getEffectiveTypeFlags()))
+            {
+                continue;
+            }
+
             CUnitDraw2D* d = DCAST(u->getDraw(), CUnitDraw2D*);
             if (d->getPosition().getDistance(getPosition()) - d->getHalfOfWidth() - getRadius() <= 0 && m_mapContactedUnits.getObject(u->getId()) == nullptr)
             {
                 if (u->onProjectileArrive(this) == false)
                 {
-                    M_MAP_NEXT;
                     continue;
                 }
 
@@ -1252,7 +1277,6 @@ void CProjectile::onTick(float dt)
                     return;
                 }
             }
-            M_MAP_NEXT;
         }
     }
 }

@@ -4,11 +4,11 @@ __ABILITY_LIBRARY__ = true
 include("Ability.lua")
 
 function loadAbilityLibrary()
-	local a, id
+	local a, id, id2
 	
 	-- ActiveAbilities
 	--  ThrowHammer
-	a = StunBuff:new("Stun", "Stun", 2.0, false)
+	a = StunBuff:new("StunBuff", "Stun", 2.0, false)
 	id = addTemplateAbility(a)
 	
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 2.5, 0.0, Ability.kMaskActiveTrigger)
@@ -24,27 +24,42 @@ function loadAbilityLibrary()
 	AL.kThrowHammer = a
 	
 	-- ThunderCap
-	a = SpeedBuff:new("ThunderCapBuff", "SlowDown", 3.0, false, -0.5, 0.0, -0.5, 0.0)
+	a = SpeedBuff:new("ThunderCapBuff", "SlowDown", 5.0, true, -0.8, 0.0, -0.8, 0.0)
 	id = addTemplateAbility(a)
 	
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.5, 0.0, Ability.kMaskActiveTrigger)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("雷霆震地", 15.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
-	a:setCastTargetRadius(80.0)
+	a = BuffMakerAct:new("雷霆震地", 18.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
+	a:setCastTargetRadius(100.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:addEffectSound("sounds/Effects/ThunderCap.mp3")
 	addTemplateAbility(a)
 	AL.kThunderCap = a
 	
+	-- ShieldBash
+	a = StunBuff:new("StunBuff", "Stun", 3.5, false)
+	id = addTemplateAbility(a)
+	
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 2.0, 0.0, Ability.kMaskActiveTrigger)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("盾击", 15.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
+	a:setCastHorizontal(true)
+	a:setCastRange(50.0)
+	a:addCastAnimation(Sprite.kAniAct3)
+	a:addEffectSound("sounds/Effects/ThunderCap.mp3")
+	addTemplateAbility(a)
+	AL.kShieldBash = a
+	
 	-- SpeedUp
-	a = ChangeAttributeBuff:new("RageBuff", "Rage", 8.0, true, 0.0, 0.0, 0.8, 0.0, 0.8, 0.0, 2.0, 0.0, -0.75, 0.0)
+	a = ChangeAttributeBuff:new("RageBuff", "Rage", 5.0, true, 0.0, 0.0, 0.5, 0.0, 0.5, 0.0, 1.0, 0.0, -0.75, 0.0)
 	id = addTemplateAbility(a)
 	
 	a = BuffMakerAct:new("狂暴", 15.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct5)
-	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	addTemplateAbility(a)
 	AL.kSpeedUp = a
@@ -60,20 +75,24 @@ function loadAbilityLibrary()
 	AL.kReflect = a
 	
 	-- Cutter
+	a = EffectBuff:new(SEL.kFireBig, true)
+	id = addTemplateAbility(a)
+	
 	a = SpeedBuff:new("SlowDown", "SlowDown", 3.0, false, -0.5, 0.0, -0.5, 0.0)
-	id = addTemplateAbility(a)
-	
-	a = ChangeHpBuff:new("Poison", "Poison", 3.0, false, 0.2, -0.01, 0.0, 0.0, -1.0)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 10.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
+	a = ChangeHpBuff:new("FireBuff", "Fire", 3.0, false, 0.2, -0.003, -10.0, 0.0, -1.0)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("致命匕首", 10.0, CommandTarget.kPointTarget, UnitForce.kEnemy, id)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.5, 0.0, Ability.kMaskActiveTrigger)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("汽油弹", 10.0, CommandTarget.kPointTarget, UnitForce.kEnemy, id)
 	a:setCastRange(600.0)
-	a:addCastAnimation(Sprite.kAniAct2)
+	a:addCastAnimation(Sprite.kAniAct3)
 	a:setImageName("UI/Ability/FireBall.png")
 	a:setTemplateProjectile(PL.kPirateProy)
 	addTemplateAbility(a)
@@ -93,7 +112,8 @@ function loadAbilityLibrary()
 	AL.kCurse = a
 
 	-- GravitySurf
-	a = SummonUnitAct:new("引力法球", 28.0, CommandTarget.kPointTarget, SUL.kBlackHole, 10.0)
+	a = SummonUnitAct:new("引力虚空", 28.0, CommandTarget.kPointTarget, SUL.kBlackHole, 10.0)
+	a:setEffectiveTypeFlags(UnitForce.kEnemy)
 	a:setCastRange(200.0)
 	a:setCastTargetRadius(150.0)
 	a:addCastAnimation(Sprite.kAniAct4)
@@ -103,10 +123,10 @@ function loadAbilityLibrary()
 	AL.kGravitySurf = a
 	
 	-- SpeedUp2
-	a = SpeedBuff:new("SpeedUp2", "SpeedUp2", 2.0, false, 3.0, 0.0, 3.0, 0.0)
+	a = SpeedBuff:new("SpeedUp2", "SpeedUp2", 3.0, false, 3.0, 0.0, 3.0, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("疾速", 20.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
+	a = BuffMakerAct:new("疾速", 15.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct5)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	addTemplateAbility(a)
@@ -116,7 +136,7 @@ function loadAbilityLibrary()
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger)
 	id = addTemplateAbility(a)
 	
-	a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, 100)
+	a = KnockBackBuff:new("KnockBack", 0.5, 100)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
@@ -131,7 +151,7 @@ function loadAbilityLibrary()
 	a = SpeedBuff:new("SlowDownBuff", "SlowDown", 8.0, false, -0.8, 0.0, -0.8, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = KnockBackBuff:new("KnockBackBuff", "KnockBack", 0.5, 40)
+	a = KnockBackBuff:new("KnockBack", 0.5, 40)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
@@ -148,10 +168,10 @@ function loadAbilityLibrary()
 	AL.kKnockBackEx = a
 	
 	-- ThrowHammerEx
-	a = StunBuff:new("StunBuff", "Stun", 5.0, false)
-	id = addTemplateAbility(a)	
+	a = StunBuff:new("StunBuff", "Stun", 3.0, false)
+	id = addTemplateAbility(a)
 	
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 100.0, 0.0, 0.0, Ability.kNoMasked, true)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 2.5, 0.0, Ability.kNoMasked, true)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 
@@ -159,7 +179,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ThrowHammerEx", 12.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
+	a = BuffMakerAct:new("雷神之锤", 22.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 	a:setCastRange(400.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:setTemplateProjectile(PL.kThorHammer)
@@ -168,21 +188,33 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kThrowHammerEx = a
 	
-	-- WarCry
-	a = SpeedBuff:new("WarCrySpeedBuff", "WarCrySpeed", 5.0, false, 2.0, 0.0, 2.0, 0.0)
+	-- HealWind
+	a = ChangeAttributeBuff:new("AUC.CAB", "ChangeAttributeAttack", 5.0, false, 0.5, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 999.0)
 	id = addTemplateAbility(a)
 	
-	a = ChangeHpBuff:new("WarCryHealBuff", "WarCryHeal", 10.0, false, 0.1, 0.005, 0.0)
+	a = ChangeHpBuff:new("WarCryHealBuff", "WarCryHeal", 10.0, false, 0.1, 0.002, 0.0)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("圣愈之风", 40.0, CommandTarget.kNoTarget, UnitForce.kAlly, id)
+	a = BuffMakerAct:new("圣愈之风", 40.0, CommandTarget.kNoTarget, UnitForce.kSelf + UnitForce.kAlly, id)
 	a:setCastTargetRadius(200.0)
 	a:addCastAnimation(Sprite.kAniAct4)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:setImageName("UI/Ability/WarCry.png")
 	addTemplateAbility(a)
-	AL.kWarCry = a
+	AL.kHealWind = a
+	
+	-- kArmorUpCry
+	a = ChangeAttributeBuff:new("AUC.CAB", "ChangeAttributeAttack", 5.0, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 10.0)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("守护者呐喊", 20.0, CommandTarget.kNoTarget, UnitForce.kSelf + UnitForce.kAlly, id)
+	a:setCastTargetRadius(200.0)
+	a:addCastAnimation(Sprite.kAniAct4)
+	a:addEffectSound("sounds/Effects/LevelUp.mp3")
+	a:setImageName("UI/Ability/WarCry.png")
+	addTemplateAbility(a)
+	AL.kArmorUpCry = a
 	
 	-- MultiSlash
 	a = DamageBuff:new("dmg", AttackValue.kPhysical, 75.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
@@ -220,27 +252,33 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kMagicalRain = a
 	
-	-- ArrowRain
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger)
+	-- MissileStorm
+	a = EffectBuff:new(SEL.kExplosionSmall, false)
 	id = addTemplateAbility(a)
 	
-	a = ProjectileRainAct:new("ArrowRain", 2.0, SPL.kVoodooProy, 10.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
-	a:addCastAnimation(Sprite.kAniAct5)
-	--a:addEffectSound("sounds/Effects/LevelUp.mp3")
-	a:setImageName("UI/Ability/Ability03.png")
-	addTemplateAbility(a)
-	AL.kArrowRain = a
-	
-	-- SweetDew
-	a = ChangeAttributeBuff:new("H.CAB", "ChangeAttributeAttack", 5.0, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 2.0, 10.0)
-	id = addTemplateAbility(a)
-	
-	a = ChangeHpBuff:new("HealBuff", "Heal", 2.0, true, 0.05, 0.00625, 0.0, 0.0, -1.0)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.50, 0.0, Ability.kMaskActiveTrigger)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("治疗甘露", 1.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, id)
+	a = ProjectileRainAct:new("导弹风暴", 30.0, SPL.kMissile, 5.0, 5.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy, "sounds/Effects/Sound_RocketLaunt.mp3", 2.0)
+	a:addCastAnimation(Sprite.kAniAct3)
+	--a:addEffectSound("sounds/Effects/AV_ULT.mp3")
+	a:setImageName("UI/Ability/Ability03.png")
+	a:setCastTargetRadius(250)
+	addTemplateAbility(a)
+	AL.kMissileStorm = a
+	
+	-- SweetDew
+	a = ChangeAttributeBuff:new("H.CAB", "ChangeAttributeAttack", 5.0, false, 0.2, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+	id = addTemplateAbility(a)
+	
+	a = ChangeHpBuff:new("HealBuff", "Heal", 2.0, true, 0.05, 0.00125, 0.0, 0.0, -1.0)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("治疗甘露", 5.0, CommandTarget.kUnitTarget, UnitForce.kSelf + UnitForce.kAlly, id)
 	a:setCastRange(300.0)
+	a:setCastTargetRadius(75.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:setTemplateProjectile(SPL.kWizardProy)
 	a:addEffectSound("sounds/Effects/sound_eff_impact_heal.mp3")
@@ -248,7 +286,7 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kSweetDew = a
 	
-	-- kSnowStorm
+	-- SnowStorm
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger)
 	id = addTemplateAbility(a)
 	
@@ -256,7 +294,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 
-	a = RainAct:new("冰锥术", 12.0, RainAct.kSharpIce, 10.0, 1.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
+	a = RainAct:new("冰锥术", 12.0, SEL.kRainSharpIce, 10.0, 1.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
 	a:addCastAnimation(Sprite.kAniAct4)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	--a:setImageName("UI/Ability/Ability03.png")
@@ -282,36 +320,69 @@ function loadAbilityLibrary()
 	AL.kSerialExplode = a
 	
 	-- FastMoveToBack
-	a = ChangeAttributeBuff:new("ChangeAttributeAttackBuff", "ChangeAttributeAttack", 0.5, false, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0)
+	a = EffectBuff:new(SEL.kBleedingRedBig, true)
 	id = addTemplateAbility(a)
 	
-	a = FastMoveToBackBuff:new("FastMoveToBack", 15, 3.0, 500.0, id)
+	a = ChangeHpBuff:new("FMTB.CHB", "Bleeding", 5.0, true, 0.1, -0.001, -10.0, 0.0, -1.0)
+	a:setAppendBuff(id)
+	id2 = addTemplateAbility(a)
+	
+	a = ChangeAttributeBuff:new("FMTB.CAB", "ChangeAttributeAttack", 0.5, false, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.0, 0.0, 0.0, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("幽灵", 28.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
-	a:addCastAnimation(Sprite.kAniAct5)
+	a = BackStabBuff:new("FMTB.BackStabBuff", "BackStab", 3.0, false, id, id2)
+	id = addTemplateAbility(a)
+	
+	a = FastMoveToBackBuff:new("FastMoveToBack", 12, 2.0, 500.0, id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("幽灵背刺", 28.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
+	a:addCastAnimation(Sprite.kAniAct4)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:setImageName("UI/Ability/ChargeJump.png")
 	addTemplateAbility(a)
 	AL.kFastMoveToBack = a
 	
 	-- SwordWave
-	a = ChangeAttributeBuff:new("CA.CAB", "ChangeAttributeAttack", 20.0, false, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, -0.99, 0.0, 0.0, 0.0)
+	a = ChangeAttributeBuff:new("CA.CAB", "ChangeAttributeAttack", 10.0, false, 0.0, 0.0, 0.0, 0.0, 4.0, 0.0, -0.99, 0.0, 0.0, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = ChangeAttackBuff:new("ChangeAttack", 20.0, AttackValue.kMagical, 0.0, nil, 400.0, false, SPL.kGreenWave)
+	a = ChangeAttackBuff:new("ChangeAttack", 10.0, AttackValue.kMagical, 0.0, nil, 200.0, false, SPL.kGreenWave)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("剑气", 60.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
+	a = BuffMakerAct:new("逐风式", 40.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
 	a:addCastAnimation(Sprite.kAniAct2)
 	a:addEffectSound("sounds/Effects/LevelUp.mp3")
 	a:setImageName("UI/Ability/AttackValue.png")
 	addTemplateAbility(a)
 	AL.kSwordWave = a
 	
+	-- ShotGun
+	a = SplashPas:new("Splash", 25, 1.00, 0.0, 50, 0.50, 0.0)
+	id = addTemplateAbility(a)
+	
+	a = LimitedPasBuff:new("LimitedPas", 10.0, id)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = ChangeAttributeBuff:new("SG.CAB", "ChangeAttributeAttack", 10.0, false, 0.0, 0.0, 0.80, 0.0, 0.80, 0.0, -0.50, 0.0, 0.0, 0.0)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = ChangeAttackBuff:new("ChangeAttack", 10.0, AttackValue.kPhysical, 0.2, nil, 100.0, false, nil)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = BuffMakerAct:new("速射散弹枪", 30.0, CommandTarget.kNoTarget, UnitForce.kSelf, id)
+	a:addCastAnimation(Sprite.kAniAct2)
+	a:addEffectSound("sounds/Effects/LevelUp.mp3")
+	a:setImageName("UI/Ability/AttackValue.png")
+	addTemplateAbility(a)
+	AL.kShotGun = a
+	
 	-- BouncingFireBall
-	a = EffectBuff:new("Effects/Explosion/Short", 0.08, 0.5, 40 / 132, "sounds/Effects/Sound_FireballHit.mp3", false)
+	a = EffectBuff:new(SEL.kExplosionShort, false)
 	id = addTemplateAbility(a)
 	
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 2.00, 0.0, Ability.kMaskActiveTrigger, false, true, 80)
@@ -331,8 +402,19 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kBouncingFireBall = a
 	
+	-- ArrowWind
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.50, 0.0, Ability.kMaskActiveTrigger)
+	id = addTemplateAbility(a)
+	
+	a = ProjectileWindAct:new("箭矢狂风", 40.0, PL.kArcherArrow2, 30.0, 500, 500, 10.0, id, UnitForce.kEnemy)
+	a:addCastAnimation(Sprite.kAniAct4)
+	--a:addEffectSound("sounds/Effects/LevelUp.mp3")
+	a:setImageName("UI/Ability/Ability01.png")
+	addTemplateAbility(a)
+	AL.kArrowWind = a
+	
 	-- BuffMaker
-	--a = StunBuff:new("Stun", "Stun", 0.5, false)
+	--a = StunBuff:new("StunBuff", "Stun", 0.5, false)
 	--id = addTemplateAbility(a)
 	
 	--a = WhenDamagedBuff:new("Buff", "Buff", 10.0, false, 0.02, 0.0, id)
@@ -365,7 +447,7 @@ function loadAbilityLibrary()
 	AL.kRebirth = a
 	
 	-- BerserkerBlood
-	a = BerserkerBloodPas:new("BerserkerBlood", 0.05, 0.0, 0.05, 0.0, 0.05, 0.0, 0.05, 0.0)
+	a = BerserkerBloodPas:new("狂战士之血", 0.05, 0.0, 0.05, 0.0, 0.05, 0.0, 0.05, 0.0)
 	addTemplateAbility(a)
 	AL.kBerserkerBlood = a
 	
@@ -378,10 +460,10 @@ function loadAbilityLibrary()
 	AL.kStunAttack = a
 	
 	-- ArmorBreakAttack
-	a = ArmorBuff:new("ArmorBreakBuff", "ArmorBreak", 12, false, -0.0, -4.0)
+	a = ArmorBuff:new("ArmorBreakBuff", "ArmorBreak", 5, true, -0.0, -4.0)
 	id = addTemplateAbility(a)
 	
-	a = AttackBuffMakerPas:new("ArmorBreakAttack", 1.0, id, false, 1.0, 0.0)
+	a = AttackBuffMakerPas:new("ArmorBreakAttack", 0.2, id, false, 1.0, 0.0)
 	addTemplateAbility(a)
 	AL.kArmorBreakAttack = a
 	
@@ -394,6 +476,20 @@ function loadAbilityLibrary()
 	a = AttackBuffMakerPas:new("CriticalAttack", 0.15, 0, true, 4.0, 0.0)
 	addTemplateAbility(a)
 	AL.kCriticalAttack = a
+	
+	-- SlowDownAttack
+	a = SpeedBuff:new("SlowDownAttackBuff", "SlowDown", 3, false, -0.3, 0.0, -0.3, 0.0)
+	id = addTemplateAbility(a)
+	a = AttackBuffMakerPas:new("SlowDownAttack", 1.0, id, false, 1.0, 0.0, 0)
+	addTemplateAbility(a)
+	AL.kSlowDownAttack = a
+
+	-- KnockBackAttack
+	a = KnockBackBuff:new("KnockBack", 0.5, 30)
+	id = addTemplateAbility(a)
+	a = AttackBuffMakerPas:new("KnockBackAttack", 0.2, id, false, 1.5, 0.0, 0)
+	addTemplateAbility(a)
+	AL.kKnockBackAttack = a
 	
 	-- DeadlyAttack
 	a = AttackBuffMakerPas:new("DeadlyAttack", 0.05, 0, true, 50.0, 0.0)
@@ -416,6 +512,13 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kEvade = a
 	
+	-- EvadeHeal
+	a = ChangeHpBuff:new("EvadeHealBuff", "EvadeHeal", 3, true, 0.2, 0.0002, 1, 0.0, 0.0)
+	id = addTemplateAbility(a)
+	a = EvadePas:new("EvadeHeal", 0.20, id)
+	addTemplateAbility(a)
+	AL.kEvadeHeal = a
+	
 	-- AutoHeal
 	a = ChangeHpPas:new("AutoHeal", 0.2, 0.0, 1.5, 0.0, 0.0)
 	addTemplateAbility(a)
@@ -426,26 +529,31 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kAutoDamaged = a
 	
+	-- kSplashAttack
+	a = SplashPas:new("SplashAttack", 25, 1.00, 0.0, 50, 0.50, 0.0)
+	addTemplateAbility(a)
+	AL.kSplashAttack = a
+	
 	-- DoubleAttack
 	a = DoubleAttackPas:new("DA", 0.2, 0.5, 0.0)
 	addTemplateAbility(a)
 	AL.kDoubleAttack = a
 
 	-- ThunderCapAttack
-	a = SpeedBuff:new("ThunderCapBuff", "ThunderCap", 3.0, false, -0.5, 0.0, -0.5, 0.0)
+	a = SpeedBuff:new("ThunderCapBuff", "ThunderCap", 3.0, true, -0.2, 0.0, -0.2, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 30.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.5, 0.0, Ability.kMaskActiveTrigger)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = BuffMakerAct:new("ThunderCap", 2.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
-	a:setCastTargetRadius(150.0)
+	a = BuffMakerAct:new("ThunderCap", 1.0, CommandTarget.kNoTarget, UnitForce.kEnemy, id)
+	a:setCastTargetRadius(100.0)
 	a:addCastAnimation(Sprite.kAniAct3)
 	a:addEffectSound("sounds/Effects/ThunderCap.mp3")
 	id = addTemplateAbility(a)
 
-	a = AttackBuffMakerPas:new("ThunderCapAttack", 0.08, 0, false, 1.0, 10.0, id)
+	a = AttackBuffMakerPas:new("ThunderCapAttack", 0.30, 0, false, 1.0, 10.0, id)
 	addTemplateAbility(a)
 	AL.kThunderCapAttack = a
 	
@@ -477,7 +585,7 @@ function loadAbilityLibrary()
 	a = SpeedBuff:new("SlowDownBuff", "SlowDown", 3.0, false, -0.5, 0.0, -0.5, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = ChangeHpBuff:new("Poison", "Poison", 3.0, false, 0.2, -0.01, 0.0, 0.0, -1.0)
+	a = ChangeHpBuff:new("Poison", "Poison", 3.0, false, 0.2, -0.001, -10.0, 0.0, -1.0)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
@@ -492,12 +600,12 @@ function loadAbilityLibrary()
 	a:setTemplateProjectile(PL.kPirateProy)
 	id = addTemplateAbility(a)
 	
-	a = AttackBuffMakerPas:new("CutterAttack", 0.08, 0, false, 1.0, 0.0, id)
+	a = AttackBuffMakerPas:new("CutterAttack", 0.03, 0, false, 1.0, 0.0, id)
 	addTemplateAbility(a)
 	AL.kCutterAttack = a
 	
 	-- PressureBombAttack
-	a = PressureBombBuff:new("PressureBomb", 15.0, 750, AttackValue.kMagical, 360.0, 50)
+	a = PressureBombBuff:new("PressureBomb", 15.0, 800, AttackValue.kMagical, 300.0, 50)
 	id = addTemplateAbility(a)
 	
 	a = AttackBuffMakerPas:new("PressureBombAttack", 1.0, id, false, 1.0, 0.0)
@@ -513,7 +621,7 @@ function loadAbilityLibrary()
 	AL.kDamageIncreaceAttack = a
 	
 	-- LightningAttack
-	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kMaskActiveTrigger)
+	a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.75, 0.0, Ability.kOnAttackTargetTrigger, true, false)
 	id = addTemplateAbility(a)
 	
 	a = TransitiveLinkBuff:new("LightningAttack", 0.2, 150, 8, 1, UnitForce.kEnemy, PL.kTeslaRay)
@@ -532,7 +640,7 @@ function loadAbilityLibrary()
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	
-	a = StrikeBackPas:new("StrikeBack", 100, 0.05, id)
+	a = StrikeBackPas:new("StrikeBack", 100, 0.08, id)
 	addTemplateAbility(a)
 	AL.kStrikeBack = a
 	
@@ -560,7 +668,25 @@ function loadAbilityLibrary()
 	addTemplateAbility(a)
 	AL.kChangeAttributeAttack = a
 	
+	-- SpeedUpAttack
+	a = ChangeAttributeBuff:new("SpeedUpAttackBuff", "SpeedUpAttack", 10.0, true, 0.0, 0.0, 0.2, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0)
+	id = addTemplateAbility(a)
 	
+	a = AttackBuffMakerPas:new("SpeedUpAttack", 0.5, id, true, 1.0, 0.0, 0)
+	addTemplateAbility(a)
+	AL.kSpeedUpAttack = a
+	
+	-- BleedAttack
+	a = EffectBuff:new(SEL.kBleedingRedBig, true)
+	id = addTemplateAbility(a)
+	
+	a = ChangeHpBuff:new("BleedingBuff", "Bleeding", 5.0, true, 0.2, -0.001, -10.0, 0.0, -1.0)
+	a:setAppendBuff(id)
+	id = addTemplateAbility(a)
+	
+	a = AttackBuffMakerPas:new("BleedAttack", 0.20, id, false, 1.0, 0.0, 0)
+	addTemplateAbility(a)
+	AL.kBleedAttack = a
 
 end
 
@@ -604,7 +730,7 @@ a:setDescribe("攻击时有15%的概率对目标造成200%的伤害")
 a:setLevelInfo(1, 0, "造成300%的伤害")
 a:setGrade(Ability.kNormal)
 a:setLevelUpdate(Update:new())
-id = SAL.add(a)
+SAL.kCriticalAttack = SAL.add(a)
 	
 -- Curse
 Update = class(LevelUpdate)
@@ -664,7 +790,7 @@ a:setLevelInfo(2, 1, "同时降低单位15%的移动速度，持续3秒")
 a:setLevelInfo(3, 2, "诅咒效果持续17秒")
 a:setGrade(Ability.kEpic)
 a:setLevelUpdate(Update:new())
-id = SAL.add(a)
+SAL.kMassCurse = SAL.add(a)
 
 
 -- MultySlash
@@ -717,7 +843,7 @@ a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 5, 0, Sprite.kAniAct1, Sprit
 a:setAppendBuff(id)
 id = SAL.addi(a, 011)  -- 011
 
-a = BuffMakerAct:new("多重斩击", 30.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
+a = BuffMakerAct:new("幻影斩击", 30.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 a:setCastRange(300)
 a:setImageName("UI/Ability/Ability02.png")
 a:setMaxLevel(3)
@@ -730,7 +856,7 @@ a:setLevelInfo(3, 2, "每次斩击可以触发其他技能效果")
 a:setGrade(Ability.kLegend)
 
 a:setLevelUpdate(Update:new())
-id = SAL.add(a)
+SAL.kMultySlash = SAL.add(a)
 
 
 -- MagicalRain
@@ -756,7 +882,7 @@ end
 a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 0.20, 0.0, Ability.kMaskActiveTrigger)
 id = SAL.addi(a, 001)  -- 001
 
-a = RainAct:new("魔法箭雨", 22.0, RainAct.kBolt, 5.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
+a = RainAct:new("魔法箭雨", 15.0, SEL.kRainBolt, 5.0, 3.0, id, CommandTarget.kPointTarget, UnitForce.kEnemy)
 a:addCastAnimation(Sprite.kAniAct3)
 a:addEffectSound("sounds/Effects/LevelUp.mp3")
 a:setImageName("UI/Ability/Ability03.png")
@@ -775,7 +901,7 @@ a:setLevelUpdate(Update:new())
 SAL.kMageRain = SAL.add(a)
 
 
--- ThrowHammerEx
+-- ThunderHammer
 Update = class(LevelUpdate)
 Update.stun = 0
 Update.buff = {}
@@ -840,7 +966,7 @@ a:setLevelInfo(2, 3, "附加10%攻击力的神圣伤害")
 a:setGrade(Ability.kLegend)
 
 a:setLevelUpdate(Update:new())
-id = SAL.add(a)
+SAL.kThunderHammer = SAL.add(a)
 
 addAbilityToUserData(100, 0)
 addAbilityToUserData(200, 0)

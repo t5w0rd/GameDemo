@@ -97,10 +97,7 @@ int obj_sctor(lua_State* L)
     if (lua_pcall(L, n - self, 0, 0) != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
-        lua_getglobal(L, "log");
-        lua_pushvalue(L, -2);
-        lua_call(L, 1, 0);
-        lua_pop(L, 1);
+        return luaL_throwerror(L, true, err);
     }
 
     lua_pop(L, 1);
@@ -138,10 +135,7 @@ int class_type_new(lua_State* L)
     if (lua_pcall(L, n - class_type, 0, 0) != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
-        lua_getglobal(L, "log");
-        lua_pushvalue(L, -2);
-        lua_call(L, 1, 0);
-        lua_pop(L, 1);
+        return luaL_throwerror(L, true, err);
     }
 
     lua_pushnil(L);
@@ -777,6 +771,8 @@ luaL_Reg Unit_funcs[] = {
     { "getHalfOfHeight", Unit2D_getHalfOfHeight },
     { "setPosition", Unit2D_setPosition },
     { "getPosition", Unit2D_getPosition },
+    { "setFlippedX", Unit2D_setFlippedX },
+    { "isFlippedX", Unit2D_isFlippedX },
     { "getNearestEnemyInRange", Unit2D_getNearestEnemyInRange },
     { "getNearestUnitInRange", Unit2D_getNearestUnitInRange },
     { "move", Unit2D_move },
@@ -1573,6 +1569,27 @@ int Unit2D_getPosition(lua_State* L)
     return 2;
 }
 
+int Unit2D_setFlippedX(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    bool flipped = luaL_tobooleandef(L, 2, true);
+
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+    d->setFlippedX(flipped);
+
+    return 0;
+}
+
+int Unit2D_isFlippedX(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
+
+    lua_pushboolean(L, d->isFlippedX());
+
+    return 1;
+}
+
 int Unit2D_getNearestEnemyInRange(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
@@ -2082,6 +2099,8 @@ luaL_Reg Projectile_funcs[] = {
     { "setFromToType", Projectile_setFromToType },
     { "setFireType", Projectile_setFireType },
     { "setPenaltyFlags", Projectile_setPenaltyFlags },
+    { "setEffectiveTypeFlags", Projectile_setEffectiveTypeFlags },
+    { "getEffectiveTypeFlags", Projectile_getEffectiveTypeFlags },
     { "fire", Projectile_fire },
     { "die", Projectile_die },
     { "setPosition", Projectile_setPosition },
@@ -2203,6 +2222,26 @@ int Projectile_setPenaltyFlags(lua_State* L)
     _p->setPenaltyFlags(lua_tounsigned(L, 2));
 
     return 0;
+}
+
+int Projectile_setEffectiveTypeFlags(lua_State* L)
+{
+    CProjectile* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    _p->setEffectiveTypeFlags(lua_tounsigned(L, 2));
+
+    return 0;
+}
+
+int Projectile_getEffectiveTypeFlags(lua_State* L)
+{
+    CProjectile* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushunsigned(L, _p->getEffectiveTypeFlags());
+
+    return 1;
 }
 
 int Projectile_fire(lua_State* L)
@@ -3097,7 +3136,7 @@ int BuffAbility_setAppendBuff(lua_State* L)
 {
     CBuffAbility* _p = nullptr;
     luaL_toobjptr(L, 1, _p);
-    int id = lua_tointeger(L, 2);
+    int id = luaL_toabilityid(L, 2);
 
     _p->setAppendBuff(id);
 
@@ -3138,6 +3177,11 @@ luaL_Reg AttackAct_funcs[] = {
     { "getRealAttackSpeed", AttackAct_getRealAttackSpeed },
     { "setExAttackSpeed", AttackAct_setExAttackSpeed },
     { "getExAttackSpeed", AttackAct_getExAttackSpeed },
+    { "setAttackValueRandomRange", AttackAct_setAttackValueRandomRange },
+    { "getAttackValueRandomRange", AttackAct_getAttackValueRandomRange },
+    { "setExAttackValueRandomRange", AttackAct_setExAttackValueRandomRange },
+    { "getExAttackValueRandomRange", AttackAct_getExAttackValueRandomRange },
+    
     { nullptr, nullptr }
 };
 
@@ -3292,6 +3336,52 @@ int AttackAct_getExAttackSpeed(lua_State* L)
     luaL_toobjptr(L, 1, _p);
 
     const CExtraCoeff& ex = _p->getExAttackSpeed();
+
+    lua_pushnumber(L, ex.getMulriple());
+    lua_pushnumber(L, ex.getAddend());
+
+    return 2;
+}
+
+int AttackAct_setAttackValueRandomRange(lua_State* L)
+{
+    CAttackAct* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    float r = lua_tonumber(L, 2);
+
+    _p->setAttackValueRandomRange(r);
+
+    return 0;
+}
+
+int AttackAct_getAttackValueRandomRange(lua_State* L)
+{
+    CAttackAct* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushnumber(L, _p->getAttackValueRandomRange());
+
+    return 1;
+}
+
+int AttackAct_setExAttackValueRandomRange(lua_State* L)
+{
+    CAttackAct* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+    float exA = lua_tonumber(L, 2);
+    float exB = lua_tonumber(L, 3);
+
+    _p->setExAttackValueRandomRange(CExtraCoeff(exA, exB));
+
+    return 0;
+}
+
+int AttackAct_getExAttackValueRandomRange(lua_State* L)
+{
+    CAttackAct* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    const CExtraCoeff& ex = _p->getExAttackValueRandomRange();
 
     lua_pushnumber(L, ex.getMulriple());
     lua_pushnumber(L, ex.getAddend());
@@ -3631,22 +3721,21 @@ int SplashPas_ctor(lua_State* L)
 
 int KnockBackBuff_ctor(lua_State* L)
 {
-    const char* root = lua_tostring(L, 2);
-    const char* name = lua_tostring(L, 3);
-    float duration = lua_tonumber(L, 4);
-    float distance = lua_tonumber(L, 5);
-    bool usingRefPos = lua_gettop(L) == 5;
+    const char* name = lua_tostring(L, 2);
+    float duration = lua_tonumber(L, 3);
+    float distance = lua_tonumber(L, 4);
+    bool usingRefPos = lua_gettop(L) == 4;
     
     CKnockBackBuff* _p = nullptr;
     if (usingRefPos)
     {
-        _p = new CKnockBackBuff(root, name, duration, distance);
+        _p = new CKnockBackBuff(name, duration, distance);
     }
     else
     {
-        float x = lua_tonumber(L, 6);
-        float y = lua_tonumber(L, 7);
-        _p = new CKnockBackBuff(root, name, duration, distance, CPoint(x, y));
+        float x = lua_tonumber(L, 5);
+        float y = lua_tonumber(L, 6);
+        _p = new CKnockBackBuff(name, duration, distance, CPoint(x, y));
     }
     
     lua_pushlightuserdata(L, _p);
@@ -3657,12 +3746,11 @@ int KnockBackBuff_ctor(lua_State* L)
 
 int AttractBuff_ctor(lua_State* L)
 {
-    const char* root = lua_tostring(L, 2);
-    const char* name = lua_tostring(L, 3);
-    float duration = lua_tonumber(L, 4);
-    float distance = lua_tonumber(L, 5);
+    const char* name = lua_tostring(L, 2);
+    float duration = lua_tonumber(L, 3);
+    float distance = lua_tonumber(L, 4);
 
-    CAttractBuff* _p = new CAttractBuff(root, name, duration, distance);
+    CAttractBuff* _p = new CAttractBuff(name, duration, distance);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3803,11 +3891,11 @@ int g_onWorldTick(lua_State* L)
 
 int g_setControlUnit(lua_State* L)
 {
-    CUnit* u = luaL_tounitptr(L, 1);
+    int id = luaL_tounitid(L, 1);
 
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    w->setControlUnit(u->getId());
+    w->setControlUnit(id);
     lua_pop(L, 1);
 
     return 0;
@@ -3886,10 +3974,7 @@ int g_getUnits(lua_State* L)
             if (lua_pcall(L, 1, 1, 0) != LUA_OK)
             {
                 const char* err = lua_tostring(L, -1);
-                lua_getglobal(L, "log");
-                lua_pushvalue(L, -2);
-                lua_call(L, 1, 0);
-                lua_pop(L, 1);
+                return luaL_throwerror(L, true, err);
             }
             else
             {

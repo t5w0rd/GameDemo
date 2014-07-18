@@ -199,6 +199,15 @@ function UnitGroup.getEffectiveUnitsInRange(x, y, unit, radius, forceFlags, func
 	return ug
 end
 
+function UnitGroup:getRandomUnit()
+	local num = #self.units
+	if num == 0 then
+		return nil
+	end
+	
+	return self.units[math.random(num)]
+end
+
 function UnitGroup:addBuffAbility(buff, src, level)
 	for _, u in ipairs(self.units) do
 		u:addBuffAbility(buff, src, level)
@@ -260,11 +269,12 @@ function UnitCreator:ctor()
 	self.atk.t = AttackValue.kPhysical
 	self.atk.v = 10.0
 	self.atk.i = 1.5
+	self.atk.r = 0.15
 	
 	-- armor
-	self.arm = {--[[t: type; v: value]]}
-	self.arm.t = ArmorValue.kHeavy
-	self.arm.v = 0.0
+	self.amr = {--[[t: type; v: value]]}
+	self.amr.t = ArmorValue.kHeavy
+	self.amr.v = 0.0
 	
 	-- ability
 	self.act = {--[[array of active ability]]}
@@ -302,8 +312,9 @@ function UnitCreator:createUnit()
 	local atk = u:getAttackAbility()
     atk:setBaseAttack(self.atk.t, self.atk.v)
     atk:setBaseAttackInterval(self.atk.i)
+	atk:setAttackValueRandomRange(self.atk.r)
 	
-	u:setBaseArmor(self.arm.t, self.arm.v)
+	u:setBaseArmor(self.amr.t, self.amr.v)
 	
 	for _, act in ipairs(self.act) do
 		u:addActiveAbility(act)
@@ -357,6 +368,80 @@ include("AI.lua")
 include("AI2.lua")
 
 include("LevelUpdate.lua")
+
+function addAbilitiesForUnit(u, id)
+	if id == UL.kMage then
+		u:addActiveAbility(AL.kGravitySurf:getId())
+		u:addActiveAbility(SAL.kMageRain, 3)
+		u:addActiveAbility(AL.kKnockBack:getId())
+		
+	elseif id == UL.kFrost then
+		u:addActiveAbility(AL.kSnowStorm:getId())
+		u:addActiveAbility(AL.kKnockBack:getId())
+		u:addPassiveAbility(AL.kSlowDownAttack:getId())
+		
+	elseif id == UL.kArcher then
+		u:addActiveAbility(AL.kArrowWind:getId())
+		u:addActiveAbility(AL.kSpeedUp2:getId())
+		u:addPassiveAbility(AL.kCriticalAttack:getId())
+		
+	elseif id == UL.kElemental then
+		u:addActiveAbility(AL.kSerialExplode:getId())
+		u:addActiveAbility(AL.kBouncingFireBall:getId())
+		u:addPassiveAbility(AL.kArmorBreakAttack:getId())
+		
+	elseif id == SUL.kPriest then
+		u:addActiveAbility(AL.kHealWind:getId())
+		u:addActiveAbility(AL.kSweetDew:getId())
+		
+	elseif id == UL.kArtillery then
+		u:addActiveAbility(AL.kCutter:getId())
+		u:addActiveAbility(AL.kShotGun:getId())
+		u:addPassiveAbility(AL.kKnockBackAttack:getId())
+		u:addPassiveAbility(AL.kChangeAttributeAttack:getId())
+		
+	elseif id == UL.kLumberjack then
+		u:addActiveAbility(AL.kMissileStorm:getId())
+		u:addPassiveAbility(AL.kStrikeBack:getId())
+		
+	elseif id == UL.kThor then
+		u:addActiveAbility(SAL.kThunderHammer, 2)
+		u:addPassiveAbility(AL.kLightningAttack:getId())
+		u:addPassiveAbility(AL.kStunAttack:getId())
+		
+	elseif id == UL.kAlric then
+		u:addActiveAbility(AL.kFastMoveToBack:getId())
+		u:addActiveAbility(AL.kSwordWave:getId())
+		u:addPassiveAbility(AL.kDoubleAttack:getId())
+		u:addPassiveAbility(AL.kStunAttack:getId())
+		
+	elseif id == UL.kMalik then
+		u:addActiveAbility(AL.kThunderCap:getId())
+		u:addPassiveAbility(AL.kSpeedUpAttack:getId())
+		u:addPassiveAbility(AL.kDoubleAttack:getId())
+		u:addPassiveAbility(AL.kStunAttack:getId())
+		u:addPassiveAbility(AL.kThunderCapAttack:getId())
+		
+	elseif id == UL.kBarracks then
+		u:addActiveAbility(SAL.kMultySlash, 3)
+		u:addActiveAbility(AL.kShieldBash:getId())
+		u:addActiveAbility(AL.kArmorUpCry:getId())
+		u:addPassiveAbility(AL.kEvadeHeal:getId())
+		
+	elseif id == UL.kViking then
+		u:addActiveAbility(AL.kSpeedUp:getId())
+		u:addActiveAbility(AL.kChargeJump:getId())
+		u:addPassiveAbility(AL.kBerserkerBlood:getId())
+		u:addPassiveAbility(AL.kVampireAttack:getId())
+		
+	elseif id == UL.kOni then
+		u:addPassiveAbility(AL.kDamageIncreaceAttack:getId())
+		u:addPassiveAbility(AL.kBleedAttack:getId())
+		u:addPassiveAbility(AL.kSplashAttack:getId())
+		
+	end
+end
+
 function initForHero()
 	local hero = getControlUnit()
     hero:setLevelUpdate(HeroLevelUpdate:new())
@@ -368,10 +453,11 @@ function initForHero()
 	--hero:addActiveAbility(a)
 	--hero:addActiveAbility(AL.kBuffMaker:getId())
 	--hero:addActiveAbility(AL.kChangeAttack:getId())
-	--hero:addActiveAbility(AL.kFastMoveToBack:getId())
-	hero:addActiveAbility(AL.kSerialExplode:getId())
+	hero:addActiveAbility(AL.kFastMoveToBack:getId())
+	--hero:addActiveAbility(AL.kMissileStorm:getId())
 	hero:addActiveAbility(AL.kSwordWave:getId())
-	hero:addActiveAbility(AL.kBouncingFireBall:getId())
+	--hero:addActiveAbility(AL.kBouncingFireBall:getId())
+	--hero:addActiveAbility(AL.kArrowWind:getId())
 	
 	
 	return hero

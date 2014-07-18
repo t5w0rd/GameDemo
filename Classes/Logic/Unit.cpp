@@ -205,7 +205,7 @@ const CMultiArmorValue& CMultiArmorValue::operator=(const CMultiArmorValue& roAr
  1.75    超强
  2.00    瓦解
  */
-
+// 防护效果表
 float g_afArmorAttackTable[CArmorValue::CONST_MAX_ARMOR_TYPE][CAttackValue::CONST_MAX_ATTACK_TYPE] = {
     //           物理攻击 魔法攻击 攻城攻击 神圣攻击
     /*重装护甲*/ { 1.50,   0.25,   1.00,   0.00 },
@@ -1409,12 +1409,15 @@ void CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
     
     damagedLow(fDamage, pSource, dwTriggerMask);
     
-    M_VEC_FOREACH(pAttack->getAttackBuffs())
+    if (pSource != nullptr)
     {
-        const CAttackBuff* pAb = &M_VEC_EACH;
-        // TODO: copy BUFF from TemplateAbilities
-        addBuffAbility(pAb->getTemplateBuff(), pSource->getId(), pAb->getBuffLevel());
-        M_MAP_NEXT;
+        M_VEC_FOREACH(pAttack->getAttackBuffs())
+        {
+            const CAttackBuff& ab = M_VEC_EACH;
+            // TODO: copy BUFF from TemplateAbilities
+            addBuffAbility(ab.getTemplateBuff(), pSource->getId(), ab.getBuffLevel());
+            M_MAP_NEXT;
+        }
     }
 }
 
@@ -1446,7 +1449,7 @@ void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
     
     onDamagedDone(fDamage, pSource, dwTriggerMask);
     
-    if (pSource)
+    if (pSource != nullptr)
     {
         pSource->onDamageTargetDone(fDamage, this, dwTriggerMask);
     }
@@ -1487,6 +1490,11 @@ void CUnit::addActiveAbility(int id, int iLevel, bool bNotify)
     CWorld* w = getWorld();
     CActiveAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
+    if (pAbility == nullptr)
+    {
+        CCLOG("ERR | addActiveAbility(%d, %d, %d), ability is not found", id, iLevel, (int)bNotify);
+        return;
+    }
     pAbility->setLevel(iLevel);
     addActiveAbility(pAbility, bNotify);
 }
@@ -1556,6 +1564,11 @@ void CUnit::addPassiveAbility(int id, int iLevel, bool bNotify)
     CWorld* w = getWorld();
     CPassiveAbility* pAbility = nullptr;
     w->copyAbility(id)->dcast(pAbility);
+    if (pAbility == nullptr)
+    {
+        CCLOG("ERR | addPassiveAbility(%d, %d, %d), ability is not found", id, iLevel, (int)bNotify);
+        return;
+    }
     pAbility->setLevel(iLevel);
     addPassiveAbility(pAbility, bNotify);
 }
@@ -1665,7 +1678,7 @@ void CUnit::addBuffAbility(int id, int iSrcUnit, int iLevel, bool bNotify)
     w->copyAbility(id)->dcast(pAbility);
     if (pAbility == nullptr)
     {
-        CCLOG("ERR | add buff(null)");
+        CCLOG("ERR | addBuffAbility(%d, %d, %d, %d), ability is not found", id, iSrcUnit, iLevel, (int)bNotify);
         return;
     }
 

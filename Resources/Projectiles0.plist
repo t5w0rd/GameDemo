@@ -7,11 +7,11 @@
             <key>Sprites/AlienProy/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{909,388},{60,32}}</string>
+                <string>{{302,676},{60,32}}</string>
                 <key>offset</key>
                 <string>{3,-1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{9,3},{60,32}}</string>
                 <key>sourceSize</key>
@@ -20,11 +20,11 @@
             <key>Sprites/AlienProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{81,626},{46,50}}</string>
+                <string>{{570,976},{46,50}}</string>
                 <key>offset</key>
                 <string>{2,-2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{15,17},{46,50}}</string>
                 <key>sourceSize</key>
@@ -46,11 +46,11 @@
             <key>Sprites/AlienProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{230,584},{68,72}}</string>
+                <string>{{453,840},{68,72}}</string>
                 <key>offset</key>
                 <string>{-2,2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{0,2},{68,72}}</string>
                 <key>sourceSize</key>
@@ -59,11 +59,11 @@
             <key>Sprites/AlienProy/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{909,388},{60,32}}</string>
+                <string>{{302,676},{60,32}}</string>
                 <key>offset</key>
                 <string>{3,-1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{9,3},{60,32}}</string>
                 <key>sourceSize</key>
@@ -72,11 +72,11 @@
             <key>Sprites/AlienProy/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{909,422},{60,32}}</string>
+                <string>{{513,916},{60,32}}</string>
                 <key>offset</key>
                 <string>{3,-1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{9,3},{60,32}}</string>
                 <key>sourceSize</key>
@@ -85,11 +85,11 @@
             <key>Sprites/AlienProy/move/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{733,444},{58,34}}</string>
+                <string>{{603,916},{58,34}}</string>
                 <key>offset</key>
                 <string>{2,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{9,1},{58,34}}</string>
                 <key>sourceSize</key>
@@ -98,11 +98,11 @@
             <key>Sprites/AlienProy/move/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{939,477},{56,34}}</string>
+                <string>{{639,907},{56,34}}</string>
                 <key>offset</key>
                 <string>{1,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{9,1},{56,34}}</string>
                 <key>sourceSize</key>
@@ -251,45 +251,6 @@
                 <key>sourceSize</key>
                 <string>{40,16}</string>
             </dict>
-            <key>Sprites/ArcherArrow/die/00.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{660,34},{32,8}}</string>
-                <key>offset</key>
-                <string>{0,1}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{4,3},{32,8}}</string>
-                <key>sourceSize</key>
-                <string>{40,16}</string>
-            </dict>
-            <key>Sprites/ArcherArrow/move/00.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{220,250},{34,12}}</string>
-                <key>offset</key>
-                <string>{2,0}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{5,2},{34,12}}</string>
-                <key>sourceSize</key>
-                <string>{40,16}</string>
-            </dict>
-            <key>Sprites/ArcherArrow/move/01.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{660,34},{32,8}}</string>
-                <key>offset</key>
-                <string>{0,1}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{4,3},{32,8}}</string>
-                <key>sourceSize</key>
-                <string>{40,16}</string>
-            </dict>
             <key>Sprites/Ball1/act1/00.png</key>
             <dict>
                 <key>frame</key>
@@ -306,7 +267,7 @@
             <key>Sprites/Ball1/act1/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{904,150},{17,16}}</string>
+                <string>{{216,349},{17,16}}</string>
                 <key>offset</key>
                 <string>{2,-2}</string>
                 <key>rotated</key>
@@ -319,7 +280,7 @@
             <key>Sprites/Ball1/act1/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{904,150},{17,16}}</string>
+                <string>{{216,349},{17,16}}</string>
                 <key>offset</key>
                 <string>{2,-2}</string>
                 <key>rotated</key>
@@ -345,11 +306,11 @@
             <key>Sprites/Ball1/act1/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{821,410},{19,20}}</string>
+                <string>{{720,998},{19,20}}</string>
                 <key>offset</key>
                 <string>{2,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{15,11},{19,20}}</string>
                 <key>sourceSize</key>
@@ -358,7 +319,7 @@
             <key>Sprites/Ball1/act1/05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,646},{21,22}}</string>
+                <string>{{235,913},{21,22}}</string>
                 <key>offset</key>
                 <string>{2,-1}</string>
                 <key>rotated</key>
@@ -371,11 +332,11 @@
             <key>Sprites/Ball1/act1/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{935,150},{9,12}}</string>
+                <string>{{965,32},{9,12}}</string>
                 <key>offset</key>
                 <string>{0,4}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{18,10},{9,12}}</string>
                 <key>sourceSize</key>
@@ -384,7 +345,7 @@
             <key>Sprites/Ball1/act1/07.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{660,82},{7,10}}</string>
+                <string>{{956,32},{7,10}}</string>
                 <key>offset</key>
                 <string>{1,5}</string>
                 <key>rotated</key>
@@ -410,11 +371,11 @@
             <key>Sprites/Ball1/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{923,150},{16,10}}</string>
+                <string>{{938,32},{16,10}}</string>
                 <key>offset</key>
                 <string>{-3,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{5,7},{16,10}}</string>
                 <key>sourceSize</key>
@@ -449,11 +410,11 @@
             <key>Sprites/Ball1/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{882,150},{16,20}}</string>
+                <string>{{216,367},{16,20}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{8,1},{16,20}}</string>
                 <key>sourceSize</key>
@@ -475,11 +436,11 @@
             <key>Sprites/Ball1/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{660,68},{8,12}}</string>
+                <string>{{979,32},{8,12}}</string>
                 <key>offset</key>
                 <string>{1,1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{13,4},{8,12}}</string>
                 <key>sourceSize</key>
@@ -488,11 +449,11 @@
             <key>Sprites/Ball1/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{923,150},{16,10}}</string>
+                <string>{{938,32},{16,10}}</string>
                 <key>offset</key>
                 <string>{-3,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{5,7},{16,10}}</string>
                 <key>sourceSize</key>
@@ -501,11 +462,11 @@
             <key>Sprites/Ball1/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{870,134},{22,10}}</string>
+                <string>{{914,32},{22,10}}</string>
                 <key>offset</key>
                 <string>{-5,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{0,7},{22,10}}</string>
                 <key>sourceSize</key>
@@ -514,7 +475,7 @@
             <key>Sprites/BlackHole/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,626},{73,77}}</string>
+                <string>{{156,861},{73,77}}</string>
                 <key>offset</key>
                 <string>{-1,1}</string>
                 <key>rotated</key>
@@ -527,11 +488,11 @@
             <key>Sprites/BlackHole/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{640,358},{91,90}}</string>
+                <string>{{2,916},{91,90}}</string>
                 <key>offset</key>
                 <string>{-2,-1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{4,8},{91,90}}</string>
                 <key>sourceSize</key>
@@ -540,7 +501,7 @@
             <key>Sprites/BlackHole/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{542,408},{89,89}}</string>
+                <string>{{236,822},{89,89}}</string>
                 <key>offset</key>
                 <string>{-2,-1}</string>
                 <key>rotated</key>
@@ -553,7 +514,7 @@
             <key>Sprites/BlackHole/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{544,222},{100,102}}</string>
+                <string>{{524,814},{100,102}}</string>
                 <key>offset</key>
                 <string>{-2,-1}</string>
                 <key>rotated</key>
@@ -566,7 +527,7 @@
             <key>Sprites/BlackHole/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{854,258},{136,128}}</string>
+                <string>{{874,254},{136,128}}</string>
                 <key>offset</key>
                 <string>{-2,-4}</string>
                 <key>rotated</key>
@@ -579,11 +540,11 @@
             <key>Sprites/BlackHole/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{640,358},{91,90}}</string>
+                <string>{{2,916},{91,90}}</string>
                 <key>offset</key>
                 <string>{-2,-1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{4,8},{91,90}}</string>
                 <key>sourceSize</key>
@@ -592,7 +553,7 @@
             <key>Sprites/BlackHole/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{542,408},{89,89}}</string>
+                <string>{{236,822},{89,89}}</string>
                 <key>offset</key>
                 <string>{-2,-1}</string>
                 <key>rotated</key>
@@ -605,7 +566,7 @@
             <key>Sprites/FireBall/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{129,722},{68,38}}</string>
+                <string>{{400,984},{68,38}}</string>
                 <key>offset</key>
                 <string>{-16,-3}</string>
                 <key>rotated</key>
@@ -618,7 +579,7 @@
             <key>Sprites/FireBall/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{129,722},{68,38}}</string>
+                <string>{{400,984},{68,38}}</string>
                 <key>offset</key>
                 <string>{-16,-3}</string>
                 <key>rotated</key>
@@ -631,7 +592,7 @@
             <key>Sprites/FireBall/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{136,534},{66,38}}</string>
+                <string>{{236,624},{66,38}}</string>
                 <key>offset</key>
                 <string>{-15,-4}</string>
                 <key>rotated</key>
@@ -644,11 +605,11 @@
             <key>Sprites/FireBall/move/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{232,548},{70,34}}</string>
+                <string>{{417,840},{70,34}}</string>
                 <key>offset</key>
                 <string>{-17,-2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{0,9},{70,34}}</string>
                 <key>sourceSize</key>
@@ -657,7 +618,7 @@
             <key>Sprites/FrostBolt/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,492},{42,28}}</string>
+                <string>{{630,742},{42,28}}</string>
                 <key>offset</key>
                 <string>{-3,0}</string>
                 <key>rotated</key>
@@ -670,11 +631,11 @@
             <key>Sprites/FrostBolt/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{683,450},{48,44}}</string>
+                <string>{{720,948},{48,44}}</string>
                 <key>offset</key>
                 <string>{-2,2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{32,10},{48,44}}</string>
                 <key>sourceSize</key>
@@ -683,11 +644,11 @@
             <key>Sprites/FrostBolt/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{881,456},{56,50}}</string>
+                <string>{{94,966},{56,50}}</string>
                 <key>offset</key>
                 <string>{-2,2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{28,7},{56,50}}</string>
                 <key>sourceSize</key>
@@ -696,11 +657,11 @@
             <key>Sprites/FrostBolt/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{821,438},{58,54}}</string>
+                <string>{{547,916},{58,54}}</string>
                 <key>offset</key>
                 <string>{-2,1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{27,6},{58,54}}</string>
                 <key>sourceSize</key>
@@ -709,7 +670,7 @@
             <key>Sprites/FrostBolt/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{68,730},{58,60}}</string>
+                <string>{{64,776},{58,60}}</string>
                 <key>offset</key>
                 <string>{-1,2}</string>
                 <key>rotated</key>
@@ -722,7 +683,7 @@
             <key>Sprites/FrostBolt/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,492},{42,28}}</string>
+                <string>{{630,742},{42,28}}</string>
                 <key>offset</key>
                 <string>{-3,0}</string>
                 <key>rotated</key>
@@ -748,7 +709,7 @@
             <key>Sprites/GiantProy/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{470,456},{74,70}}</string>
+                <string>{{84,840},{74,70}}</string>
                 <key>offset</key>
                 <string>{0,1}</string>
                 <key>rotated</key>
@@ -761,11 +722,11 @@
             <key>Sprites/GiantProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{228,654},{80,74}}</string>
+                <string>{{2,840},{80,74}}</string>
                 <key>offset</key>
                 <string>{1,2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{45,21},{80,74}}</string>
                 <key>sourceSize</key>
@@ -774,7 +735,7 @@
             <key>Sprites/GiantProy/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{542,324},{96,82}}</string>
+                <string>{{236,738},{96,82}}</string>
                 <key>offset</key>
                 <string>{-1,13}</string>
                 <key>rotated</key>
@@ -787,7 +748,7 @@
             <key>Sprites/GiantProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{546,34},{112,80}}</string>
+                <string>{{524,626},{112,80}}</string>
                 <key>offset</key>
                 <string>{-1,18}</string>
                 <key>rotated</key>
@@ -800,7 +761,7 @@
             <key>Sprites/GiantProy/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,544},{126,80}}</string>
+                <string>{{524,544},{126,80}}</string>
                 <key>offset</key>
                 <string>{-1,11}</string>
                 <key>rotated</key>
@@ -813,7 +774,7 @@
             <key>Sprites/GiantProy/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,458},{132,84}}</string>
+                <string>{{526,458},{132,84}}</string>
                 <key>offset</key>
                 <string>{-4,1}</string>
                 <key>rotated</key>
@@ -826,7 +787,7 @@
             <key>Sprites/GiantProy/die/05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{336,366},{132,90}}</string>
+                <string>{{526,366},{132,90}}</string>
                 <key>offset</key>
                 <string>{-4,-3}</string>
                 <key>rotated</key>
@@ -839,7 +800,7 @@
             <key>Sprites/GiantProy/die/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{860,194},{148,62}}</string>
+                <string>{{874,190},{148,62}}</string>
                 <key>offset</key>
                 <string>{-6,-24}</string>
                 <key>rotated</key>
@@ -852,7 +813,7 @@
             <key>Sprites/GiantProy/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{470,456},{74,70}}</string>
+                <string>{{84,840},{74,70}}</string>
                 <key>offset</key>
                 <string>{0,1}</string>
                 <key>rotated</key>
@@ -865,7 +826,7 @@
             <key>Sprites/GreenWave/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{971,418},{57,50}}</string>
+                <string>{{628,848},{57,50}}</string>
                 <key>offset</key>
                 <string>{-8,1}</string>
                 <key>rotated</key>
@@ -875,10 +836,179 @@
                 <key>sourceSize</key>
                 <string>{99,56}</string>
             </dict>
+            <key>Sprites/Hurricane/birth/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{542,282},{82,114}}</string>
+                <key>offset</key>
+                <string>{-11,-21}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{46,62},{82,114}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/birth/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{546,34},{118,128}}</string>
+                <key>offset</key>
+                <string>{-4,-15}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{35,49},{118,128}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/birth/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{882,44},{140,144}}</string>
+                <key>offset</key>
+                <string>{-3,-10}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{25,36},{140,144}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/birth/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{858,410},{156,170}}</string>
+                <key>offset</key>
+                <string>{-2,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{18,13},{156,170}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/default.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{660,636},{184,184}}</string>
+                <key>offset</key>
+                <string>{-4,-2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{2,8},{184,184}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/die/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{336,294},{186,188}}</string>
+                <key>offset</key>
+                <string>{-3,-1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{2,5},{186,188}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/die/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{336,482},{186,186}}</string>
+                <key>offset</key>
+                <string>{-1,-1}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{4,6},{186,186}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/die/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,586},{188,190}}</string>
+                <key>offset</key>
+                <string>{0,-3}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{4,6},{188,190}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/die/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{850,582},{180,172}}</string>
+                <key>offset</key>
+                <string>{-3,5}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{5,7},{180,172}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/move/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{660,636},{184,184}}</string>
+                <key>offset</key>
+                <string>{-4,-2}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{2,8},{184,184}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/move/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{336,670},{168,186}}</string>
+                <key>offset</key>
+                <string>{-1,2}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{13,3},{168,186}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/move/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{666,274},{174,190}}</string>
+                <key>offset</key>
+                <string>{-2,3}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{9,0},{174,190}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
+            <key>Sprites/Hurricane/move/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{660,450},{184,188}}</string>
+                <key>offset</key>
+                <string>{-2,1}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{4,3},{184,188}}</string>
+                <key>sourceSize</key>
+                <string>{196,196}</string>
+            </dict>
             <key>Sprites/KungFuProy/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{668,586},{32,32}}</string>
+                <string>{{915,906},{32,32}}</string>
                 <key>offset</key>
                 <string>{1,0}</string>
                 <key>rotated</key>
@@ -891,7 +1021,7 @@
             <key>Sprites/KungFuProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{668,586},{32,32}}</string>
+                <string>{{915,906},{32,32}}</string>
                 <key>offset</key>
                 <string>{1,0}</string>
                 <key>rotated</key>
@@ -904,11 +1034,11 @@
             <key>Sprites/KungFuProy/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{633,498},{42,48}}</string>
+                <string>{{747,896},{42,48}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{1,0},{42,48}}</string>
                 <key>sourceSize</key>
@@ -917,7 +1047,7 @@
             <key>Sprites/KungFuProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{728,570},{38,46}}</string>
+                <string>{{470,984},{38,46}}</string>
                 <key>offset</key>
                 <string>{-3,1}</string>
                 <key>rotated</key>
@@ -930,7 +1060,7 @@
             <key>Sprites/KungFuProy/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{590,499},{40,44}}</string>
+                <string>{{194,595},{40,44}}</string>
                 <key>offset</key>
                 <string>{-2,2}</string>
                 <key>rotated</key>
@@ -943,7 +1073,7 @@
             <key>Sprites/KungFuProy/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{783,554},{34,34}}</string>
+                <string>{{928,980},{34,34}}</string>
                 <key>offset</key>
                 <string>{3,-3}</string>
                 <key>rotated</key>
@@ -995,7 +1125,7 @@
             <key>Sprites/Lightning/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{336,182},{206,66}}</string>
+                <string>{{666,142},{206,66}}</string>
                 <key>offset</key>
                 <string>{-3,1}</string>
                 <key>rotated</key>
@@ -1021,7 +1151,7 @@
             <key>Sprites/Lightning/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,400},{200,56}}</string>
+                <string>{{2,474},{200,56}}</string>
                 <key>offset</key>
                 <string>{-6,2}</string>
                 <key>rotated</key>
@@ -1047,7 +1177,7 @@
             <key>Sprites/Lightning/die/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{660,102},{208,44}}</string>
+                <string>{{336,142},{208,44}}</string>
                 <key>offset</key>
                 <string>{-2,-1}</string>
                 <key>rotated</key>
@@ -1086,11 +1216,11 @@
             <key>Sprites/LumberjackProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{81,678},{46,50}}</string>
+                <string>{{622,976},{46,50}}</string>
                 <key>offset</key>
                 <string>{2,-2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{15,17},{46,50}}</string>
                 <key>sourceSize</key>
@@ -1112,7 +1242,7 @@
             <key>Sprites/LumberjackProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{129,652},{68,72}}</string>
+                <string>{{439,914},{68,72}}</string>
                 <key>offset</key>
                 <string>{-2,2}</string>
                 <key>rotated</key>
@@ -1125,11 +1255,11 @@
             <key>Sprites/LumberjackProy/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1002,128},{38,20}}</string>
+                <string>{{399,912},{38,20}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{2,0},{38,20}}</string>
                 <key>sourceSize</key>
@@ -1138,11 +1268,11 @@
             <key>Sprites/LumberjackProy/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1002,44},{40,20}}</string>
+                <string>{{315,913},{40,20}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{2,0},{40,20}}</string>
                 <key>sourceSize</key>
@@ -1151,11 +1281,11 @@
             <key>Sprites/MageBolt/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,536},{40,24}}</string>
+                <string>{{194,727},{40,24}}</string>
                 <key>offset</key>
                 <string>{-8,-2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{12,16},{40,24}}</string>
                 <key>sourceSize</key>
@@ -1164,11 +1294,11 @@
             <key>Sprites/MageBolt/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{733,480},{44,48}}</string>
+                <string>{{701,898},{44,48}}</string>
                 <key>offset</key>
                 <string>{3,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{21,3},{44,48}}</string>
                 <key>sourceSize</key>
@@ -1177,11 +1307,11 @@
             <key>Sprites/MageBolt/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{821,494},{42,48}}</string>
+                <string>{{774,844},{42,48}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{19,3},{42,48}}</string>
                 <key>sourceSize</key>
@@ -1190,11 +1320,11 @@
             <key>Sprites/MageBolt/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{412,562},{42,46}}</string>
+                <string>{{810,944},{42,46}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{19,3},{42,46}}</string>
                 <key>sourceSize</key>
@@ -1203,7 +1333,7 @@
             <key>Sprites/MageBolt/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{208,372},{26,26}}</string>
+                <string>{{124,776},{26,26}}</string>
                 <key>offset</key>
                 <string>{1,1}</string>
                 <key>rotated</key>
@@ -1216,11 +1346,11 @@
             <key>Sprites/MageBolt/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,536},{40,24}}</string>
+                <string>{{194,727},{40,24}}</string>
                 <key>offset</key>
                 <string>{-8,-2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{12,16},{40,24}}</string>
                 <key>sourceSize</key>
@@ -1229,11 +1359,11 @@
             <key>Sprites/MageBolt/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{821,358},{50,24}}</string>
+                <string>{{660,822},{50,24}}</string>
                 <key>offset</key>
                 <string>{-14,-2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{1,16},{50,24}}</string>
                 <key>sourceSize</key>
@@ -1242,11 +1372,11 @@
             <key>Sprites/MirageProy/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{870,102},{30,10}}</string>
+                <string>{{882,32},{30,10}}</string>
                 <key>offset</key>
                 <string>{-2,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{13,22},{30,10}}</string>
                 <key>sourceSize</key>
@@ -1255,7 +1385,7 @@
             <key>Sprites/MirageProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{783,480},{36,36}}</string>
+                <string>{{854,986},{36,36}}</string>
                 <key>offset</key>
                 <string>{3,0}</string>
                 <key>rotated</key>
@@ -1268,11 +1398,11 @@
             <key>Sprites/MirageProy/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{518,547},{44,42}}</string>
+                <string>{{854,940},{44,42}}</string>
                 <key>offset</key>
                 <string>{4,2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{12,3},{44,42}}</string>
                 <key>sourceSize</key>
@@ -1281,37 +1411,76 @@
             <key>Sprites/MirageProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{424,510},{50,44}}</string>
+                <string>{{518,978},{50,44}}</string>
                 <key>offset</key>
                 <string>{4,2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{9,2},{50,44}}</string>
                 <key>sourceSize</key>
                 <string>{60,52}</string>
             </dict>
-            <key>Sprites/MirageProy/move/00.png</key>
+            <key>Sprites/Missile/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{870,102},{30,10}}</string>
+                <string>{{259,913},{54,20}}</string>
                 <key>offset</key>
-                <string>{-2,-1}</string>
+                <string>{1,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{2,2},{54,20}}</string>
+                <key>sourceSize</key>
+                <string>{56,24}</string>
+            </dict>
+            <key>Sprites/Missile/move/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{259,913},{54,20}}</string>
+                <key>offset</key>
+                <string>{1,0}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{2,2},{54,20}}</string>
+                <key>sourceSize</key>
+                <string>{56,24}</string>
+            </dict>
+            <key>Sprites/Missile/move/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{638,626},{56,20}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
                 <key>rotated</key>
                 <true/>
                 <key>sourceColorRect</key>
-                <string>{{13,22},{30,10}}</string>
+                <string>{{0,2},{56,20}}</string>
                 <key>sourceSize</key>
-                <string>{60,52}</string>
+                <string>{56,24}</string>
+            </dict>
+            <key>Sprites/Missile/move/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{638,684},{56,20}}</string>
+                <key>offset</key>
+                <string>{0,0}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{0,2},{56,20}}</string>
+                <key>sourceSize</key>
+                <string>{56,24}</string>
             </dict>
             <key>Sprites/PirateProy/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,606},{38,22}}</string>
+                <string>{{712,822},{38,22}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{3,4},{38,22}}</string>
                 <key>sourceSize</key>
@@ -1320,7 +1489,7 @@
             <key>Sprites/PirateProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,767},{60,60}}</string>
+                <string>{{2,776},{60,60}}</string>
                 <key>offset</key>
                 <string>{1,-2}</string>
                 <key>rotated</key>
@@ -1333,7 +1502,7 @@
             <key>Sprites/PirateProy/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{136,458},{66,74}}</string>
+                <string>{{236,480},{66,74}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -1346,7 +1515,7 @@
             <key>Sprites/PirateProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{130,574},{72,76}}</string>
+                <string>{{326,935},{72,76}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -1359,11 +1528,11 @@
             <key>Sprites/PirateProy/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{330,542},{80,78}}</string>
+                <string>{{156,779},{80,78}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{8,6},{80,78}}</string>
                 <key>sourceSize</key>
@@ -1372,11 +1541,11 @@
             <key>Sprites/PirateProy/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{336,458},{86,82}}</string>
+                <string>{{242,936},{86,82}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{5,3},{86,82}}</string>
                 <key>sourceSize</key>
@@ -1385,11 +1554,11 @@
             <key>Sprites/PirateProy/die/05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{470,366},{88,70}}</string>
+                <string>{{327,840},{88,70}}</string>
                 <key>offset</key>
                 <string>{0,7}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{4,2},{88,70}}</string>
                 <key>sourceSize</key>
@@ -1398,7 +1567,7 @@
             <key>Sprites/PirateProy/die/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{236,480},{66,66}}</string>
+                <string>{{236,556},{66,66}}</string>
                 <key>offset</key>
                 <string>{0,6}</string>
                 <key>rotated</key>
@@ -1411,11 +1580,11 @@
             <key>Sprites/PirateProy/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,606},{38,22}}</string>
+                <string>{{712,822},{38,22}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{3,4},{38,22}}</string>
                 <key>sourceSize</key>
@@ -1424,11 +1593,11 @@
             <key>Sprites/PirateProy/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{203,669},{38,20}}</string>
+                <string>{{752,822},{38,20}}</string>
                 <key>offset</key>
                 <string>{1,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{4,5},{38,20}}</string>
                 <key>sourceSize</key>
@@ -1437,11 +1606,11 @@
             <key>Sprites/PirateProy/move/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{203,709},{38,20}}</string>
+                <string>{{792,822},{38,20}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{3,5},{38,20}}</string>
                 <key>sourceSize</key>
@@ -1450,11 +1619,11 @@
             <key>Sprites/PriestBolt/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,564},{40,24}}</string>
+                <string>{{194,753},{40,24}}</string>
                 <key>offset</key>
                 <string>{-8,-2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{12,16},{40,24}}</string>
                 <key>sourceSize</key>
@@ -1463,11 +1632,11 @@
             <key>Sprites/PriestBolt/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{683,496},{44,48}}</string>
+                <string>{{728,846},{44,48}}</string>
                 <key>offset</key>
                 <string>{3,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{21,3},{44,48}}</string>
                 <key>sourceSize</key>
@@ -1476,11 +1645,11 @@
             <key>Sprites/PriestBolt/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{733,526},{42,48}}</string>
+                <string>{{766,946},{42,48}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{19,3},{42,48}}</string>
                 <key>sourceSize</key>
@@ -1489,11 +1658,11 @@
             <key>Sprites/PriestBolt/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{632,542},{42,46}}</string>
+                <string>{{835,892},{42,46}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{19,3},{42,46}}</string>
                 <key>sourceSize</key>
@@ -1502,7 +1671,7 @@
             <key>Sprites/PriestBolt/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,536},{26,26}}</string>
+                <string>{{766,996},{26,26}}</string>
                 <key>offset</key>
                 <string>{1,1}</string>
                 <key>rotated</key>
@@ -1515,11 +1684,11 @@
             <key>Sprites/PriestBolt/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,564},{40,24}}</string>
+                <string>{{194,753},{40,24}}</string>
                 <key>offset</key>
                 <string>{-8,-2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{12,16},{40,24}}</string>
                 <key>sourceSize</key>
@@ -1528,7 +1697,7 @@
             <key>Sprites/PriestBolt/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,484},{50,24}}</string>
+                <string>{{675,907},{50,24}}</string>
                 <key>offset</key>
                 <string>{-14,-2}</string>
                 <key>rotated</key>
@@ -1541,7 +1710,7 @@
             <key>Sprites/TeslaRay/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{652,148},{206,62}}</string>
+                <string>{{666,210},{206,62}}</string>
                 <key>offset</key>
                 <string>{-3,-1}</string>
                 <key>rotated</key>
@@ -1554,7 +1723,7 @@
             <key>Sprites/TeslaRay/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{652,148},{206,62}}</string>
+                <string>{{666,210},{206,62}}</string>
                 <key>offset</key>
                 <string>{-3,-1}</string>
                 <key>rotated</key>
@@ -1580,7 +1749,7 @@
             <key>Sprites/TeslaRay/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{336,250},{204,62}}</string>
+                <string>{{336,230},{204,62}}</string>
                 <key>offset</key>
                 <string>{-4,2}</string>
                 <key>rotated</key>
@@ -1593,7 +1762,7 @@
             <key>Sprites/TeslaRay/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{336,314},{204,50}}</string>
+                <string>{{2,372},{204,50}}</string>
                 <key>offset</key>
                 <string>{-1,2}</string>
                 <key>rotated</key>
@@ -1606,7 +1775,7 @@
             <key>Sprites/TeslaRay/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{648,304},{196,52}}</string>
+                <string>{{2,532},{196,52}}</string>
                 <key>offset</key>
                 <string>{-7,1}</string>
                 <key>rotated</key>
@@ -1619,7 +1788,7 @@
             <key>Sprites/TeslaRay/die/05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{648,254},{204,48}}</string>
+                <string>{{2,424},{204,48}}</string>
                 <key>offset</key>
                 <string>{-1,2}</string>
                 <key>rotated</key>
@@ -1632,7 +1801,7 @@
             <key>Sprites/TeslaRay/die/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{652,212},{206,40}}</string>
+                <string>{{336,188},{206,40}}</string>
                 <key>offset</key>
                 <string>{-3,-2}</string>
                 <key>rotated</key>
@@ -1645,7 +1814,7 @@
             <key>Sprites/TeslaRay/die/07.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{336,142},{208,38}}</string>
+                <string>{{666,102},{208,38}}</string>
                 <key>offset</key>
                 <string>{-1,-2}</string>
                 <key>rotated</key>
@@ -1658,33 +1827,7 @@
             <key>Sprites/ThorHammer/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{847,388},{60,48}}</string>
-                <key>offset</key>
-                <string>{-8,-1}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{2,7},{60,48}}</string>
-                <key>sourceSize</key>
-                <string>{80,60}</string>
-            </dict>
-            <key>Sprites/ThorHammer/die/00.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{847,388},{60,48}}</string>
-                <key>offset</key>
-                <string>{-8,-1}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{2,7},{60,48}}</string>
-                <key>sourceSize</key>
-                <string>{80,60}</string>
-            </dict>
-            <key>Sprites/ThorHammer/move/00.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{847,388},{60,48}}</string>
+                <string>{{94,916},{60,48}}</string>
                 <key>offset</key>
                 <string>{-8,-1}</string>
                 <key>rotated</key>
@@ -1697,7 +1840,7 @@
             <key>Sprites/VoodooProy/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,432},{30,28}}</string>
+                <string>{{304,616},{30,28}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -1710,7 +1853,7 @@
             <key>Sprites/VoodooProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,424},{30,28}}</string>
+                <string>{{304,646},{30,28}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
@@ -1723,7 +1866,7 @@
             <key>Sprites/VoodooProy/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{424,458},{44,50}}</string>
+                <string>{{674,965},{44,50}}</string>
                 <key>offset</key>
                 <string>{2,-1}</string>
                 <key>rotated</key>
@@ -1736,11 +1879,11 @@
             <key>Sprites/VoodooProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{871,508},{42,48}}</string>
+                <string>{{791,894},{42,48}}</string>
                 <key>offset</key>
                 <string>{-1,0}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{4,2},{42,48}}</string>
                 <key>sourceSize</key>
@@ -1749,11 +1892,11 @@
             <key>Sprites/VoodooProy/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{680,542},{42,46}}</string>
+                <string>{{866,812},{42,46}}</string>
                 <key>offset</key>
                 <string>{-1,2}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{4,1},{42,46}}</string>
                 <key>sourceSize</key>
@@ -1762,11 +1905,11 @@
             <key>Sprites/VoodooProy/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{783,518},{34,36}}</string>
+                <string>{{892,986},{34,36}}</string>
                 <key>offset</key>
                 <string>{4,-3}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{13,11},{34,36}}</string>
                 <key>sourceSize</key>
@@ -1775,7 +1918,7 @@
             <key>Sprites/VoodooProy/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,432},{30,28}}</string>
+                <string>{{304,616},{30,28}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -1788,11 +1931,11 @@
             <key>Sprites/VoodooProy/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,454},{30,28}}</string>
+                <string>{{630,786},{30,28}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{11,12},{30,28}}</string>
                 <key>sourceSize</key>
@@ -1814,11 +1957,11 @@
             <key>Sprites/VoodooProy/move/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,454},{30,28}}</string>
+                <string>{{630,786},{30,28}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{11,13},{30,28}}</string>
                 <key>sourceSize</key>
@@ -1840,7 +1983,7 @@
             <key>Sprites/VoodooProy/move/05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,400},{30,30}}</string>
+                <string>{{304,392},{30,30}}</string>
                 <key>offset</key>
                 <string>{0,-2}</string>
                 <key>rotated</key>
@@ -1853,7 +1996,7 @@
             <key>Sprites/VoodooProy/move/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{992,258},{30,30}}</string>
+                <string>{{304,424},{30,30}}</string>
                 <key>offset</key>
                 <string>{0,-2}</string>
                 <key>rotated</key>
@@ -1866,7 +2009,7 @@
             <key>Sprites/VoodooProy/move/07.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,462},{30,28}}</string>
+                <string>{{628,818},{30,28}}</string>
                 <key>offset</key>
                 <string>{0,-3}</string>
                 <key>rotated</key>
@@ -1879,7 +2022,7 @@
             <key>Sprites/VoodooProy/move/08.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{992,290},{30,30}}</string>
+                <string>{{304,456},{30,30}}</string>
                 <key>offset</key>
                 <string>{0,-3}</string>
                 <key>rotated</key>
@@ -1892,7 +2035,7 @@
             <key>Sprites/VoodooProy/move/09.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{992,322},{30,30}}</string>
+                <string>{{304,488},{30,30}}</string>
                 <key>offset</key>
                 <string>{0,-2}</string>
                 <key>rotated</key>
@@ -1905,7 +2048,7 @@
             <key>Sprites/VoodooProy/move/10.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{992,354},{30,30}}</string>
+                <string>{{304,520},{30,30}}</string>
                 <key>offset</key>
                 <string>{0,-2}</string>
                 <key>rotated</key>
@@ -1918,7 +2061,7 @@
             <key>Sprites/VoodooProy/move/11.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{992,386},{30,30}}</string>
+                <string>{{304,552},{30,30}}</string>
                 <key>offset</key>
                 <string>{0,-2}</string>
                 <key>rotated</key>
@@ -1931,7 +2074,7 @@
             <key>Sprites/VoodooProy/move/12.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{204,432},{30,28}}</string>
+                <string>{{304,616},{30,28}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
@@ -1944,7 +2087,7 @@
             <key>Sprites/VoodooProy/move/13.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,392},{30,30}}</string>
+                <string>{{304,584},{30,30}}</string>
                 <key>offset</key>
                 <string>{0,-1}</string>
                 <key>rotated</key>
@@ -1957,7 +2100,7 @@
             <key>Sprites/WizardBolt/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{821,538},{46,46}}</string>
+                <string>{{818,844},{46,46}}</string>
                 <key>offset</key>
                 <string>{-3,-3}</string>
                 <key>rotated</key>
@@ -1970,7 +2113,7 @@
             <key>Sprites/WizardBolt/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{328,622},{38,38}}</string>
+                <string>{{898,940},{38,38}}</string>
                 <key>offset</key>
                 <string>{-4,-2}</string>
                 <key>rotated</key>
@@ -1983,7 +2126,7 @@
             <key>Sprites/WizardBolt/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{368,622},{34,34}}</string>
+                <string>{{938,940},{34,34}}</string>
                 <key>offset</key>
                 <string>{-4,-2}</string>
                 <key>rotated</key>
@@ -1996,7 +2139,7 @@
             <key>Sprites/WizardBolt/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{921,513},{32,32}}</string>
+                <string>{{964,976},{32,32}}</string>
                 <key>offset</key>
                 <string>{-3,-2}</string>
                 <key>rotated</key>
@@ -2022,7 +2165,7 @@
             <key>Sprites/WizardBolt/die/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{412,606},{40,38}}</string>
+                <string>{{194,687},{40,38}}</string>
                 <key>offset</key>
                 <string>{1,-1}</string>
                 <key>rotated</key>
@@ -2035,7 +2178,7 @@
             <key>Sprites/WizardBolt/die/05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,701},{64,64}}</string>
+                <string>{{236,664},{64,64}}</string>
                 <key>offset</key>
                 <string>{0,0}</string>
                 <key>rotated</key>
@@ -2048,11 +2191,11 @@
             <key>Sprites/WizardBolt/die/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{733,358},{84,86}}</string>
+                <string>{{156,936},{84,86}}</string>
                 <key>offset</key>
                 <string>{0,1}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{18,16},{84,86}}</string>
                 <key>sourceSize</key>
@@ -2061,7 +2204,7 @@
             <key>Sprites/WizardBolt/die/07.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{546,116},{104,104}}</string>
+                <string>{{524,708},{104,104}}</string>
                 <key>offset</key>
                 <string>{1,-1}</string>
                 <key>rotated</key>
@@ -2074,7 +2217,7 @@
             <key>Sprites/WizardBolt/die/08.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{882,32},{118,116}}</string>
+                <string>{{546,164},{118,116}}</string>
                 <key>offset</key>
                 <string>{0,-2}</string>
                 <key>rotated</key>
@@ -2087,7 +2230,7 @@
             <key>Sprites/WizardBolt/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{821,538},{46,46}}</string>
+                <string>{{818,844},{46,46}}</string>
                 <key>offset</key>
                 <string>{-3,-3}</string>
                 <key>rotated</key>
@@ -2100,7 +2243,7 @@
             <key>Sprites/WizardBolt/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{542,499},{46,46}}</string>
+                <string>{{846,764},{46,46}}</string>
                 <key>offset</key>
                 <string>{-3,-3}</string>
                 <key>rotated</key>
@@ -2113,11 +2256,11 @@
             <key>Sprites/WizardBolt/move/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{633,450},{48,46}}</string>
+                <string>{{680,848},{48,46}}</string>
                 <key>offset</key>
                 <string>{-3,-3}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{33,40},{48,46}}</string>
                 <key>sourceSize</key>
@@ -2204,11 +2347,11 @@
             <key>Sprites/WizardLightning/die/05.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,372},{204,26}}</string>
+                <string>{{208,389},{204,26}}</string>
                 <key>offset</key>
                 <string>{18,2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{36,15},{204,26}}</string>
                 <key>sourceSize</key>
@@ -2217,7 +2360,7 @@
             <key>Sprites/WizardLightning/die/06.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{860,168},{162,24}}</string>
+                <string>{{858,384},{162,24}}</string>
                 <key>offset</key>
                 <string>{39,0}</string>
                 <key>rotated</key>
@@ -2230,7 +2373,7 @@
             <key>Sprites/WizardProy/default.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,578},{34,24}}</string>
+                <string>{{124,804},{34,24}}</string>
                 <key>offset</key>
                 <string>{-10,0}</string>
                 <key>rotated</key>
@@ -2243,11 +2386,11 @@
             <key>Sprites/WizardProy/die/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{470,532},{46,42}}</string>
+                <string>{{894,764},{46,42}}</string>
                 <key>offset</key>
                 <string>{-1,-2}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{8,5},{46,42}}</string>
                 <key>sourceSize</key>
@@ -2256,11 +2399,11 @@
             <key>Sprites/WizardProy/die/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{460,576},{44,38}}</string>
+                <string>{{879,860},{44,38}}</string>
                 <key>offset</key>
                 <string>{0,1}</string>
                 <key>rotated</key>
-                <false/>
+                <true/>
                 <key>sourceColorRect</key>
                 <string>{{10,4},{44,38}}</string>
                 <key>sourceSize</key>
@@ -2269,7 +2412,7 @@
             <key>Sprites/WizardProy/die/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{590,545},{44,40}}</string>
+                <string>{{194,641},{44,40}}</string>
                 <key>offset</key>
                 <string>{1,0}</string>
                 <key>rotated</key>
@@ -2282,7 +2425,7 @@
             <key>Sprites/WizardProy/die/03.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{632,586},{34,32}}</string>
+                <string>{{879,906},{34,32}}</string>
                 <key>offset</key>
                 <string>{-3,-5}</string>
                 <key>rotated</key>
@@ -2295,7 +2438,7 @@
             <key>Sprites/WizardProy/move/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,578},{34,24}}</string>
+                <string>{{124,804},{34,24}}</string>
                 <key>offset</key>
                 <string>{-10,0}</string>
                 <key>rotated</key>
@@ -2308,7 +2451,7 @@
             <key>Sprites/WizardProy/move/01.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{304,614},{48,22}}</string>
+                <string>{{400,934},{48,22}}</string>
                 <key>offset</key>
                 <string>{-7,-1}</string>
                 <key>rotated</key>
@@ -2321,11 +2464,11 @@
             <key>Sprites/WizardProy/move/02.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1002,86},{40,20}}</string>
+                <string>{{357,912},{40,20}}</string>
                 <key>offset</key>
                 <string>{-7,-3}</string>
                 <key>rotated</key>
-                <true/>
+                <false/>
                 <key>sourceColorRect</key>
                 <string>{{5,17},{40,20}}</string>
                 <key>sourceSize</key>
@@ -2341,7 +2484,7 @@
             <key>size</key>
             <string>{1024,1024}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:24ef8ed05d7f359364371b04779114fd:3850826049ddc372d9b491e5353b6566:84263f661ed76fc49b78530a67bc62b5$</string>
+            <string>$TexturePacker:SmartUpdate:3bf83777a800eb65b095a148fb39642d:b42a77e6ab621e3d7db7e8dff21de323:84263f661ed76fc49b78530a67bc62b5$</string>
             <key>textureFileName</key>
             <string>Projectiles0.png</string>
         </dict>

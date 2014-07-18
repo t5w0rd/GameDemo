@@ -16,7 +16,7 @@ lvl = 1
 taid2 = 0
 
 function spawnSoldier(id, force)
-	u = createUnit(id)
+	local u = createUnit(id)
 	u:setForceByIndex(force)
 
 	if force == 1 then
@@ -49,15 +49,17 @@ function spawnHero(id, force)
 	local u = spawnSoldier(id, force)
 	u:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
 	if me:getLevel() > 15 and math.random() < 0.1 then
-		u:setExMaxHp(1 + kill / 10, 0.0)
+		u:setExArmorValue(1 + kill / 10, kill)
 	end
 	u:setRewardGold(50 + kill * 20 / 1.5)
 	u:setRewardExp(20 + kill * 10 / 1.5)
 	local at, av = u:getBaseArmor()
 	u:setBaseArmor(at, av + kill * 0.7)
+	local atk = me:getAttackAbility()
+	local mt, mv = atk:getBaseAttack()
 	atk = u:getAttackAbility()
-	t, v = atk:getBaseAttack()
-	atk:setBaseAttack(t, v * (1 + kill / 5.0) + kill * 4)
+	local t, v = atk:getBaseAttack()
+	atk:setBaseAttack(t, (v * (1 + kill / 5.0) + kill * 4) * 0.5 + mv * 0.5)
 	atk:setExAttackSpeed(1.0 + kill / 30, 0.0)
 	for i = 1, (3 + kill / 2) do
 		u:addPassiveAbility(aaa[math.random(1, c)])
@@ -73,10 +75,10 @@ function spawnHero(id, force)
 			u:addActiveAbility(AL.kKnockBack:getId())
 		else
 			u:setAI(LuaAI:new())
-			u:addActiveAbility(AL.kThrowHammer:getId())
-			u:addActiveAbility(AL.kThunderCap:getId())
+			--u:addActiveAbility(AL.kThrowHammer:getId())
+			--u:addActiveAbility(AL.kThunderCap:getId())
 			u:addActiveAbility(AL.kSpeedUp:getId())
-			u:addActiveAbility(AL.kChargeJump:getId())
+			--u:addActiveAbility(AL.kChargeJump:getId())
 		end
 	else
 		u:setExMaxHp(0.20, 0.0)
@@ -84,19 +86,7 @@ function spawnHero(id, force)
 		u:addActiveAbility(AL.kKnockBack:getId())
 	end
 	
-	if id == UL.kMage then
-		u:addActiveAbility(AL.kGravitySurf:getId())
-		u:addActiveAbility(SAL.kMageRain, 3)
-	elseif id == UL.kFrost then
-		u:addActiveAbility(AL.kSnowStorm:getId())
-	elseif id == UL.kArcher then
-		u:addActiveAbility(AL.kCutter:getId())
-	elseif id == UL.kElemental then
-		u:addActiveAbility(AL.kSerialExplode:getId())
-	elseif id == SUL.kPriest then
-		u:addActiveAbility(AL.kWarCry:getId())
-		u:addActiveAbility(AL.kSweetDew:getId())
-	end
+	addAbilitiesForUnit(u, id)
 	
 	return u
 end
@@ -126,7 +116,7 @@ function initAbilityForLevelUp()
 	c = c + 1
 	aaa[c] = addTemplateAbility(a)
 
-	a = KnockBackBuff:new("KnockBack", "KnockBack", 0.5, 30)
+	a = KnockBackBuff:new("KnockBack", 0.5, 30)
 	id = addTemplateAbility(a)
 	a = AttackBuffMakerPas:new("KnockBackAttack", 0.2, id, false, 1.5, 0.0, 0)
 	c = c + 1
@@ -150,7 +140,7 @@ function initAbilityForLevelUp()
 	c = c + 1
 	aaa[c] = addTemplateAbility(a)
 
-	a = ChangeHpBuff:new("+HP", "Heal", 3, true, 0.2, 0.0, 1, 0.0, 0.0)
+	a = ChangeHpBuff:new("+HP", "Heal", 3, true, 0.2, 0.0002, 1, 0.0, 0.0)
 	id = addTemplateAbility(a)
 	a = EvadePas:new("Evade", 0.20, id)
 	c = c + 1

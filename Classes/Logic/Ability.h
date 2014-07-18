@@ -531,8 +531,8 @@ protected:
     static const int CONST_ACT_TAG;
 
 public:
-    CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance);
-    CKnockBackBuff(const char* pRootId, const char* pName, float fDuration, float fDistance, const CPoint& rRefPosition);
+    CKnockBackBuff(const char* pName, float fDuration, float fDistance);
+    CKnockBackBuff(const char* pName, float fDuration, float fDistance, const CPoint& rRefPosition);
     virtual CKnockBackBuff* copy() override;
 
     virtual void onUnitAddAbility() override;
@@ -554,7 +554,7 @@ protected:
     static const int CONST_ACT_TAG;
 
 public:
-    CAttractBuff(const char* pRootId, const char* pName, float fDuration, float fDistance);
+    CAttractBuff(const char* pName, float fDuration, float fDistance);
 
     virtual CAttractBuff* copy() override;
 

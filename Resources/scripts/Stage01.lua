@@ -12,8 +12,8 @@ uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
 uc.atk.v = 5.0
 uc.atk.i = 1.0
-uc.arm.t = ArmorValue.kHeavy
-uc.arm.v = 0.0
+uc.amr.t = ArmorValue.kHeavy
+uc.amr.v = 0.0
 uc.reward.g = 5
 uc.reward.e = 5
 
@@ -26,8 +26,8 @@ uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
 uc.atk.v = 205.0
 uc.atk.i = 1.0
-uc.arm.t = ArmorValue.kHeavy
-uc.arm.v = 100.0
+uc.amr.t = ArmorValue.kHeavy
+uc.amr.v = 100.0
 uc.reward.g = 500
 uc.reward.e = 500
 

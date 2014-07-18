@@ -472,16 +472,29 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Sprites/Artillery/act2/08.png</key>
+            <key>Sprites/Artillery/act2/04.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{1978,330},{68,98}}</string>
+                <string>{{702,1490},{78,68}}</string>
                 <key>offset</key>
-                <string>{-4,-3}</string>
+                <string>{8,-18}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{54,36},{68,98}}</string>
+                <string>{{61,66},{78,68}}</string>
+                <key>sourceSize</key>
+                <string>{184,164}</string>
+            </dict>
+            <key>Sprites/Artillery/act2/05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{980,1430},{80,64}}</string>
+                <key>offset</key>
+                <string>{6,-19}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{58,69},{80,64}}</string>
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
@@ -511,29 +524,16 @@
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
-            <key>Sprites/Artillery/act4/04.png</key>
+            <key>Sprites/Artillery/act4/08.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{702,1490},{78,68}}</string>
+                <string>{{1978,330},{68,98}}</string>
                 <key>offset</key>
-                <string>{8,-18}</string>
+                <string>{-4,-3}</string>
                 <key>rotated</key>
                 <false/>
                 <key>sourceColorRect</key>
-                <string>{{61,66},{78,68}}</string>
-                <key>sourceSize</key>
-                <string>{184,164}</string>
-            </dict>
-            <key>Sprites/Artillery/act4/05.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{980,1430},{80,64}}</string>
-                <key>offset</key>
-                <string>{6,-19}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{58,69},{80,64}}</string>
+                <string>{{54,36},{68,98}}</string>
                 <key>sourceSize</key>
                 <string>{184,164}</string>
             </dict>
@@ -1944,136 +1944,6 @@
             <key>Sprites/Frost/act2/00.png</key>
             <dict>
                 <key>frame</key>
-                <string>{{2,1968},{82,78}}</string>
-                <key>offset</key>
-                <string>{2,-41}</string>
-                <key>rotated</key>
-                <false/>
-                <key>sourceColorRect</key>
-                <string>{{43,106},{82,78}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/01.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1496,1966},{80,78}}</string>
-                <key>offset</key>
-                <string>{2,-41}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,106},{80,78}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/02.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1576,1766},{80,76}}</string>
-                <key>offset</key>
-                <string>{2,-41}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,107},{80,76}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/03.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1654,1966},{80,76}}</string>
-                <key>offset</key>
-                <string>{2,-41}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,107},{80,76}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/04.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{480,856},{86,90}}</string>
-                <key>offset</key>
-                <string>{5,-34}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,93},{86,90}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/05.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{828,560},{88,96}}</string>
-                <key>offset</key>
-                <string>{6,-32}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,88},{88,96}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/07.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{98,556},{90,94}}</string>
-                <key>offset</key>
-                <string>{7,-33}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,90},{90,94}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/08.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{194,644},{90,94}}</string>
-                <key>offset</key>
-                <string>{7,-33}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,90},{90,94}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/09.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1242,1430},{82,84}}</string>
-                <key>offset</key>
-                <string>{3,-37}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,99},{82,84}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act2/10.png</key>
-            <dict>
-                <key>frame</key>
-                <string>{{1724,1714},{78,84}}</string>
-                <key>offset</key>
-                <string>{1,-38}</string>
-                <key>rotated</key>
-                <true/>
-                <key>sourceColorRect</key>
-                <string>{{44,100},{78,84}}</string>
-                <key>sourceSize</key>
-                <string>{164,208}</string>
-            </dict>
-            <key>Sprites/Frost/act3/00.png</key>
-            <dict>
-                <key>frame</key>
                 <string>{{1918,1476},{78,88}}</string>
                 <key>offset</key>
                 <string>{1,-35}</string>
@@ -2084,7 +1954,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/01.png</key>
+            <key>Sprites/Frost/act2/01.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1784,1164},{78,94}}</string>
@@ -2097,7 +1967,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/02.png</key>
+            <key>Sprites/Frost/act2/02.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{432,332},{76,98}}</string>
@@ -2110,7 +1980,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/03.png</key>
+            <key>Sprites/Frost/act2/03.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1928,888},{76,100}}</string>
@@ -2123,7 +1993,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/04.png</key>
+            <key>Sprites/Frost/act2/04.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1724,786},{100,76}}</string>
@@ -2136,7 +2006,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/05.png</key>
+            <key>Sprites/Frost/act2/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{654,262},{100,70}}</string>
@@ -2149,7 +2019,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/06.png</key>
+            <key>Sprites/Frost/act2/06.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1936,810},{100,76}}</string>
@@ -2162,7 +2032,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/07.png</key>
+            <key>Sprites/Frost/act2/07.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1826,836},{100,76}}</string>
@@ -2175,7 +2045,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/08.png</key>
+            <key>Sprites/Frost/act2/08.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1974,430},{102,72}}</string>
@@ -2188,7 +2058,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/09.png</key>
+            <key>Sprites/Frost/act2/09.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1766,252},{104,72}}</string>
@@ -2201,7 +2071,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/10.png</key>
+            <key>Sprites/Frost/act2/10.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1892,2},{106,78}}</string>
@@ -2214,7 +2084,7 @@
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
-            <key>Sprites/Frost/act3/11.png</key>
+            <key>Sprites/Frost/act2/11.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{1174,1966},{80,80}}</string>
@@ -2224,6 +2094,136 @@
                 <false/>
                 <key>sourceColorRect</key>
                 <string>{{44,103},{80,80}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/00.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{2,1968},{82,78}}</string>
+                <key>offset</key>
+                <string>{2,-41}</string>
+                <key>rotated</key>
+                <false/>
+                <key>sourceColorRect</key>
+                <string>{{43,106},{82,78}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/01.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1496,1966},{80,78}}</string>
+                <key>offset</key>
+                <string>{2,-41}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,106},{80,78}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/02.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1576,1766},{80,76}}</string>
+                <key>offset</key>
+                <string>{2,-41}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,107},{80,76}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/03.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1654,1966},{80,76}}</string>
+                <key>offset</key>
+                <string>{2,-41}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,107},{80,76}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/04.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{480,856},{86,90}}</string>
+                <key>offset</key>
+                <string>{5,-34}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,93},{86,90}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/05.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{828,560},{88,96}}</string>
+                <key>offset</key>
+                <string>{6,-32}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,88},{88,96}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/07.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{98,556},{90,94}}</string>
+                <key>offset</key>
+                <string>{7,-33}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,90},{90,94}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/08.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{194,644},{90,94}}</string>
+                <key>offset</key>
+                <string>{7,-33}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,90},{90,94}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/09.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1242,1430},{82,84}}</string>
+                <key>offset</key>
+                <string>{3,-37}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,99},{82,84}}</string>
+                <key>sourceSize</key>
+                <string>{164,208}</string>
+            </dict>
+            <key>Sprites/Frost/act3/10.png</key>
+            <dict>
+                <key>frame</key>
+                <string>{{1724,1714},{78,84}}</string>
+                <key>offset</key>
+                <string>{1,-38}</string>
+                <key>rotated</key>
+                <true/>
+                <key>sourceColorRect</key>
+                <string>{{44,100},{78,84}}</string>
                 <key>sourceSize</key>
                 <string>{164,208}</string>
             </dict>
@@ -3306,7 +3306,7 @@
                 <key>sourceSize</key>
                 <string>{360,412}</string>
             </dict>
-            <key>Sprites/Lumberjack/act2/05.png</key>
+            <key>Sprites/Lumberjack/act3/05.png</key>
             <dict>
                 <key>frame</key>
                 <string>{{898,80},{98,108}}</string>
@@ -7398,7 +7398,7 @@
             <key>size</key>
             <string>{2048,2048}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:99a824dd17f5d1f137d663447ab9600d:f232f1cd76c4de3473380705babf0649:cbc7ffaea9b3cb73f4655ba87628df80$</string>
+            <string>$TexturePacker:SmartUpdate:cba5522a44d11959c5e34cf5e275aea1:9c94e6415318ea1d904dcdf29427c1e4:cbc7ffaea9b3cb73f4655ba87628df80$</string>
             <key>textureFileName</key>
             <string>Heroes4.png</string>
         </dict>
