@@ -217,7 +217,7 @@ uc.hp = 3000
 uc.ms = 60
 uc.force.index = 1
 uc.atk.t = AttackValue.kMagical
-uc.atk.v = 100.0
+uc.atk.v = 80.0
 uc.atk.i = 2.0
 uc.atk.r = 0.10
 uc.amr.t = ArmorValue.kCrystal
@@ -231,19 +231,35 @@ table.insert(ucs, uc)
 Stage03 = class(Battle)
 function Stage03:onInit()
 	local hero = initForHero()
+	hero:setGhost(hero)
+	--hero:setVisible(false)
 	--hero:setLevel(20)
-	hero:addExp(10000)
-	hero:setGhost(true)
+	--hero:addExp(10000)
 	hero:setAlly(2 ^ 0 + 2 ^ 1 + 2 ^ 2)
+	hero:setPosition(750, 800)
 	
 	local u, uc, us, id
-	local n = math.random(5)
-	
+	local n
 	us = {}
+	
+	local tm = {}
+	tm[1] = {}
+	tm[2] = {UL.kThor, UL.kElemental, UL.kViking, SUL.kPriest}
+	tm[3] = {UL.kElemental, UL.kViking, UL.kMage, UL.kArtillery}
+	tm[3] = {UL.kFrost, UL.kArcher, UL.kMage, UL.kLumberjack}
+	
+	local rnd = math.random(1, #tm)
+	team = tm[rnd]
+	if rnd == 1 then
+		n = math.random(5)
+	else
+		n = 4
+	end
+	
 	for i = 1, n do
 		repeat
 			id = math.random(#ucs)
-		until not us[id]
+		until ( #team < i and not us[id]) or (#team >= i and team[i] == ucs[id].id)
 		us[id] = true
 		
 		uc = ucs[id]
@@ -254,7 +270,9 @@ function Stage03:onInit()
 		u:setForceByIndex(0)
 		u:setAlly(2 ^ 0 + 2 ^ 2)
 		u:setPosition(300 + math.random(-50, 50), 500 + math.random(-50, 50))
+		setPortrait(i - 1, u)
 	end
+	showUnitInfo(0)
 	
 	us = {}
 	for i = 1, n do
@@ -272,7 +290,7 @@ function Stage03:onInit()
 		u:setAlly(2 ^ 1 + 2 ^ 2)
 		u:setPosition(1200 + math.random(-50, 50), 500 + math.random(-50, 50))
 	end
-	setControlUnit(u)
+	--setControlUnit(u)
 end
 
 function Stage03:onTick(dt)

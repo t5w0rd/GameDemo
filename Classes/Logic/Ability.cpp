@@ -958,9 +958,37 @@ void CActiveAbility::effect()
 
 const CPoint& CActiveAbility::getAbilityEffectPoint(CProjectile* pProjectile, CUnit* pTarget)
 {
+    if (pProjectile != nullptr)
+    {
+        return pProjectile->getPosition();
+    }
+
+    if (pTarget != nullptr)
+    {
+        auto td = DCAST(pTarget->getDraw(), CUnitDraw2D*);
+        return td->getPosition();
+    }
+
     CUnitDraw2D* od = DCAST(getOwner()->getDraw(), CUnitDraw2D*);
-    const CPoint& ret = ((pProjectile != nullptr) ? pProjectile->getPosition() : (getCastTargetType() == CCommandTarget::kNoTarget ? od->getPosition() : od->getCastTarget().getTargetPoint()));
-    return ret;
+
+    switch (getCastTargetType())
+    {
+    case CCommandTarget::kNoTarget:
+        return od->getPosition();
+
+    case CCommandTarget::kPointTarget:
+        return od->getCastTarget().getTargetPoint();
+    }
+
+    auto u = getOwner()->getUnit(od->getCastTarget().getTargetUnit());
+    if (u == nullptr)
+    {
+        CCLOG("ERR | getAbilityEffectPoint() err");
+        return od->getPosition();
+    }
+
+    CUnitDraw2D* ud = DCAST(u->getDraw(), CUnitDraw2D*);
+    return ud->getPosition();
 }
 
 // CPassiveAbility
@@ -1249,10 +1277,12 @@ bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
         
     case CCommandTarget::kUnitTarget:
         pTarget = o->getUnit(rTarget.getTargetUnit());
-        if (pTarget != nullptr && (pTarget->isDead()))
+        if (pTarget != nullptr && (pTarget->isDead() || !o->canEffect(DCAST(pTarget, CUnitForce*), getEffectiveTypeFlags())))
         {
-            pTarget = nullptr;
+            m_iTargetId = 0;
+            return false;
         }
+        m_iTargetId = pTarget->getId();
         
         break;
         
@@ -1261,10 +1291,12 @@ bool CBuffMakerAct::checkConditions(const CCommandTarget& rTarget)
     }
 
     m_iTargetId = pTarget != nullptr ? pTarget->getId() : 0;
+    return true;
     
     if (pTarget != nullptr &&
         !o->canEffect(DCAST(pTarget, CUnitForce*), getEffectiveTypeFlags()))
     {
+        return false;
         // 如果有待选目标(自身或命令目标)，但是无法作用
         if (getCastTargetRadius() <= FLT_EPSILON ||
             getEffectiveTypeFlags() == CUnitForce::kSelf)
@@ -1668,6 +1700,16 @@ void CDamageBuff::onUnitAddAbility()
 {
     CUnit* o = getOwner();
     CUnit* s = o->getUnit(getSrcUnit());
+    if (s == nullptr)
+    {
+        return;
+    }
+
+    if (s->isGhost())
+    {
+        s = s->getRootGhostOwner();
+    }
+
     if (s == nullptr)
     {
         return;
@@ -3030,6 +3072,7 @@ void CChargeJumpBuff::onJumpDone()
     od->getSprite()->getParent()->addChild(eff);
     eff->setScale(0.6f);
     eff->setLogicPosition(od->getPosition());
+    eff->setLocalZOrder(1.0f);
     eff->playRelease();
 
     M_DEF_GC(gc);

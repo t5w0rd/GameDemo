@@ -2278,6 +2278,21 @@ int CUnit::getGhostOwner() const
     return m_iGhostOwner;
 }
 
+CUnit* CUnit::getRootGhostOwner()
+{
+    CUnit* res = this;
+    while (res != nullptr && res->isGhost())
+    {
+        auto go = res->getUnit(res->getGhostOwner());
+        if (go == res)
+        {
+            break;
+        }
+        res = go;
+    }
+    return res;
+}
+
 void CUnit::setResource(CForceResource* var)
 {
     M_SAFE_RETAIN(var);
@@ -2468,6 +2483,62 @@ CAction* CUnit::getActionByTag(int iTag)
     return m_oActMgr.getActionByTag(iTag);
 }
 
+// CAIRetainer
+CAIRetainer::CAIRetainer()
+: m_w(nullptr)
+, m_unitId(0)
+, m_aiOld(nullptr)
+, m_aiCur(nullptr)
+{
+}
+
+CAIRetainer::~CAIRetainer()
+{
+    M_SAFE_RELEASE(m_aiOld);
+    M_SAFE_RELEASE(m_aiCur);
+}
+
+void CAIRetainer::init(CWorld* w)
+{
+    m_w = w;
+}
+
+void CAIRetainer::retain(CUnit* u)
+{
+    if (u != nullptr && (u->getAI() == nullptr || (u->getId() == m_unitId && m_aiCur == u->getAI())))
+    {
+        return;
+    }
+
+    if (m_aiOld != nullptr)
+    {
+        auto old = m_w->getUnit(m_unitId);
+        if (old != nullptr && m_aiCur == old->getAI())
+        {
+            // 之前的单位存在，且AI没有更换
+            old->setAI(m_aiOld);
+        }
+        m_aiOld->release();
+        m_aiCur->release();
+    }
+
+    if (u == nullptr)
+    {
+        m_unitId = 0;
+        m_aiOld = nullptr;
+        m_aiCur = nullptr;
+    }
+    else
+    {
+        m_unitId = u->getId();
+        m_aiOld = u->getAI();
+        m_aiOld->retain();
+        m_aiCur = new CBaseAI();
+        m_aiCur->retain();
+        u->setAI(m_aiCur);
+    }
+}
+
 // CWorld
 CWorld::CWorld()
 : m_iScriptHandler(0)
@@ -2508,7 +2579,22 @@ void CWorld::onDelProjectile(CProjectile* pProjectile)
 
 bool CWorld::init()
 {
+    m_aiRetainer.init(this);
     return onInit();
+}
+
+void CWorld::setControlUnit(CUnit* u)
+{
+    if (u == nullptr)
+    {
+        m_iControlUnit = 0;
+    }
+    else
+    {
+        m_iControlUnit = u->getId();
+    }
+
+    m_aiRetainer.retain(u);
 }
 
 void CWorld::addUnit(CUnit* pUnit)

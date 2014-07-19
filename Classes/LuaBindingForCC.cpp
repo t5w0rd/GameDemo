@@ -857,6 +857,50 @@ int g_saveUserData(lua_State* L)
     return 0;
 }
 
+int g_setPortrait(lua_State* L)
+{
+    int idx = lua_tointeger(L, 1);
+    CUnit* u = luaL_tounitptr(L, 2);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    auto l = DCAST(w->getLayer(), BattleSceneLayer*);
+    l->m_pp.setPortrait(idx, u, CC_CALLBACK_1(BattleSceneLayer::onClickHeroPortrait, l));
+
+    return 0;
+}
+
+int g_delPortrait(lua_State* L)
+{
+    int idx = lua_tointeger(L, 1);
+    bool follow = luaL_tobooleandef(L, 2, false);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    auto l = DCAST(w->getLayer(), BattleSceneLayer*);
+    l->m_pp.delPortrait(idx, follow);
+
+    return 0;
+}
+
+int g_showUnitInfo(lua_State* L)
+{
+    auto id = luaL_tounitid(L, 1);
+
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    auto l = DCAST(w->getLayer(), BattleSceneLayer*);
+    l->updateTargetInfo(id);
+
+    return 0;
+}
+
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -868,6 +912,9 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "endWithVictory", g_endWithVictory);
     lua_register(L, "endWithDefeat", g_endWithDefeat);
     lua_register(L, "saveUserData", g_saveUserData);
+    lua_register(L, "setPortrait", g_setPortrait);
+    lua_register(L, "delPortrait", g_delPortrait);
+    lua_register(L, "showUnitInfo", g_showUnitInfo);
 
     return 0;
 }

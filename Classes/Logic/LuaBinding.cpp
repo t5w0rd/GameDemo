@@ -1211,9 +1211,9 @@ int Unit_say(lua_State* L)
 int Unit_setGhost(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    bool ghost = luaL_tobooleandef(L, 2, true);
+    int owner = luaL_tounitid(L, 2);
 
-    u->setGhost(ghost);
+    u->setGhost(owner);
 
     return 0;
 }
@@ -3891,11 +3891,11 @@ int g_onWorldTick(lua_State* L)
 
 int g_setControlUnit(lua_State* L)
 {
-    int id = luaL_tounitid(L, 1);
+    auto u = luaL_tounitptr(L, 1);
 
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    w->setControlUnit(id);
+    w->setControlUnit(u);
     lua_pop(L, 1);
 
     return 0;

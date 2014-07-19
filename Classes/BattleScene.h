@@ -58,6 +58,42 @@ public:
 
 };
 
+class CPortraitPanel
+{
+public:
+    struct PORTRAIT_INFO
+    {
+        ButtonNormal* portrait;
+        ProgressBar* hpBar;
+        ProgressBar* expBar;
+        Label* levelNum;
+
+        int unitId;
+        float hpPer;
+        float expPer;
+        int level;
+
+        PORTRAIT_INFO() { clear(); }
+        void clear() { memset(this, 0, sizeof(PORTRAIT_INFO)); }
+    };
+
+public:
+    CPortraitPanel();
+
+    void init(CWorldForCC* world, Node* parent, int max);
+    void updatePortrait(int index);
+    void delPortrait(int index, bool follow = false);
+    void setPortrait(int index, CUnit* u, const ccMenuCallback& onClick);
+    void updateContent();
+
+protected:
+    void createPortrait(PORTRAIT_INFO& pi, CUnit* u, const ccMenuCallback& onClick);
+
+    vector<PORTRAIT_INFO> m_vecPortraits;
+    CWorldForCC* m_w;
+    ButtonPanel* m_bp;
+};
+
 class ProgressBar;
 class BattleSceneLayer : public UnitLayer
 {
@@ -118,22 +154,9 @@ public:
     void updateTargetInfo(int id = 0);
     void showTargetInfo(bool bShow = true);
 
-    //Sprite* m_pHeroPortrait;
-    ProgressBar* m_pHeroHpBar;
-    ProgressBar* m_pHeroExpBar;
-    Label* m_pHeroLevel;
-    struct HERO_INFO
-    {
-        float fHpPer;
-        float fExpPer;
-        int iLevel;
-        HERO_INFO() { memset(this, 0, sizeof(HERO_INFO)); }
-    };
-    HERO_INFO m_stHeroInfo;
-    ButtonPanel* m_bp;
-    void initHeroPortrait();
-    void updateHeroPortrait();
+    CPortraitPanel m_pp;
 
+    ButtonPanel* m_bp;
     ButtonBase* createAbilityButton(CAbility* ability);
     void initHeroAbilityPanel();
     void updateHeroAbilityPanel();
@@ -167,6 +190,8 @@ public:
     void endWithDefeat();
 
     void onShowVictoryDone(Node* node);
+
+    MenuEx* m_mn;
     
 };
 

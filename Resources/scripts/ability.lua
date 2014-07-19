@@ -203,21 +203,13 @@ function SummonUnitAct:onUnitAbilityEffect(projectile, target)
     u:setForce(o:getForce())
     u:setAlly(o:getAlly())
     u:setLevel(self:getLevel())
-    u:setGhost()
+    u:setGhost(o)
     u:doAnimation(Sprite.kAniMove, INFINITE)
 	u:doRotateBy(360, 1.0, INFINITE)
 
     u:addBuffAbility(LimitedLifeBuff:new("LimitedLife", "LimitedLife", self.duration))
-
-    a = AttractBuff:new("Attract", 1, 10.0)
-    id = addTemplateAbility(a)
-    a = AuraPas:new("AttractAura", 0.5, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
-    u:addPassiveAbility(a)
-
-    a = DamageBuff:new("dmg", AttackValue.kMagical, 0.0, 1.50, 0.0)
-    id = addTemplateAbility(a)
-    a = AuraPas:new("DamageAura", 0.5, id, self:getCastTargetRadius(), UnitForce.kEnemy, false)
-    u:addPassiveAbility(a)
+	u:addPassiveAbility(AL.kAttractAura:getId())
+    
 end
 
 BerserkerBloodPas = class(PassiveAbility)

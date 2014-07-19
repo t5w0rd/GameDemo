@@ -1172,7 +1172,7 @@ void ButtonBase::coolDown(float fFromPercent)
 {
     if (getCoolDown())
     {
-        float fCoolDownReal = getCoolDown() * (100.0 - fFromPercent) / 100.0;
+        float fCoolDownReal = getCoolDown() * (1.0f - fFromPercent);
         if (m_pMask != nullptr)
         {
             m_pMask->setVisible(true);
@@ -1184,13 +1184,13 @@ void ButtonBase::coolDown(float fFromPercent)
         if (_disabledImage != nullptr)
         {
             _disabledImage->stopAllActions();
-            DCAST(_disabledImage, Sprite*)->setOpacity(0x50 + (0xFF - 0x50) * fFromPercent / 100.0);
+            DCAST(_disabledImage, Sprite*)->setOpacity(0x50 + (0xFF - 0x50) * fFromPercent);
             _disabledImage->runAction(FadeTo::create(fCoolDownReal, 0xFF));
         }
         
 
         //m_pPt->setOpacity(0x7F + (0xFF - 0x7F) * fFromPercent / 100.0);
-        ProgressFromTo* pPro = ProgressFromTo::create(fCoolDownReal, fFromPercent, 100.0f);
+        ProgressFromTo* pPro = ProgressFromTo::create(fCoolDownReal, fFromPercent * 100.0f, 100.0f);
 
         m_pPt->stopAllActions();
         m_pPt->runAction(

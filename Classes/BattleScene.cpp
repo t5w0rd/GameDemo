@@ -55,7 +55,7 @@ bool CBattleWorld::onInit()
     CUserData* udt = CUserData::instance();
     u = CUnitLibraryForCC::instance()->copyUnit(udt->getHeroSelected()->id);
     addUnit(u);
-    setControlUnit(u->getId());
+    setControlUnit(u);
     setHero(u);
     u->setMaxLevel(20);
     u->updateExpRange();
@@ -107,6 +107,9 @@ bool CBattleWorld::onInit()
     u->setBaseArmor(udt->getHeroSelected()->armVal);
     d->setBaseMoveSpeed(udt->getHeroSelected()->moveSpeed);
 
+    l->m_pp.init(this, l->getCtrlLayer(), 5);
+    l->m_pp.setPortrait(0, getUnit(getControlUnit()), CC_CALLBACK_1(BattleSceneLayer::onClickHeroPortrait, l));
+
     onLuaWorldInit();
 
     u->addExp(udt->getHeroSelected()->exp);
@@ -118,9 +121,6 @@ bool CBattleWorld::onInit()
 
     l->initResourceInfo();
     l->updateResourceInfo(fr->getGold());
-    
-    l->initHeroPortrait();
-    l->updateHeroPortrait();
 
     l->initHeroAbilityPanel();
     l->updateHeroAbilityPanel();
@@ -160,7 +160,7 @@ void CBattleWorld::onTick(float dt)
 
     BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
     l->updateTargetInfo();
-    l->updateHeroPortrait();
+    l->m_pp.updateContent();
 }
 
 bool CBattleWorld::onLuaWorldInit()
@@ -338,7 +338,8 @@ void CBattleWorld::onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile
 
 void CBattleWorld::onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
 {
-    if (pUnit != getHero())
+    auto u = getUnit(getControlUnit());
+    if (pUnit != u)
     {
         return;
     }
@@ -349,7 +350,8 @@ void CBattleWorld::onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility
 
 void CBattleWorld::onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
 {
-    if (pUnit != getHero())
+    auto u = getUnit(getControlUnit());
+    if (pUnit != u)
     {
         return;
     }
@@ -360,7 +362,8 @@ void CBattleWorld::onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility
 
 void CBattleWorld::onUnitAbilityCD(CUnit* pUnit, CAbility* pAbility)
 {
-    if (pUnit != getHero())
+    auto u = getUnit(getControlUnit());
+    if (pUnit != u)
     {
         return;
     }
@@ -422,6 +425,137 @@ bool BattleScene::init()
     m_pWorld->retain();
 
     return Scene::init();
+}
+
+// CPortraitPanel
+CPortraitPanel::CPortraitPanel()
+: m_w(nullptr)
+, m_bp(nullptr)
+{
+}
+
+void CPortraitPanel::init(CWorldForCC* world, Node* parent, int max)
+{
+    m_w = world;
+
+    m_bp = ButtonPanel::create(max, 1, Size(112, 124), 0, 10, nullptr);
+    parent->addChild(m_bp);
+    m_bp->setPosition(Point(m_bp->getContentSize().width * 0.5 + 30, wsz().height * 0.5));
+
+    m_vecPortraits.resize(max);
+}
+
+void CPortraitPanel::createPortrait(PORTRAIT_INFO& pi, CUnit* u, const ccMenuCallback& onClick)
+{
+    M_DEF_GC(gc);
+
+    SpriteFrameCache* fc = gc->getfc();
+    char sz[1024];
+    sprintf(sz, "Sprites/%s/portrait_hero.png", DCAST(u->getDraw(), CUnitDrawForCC*)->getSpriteInfo()->getName());
+    SpriteFrame* fr = fc->getSpriteFrameByName(sz);
+    if (fr == nullptr)
+    {
+        sprintf(sz, "UI/HeroInfo/portrait_hero.png");
+    }
+
+    pi.portrait = ButtonNormal::createWithFrameName(sz, sz, nullptr, nullptr, nullptr, 0.0f, onClick, nullptr);
+    pi.portrait->setUserData(&pi);
+
+    Sprite* fill = Sprite::createWithSpriteFrameName("UI/status/HpBarFill.png");
+    Sprite* border = Sprite::createWithSpriteFrameName("UI/status/HpBarBorder.png");
+    pi.hpBar = ProgressBar::create(Size(104, 8), fill, border, 0, 0, true);
+    pi.portrait->addChild(pi.hpBar);
+    pi.hpBar->setPosition(Point(pi.portrait->getContentSize().width * 0.5, 16));
+
+    fill = Sprite::createWithSpriteFrameName("UI/status/ExpBarFill.png");
+    border = Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png");
+    pi.expBar = ProgressBar::create(Size(104, 8), fill, border, 0, 0, true);
+    pi.portrait->addChild(pi.expBar);
+    pi.expBar->setPosition(Point(pi.portrait->getContentSize().width * 0.5, 6));
+
+    pi.levelNum = Label::createWithTTF("1", FONT_ARIAL, 24, Size(28, 28), TextHAlignment::CENTER);
+    pi.portrait->addChild(pi.levelNum);
+    pi.levelNum->setPosition(Point(94, 37));
+
+    pi.level = 1;
+    pi.unitId = u->getId();
+}
+
+void CPortraitPanel::updatePortrait(int index)
+{
+    auto& pi = m_vecPortraits[index];
+    if (pi.portrait == nullptr)
+    {
+        return;
+    }
+
+    auto u = m_w->getUnit(pi.unitId);
+    if (u == nullptr)
+    {
+        return;
+    }
+
+    float realMaxHp = u->getRealMaxHp();
+    float hpPer = realMaxHp == 0.0f ? 0.0f : (u->getHp() / realMaxHp);
+    if (hpPer != pi.hpPer)
+    {
+        pi.hpPer = hpPer;
+        pi.hpBar->setPercentage(hpPer);
+    }
+
+    int expRange = u->getMaxExp() - u->getBaseExp();
+    float expPer = expRange == 0 ? 0.0f : ((u->getExp() - u->getBaseExp()) * 1.0 / expRange);
+    if (expPer != pi.expPer)
+    {
+        pi.expPer = expPer;
+        pi.expBar->setPercentage(expPer);
+    }
+
+    if (u->getLevel() != pi.level)
+    {
+        pi.level = u->getLevel();
+        char sz[64];
+        sprintf(sz, "%d", u->getLevel());
+        pi.levelNum->setString(sz);
+    }
+}
+
+void CPortraitPanel::delPortrait(int index, bool follow /*= false*/)
+{
+    auto& pi = m_vecPortraits[index];
+    if (pi.portrait == nullptr)
+    {
+        return;
+    }
+
+    m_bp->delButton(pi.portrait);
+
+    if (follow)
+    {
+        m_bp->clearUpSlot(ButtonPanel::kTopToBottom);
+    }
+
+    pi.clear();
+}
+
+void CPortraitPanel::setPortrait(int index, CUnit* u, const ccMenuCallback& onClick)
+{
+    auto& pi = m_vecPortraits[index];
+    if (pi.portrait != nullptr)
+    {
+        delPortrait(index, false);
+    }
+
+    createPortrait(pi, u, onClick);
+    m_bp->addButton(pi.portrait, m_bp->getMaxCount() - index - 1);
+}
+
+void CPortraitPanel::updateContent()
+{
+    for (size_t i = 0; i < m_vecPortraits.size(); ++i)
+    {
+        updatePortrait(i);
+    }
 }
 
 // BattleSceneLayer
@@ -584,30 +718,31 @@ void BattleSceneLayer::onLoadingDone()
     /////////////////////////////
     // 3. add your codes below...
     
-    Menu* mn = Menu::create();
-    m_ctrlLayer->addChild(mn);
-    mn->setPosition(Point::ZERO);
+    m_mn = MenuEx::create();
+    m_ctrlLayer->addChild(m_mn);
+    m_mn->setPosition(Point::ZERO);
     
     auto btn = ButtonNormal::createWithFrameName("UI/Button/Fist/Normal.png", "UI/Button/Fist/On.png", "UI/Button/Fist/Disabled.png", "UI/Button/Fist/Blink.png", "UI/Button/Fist/Mask.png", 90.0f, CC_CALLBACK_1(BattleSceneLayer::onClickFist, this), nullptr);
-    mn->addChild(btn);
-    btn->setPosition(Point(wsz.width * 0.07, wsz.height - btn->getContentSize().height * 0.5 - 400));
+    m_mn->addChild(btn);
+    btn->setPosition(Point(wsz.width - btn->getContentSize().width * 0.5 - 30, 100));
 
     MenuItemSprite* btnPause = MenuItemSprite::create(
         Sprite::create("UI/Button/BtnPauseNor.png"),
         Sprite::create("UI/Button/BtnPauseSel.png"),
         nullptr,
         CC_CALLBACK_1(BattleSceneLayer::onClickPause, this));
-    mn->addChild(btnPause);
+    m_mn->addChild(btnPause);
 
     btnPause->setPosition(Point(wsz.width - btnPause->getContentSize().width * 0.5 - 50, wsz.height - btnPause->getContentSize().height * 0.5 - 50));
 
-    if (getWorld()->init() == false)
+    auto w = getWorld();
+    if (w->init() == false)
     {
     }
 
     setWorldInterval(0.02f);
 
-#if 0
+#if 0  // 英雄满血，调试用
     CUnit* hero = DCAST(getWorld(), CBattleWorld*)->getHero();
     auto mi = MenuItemFont::create("50%", bind([hero](Ref*)
     {
@@ -909,10 +1044,16 @@ void BattleSceneLayer::updateTargetInfo(int id)
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* pUnit = w->getUnit(m_iTargetInfoUnitId);
-
-    if (!pUnit)
+    auto ctrl = w->getUnit(w->getControlUnit());
+    if (pUnit == nullptr)
     {
-        const CCommandTarget& rTarget = DCAST(w->getHero()->getDraw(), CUnitDrawForCC*)->getCastTarget();
+        if (ctrl == nullptr)
+        {
+            showTargetInfo(false);
+            return;
+        }
+
+        const CCommandTarget& rTarget = DCAST(ctrl->getDraw(), CUnitDrawForCC*)->getCastTarget();
         if (rTarget.getTargetType() == CCommandTarget::kUnitTarget)
         {
             m_iTargetInfoUnitId = rTarget.getTargetUnit();
@@ -1089,79 +1230,6 @@ void BattleSceneLayer::showTargetInfo(bool bShow /*= true*/)
     m_bShowTargetInfo = bShow;
 }
 
-void BattleSceneLayer::initHeroPortrait()
-{
-    static Point org = Director::getInstance()->getVisibleOrigin();
-    static Size wsz = Director::getInstance()->getVisibleSize();
-    
-    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    CUnit* hero = w->getHero();
-
-    M_DEF_GC(gc);
-
-    SpriteFrameCache* fc = gc->getfc();
-    char sz[1024];
-    sprintf(sz, "Sprites/%s/portrait_hero.png", DCAST(hero->getDraw(), CUnitDrawForCC*)->getSpriteInfo()->getName());
-    SpriteFrame* fr = fc->getSpriteFrameByName(sz);
-    
-    const Point& pos = m_ctrlLayer->getChildByTag(1000)->getPosition();
-    ButtonPanel* bp = ButtonPanel::create(1, 1, Size(112, 124), 0, 0, nullptr);
-    m_ctrlLayer->addChild(bp);
-    ButtonNormal* btn = ButtonNormal::createWithFrameName(sz, sz, nullptr, nullptr, nullptr, 0.0f, CC_CALLBACK_1(BattleSceneLayer::onClickHeroPortrait, this), nullptr);
-    bp->setPosition(Point(wsz.width * 0.07, pos.y - btn->getContentSize().height * 0.5 - 100));
-    bp->addButton(btn, 0, 0);
-
-    Sprite* fill = Sprite::createWithSpriteFrameName("UI/status/HpBarFill.png");
-    Sprite* border = Sprite::createWithSpriteFrameName("UI/status/HpBarBorder.png");
-    m_pHeroHpBar = ProgressBar::create(Size(104, 8), fill, border, 0, 0, true);
-    btn->addChild(m_pHeroHpBar);
-    //m_pHeroPortrait->addChild(m_pHeroHpBar);
-    //m_pHeroHpBar->setPosition(Point(m_pHeroPortrait->getContentSize().width * 0.5, 16));
-    m_pHeroHpBar->setPosition(Point(btn->getContentSize().width * 0.5, 16));
-    
-    fill = Sprite::createWithSpriteFrameName("UI/status/ExpBarFill.png");
-    border = Sprite::createWithSpriteFrameName("UI/status/ExpBarBorder.png");
-    m_pHeroExpBar = ProgressBar::create(Size(104, 8), fill, border, 0, 0, true);
-    //m_pHeroPortrait->addChild(m_pHeroExpBar);
-    //m_pHeroExpBar->setPosition(Point(m_pHeroPortrait->getContentSize().width * 0.5, 6));
-    btn->addChild(m_pHeroExpBar);
-    m_pHeroExpBar->setPosition(Point(btn->getContentSize().width * 0.5, 6));
-
-    m_pHeroLevel = Label::createWithTTF("1", FONT_ARIAL, 24, Size(28, 28), TextHAlignment::CENTER);
-    //m_pHeroPortrait->addChild(m_pHeroLevel);
-    btn->addChild(m_pHeroLevel);
-    m_pHeroLevel->setPosition(Point(94, 37));
-    m_stHeroInfo.iLevel = 1;
-}
-
-void BattleSceneLayer::updateHeroPortrait()
-{
-    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    CUnit* hero = w->getHero();
-
-    float fHpPer = hero->getHp() / hero->getRealMaxHp();
-    if (fHpPer != m_stHeroInfo.fHpPer)
-    {
-        m_stHeroInfo.fHpPer = fHpPer;
-        m_pHeroHpBar->setPercentage(fHpPer);
-    }
-
-    float fExpPer = (hero->getExp() - hero->getBaseExp()) * 1.0 / (hero->getMaxExp() - hero->getBaseExp());
-    if (fExpPer != m_stHeroInfo.fExpPer)
-    {
-        m_stHeroInfo.fExpPer = fExpPer;
-        m_pHeroExpBar->setPercentage(fExpPer);
-    }
-
-    if (hero->getLevel() != m_stHeroInfo.iLevel)
-    {
-        m_stHeroInfo.iLevel = hero->getLevel();
-        char sz[64];
-        sprintf(sz, "%d", hero->getLevel());
-        m_pHeroLevel->setString(sz);
-    }
-}
-
 ButtonBase* BattleSceneLayer::createAbilityButton(CAbility* ability)
 {
     auto image = ability->getImageName();
@@ -1211,24 +1279,34 @@ void BattleSceneLayer::updateHeroAbilityPanel()
     }
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    CUnit* hero = w->getHero();
-
-    int n = m_bp->getCount();
-    for (int i = 0; i < n; ++i)
+    //CUnit* hero = w->getHero();
+    CUnit* u = w->getUnit(w->getControlUnit());
+    if (u == nullptr)
     {
-        auto btn = m_bp->getButton(i);
-        if (btn != nullptr && hero->getActiveAbility((int)btn->getUserData()) == nullptr)
+        return;
+    }
+
+    // 首先去除当前操控单位身上不存在的技能
+    int m = m_bp->getMaxCount();
+    int n = m_bp->getCount();
+    for (int i = 0, j = 0; i < m && j < n; ++i)
+    {
+        auto y = m - i - 1;
+        auto btn = m_bp->getButton(0, y);
+        if (btn != nullptr && u->getActiveAbility((int)btn->getUserData()) == nullptr)
         {
-            m_bp->delButton(i);
+            m_bp->delButton(0, y);
+            ++j;
         }
     }
 
-    CUnit::MAP_ACTIVE_ABILITIES& as = hero->getActiveAbilities();
+    CUnit::MAP_ACTIVE_ABILITIES& as = u->getActiveAbilities();
     M_MAP_FOREACH(as)
     {
         auto id = M_MAP_IT->first;
         auto a = M_MAP_EACH;
         M_MAP_NEXT;
+
         if (a->isTemporary())
         {
             continue;
@@ -1244,6 +1322,11 @@ void BattleSceneLayer::updateHeroAbilityPanel()
             if (btn != nullptr)
             {
                 m_bp->addButtonEx(btn, ButtonPanel::kTopToBottom);
+                if (a->isCoolingDown())
+                {
+                    float per = a->getCoolingDownElapsed() / a->getRealCoolDown();
+                    btn->coolDown(per);
+                }
             }
         }
     }
@@ -1261,7 +1344,14 @@ void BattleSceneLayer::cancelAbilityWaiting(int abilityId, int cancelTag)
         btn->removeChildByTag(10);
     }
 
-    auto d = DCAST(DCAST(getWorld(), CBattleWorld*)->getHero()->getDraw(), CUnitDrawForCC*);
+    auto w = DCAST(getWorld(), CBattleWorld*);
+    auto u = w->getUnit(w->getControlUnit());
+    if (u == nullptr)
+    {
+        return;
+    }
+
+    auto d = DCAST(u->getDraw(), CUnitDrawForCC*);
     d->setWaitForCastTargetActiveAbilityId(0);
 }
 
@@ -1291,17 +1381,25 @@ void BattleSceneLayer::onClickFist(Ref* btn)
 
 }
 
-void BattleSceneLayer::onClickHeroPortrait(Ref* btn)
+void BattleSceneLayer::onClickHeroPortrait(Ref* ref)
 {
     M_DEF_GC(gc);
     gc->playSound("sounds/Effects/Sound_GUIButtonCommon.mp3");
 
-    CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    if (w->getHero())
+    auto btn = DCAST(ref, ButtonNormal*);
+    auto pi = (CPortraitPanel::PORTRAIT_INFO*)btn->getUserData();
+    
+    auto w = DCAST(getWorld(), CBattleWorld*);
+    auto u = w->getUnit(pi->unitId);
+    if (u == nullptr)
     {
-        showTargetInfo();
-        updateTargetInfo(w->getHero()->getId());
+        return;
     }
+
+    showTargetInfo();
+    updateTargetInfo(pi->unitId);
+    w->setControlUnit(u);
+    updateHeroAbilityPanel();
 }
 
 void BattleSceneLayer::onClickAbilityButton(Ref* mi)
@@ -1311,7 +1409,13 @@ void BattleSceneLayer::onClickAbilityButton(Ref* mi)
 
     auto btn = DCAST(mi, ButtonBase*);
     auto w = DCAST(getWorld(), CBattleWorld*);
-    auto u = w->getHero();
+    auto u = w->getUnit(w->getControlUnit());
+    if (u == nullptr)
+    {
+        btn->setClickRetCode(-1);
+        return;
+    }
+
     auto d = DCAST(u->getDraw(), CUnitDrawForCC*);
     auto id = (int)btn->getUserData();
     auto a = u->getActiveAbility(id);
@@ -1615,8 +1719,7 @@ void BattleSceneLayer::onDragonStrikeUpdate(Node* pNode)
 
 void BattleSceneLayer::onClickPause(Ref* obj)
 {
-    //getWorld()->shutdown();
-    //Director::getInstance()->replaceScene(BattleSceneLayer::scene());
+    Director::getInstance()->getScheduler()->setTimeScale(1.0f);
     showCtrlPanel();
 }
 

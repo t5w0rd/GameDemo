@@ -568,6 +568,7 @@ public:
     void setGhost(int iGhostOwner);
     bool isGhost() const;
     int getGhostOwner() const;
+    CUnit* getRootGhostOwner();
 
     M_SYNTHESIZE_READONLY(CForceResource*, m_pResource, Resource);
     void setResource(CForceResource* var);
@@ -643,6 +644,22 @@ public:
     
 };
 
+class CAIRetainer
+{
+public:
+    CAIRetainer();
+    ~CAIRetainer();
+
+    void init(CWorld* w);
+    void retain(CUnit* u);
+
+protected:
+    CWorld* m_w;
+    int m_unitId;
+    CBaseAI* m_aiOld;
+    CBaseAI* m_aiCur;
+};
+
 class CWorld : public CUnitEventAdapter
 {
 public:
@@ -660,7 +677,9 @@ public:
 
     bool init();
 
-    M_SYNTHESIZE(int, m_iControlUnit, ControlUnit);
+    M_SYNTHESIZE_PASS_BY_REF(CAIRetainer, m_aiRetainer, AIRetainer);
+    M_SYNTHESIZE_READONLY(int, m_iControlUnit, ControlUnit);
+    void setControlUnit(CUnit* u);
     
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnits, Units);

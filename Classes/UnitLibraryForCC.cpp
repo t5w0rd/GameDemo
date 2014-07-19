@@ -73,8 +73,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     p->setMaxHeightDelta(20.0f);
     p->setPenaltyFlags(CProjectile::kOnContact);
     p->setFireType(CProjectile::kFireStraight);
-    p->addFireSound("sounds/Effects/ArrowRelease00.mp3");
-    p->addFireSound("sounds/Effects/ArrowRelease01.mp3");
+    //p->addFireSound("sounds/Effects/ArrowRelease00.mp3");
+    //p->addFireSound("sounds/Effects/ArrowRelease01.mp3");
     addProjectile(kArcherArrow2, p);
 
     // Lightning

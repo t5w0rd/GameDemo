@@ -413,7 +413,6 @@ function addAbilitiesForUnit(u, id)
 		u:addActiveAbility(AL.kFastMoveToBack:getId())
 		u:addActiveAbility(AL.kSwordWave:getId())
 		u:addPassiveAbility(AL.kDoubleAttack:getId())
-		u:addPassiveAbility(AL.kStunAttack:getId())
 		
 	elseif id == UL.kMalik then
 		u:addActiveAbility(AL.kThunderCap:getId())
