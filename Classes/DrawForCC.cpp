@@ -1033,18 +1033,20 @@ int CProjectileForCC::doAnimation(int id, const FUNC_VOID& onNotifyFrame, int iR
     ActionInterval* act = nullptr;
     if (pAniInfo == nullptr)
     {
-        if (id == kAniDie)
+        if (onNotifyFrame)
         {
-            act = FadeOut::create(0.1f);
+            act = Sequence::createWithTwoActions(CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame)), DelayTime::create(0.0f));
         }
         else
         {
-            act = DelayTime::create(0.2f);
-        }
-
-        if (onNotifyFrame)
-        {
-            act = Sequence::createWithTwoActions(act, CallFuncN::create(CC_CALLBACK_1(ProjectileSprite::onNotifyFrame, getSprite(), onNotifyFrame)));
+            if (id == kAniDie)
+            {
+                act = FadeOut::create(0.2f);
+            }
+            else
+            {
+                act = DelayTime::create(0.2f);
+            }
         }
     }
     else

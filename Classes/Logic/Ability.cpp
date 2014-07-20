@@ -97,9 +97,9 @@ void CAbility::resetCD()
     getOwner()->updateAbilityCD(getId());
 }
 
-void CAbility::coolDown()
+void CAbility::coolDown(float fromPercent /*= 0.0f */)
 {
-    setCoolingDownElapsed(0.0f);
+    setCoolingDownElapsed(fromPercent * getRealCoolDown());
     getOwner()->abilityCD(this);
 }
 
@@ -772,7 +772,7 @@ void CActiveAbility::copyData(CAbility* from)
 
 
 const float CActiveAbility::CONST_MAX_CAST_BUFFER_RANGE = 50.0f;
-const float CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE = 5.0f;
+const float CActiveAbility::CONST_MAX_HOR_CAST_Y_RANGE = 20.0f;
 
 bool CActiveAbility::cast()
 {
@@ -2314,7 +2314,7 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
 }
 
 // CTransitiveLinkBuff
-CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, int iMinIntervalTimes, uint32_t dwEffectiveTypeFlags)
+CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, int iMinIntervalTimes, uint32_t dwEffectiveTypeFlags, bool bNearestFirst)
 : CBuffAbility("LinkBuff", pName, fDuration, true)
 , m_fRange(fRange)
 , m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
@@ -2325,6 +2325,7 @@ CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, flo
 , m_iTemplateProjectile(0)
 , m_iMinIntervalTimes(iMinIntervalTimes)
 , m_bTransmited(false)
+, m_bNearestFirst(bNearestFirst)
 {
     setDbgClassName("CTransitiveLinkBuff");
     setTriggerFlags(CUnit::kOnDeadTrigger);
@@ -2332,7 +2333,7 @@ CTransitiveLinkBuff::CTransitiveLinkBuff(const char* pName, float fDuration, flo
 
 CTransitiveLinkBuff* CTransitiveLinkBuff::copy()
 {
-    CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_iMinIntervalTimes, m_dwEffectiveTypeFlags);
+    CTransitiveLinkBuff* ret = new CTransitiveLinkBuff(getName(), getDuration(), m_fRange, m_iMaxTimes, m_iMinIntervalTimes, m_dwEffectiveTypeFlags, m_bNearestFirst);
     ret->copyData(this);
     return ret;
 }
@@ -2417,7 +2418,7 @@ void CTransitiveLinkBuff::TransmitNext()
     }
     
     CUnit* t = nullptr;
-    if (m_iMinIntervalTimes > m_iMaxTimes)
+    if (m_bNearestFirst)
     {
         t = CUnitGroup::getNearestUnitInRange(w, d->getPosition(), m_fRange, bind(&CTransitiveLinkBuff::checkConditions, this, placeholders::_1));
     }
@@ -2978,6 +2979,7 @@ CChargeJumpBuff::CChargeJumpBuff(const char* pName, float fDuration, const CExtr
 , m_fDamageCoeff(fDamageCoeff)
 , m_iTemplateBuff(iTemplateBuff)
 , m_fLastAngle(0.0f)
+, m_bJump(false)
 {
     setDbgClassName("CChargeJumpBuff");
     setInterval(0.1f);
@@ -3010,8 +3012,9 @@ void CChargeJumpBuff::onUnitInterval()
     if (m_iTimes <= 0)
     {
         setInterval(0.0f);
-        if (!o->isDead())
+        if (!o->isDead() && !o->isSuspended())
         {
+            m_bJump = true;
             float spd = od->getRealMoveSpeed();
 
             const float dur = 0.5;  // base duration
@@ -3045,10 +3048,15 @@ void CChargeJumpBuff::onUnitAddAbility()
     m_oStartPosition = pos;
     m_oLastPosition = pos;
     m_fLastAngle = od->isFlippedX() ? M_PI : 0.0f;
+    m_bJump = false;
 }
 
 void CChargeJumpBuff::onUnitDelAbility()
 {
+    if (m_bJump == false)
+    {
+        return;
+    }
     auto o = getOwner();
     auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
     o->resume();

@@ -230,6 +230,15 @@ int g_isFileExist(lua_State* L)
     return 1;
 }
 
+int g_setGameSpeed(lua_State* L)
+{
+    float spd = lua_tonumber(L, 1);
+
+    Director::getInstance()->getScheduler()->setTimeScale(spd);
+
+    return 0;
+}
+
 luaL_Reg Unit4CC_funcs[] = {
     { "ctor", Unit4CC_ctor },
     { "addBattleTip", Unit4CC_addBattleTip },
@@ -720,6 +729,7 @@ int luaRegCommFuncsForCC(lua_State* L)
     lua_register(L, "addAbilityToUserData", g_addAbilityToUserData);
     lua_register(L, "getWritablePath", g_getWritablePath);
     lua_register(L, "isFileExist", g_isFileExist);
+    lua_register(L, "setGameSpeed", g_setGameSpeed);
 
     // TODO: patch global class members
     M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);
@@ -901,6 +911,18 @@ int g_showUnitInfo(lua_State* L)
     return 0;
 }
 
+int g_restartStage(lua_State* L)
+{
+    lua_getglobal(L, "_world");
+    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    auto l = DCAST(w->getLayer(), BattleSceneLayer*);
+    l->onClickRestart(nullptr);
+
+    return 0;
+}
+
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -915,6 +937,7 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "setPortrait", g_setPortrait);
     lua_register(L, "delPortrait", g_delPortrait);
     lua_register(L, "showUnitInfo", g_showUnitInfo);
+    lua_register(L, "restartStage", g_restartStage);
 
     return 0;
 }

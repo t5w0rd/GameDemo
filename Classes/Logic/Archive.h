@@ -60,7 +60,7 @@ public:
     typedef unordered_map<string, CValue*> MAP_VALUE;
 
 public:
-    CValueMap();
+    CValueMap(int type = kVtMAP);
     virtual ~CValueMap();
 
     void setValue(const string& name, CValue* data);

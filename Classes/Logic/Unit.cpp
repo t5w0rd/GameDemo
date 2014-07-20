@@ -413,6 +413,7 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
 
     if (pUnit->isDoingOr(CUnit::kCasting) && !pUnit->isDoingOr(CUnit::kMoving))
     {
+        // 原地施法
         return;
     }
 
@@ -422,8 +423,14 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
         return;
     }
 
+    int atk = pUnit->getAttackAbilityId();
+    if (atk == 0)
+    {
+        return;
+    }
+
     // 追击目标仍在仇恨区内就继续追击
-    if (d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
+    if (d->getCastActiveAbilityId() == atk && d->getCastTarget().getTargetType() == CCommandTarget::kUnitTarget)
     {
         CUnit* tt = pUnit->getUnit(d->getCastTarget().getTargetUnit());
         if (tt != nullptr)
@@ -437,12 +444,6 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
         }
     }
 
-    int atk = pUnit->getAttackAbilityId();
-    if (atk == 0)
-    {
-        return;
-    }
-
     CUnit* t = CUnitGroup::getNearestUnitInRange(pUnit->getWorld(), d->getPosition(), d->getHostilityRange(), CUnitGroup::matchLivingEnemy(pUnit));
     if (t == nullptr || t->isDead())
     {
@@ -451,7 +452,11 @@ void CBaseAI::onUnitTick(CUnit* pUnit, float dt)
         return;
     }
 
-    d->cmdCastSpell(CCommandTarget(t->getId()), atk, false);
+    if (d->getCastActiveAbilityId() != atk || d->getCastTarget().getTargetUnit() != t->getId())
+    {
+        //CCLOG("%d want to attack %d", pUnit->getId(), t->getId());
+        d->cmdCastSpell(CCommandTarget(t->getId()), atk, false);
+    }
 }
 
 void CBaseAI::onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource)
@@ -2761,9 +2766,10 @@ void CWorld::abilityReady(CAbility* pAbility)
     {
         // 存在于主世界中，则触发事件
         o->onAbilityReady(pAbility);
-        // 防止BUFF更改CD而导技能在致脱离CD管理器后CD大于Elapsed
-        pAbility->setCoolingDownElapsed(FLT_MAX);
     }
+
+    // 防止BUFF更改CD而导技能在致脱离CD管理器后CD大于Elapsed
+    pAbility->setCoolingDownElapsed(FLT_MAX);
 }
 
 void CWorld::step(float dt)

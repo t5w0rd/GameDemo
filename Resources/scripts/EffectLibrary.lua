@@ -88,3 +88,5 @@ SEL.kRainSharpIce = SEL.add(eff)
 eff = EffectCreator:new("Effects/Bleeding/Red/Big", 0.05, 0.5, 60 / 116, nil)
 SEL.kBleedingRedBig = SEL.add(eff)
 
+eff = EffectCreator:new("Effects/EarthQuake", 0.05, 0.5, 25 / 132, nil)
+SEL.kEarthQuake = SEL.add(eff)

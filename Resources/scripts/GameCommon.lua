@@ -389,6 +389,7 @@ function addAbilitiesForUnit(u, id)
 		u:addActiveAbility(AL.kSerialExplode:getId())
 		u:addActiveAbility(AL.kBouncingFireBall:getId())
 		u:addPassiveAbility(AL.kArmorBreakAttack:getId())
+		u:addPassiveAbility(AL.kAttackedSpeedUp:getId())
 		
 	elseif id == SUL.kPriest then
 		u:addActiveAbility(AL.kHealWind:getId())
@@ -403,16 +404,16 @@ function addAbilitiesForUnit(u, id)
 	elseif id == UL.kLumberjack then
 		u:addActiveAbility(AL.kMissileStorm:getId())
 		u:addPassiveAbility(AL.kStrikeBack:getId())
+		u:addPassiveAbility(AL.kTransitiveAttack:getId())
 		
 	elseif id == UL.kThor then
-		u:addActiveAbility(SAL.kThunderHammer, 2)
+		u:addActiveAbility(AL.kThunderHammer:getId())
 		u:addPassiveAbility(AL.kLightningAttack:getId())
 		u:addPassiveAbility(AL.kStunAttack:getId())
 		
 	elseif id == UL.kAlric then
+		u:addActiveAbility(SAL.kMultySlash, 3)
 		u:addActiveAbility(AL.kFastMoveToBack:getId())
-		u:addActiveAbility(AL.kSwordWave:getId())
-		u:addPassiveAbility(AL.kDoubleAttack:getId())
 		
 	elseif id == UL.kMalik then
 		u:addActiveAbility(AL.kThunderCap:getId())
@@ -422,9 +423,9 @@ function addAbilitiesForUnit(u, id)
 		u:addPassiveAbility(AL.kThunderCapAttack:getId())
 		
 	elseif id == UL.kBarracks then
-		u:addActiveAbility(SAL.kMultySlash, 3)
 		u:addActiveAbility(AL.kShieldBash:getId())
 		u:addActiveAbility(AL.kArmorUpCry:getId())
+		u:addActiveAbility(AL.kSpeedUpCry:getId())
 		u:addPassiveAbility(AL.kEvadeHeal:getId())
 		
 	elseif id == UL.kViking then
@@ -434,6 +435,7 @@ function addAbilitiesForUnit(u, id)
 		u:addPassiveAbility(AL.kVampireAttack:getId())
 		
 	elseif id == UL.kOni then
+		u:addActiveAbility(AL.kSwordWave:getId())
 		u:addPassiveAbility(AL.kDamageIncreaceAttack:getId())
 		u:addPassiveAbility(AL.kBleedAttack:getId())
 		u:addPassiveAbility(AL.kSplashAttack:getId())

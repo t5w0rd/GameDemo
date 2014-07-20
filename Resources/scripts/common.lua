@@ -15,6 +15,14 @@ function table.copy(st)
     return tab
 end
 
+function table.changevalue(t, key, delta)
+	if not t[key] then
+		t[key] = delta
+	else
+		t[key] = t[key] + delta
+	end
+end
+
 function getDirectionPoint(x0, y0, a, dis)
     return x0 + math.cos(-a) * dis, y0 + math.sin(a) * dis
 end

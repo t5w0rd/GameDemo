@@ -178,7 +178,7 @@ sp:prepareFrame(Sprite.kFrmDefault, "default")
 sp:prepareAnimation(Sprite.kAniMove, "move", -1)
 sp:prepareAnimation(Sprite.kAniDie, "die", 0)
 u = Unit:new(sp, "BlackHole")
-u:setGeometry(33.0, 33.0, 0.5, 0.5, 0, 0);
+u:setGeometry(0.0, 0.0, 0.5, 0.5, 0, 0);
 u:setFixed()
 SUL.kBlackHole = SUL.add(u)
 

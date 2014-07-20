@@ -2708,8 +2708,9 @@ int Ability_resetCD(lua_State* L)
 int Ability_coolDown(lua_State* L)
 {
     CAbility* _p = luaL_toabilityptr(L, 1);
+    float from = luaL_tonumberdef(L, 2, 0.0f);
 
-    _p->coolDown();
+    _p->coolDown(from);
 
     return 0;
 }
@@ -3671,9 +3672,10 @@ int TransitiveLinkBuff_ctor(lua_State* L)
     int maxTimes = lua_tointeger(L, 5);
     int minIvl = lua_tointeger(L, 6);
     uint32_t eff = lua_tounsigned(L, 7);
-    int projectile = luaL_tointegerdef(L, 8, 0);
+    bool nearest = luaL_tobooleandef(L, 8, true);
+    int projectile = luaL_tointegerdef(L, 9, 0);
 
-    CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, minIvl, eff);
+    CTransitiveLinkBuff* _p = new CTransitiveLinkBuff(name, duration, range, maxTimes, minIvl, eff, nearest);
     _p->setTemplateProjectile(projectile);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");

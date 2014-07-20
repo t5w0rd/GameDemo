@@ -81,8 +81,8 @@ const string& CValueBase::getValue() const
 }
 
 // CValueMap
-CValueMap::CValueMap()
-: CValue(kVtMAP)
+CValueMap::CValueMap(int type /*= kVtMAP*/)
+: CValue(type)
 {
 }
 
@@ -253,6 +253,7 @@ CValue* CArchive::readValue(int type, unsigned int size)
     case kVtMAP:
         {
             CValueMap* ret = new CValueMap();
+            ret->setType(type);
             while (size > 0)
             {
                 string eln;

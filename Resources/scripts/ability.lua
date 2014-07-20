@@ -118,6 +118,35 @@ function DamageBackPas:onUnitDamagedDone(damage, src)
     end
 end
 
+AttackedBuffMakerPas = class(PassiveAbility)
+function AttackedBuffMakerPas:ctor(buff, toself, per)
+    self:sctor("AttackedBuffMakerPas", "AttackedBuffMaker", 0)
+    self:setTriggerFlags(Ability.kOnAttackedTrigger)
+    self.buff = buff
+	self.toself = toself
+	self.per = per
+end
+
+function AttackedBuffMakerPas:onUnitAttacked(ad, s)
+    if math.random() >= self.per then
+		return true
+	end
+	
+	local o = self:getOwner()
+    if not o then
+        --log("o is nil")
+        return true
+	end
+	
+	if self.toself then
+		o:addBuffAbility(self.buff, o, self:getLevel())
+	elseif s then
+		s:addBuffAbility(self.buff, o, self:getLevel())
+	end
+	
+	return true
+end
+
 ArmorBuff = class(BuffAbility)
 function ArmorBuff:ctor(root, name, dur, stackable, exA, exB)
     self:sctor(root, name, dur, stackable)
@@ -380,7 +409,7 @@ function StrikeBackPas:onUnitAttacked(ad, s)
 	local o = self:getOwner()
 	local x, y = o:getPosition()
 	local ug = UnitGroup.getEffectiveUnitsInRange(x, y, o, self.range, UnitForce.kEnemy)
-	ug:addBuffAbility(self.buff, o)
+	ug:addBuffAbility(self.buff, o, self:getLevel())
 	
 	return true
 end
@@ -492,7 +521,7 @@ function RainAct:onUnitInterval()
 		intensity = self.total / self.elapsed
 	end
 	
-	if self.elapsed >= self.duration then
+	if self.elapsed >= self.duration or o:isDead() then
 		self:setInterval(0.0)
 		o:stopAction(self.act)
 		o:resume()
@@ -575,7 +604,7 @@ function ProjectileRainAct:onUnitInterval()
 		intensity = self.total / self.elapsed
 	end
 	
-	if self.elapsed >= self.duration then
+	if self.elapsed >= self.duration or o:isDead() then
 		self:setInterval(0.0)
 		o:stopAction(self.act)
 		o:resume()
@@ -651,7 +680,7 @@ function ProjectileWindAct:onUnitInterval()
 		intensity = self.total / self.elapsed
 	end
 	
-	if self.elapsed >= self.duration then
+	if self.elapsed >= self.duration or o:isDead() then
 		self:setInterval(0.0)
 		o:stopAction(self.act)
 		o:resume()

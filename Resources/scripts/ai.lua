@@ -54,7 +54,8 @@ function CF.getAttackingTargetUnitPoint(u, a)
 end
 
 function CF.getNearestEffectiveUnit(u, a)
-	local r = a:getCastRange()
+	local atk = u:getAttackAbility()
+	local r = math.max(a:getCastRange(), atk:getCastRange())
 	local eff = a:getEffectiveTypeFlags()
 	local t = u:getNearestEffectiveUnitInRange(r, eff)
 	
@@ -71,7 +72,8 @@ function CF.getNearestAttackRangeEnemy(u, a)
 end
 
 function CF.getNearestEffectiveUnitExceptSelf(u, a)
-	local r = a:getCastRange()
+	local atk = u:getAttackAbility()
+	local r = math.max(a:getCastRange(), atk:getCastRange())
 	local eff = a:getEffectiveTypeFlags()
 	local self = bit32.band(eff, UnitForce.kSelf)
 	eff = bit32.band(eff, bit32.bnot(UnitForce.kSelf))
@@ -87,7 +89,8 @@ function CF.getNearestEffectiveUnitExceptSelf(u, a)
 end
 
 function CF.getNearestEffectiveUnitPoint(u, a)
-	local r = a:getCastRange()
+	local atk = u:getAttackAbility()
+	local r = math.max(a:getCastRange(), atk:getCastRange())
 	local eff = a:getEffectiveTypeFlags()
 	local t = u:getNearestEffectiveUnitInRange(r, eff)
 	if not t then
@@ -98,18 +101,21 @@ function CF.getNearestEffectiveUnitPoint(u, a)
 end
 
 function CF.getNearestEffectiveInjuredUnit(u, a)
-	return u:getNearestEffectiveInjuredUnitInRange(a:getCastRange(), a:getEffectiveTypeFlags(), 0.75, 0.0)
+	local atk = u:getAttackAbility()
+	local r = math.max(a:getCastRange(), atk:getCastRange())
+	return u:getNearestEffectiveInjuredUnitInRange(r, a:getEffectiveTypeFlags(), 0.75, 0.0)
 end
 
 function CF.getNearestEffectiveInjuredUnitExceptSelf(u, a)
-	local r = a:getCastRange()
+	local atk = u:getAttackAbility()
+	local r = math.max(a:getCastRange(), atk:getCastRange())
 	local eff = a:getEffectiveTypeFlags()
 	local self = bit32.band(eff, UnitForce.kSelf)
 	if self then
 		eff = bit32.band(eff, bit32.bnot(UnitForce.kSelf))
 	end
 	
-	local t = u:getNearestEffectiveInjuredUnitInRange(a:getCastRange(), eff, 0.75, 0.0)
+	local t = u:getNearestEffectiveInjuredUnitInRange(r, eff, 0.75, 0.0)
 	if not t then
 		if self and u:getHp() < u:getRealMaxHp() * 0.75 then
 			return u
@@ -128,7 +134,8 @@ ACF["¿ñ±©"] = CF.anytime
 ACF["»÷ÍË"] = CF.checkEffectiveUnits
 ACF["À×öªÕðµØ"] = CF.checkEffectiveUnits
 ACF["Ê¥ÓúÖ®·ç"] = CF.checkEffectiveUnits
-ACF["ÊØ»¤ÕßÄÅº°"] = CF.checkRangeEnemies
+ACF["ÊØ»¤ÅØÏø"] = CF.checkRangeEnemies
+ACF["¿ñ·çÅØÏø"] = CF.checkRangeEnemies
 ACF["¼²ËÙ"] = CF.checkRangeEnemies
 ACF["Öð·çÊ½"] = CF.checkRangeEnemies
 ACF["ÓÄÁé±³´Ì"] = CF.checkRangeEnemies
@@ -153,10 +160,10 @@ ACF["ÖÎÁÆ¸ÊÂ¶"] = CF.getNearestEffectiveInjuredUnitExceptSelf
 
 
 LuaAI = class(UnitAI)
-function LuaAI:ctor()
+function LuaAI:ctor(searchEnemy)
     self:sctor()
+	self.searchEnemy = searchEnemy
     self.acts = {}
-
     self.targetId = nil  -- Ëø¶¨ÁËµÄ¹¥»÷Ä¿±ê
     self.hitAndRun = false  -- hitAndRunÄ£Ê½
 end
@@ -267,6 +274,12 @@ function LuaAI:onUnitTick(unit, dt)
 		end
     end
     
+	if unit:isDoingNothing() and self.searchEnemy then
+		local t = unit:getNearestEnemyInRange(2000)
+		if t then
+			unit:castSpellWithTargetUnit(atk, t:getId(), false)
+		end
+	end
 end
 
 function LuaAI:onUnitAddActiveAbility(unit, a)

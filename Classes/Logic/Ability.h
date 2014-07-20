@@ -41,7 +41,7 @@ public:
     
     virtual bool isCoolingDown() const;
     virtual void resetCD();
-    virtual void coolDown();
+    virtual void coolDown(float fromPercent = 0.0f);
     
     M_SYNTHESIZE_READONLY(float, m_fInterval, Interval);
     virtual void setInterval(float fInterval);
@@ -441,7 +441,7 @@ public:
     typedef map<int, int> MAP_DAMAGED;
 
 public:    
-    CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, int iMinIntervalTimes, uint32_t dwEffectiveTypeFlags = CUnitForce::kEnemy);
+    CTransitiveLinkBuff(const char* pName, float fDuration, float fRange, int iMaxTimes, int iMinIntervalTimes, uint32_t dwEffectiveTypeFlags = CUnitForce::kEnemy, bool bNearestFirst = true);
     virtual CTransitiveLinkBuff* copy() override;
     virtual void copyData(CAbility* from) override;
 
@@ -464,6 +464,7 @@ public:
 
     M_SYNTHESIZE(int, m_iMinIntervalTimes, OneMaxTimes);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_DAMAGED, m_mapTransmited, UnitsTransmited);
+    M_SYNTHESIZE_BOOL(NearestFirst);
 
     bool checkConditions(CUnit* pUnit);
 
@@ -610,6 +611,7 @@ protected:
     CPoint m_oStartPosition, StartPosition;
     CPoint m_oLastPosition;
     float m_fLastAngle;
+    bool m_bJump;
 };
 
 // 限时技能

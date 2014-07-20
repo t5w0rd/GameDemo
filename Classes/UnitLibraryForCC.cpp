@@ -111,8 +111,8 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(CProjectile::kAniDie, "die", 0);
 
     p = new CProjectileForCC(si);
-    p->setMoveSpeed(300.0f);
-    p->setMaxHeightDelta(20.0f);
+    p->setMoveSpeed(500.0f);
+    p->setMaxHeightDelta(00.0f);
     p->setPenaltyFlags(CProjectile::kOnDying);
     p->setFireType(CProjectile::kFireFollow);
     addProjectile(kLumberjackProy, p);
@@ -251,7 +251,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Malik");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 3);
     si->prepareAnimation(kAniAct2, "act2", 3);
     si->prepareAnimation(kAniAct3, "act3", 8);
@@ -291,7 +291,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Mage");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 5);
     si->prepareAnimation(kAniAct2, "act2", 6);
     si->prepareAnimation(kAniAct3, "act3", 10);
@@ -332,7 +332,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Barracks");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1, "sounds/Sprites/Barracks/die/00.mp3");
+    si->prepareAnimation(kAniDie, "die", 0, "sounds/Sprites/Barracks/die/00.mp3");
     si->prepareAnimation(kAniAct1, "act1", 3, "sounds/Effects/MetalHeavySliceFlesh00.mp3");
     si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavySliceFlesh01.mp3");
     si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavySliceFlesh02.mp3");
@@ -380,7 +380,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Archer");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1, "sounds/Sprites/Archer/die/00.mp3");
+    si->prepareAnimation(kAniDie, "die", 0, "sounds/Sprites/Archer/die/00.mp3");
     si->prepareAnimation(kAniAct1, "act1", 4);
     si->prepareAnimation(kAniAct2, "act2", 4);
     si->prepareAnimation(kAniAct3, "act3", 13);
@@ -424,7 +424,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Frost");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 4);
     si->prepareAnimation(kAniAct2, "act2", 5);
     si->prepareAnimation(kAniAct3, "act3", 6);
@@ -444,7 +444,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
         CAttackValue(CAttackValue::kMagical, 60.0),
         0.5);
     atk->setCastMinRange(0.0f);
-    atk->setCastRange(250.0f);
+    atk->setCastRange(200.0f);
     atk->addCastAnimation(kAniAct1);
     atk->setTemplateProjectile(kFrostBolt);
     u->addActiveAbility(atk);
@@ -464,7 +464,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Artillery");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 4, "sounds/Effects/ShootGun.mp3");
     si->prepareAnimation(kAniAct2, "act2", 3);
     si->prepareAnimation(kAniAct3, "act3", 2);
@@ -501,7 +501,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Elemental");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 4);
     si->prepareAnimation(kAniAct2, "act2", 4);
     si->prepareAnimation(kAniAct3, "act3", 6);
@@ -539,7 +539,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Oni");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 9);
     si->prepareAnimation(kAniAct2, "act2", 9);
     si->prepareAnimation(kAniAct3, "act3", 19);
@@ -577,7 +577,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Thor");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1, "sounds/Sprites/Thor/die/00.mp3");
+    si->prepareAnimation(kAniDie, "die", 0, "sounds/Sprites/Thor/die/00.mp3");
     si->prepareAnimation(kAniAct1, "act1", 6, "sounds/Effects/MetalHeavyBashFlesh00.mp3");
     si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavyBashFlesh01.mp3");
     si->addAnimationSound(kAniAct1, "sounds/Effects/MetalHeavyBashFlesh02.mp3");
@@ -621,7 +621,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Viking");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 4);
     si->prepareAnimation(kAniAct2, "act2", 7);
     si->prepareAnimation(kAniAct3, "act3", 8);
@@ -659,7 +659,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Lumberjack");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 6);
     si->prepareAnimation(kAniAct2, "act2", 6);
     si->prepareAnimation(kAniAct3, "act3", 6);
@@ -690,16 +690,16 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     // Alric
     gc->loadAnimation("Sprites/Alric/move", "Sprites/Alric/move", 0.08f);
     gc->loadAnimation("Sprites/Alric/die", "Sprites/Alric/die", 0.1f);
-    gc->loadAnimation("Sprites/Alric/act1", "Sprites/Alric/act1", 0.1f);
-    gc->loadAnimation("Sprites/Alric/act2", "Sprites/Alric/act2", 0.1f);
-    gc->loadAnimation("Sprites/Alric/act3", "Sprites/Alric/act3", 0.08f);
+    gc->loadAnimation("Sprites/Alric/act1", "Sprites/Alric/act1", 0.08f);
+    gc->loadAnimation("Sprites/Alric/act2", "Sprites/Alric/act2", 0.08f);
+    gc->loadAnimation("Sprites/Alric/act3", "Sprites/Alric/act3", 0.05f);
     gc->loadAnimation("Sprites/Alric/act4", "Sprites/Alric/act4", 0.05f);
     gc->loadAnimation("Sprites/Alric/act5", "Sprites/Alric/act5", 0.1f);
     
     si = new CSpriteInfo("Alric");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 4);
     si->prepareAnimation(kAniAct2, "act2", 3);
     si->prepareAnimation(kAniAct3, "act3", 8, "sounds/Effects/hero_alric_flurry.mp3");
@@ -723,7 +723,6 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setCastHorizontal();
     atk->addCastAnimation(kAniAct1);
     atk->addCastAnimation(kAniAct2);
-    atk->addCastAnimation(kAniAct3);
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kAlric, u);
@@ -739,7 +738,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Soldier");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->addAnimationSound(kAniDie, "sounds/Effects/HumenDie00.mp3");
     si->addAnimationSound(kAniDie, "sounds/Effects/HumenDie01.mp3");
     si->addAnimationSound(kAniDie, "sounds/Effects/HumenDie02.mp3");
@@ -782,7 +781,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Templar");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 3);
     si->prepareAnimation(kAniAct2, "act2", 9);
     si->prepareAnimation(kAniAct3, "act3", 2);
@@ -815,7 +814,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     
     si = new CSpriteInfo("Arcane");
     si->prepareFrame(kFrmDefault, "default");
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 9);
     
     d = new CUnitDrawForCC(si);
@@ -836,7 +835,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setTemplateProjectile(kArcaneRay);
     u->addActiveAbility(atk);
     d->setFixed();
-    d->setHostilityRange(800.0f);
+    d->setHostilityRange(300.0f);
     addUnit(kArcane, u);
 
     // Tesla
@@ -845,7 +844,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     
     si = new CSpriteInfo("Tesla");
     si->prepareFrame(kFrmDefault, "default");
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 17);
     
     d = new CUnitDrawForCC(si);
@@ -866,7 +865,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     atk->setTemplateProjectile(kTeslaRay);
     u->addActiveAbility(atk);
     d->setFixed();
-    d->setHostilityRange(800.0f);
+    d->setHostilityRange(300.0f);
     addUnit(kTesla, u);
 
     // Wizard
@@ -881,7 +880,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si = new CSpriteInfo("Wizard");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
-    si->prepareAnimation(kAniDie, "die", -1);
+    si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 10);
     si->prepareAnimation(kAniAct2, "act2", 3);
     si->prepareAnimation(kAniAct3, "act3", 10);
