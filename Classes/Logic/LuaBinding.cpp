@@ -231,16 +231,18 @@ int g_loadValue(lua_State* L)
     }
 
     CArchive::luaPushValue(L, v);
+    delete v;
 
     return 1;
 }
 
 int g_saveValue(lua_State* L)
 {
-    auto v = CArchive::luaToValue(L, 1);
+    CValue* v = CArchive::luaToValue(L, 1);
     auto file = lua_tostring(L, 2);
 
     CArchive::saveValue(file, v);
+    delete v;
 
     return 0;
 }
