@@ -35,8 +35,15 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         float zoom = min(ssz.width / wsz.height, ssz.height / wsz.height);
         glview->setFrameZoomFactor(zoom);
     }
+
+    FILE* dbg = fopen("MRef.log", "w+");
+    CDbgMultiRefObjectManager::instance()->setOutFile(dbg);
     
     // create the application instance
     AppDelegate app;
-    return Application::getInstance()->run();
+    auto res = Application::getInstance()->run();
+    
+    fclose(dbg);
+
+    return res;
 }

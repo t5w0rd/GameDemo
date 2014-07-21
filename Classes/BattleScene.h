@@ -25,8 +25,6 @@ public:
     void onLuaWorldTick(float dt);
     M_SYNTHESIZE_BOOL(LuaWorldTickEnabled);
     
-    virtual CProjectile* copyProjectile(int id) const;
-
     virtual void onUnitDying(CUnit* pUnit) override;
     virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget) override;
     virtual void onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget) override;

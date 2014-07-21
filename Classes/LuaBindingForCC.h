@@ -20,6 +20,7 @@ int g_addAbilityToUserData(lua_State* L);
 int g_getWritablePath(lua_State* L);
 int g_isFileExist(lua_State* L);
 int g_setGameSpeed(lua_State* L);
+int g_msgBox(lua_State* L);
 
 int Unit4CC_ctor(lua_State* L);
 int Unit4CC_addBattleTip(lua_State* L);

@@ -289,8 +289,8 @@ void StageSceneLayer::onClickPanelBattle(Ref* pObj)
     CUserData::instance()->m_stageSel = m_selIndex;
     
     //gc->replaceSceneWithLoading(&BattleSceneLayer::scene);
-    //Director::getInstance()->replaceScene(BattleSceneLayer::scene());
-    Director::getInstance()->replaceScene(AbilitySceneLayer::scene());
+    Director::getInstance()->replaceScene(BattleSceneLayer::scene());
+    //Director::getInstance()->replaceScene(AbilitySceneLayer::scene());
     //Director::getInstance()->replaceScene(HeroRoomSceneLayer::scene());
 }
 

@@ -217,71 +217,12 @@ int g_addTemplateAbility(lua_State* L)
     return 1;
 }
 
-static void _luaPushValue(lua_State* L, CValue* data)
-{
-    int type = data->getType();
-
-    switch (type & 0x0000FFFF)
-    {
-    case kVtStr:
-        {
-            auto& d = DCAST(data, CValueBase*)->getValue();
-            lua_pushlstring(L, d.c_str(), d.size());
-        }
-        break;
-
-    case kVtFLT:
-    case kVtINT:
-    case kVtUINT:
-        {
-            auto& d = DCAST(data, CValueBase*)->getValue();
-            lua_pushnumber(L, lua_str2number(d.c_str(), nullptr));
-        }
-        break;
-
-    case kVtBOOL:
-        {
-            auto& d = DCAST(data, CValueBase*)->getValue();
-            lua_pushboolean(L, d.at(0) == kVtbFalse ? false : true);
-        }
-        break;
-
-    case kVtMAP:
-        {
-            lua_newtable(L);
-            auto& vm = DCAST(data, CValueMap*)->getValue();
-            M_MAP_FOREACH(vm)
-            {
-                auto& eln = M_MAP_IT->first;
-                auto eld = M_MAP_EACH;
-                M_MAP_NEXT;
-
-                if (eld->getType() & kVtfArrayElement)
-                {
-                    lua_pushnumber(L, atof(eln.c_str()));
-                }
-                else
-                {
-                    lua_pushlstring(L, eln.c_str(), eln.size());
-                }
-                
-                _luaPushValue(L, eld);
-                lua_settable(L, -3);
-            }
-        }
-        break;
-
-    default:
-        assert(false);
-    }
-}
-
-int g_loadTableFromFile(lua_State* L)
+int g_loadValue(lua_State* L)
 {
     auto file = lua_tostring(L, 1);
     
-    CArchive ar;
-    auto res = ar.loadFromFile(file);
+    CValue* v = nullptr;
+    auto res = CArchive::loadValue(file, v);
     if (res == false)
     {
         lua_pushnil(L);
@@ -289,96 +230,17 @@ int g_loadTableFromFile(lua_State* L)
         return 1;
     }
 
-    auto vm = ar.getValueMap();
-    
-    _luaPushValue(L, vm);
+    CArchive::luaPushValue(L, v);
 
     return 1;
 }
 
-static CValue* _luaToValue(lua_State* L, int index)
+int g_saveValue(lua_State* L)
 {
-    auto type = lua_type(L, index);
-    switch (type)
-    {
-    case LUA_TSTRING:
-        {
-            size_t len = 0;
-            auto buf = lua_tolstring(L, index, &len);
-            return new CValueBase(string(buf, len));
-        }
-        break;
-
-    case LUA_TNUMBER:
-        {
-            auto num = lua_tonumber(L, index);
-            char buf[32];
-            lua_number2str(buf, num);
-            return new CValueBase((lua_Number)(lua_Integer)num == num ? kVtINT : kVtFLT, buf);
-        }
-        break;
-
-    case LUA_TBOOLEAN:
-        {
-            bool b = lua_toboolean(L, index) != 0;
-            return new CValueBase(b);
-        }
-        break;
-
-    case LUA_TTABLE:
-        {
-            auto ret = new CValueMap();
-
-            lua_pushnil(L);  /* first key */
-            while (lua_next(L, index) != 0)
-            {
-                /* uses 'key' (at index -2) and 'value' (at index -1) */
-                if (lua_isnumber(L, -2))
-                {
-                    int k = (int)lua_tonumber(L, -2);
-                    auto v = _luaToValue(L, lua_gettop(L));
-                    if (v != nullptr)
-                    {
-                        v->setType(v->getType() | kVtfArrayElement);
-                        ret->setArrayElement(k, v);
-                    }
-                }
-                else if (lua_isstring(L, -2))
-                {
-                    size_t len = 0;
-                    auto k = lua_tolstring(L, -2, &len);
-                    auto v = _luaToValue(L, lua_gettop(L));
-                    if (v != nullptr)
-                    {
-                        ret->setValue(string(k, len), v);
-                    }
-                }
-                else
-                {
-                    assert(false);
-                }
-
-                /* removes 'value'; keeps 'key' for next iteration */
-                lua_pop(L, 1);
-            }
-
-        return ret;
-    }
-        break;
-    }
-
-    return nullptr;
-}
-
-int g_saveTableToFile(lua_State* L)
-{
-    auto v = _luaToValue(L, 1);
+    auto v = CArchive::luaToValue(L, 1);
     auto file = lua_tostring(L, 2);
 
-    CArchive ar;
-    CValueMap* vm = DCAST(v, CValueMap*);
-    ar.setValueMap(vm);
-    ar.saveToFile(file);
+    CArchive::saveValue(file, v);
 
     return 0;
 }
@@ -569,6 +431,7 @@ luaL_Reg LevelUpdate_funcs[] = {
 int LevelUpdate_ctor(lua_State* L)
 {
     CLevelUpdate* _p = new CLevelUpdate;
+    _p->setDbgClassName("CLevelUpdate[Lua]");
     _p->setScriptHandler(luaL_setregistry(L, 1));
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
@@ -3835,8 +3698,8 @@ int luaRegCommFuncs(lua_State* L)
     lua_register(L, "class", g_class);
     lua_register(L, "cast", g_cast);
     lua_register(L, "addTemplateAbility", g_addTemplateAbility);
-    lua_register(L, "loadTableFromFile", g_loadTableFromFile);
-    lua_register(L, "saveTableToFile", g_saveTableToFile);
+    lua_register(L, "loadValue", g_loadValue);
+    lua_register(L, "saveValue", g_saveValue);
 
     // TODO: reg global classes
     M_LUA_BIND_CLASS_WITH_FUNCS(L, MRObj);
@@ -3946,7 +3809,7 @@ int g_getUnit(lua_State* L)
 int g_getUnits(lua_State* L)
 {
     int matchfunc = 1;
-    //int matchparam = 2;
+    bool ghost = luaL_tobooleandef(L, 2, false);
 
     lua_newtable(L);
     int t = lua_gettop(L);
@@ -3961,16 +3824,10 @@ int g_getUnits(lua_State* L)
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
 
-        if (u->isGhost())
-        {
-            continue;
-        }
-
         if (lua_isfunction(L, matchfunc))
         {
             lua_pushvalue(L, matchfunc);
             luaL_pushobjptr(L, "Unit", u);
-            //lua_pushvalue(L, matchparam);
 
             bool res = false;
             if (lua_pcall(L, 1, 1, 0) != LUA_OK)

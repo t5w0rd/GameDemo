@@ -15,6 +15,7 @@
 #include "LuaScriptEngine.h"
 #include "GameControl.h"
 #include "AbilityLibrary.h"
+#include "UnitLibrary.h"
 
 
 // CAbility
@@ -872,6 +873,7 @@ void CActiveAbility::effect()
     CUnitDraw2D* d = DCAST(o->getDraw(), CUnitDraw2D*);
 
     CWorld* w = o->getWorld();
+    CUnitLibrary* ul = CUnitLibrary::instance();
     // Ability
     
     coolDown();
@@ -896,7 +898,7 @@ void CActiveAbility::effect()
 
             if (getTemplateProjectile() != 0 && t->getId() != o->getId())
             {
-                CProjectile* p = w->copyProjectile(getTemplateProjectile());
+                CProjectile* p = ul->copyProjectile(getTemplateProjectile());
                 w->addProjectile(p);
                 p->setSrcUnit(o->getId());
                 p->setSrcAbility(this);
@@ -923,7 +925,7 @@ void CActiveAbility::effect()
     case CCommandTarget::kPointTarget:
         if (getTemplateProjectile() != 0)
         {
-            CProjectile* p = w->copyProjectile(getTemplateProjectile());
+            CProjectile* p = ul->copyProjectile(getTemplateProjectile());
             w->addProjectile(p);
             p->setSrcUnit(o->getId());
             p->setSrcAbility(this);
@@ -2402,6 +2404,7 @@ void CTransitiveLinkBuff::TransmitNext()
     }
     
     CWorld* w = o->getWorld();
+    CUnitLibrary* ul = CUnitLibrary::instance();
 
     M_MAP_FOREACH(m_mapTransmited)
     {
@@ -2442,7 +2445,7 @@ void CTransitiveLinkBuff::TransmitNext()
     //int buff = w->addTemplateAbility(this);
     //pAtk->addAttackBuff(CAttackBuff(buff, getLevel()));
 
-    CProjectile* p = w->copyProjectile(getTemplateProjectile());
+    CProjectile* p = ul->copyProjectile(getTemplateProjectile());
     w->addProjectile(p);
     p->setSrcUnit(getSrcUnit());
     p->setFromToType(CProjectile::kUnitToUnit);

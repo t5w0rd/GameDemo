@@ -6,6 +6,7 @@
 // CAbilityLibrary
 CAbilityLibrary::CAbilityLibrary()
 {
+    setDbgClassName("CAbilityLibrary");
 }
 
 int CAbilityLibrary::addTemplateAbility(CAbility* pAbility)

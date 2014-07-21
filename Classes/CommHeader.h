@@ -2,6 +2,8 @@
 #define __COMMHEADER_H__
 
 
+//#include <vld.h>
+
 #include <float.h>
 #include <math.h>
 

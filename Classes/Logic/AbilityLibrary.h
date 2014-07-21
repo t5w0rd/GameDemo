@@ -1,5 +1,5 @@
-#ifndef __UNITLIBRARY_H__
-#define __UNITLIBRARY_H__
+#ifndef __ABILITYLIBRARY_H__
+#define __ABILITYLIBRARY_H__
 
 #include "MultiRefObject.h"
 
@@ -19,4 +19,4 @@ public:
 };
 
 
-#endif // __UNITLIBRARY_H__
+#endif // __ABILITYLIBRARY_H__

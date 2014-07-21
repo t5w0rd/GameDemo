@@ -4,7 +4,7 @@ __ABILITY__ = true
 include("UnitLibrary.lua")
 include("EffectLibrary.lua")
 
-
+--do return end
 TestAct = class(ActiveAbility)
 function TestAct:ctor(name, cd, castTarget, effectFlags)
 	self:sctor("RainAct", name, cd, castTarget, effectFlags)

@@ -2,6 +2,7 @@ if not DEBUG and __ABILITY_LIBRARY__ then return end
 __ABILITY_LIBRARY__ = true
 
 include("Ability.lua")
+--do return end
 
 function loadAbilityLibrary()
 	local a, id, id2
@@ -321,7 +322,7 @@ function loadAbilityLibrary()
 	a = ChangeAttributeBuff:new("SD.CAB", "SweetDew", 5.0, false, 0.2, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
 	id = addTemplateAbility(a)
 	
-	a = ChangeHpBuff:new("SD.CHB", "SweetDew", 2.0, true, 0.05, 0.001, 0.0, 0.0, -1.0)
+	a = ChangeHpBuff:new("SD.CHB", "SweetDew", 2.0, true, 0.05, 0.002, 0.0, 0.0, -1.0)
 	a:setAppendBuff(id)
 	id = addTemplateAbility(a)
 	

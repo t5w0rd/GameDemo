@@ -169,7 +169,7 @@ public:
     virtual void setLayer(UnitLayer* pLayer);
     Layer* createLayer();
 
-    virtual void shutdown();
+    virtual void onShutDown() override;
 };
 
 class CUnitPathForCC : public CUnitPath

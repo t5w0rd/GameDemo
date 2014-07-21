@@ -1,17 +1,16 @@
 #ifndef __UNITLIBRARYFORCC_H__
 #define __UNITLIBRARYFORCC_H__
 
-#include "MultiRefObject.h"
+#include "UnitLibrary.h"
 
 
 class CUnit;
 class CProjectile;
 
-class CUnitLibraryForCC : public CMultiRefObject
+class CUnitLibraryForCC : public CUnitLibrary
 {
 public:
     CUnitLibraryForCC();
-    M_SINGLETON(CUnitLibraryForCC);
 
     enum ORG_UNIT
     {
@@ -47,9 +46,8 @@ public:
 
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnits, Units);
-    void addUnit(int id, CUnit* u);
-
-    CUnit* copyUnit(int id) const;
+    virtual void addUnit(int id, CUnit* u) override;
+    virtual CUnit* copyUnit(int id) const override;
 
     enum ORG_PROJECTILE
     {
@@ -77,10 +75,13 @@ public:
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapProjectiles, Projectiles);
-    void addProjectile(int id, CProjectile* p);
+    virtual void addProjectile(int id, CProjectile* p) override;
+    virtual CProjectile* copyProjectile(int id) const override;
 
-    CProjectile* copyProjectile(int id) const;
+    virtual void loadDefaultLibrary() override;
 
+protected:
+    bool m_bDefLoaded;
 };
 
 #endif  /* __UNITLIBRARYFORCC_H__ */

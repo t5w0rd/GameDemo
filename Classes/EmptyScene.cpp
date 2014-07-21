@@ -145,29 +145,12 @@ bool EmptySceneLayer::init()
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
 
-    CArchive ar;
-
 //#if 0
-    ar.setValue("heroes_num", new CValueBase(kVtUINT, "1"));
-
-    auto hero = new CValueMap();
-    hero->setValue("name", new CValueBase("Sword"));
-    hero->setValue("hp", new CValueBase(100.0));
-    auto def = new CValueMap();
-    def->setArrayElement(0, new CValueBase(50.0));
-    def->setArrayElement(1, new CValueBase(150.001));
-    def->setArrayElement(2, new CValueBase(250.133));
-    hero->setValue("def", def);
-
-    ar.setValue("hero", hero);
-
-    ar.saveToFile("save.dat");
 
 //#else
     CGameData::instance();
     auto L = CLuaScriptEngine::instance()->getLuaHandle();
     luaL_includefilelog(L, "Empty.lua");
-    //ar.loadFromFile("save.dat");
 //#endif
     return true;
 }

@@ -5,6 +5,7 @@
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
 #include "LuaScriptEngine.h"
+#include "Archive.h"
 
 
 // CGameData
@@ -25,7 +26,39 @@ CGameData::CGameData()
 
 void CGameData::initStageData()
 {
+    const char* CONST_STAGE_MAP_NAME = "StageMap.tbl";
+
     STAGE_INFO stage;
+
+    CValue* stages = nullptr;
+    if (CArchive::loadValue(CONST_STAGE_MAP_NAME, stages) == true)
+    {
+        int num = vmg_int(stages, "num");
+        for (auto i = 1; i <= num; ++i)
+        {
+            auto st = vmg_vm(stages, i);
+            stage.name = vmg_str(st, "name");
+            stage.desc = vmg_str(st, "desc");
+            stage.btnNorName = vmg_str(st, "btnNorName");
+            stage.btnDisName = vmg_str(st, "btnDisName");
+            stage.pos.x = vmg_flt(st, "posX");
+            stage.pos.y = vmg_flt(st, "posY");
+            stage.script = vmg_str(st, "script");
+            stage.background = vmg_str(st, "background");
+            
+            stage.prevIndex.clear();
+            auto prev = vmg_vm(st, "prev");
+            for (auto j = 1; vmg_v(prev, j) != nullptr; ++j)
+            {
+                stage.prevIndex.push_back(vmg_int(prev, j) - 1);
+            }
+
+            m_stages.push_back(stage);
+        }
+
+        delete stages;
+        return;
+    }
 
     // stage 0
     stage.name = "The Sunwell";
@@ -98,6 +131,36 @@ void CGameData::initStageData()
     stage.script = "stage05.lua";
     stage.background = "backgrounds/BackgroundHD01.png";
     m_stages.push_back(stage);
+
+    stages = new CValueMap();
+    vms_int(stages, "num", m_stages.size());
+    
+    for (int i = 0; i < (int)m_stages.size(); ++i)
+    {
+        auto& e = m_stages[i];
+        auto st = new CValueMap();
+
+        vms_str(st, "name", e.name);
+        vms_str(st, "desc", e.desc);
+        vms_str(st, "btnNorName", e.btnNorName);
+        vms_str(st, "btnDisName", e.btnDisName);
+        vms_flt(st, "posX", e.pos.x);
+        vms_flt(st, "posY", e.pos.y);
+        vms_str(st, "script", e.script);
+        vms_str(st, "background", e.background);
+        
+        auto prev = new CValueMap();
+        for (int j = 0; j < (int)e.prevIndex.size(); ++j)
+        {
+            vms_int(prev, j + 1, e.prevIndex[j] + 1);
+        }
+        vms_v(st, "prev", prev);
+
+        vms_v(stages, i + 1, st);
+    }
+
+    CArchive::saveValue(CONST_STAGE_MAP_NAME, stages);
+    delete stages;
 }
 
 void CGameData::initAbilityData()

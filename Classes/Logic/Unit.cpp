@@ -2300,6 +2300,11 @@ CUnit* CUnit::getRootGhostOwner()
 
 void CUnit::setResource(CForceResource* var)
 {
+    if (m_pResource == var)
+    {
+        return;
+    }
+
     M_SAFE_RETAIN(var);
     M_SAFE_RELEASE(m_pResource);
     m_pResource = var;
@@ -2841,23 +2846,6 @@ CAbility* CWorld::copyAbility(int id) const
     return al->copyAbility(id);
 }
 
-int CWorld::addTemplateProjectile(CProjectile* pProjectile)
-{
-    m_mapTemplateProjectiles.addObject(pProjectile);
-    return pProjectile->getId();
-}
-
-CProjectile* CWorld::copyProjectile(int id) const
-{
-    CProjectile* pProjectile = m_mapTemplateProjectiles.getObject(id);
-    if (pProjectile == nullptr)
-    {
-        return nullptr;
-    }
-
-    return pProjectile->copy()->dcast(pProjectile);  // 即时转换失败也不需要释放，因为有CAutoReleasePool
-}
-
 void CWorld::addProjectile(CProjectile* pProjectile)
 {
     onAddProjectile(pProjectile);
@@ -2885,12 +2873,23 @@ void CWorld::delProjectile(int id)
 
 void CWorld::shutdown()
 {
+    onShutDown();
     m_bShutdown = true;
+    m_aiRetainer.retain(nullptr);
+    m_mapUnits.delAllObjects();
+    m_mapUnitsToRevive.delAllObjects();
+    m_mapAbilitiesCD.delAllObjects();
+    m_mapProjectiles.delAllObjects();
+}
+
+void CWorld::onShutDown()
+{
 }
 
 // CForceResource
 CForceResource::CForceResource(CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc)
 {
+    setDbgClassName("CForceResource");
     setGold(0);
     m_pSender = pSender;
     m_pCallback = pFunc;

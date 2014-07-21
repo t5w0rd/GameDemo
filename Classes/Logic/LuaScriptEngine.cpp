@@ -7,6 +7,7 @@
 CLuaScriptEngine::CLuaScriptEngine()
 : m_L(nullptr)
 {
+    setDbgClassName("CLuaScriptEngine");
     m_L = luaL_newstate();
     luaL_openlibs(m_L);
 }

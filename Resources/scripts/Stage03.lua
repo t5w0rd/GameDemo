@@ -286,7 +286,9 @@ function Stage03:spawnTeam(ucs, number, template, control, x, y)
 end
 
 function Stage03:onInit()
+	--msgBox("test测试", "title标题")
 	setGameSpeed(2.0)
+	showDebug(true)
 	self.hero = initForHero()
 	self.hero:setGhost(self.hero)
 	self.over = false
@@ -322,7 +324,7 @@ function Stage03:onInit()
 	self:spawnTeam(ucs, n, team, true, 300, 800)
 	self:spawnTeam(ucs, n, team, false, 1200, 800)
 	
-	self.res = loadTableFromFile("battle.dat")
+	self.res = loadValue("battle.tbl")
 	if not self.res then
 		self.res = {}
 		self.res.fight = {}
@@ -330,15 +332,36 @@ function Stage03:onInit()
 		self.res.survive = {}
 		self.res.log = {}
 	else
+		-- 根据胜率排序
+		local st = {}
 		for nm, num in pairs(self.res.survive) do
-			log("%s: %d/%d/%d win(%.3g%%) sur(%.3g%%)",
-				nm,
-				self.res.fight[nm],
-				self.res.win[nm],
-				num,
-				self.res.win[nm] * 100.0 / self.res.fight[nm],
-				num * 100.0 / self.res.fight[nm])
+			local ste = {}
+			ste.nm = nm
+			local win2 = self.res.win[nm]
+			local fight2 = self.res.fight[nm]
+			ste.st = self.res.win[nm] * 100.0 / self.res.fight[nm]
+			table.insert(st, ste)
 		end
+		
+		table.sort(st, function(el, el2)
+			return el.st > el2.st
+		end)
+		
+		local str = "\n============= Rank(Win) =============\n"
+		for _, el in ipairs(st) do
+			local strl = string.format("%s: %d/%d/%d win(%.3g%%) sur(%.3g%%)",
+				el.nm,
+				self.res.fight[el.nm],
+				self.res.win[el.nm],
+				self.res.survive[el.nm],
+				self.res.win[el.nm] * 100.0 / self.res.fight[el.nm],
+				self.res.survive[el.nm] * 100.0 / self.res.fight[el.nm])
+			
+			log("%s", strl)
+			str = str .. strl .. "\n"
+		end
+		
+		saveValue(str, "rank.str")
 	end
 end
 
@@ -358,7 +381,7 @@ function Stage03:onTick(dt)
 	
 	local us = getUnits(function(u)
 		return u:getId() ~= self.hero:getId()
-	end)
+	end, true)
 	local f0 = 0
 	local f1 = 0
 	for _, u in ipairs(us) do
@@ -393,6 +416,10 @@ function Stage03:onTick(dt)
 		end
 		
 		local bl = {}
+		us = getUnits(function(u)
+			return u:getId() ~= self.hero:getId()
+	end)
+	
 		for _, u in ipairs(us) do
 			local nm = u:getName()
 			table.insert(bl, nm)
@@ -400,7 +427,7 @@ function Stage03:onTick(dt)
 		end
 		table.insert(self.res.log, bl)
 		
-		saveTableToFile(self.res, "battle.dat")
+		saveValue(self.res, "battle.tbl")
 		
 		log("the battle log has been updated! (%d)", #self.res.log)
 		restartStage()

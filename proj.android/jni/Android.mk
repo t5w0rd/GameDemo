@@ -53,6 +53,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/Logic/LuaScriptEngine.cpp \
 ../../Classes/Logic/MultiRefObject.cpp \
 ../../Classes/Logic/Unit.cpp \
+../../Classes/Logic/UnitLibrary.cpp \
 ../../Classes/AbilityForCC.cpp \
 ../../Classes/AbilityScene.cpp \
 ../../Classes/ActionForCC.cpp \

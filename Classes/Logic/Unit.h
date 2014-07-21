@@ -713,15 +713,12 @@ public:
     virtual CAbility* copyAbility(int id) const;
 
     typedef CMultiRefMap<CProjectile*> MAP_PROJECTILES;
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapTemplateProjectiles, TemplateProjectiles);
-    int addTemplateProjectile(CProjectile* pProjectile);
-    virtual CProjectile* copyProjectile(int id) const;
-
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PROJECTILES, m_mapProjectiles, Projectiles);
     void addProjectile(CProjectile* pProjectile);
     void delProjectile(int id);
 
-    virtual void shutdown();
+    virtual void shutdown();  // 为避免CUnitEventAdapter(CWorld)->CUnit->CWorld的retain cycle，在这里主动销毁一些子节点
+    virtual void onShutDown();
 
 protected:
     bool m_bShutdown;

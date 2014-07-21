@@ -65,12 +65,19 @@ public:
     typedef set<CMultiRefObject*> SET_OBJS;
     
 public:
+    CDbgMultiRefObjectManager();
+    void setOutFile(FILE* out);
+
     M_SYNTHESIZE_READONLY_PASS_BY_REF(SET_OBJS, m_setObjs, Objects);
     void addObject(CMultiRefObject* pObject);
     void delObject(CMultiRefObject* pObject);
     void printDbgInfo(const char* pFile, int iLine);
-#define OBJS_INFO CDbgMultiRefObjectManager::sharedDbgMultiRefObjectManager()->printDbgInfo(__FILE__, __LINE__)
+#define OBJS_INFO CDbgMultiRefObjectManager::instance()->printDbgInfo(__FILE__, __LINE__)
     M_SINGLETON(CDbgMultiRefObjectManager);
+
+protected:
+    FILE* m_out;
+    map<string, int> m_last;
 };
 
 template <typename MULTIREF_ID_TYPE_PTR>

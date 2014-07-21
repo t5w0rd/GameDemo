@@ -4,6 +4,7 @@
 
 enum VALUE_TYPE
 {
+    kVtRaw,
     kVtStr,
     kVtFLT,
     kVtINT,
@@ -46,9 +47,14 @@ public:
     CValueBase(int n);
     CValueBase(bool b);
 
-    void setValue(const string& data);
-    string& getValue();
-    const string& getValue() const;
+    const string& toString() const;
+    double toFloat() const;
+    int toInteger() const;
+    bool toBoolean() const;
+
+    void setData(const string& data);
+    string& getData();
+    const string& getData() const;
     
 protected:
     string m_baseData;
@@ -63,10 +69,14 @@ public:
     CValueMap(int type = kVtMAP);
     virtual ~CValueMap();
 
-    void setValue(const string& name, CValue* data);
-    void setArrayElement(int index, CValue* data);
-    MAP_VALUE& getValue();
-    const MAP_VALUE& getValue() const;
+    void setMapValue(const string& name, CValue* data);
+    CValue* getMapValue(const string& name) const;
+
+    void setArrayValue(int index, CValue* data);
+    CValue* getArrayValue(int index) const;
+
+    MAP_VALUE& getDataMap();
+    const MAP_VALUE& getDataMap() const;
 
 protected:
     MAP_VALUE m_mapData;
@@ -75,30 +85,178 @@ protected:
 class CArchive
 {
 public:
-    CArchive();
-    ~CArchive();
+    static bool loadValue(const char* file, CValue*& val);
+    static bool saveValue(const char* file, CValue* val);
 
-    bool loadFromFile(const char* file);
-    unsigned int saveToFile(const char* file);
-
-    void setValue(const string& name, CValue* data);
-    CValue* getValue(const string& name);
-
-    void setValueMap(CValueMap* valueMap);
-    CValueMap* getValueMap();
-    const CValueMap* getValueMap() const;
+    static void luaPushValue(lua_State* L, CValue* val);
+    static CValue* luaToValue(lua_State* L, int index);
 
 protected:
-    void readName(string& data);
-    CValue* readValue(int type, unsigned int size);
+    static unsigned int readName(FILE* fp, string& name);
+    static unsigned int readValue(FILE* fp, CValue*& val);
 
-    void writeName(const string& data);
-    unsigned int writeValue(CValue* data);
+    static unsigned int writeName(FILE* fp, const string& name);
+    static unsigned int writeValue(FILE* fp, CValue* val);
 
-protected:
-    CValueMap* m_data;
-    FILE* m_fp;
 };
+
+
+// fast cast, set functions, unsafe
+void vms_v(CValue* vm, const string& nm, CValue* v);
+void vms_v(CValue* vm, int idx, CValue* v);
+
+void vms_str(CValue* vm, const string& nm, const string& str);
+void vms_str(CValue* vm, int idx, const string& str);
+
+void vms_flt(CValue* vm, const string& nm, double flt);
+void vms_flt(CValue* vm, int idx, double flt);
+
+void vms_int(CValue* vm, const string& nm, int integer);
+void vms_int(CValue* vm, int idx, int integer);
+
+void vms_bool(CValue* vm, const string& nm, bool boolean);
+void vms_bool(CValue* vm, int idx, bool boolean);
+
+
+// fast cast, get functions, unsafe
+CValue* vmg_v(CValue* vm, const string& nm);
+CValue* vmg_v(CValue* vm, int idx);
+
+const string& vmg_str(CValue* vm, const string& nm);
+const string& vmg_str(CValue* vm, int idx);
+
+double vmg_flt(CValue* vm, const string& nm);
+double vmg_flt(CValue* vm, int idx);
+
+int vmg_int(CValue* vm, const string& nm);
+int vmg_int(CValue* vm, int idx);
+
+bool vmg_bool(CValue* vm, const string& nm);
+bool vmg_bool(CValue* vm, int idx);
+
+CValueMap* vmg_vm(CValue* vm, const string& nm);
+CValueMap* vmg_vm(CValue* vm, int idx);
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////// Inline ////////////////////////////////
+
+inline void vms_v(CValue* vm, const string& nm, CValue* v)
+{
+    ((CValueMap*)vm)->setMapValue(nm, v);
+}
+
+inline void vms_v(CValue* vm, int idx, CValue* v)
+{
+    ((CValueMap*)vm)->setArrayValue(idx, v);
+}
+
+inline void vms_str(CValue* vm, const string& nm, const string& str)
+{
+    ((CValueMap*)vm)->setMapValue(nm, new CValueBase(str));
+}
+
+inline void vms_str(CValue* vm, int idx, const string& str)
+{
+    ((CValueMap*)vm)->setArrayValue(idx, new CValueBase(str));
+}
+
+inline void vms_flt(CValue* vm, const string& nm, double flt)
+{
+    ((CValueMap*)vm)->setMapValue(nm, new CValueBase(flt));
+}
+
+inline void vms_flt(CValue* vm, int idx, double flt)
+{
+    ((CValueMap*)vm)->setArrayValue(idx, new CValueBase(flt));
+}
+
+inline void vms_int(CValue* vm, const string& nm, int integer)
+{
+    ((CValueMap*)vm)->setMapValue(nm, new CValueBase(integer));
+}
+
+inline void vms_int(CValue* vm, int idx, int integer)
+{
+    ((CValueMap*)vm)->setArrayValue(idx, new CValueBase(integer));
+}
+
+inline void vms_bool(CValue* vm, const string& nm, bool boolean)
+{
+    ((CValueMap*)vm)->setMapValue(nm, new CValueBase(boolean));
+}
+
+inline void vms_bool(CValue* vm, int idx, bool boolean)
+{
+    ((CValueMap*)vm)->setArrayValue(idx, new CValueBase(boolean));
+}
+
+inline CValue* vmg_v(CValue* vm, const string& nm)
+{
+    return ((CValueMap*)vm)->getMapValue(nm);
+}
+
+inline CValue* vmg_v(CValue* vm, int idx)
+{
+    return ((CValueMap*)vm)->getArrayValue(idx);
+}
+
+inline const string& vmg_str(CValue* vm, const string& nm)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getMapValue(nm))->toString();
+}
+
+inline const string& vmg_str(CValue* vm, int idx)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getArrayValue(idx))->toString();
+}
+
+inline double vmg_flt(CValue* vm, const string& nm)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getMapValue(nm))->toFloat();
+}
+
+inline double vmg_flt(CValue* vm, int idx)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getArrayValue(idx))->toFloat();
+}
+
+inline int vmg_int(CValue* vm, const string& nm)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getMapValue(nm))->toInteger();
+}
+
+inline int vmg_int(CValue* vm, int idx)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getArrayValue(idx))->toInteger();
+}
+
+inline bool vmg_bool(CValue* vm, const string& nm)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getMapValue(nm))->toBoolean();
+}
+
+inline bool vmg_bool(CValue* vm, int idx)
+{
+    return ((CValueBase*)((CValueMap*)vm)->getArrayValue(idx))->toBoolean();
+}
+
+inline CValueMap* vmg_vm(CValue* vm, const string& nm)
+{
+    return (CValueMap*)((CValueMap*)vm)->getMapValue(nm);
+}
+
+inline CValueMap* vmg_vm(CValue* vm, int idx)
+{
+    return (CValueMap*)((CValueMap*)vm)->getArrayValue(idx);
+}
 
 
 #endif

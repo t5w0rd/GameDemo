@@ -9,6 +9,7 @@
 #include "EmptyScene.h"
 #include "GameData.h"
 #include "UnpackScene.h"
+#include "UnitLibraryForCC.h"
 
 
 // AppDelegate
@@ -49,6 +50,7 @@ bool AppDelegate::applicationDidFinishLaunching()
 #if GD_UNPACK
     auto scene = UnpackSceneLayer::scene();
 #else
+    CUnitLibrary::instance(new CUnitLibraryForCC);
     CGameData::instance();
     CUserData::instance()->load("");
     //auto scene = BattleSceneLayer::scene();

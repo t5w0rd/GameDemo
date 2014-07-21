@@ -9,7 +9,50 @@
 
 // CUnitLibraryForCC
 CUnitLibraryForCC::CUnitLibraryForCC()
+: m_bDefLoaded(false)
 {
+    setDbgClassName("CUnitLibraryForCC");
+}
+
+void CUnitLibraryForCC::addUnit(int id, CUnit* u)
+{
+    m_mapUnits.addObject(id, u);
+}
+
+CUnit* CUnitLibraryForCC::copyUnit(int id) const
+{
+    auto it = m_mapUnits.find(id);
+    if (it == m_mapUnits.end())
+    {
+        return nullptr;
+    }
+
+    return DCAST(it->second->copy(), CUnit*);
+}
+
+void CUnitLibraryForCC::addProjectile(int id, CProjectile* p)
+{
+    m_mapProjectiles.addObject(id, p);
+}
+
+CProjectile* CUnitLibraryForCC::copyProjectile(int id) const
+{
+    auto it = m_mapProjectiles.find(id);
+    if (it == m_mapProjectiles.end())
+    {
+        return nullptr;
+    }
+
+    return DCAST(it->second->copy(), CProjectile*);
+}
+
+void CUnitLibraryForCC::loadDefaultLibrary()
+{
+    if (m_bDefLoaded)
+    {
+        return;
+    }
+
     CSpriteInfo* si = nullptr;
     CProjectileForCC* p = nullptr;
     CUnitDrawForCC* d = nullptr;
@@ -20,7 +63,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     // MageBolt
     gc->loadAnimation("Sprites/MageBolt/move", "Sprites/MageBolt/move", 0.1f);
     gc->loadAnimation("Sprites/MageBolt/die", "Sprites/MageBolt/die", 0.1f);
-    
+
     si = new CSpriteInfo("MageBolt");
     si->prepareFrame(CProjectile::kFrmDefault, "default");
     si->prepareAnimation(CProjectile::kAniMove, "move", -1);
@@ -37,7 +80,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     // FrostBolt
     gc->loadAnimation("Sprites/FrostBolt/move", "Sprites/FrostBolt/move", 0.1f);
     gc->loadAnimation("Sprites/FrostBolt/die", "Sprites/FrostBolt/die", 0.1f);
-    
+
     si = new CSpriteInfo("FrostBolt");
     si->prepareFrame(CProjectile::kFrmDefault, "default");
     si->prepareAnimation(CProjectile::kAniMove, "move", -1);
@@ -54,7 +97,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     // ArcherArrow
     si = new CSpriteInfo("ArcherArrow");
     si->prepareFrame(CProjectile::kFrmDefault, "default");
-    
+
     p = new CProjectileForCC(si);
     p->setMoveSpeed(300.0f);
     p->setMaxHeightDelta(20.0f);
@@ -205,7 +248,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     p->setPenaltyFlags(CProjectile::kOnContact);
     p->setFireType(CProjectile::kFireStraight);
     addProjectile(kVoodooProy, p);
-    
+
     // MirageProy
     gc->loadAnimation("Sprites/MirageProy/die", "Sprites/MirageProy/die", 0.1f);
 
@@ -342,7 +385,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct3, "act3", 5);
     si->prepareAnimation(kAniAct4, "act4", 18);
     si->prepareAnimation(kAniAct5, "act5", 8);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(28.0f, 25.0f, Point(64.0f / 128, 22.0f / 152), CPoint(37.0f, 23.0f));
     d->addCtrlSound("sounds/Sprites/Barracks/move/00.mp3", 1.697f);
@@ -376,7 +419,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Archer/act3", "Sprites/Archer/act3", 0.07f);
     gc->loadAnimation("Sprites/Archer/act4", "Sprites/Archer/act4", 0.07f);
     gc->loadAnimation("Sprites/Archer/act5", "Sprites/Archer/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Archer");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -386,7 +429,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct3, "act3", 13);
     si->prepareAnimation(kAniAct4, "act4", 6);
     si->prepareAnimation(kAniAct5, "act5", 6);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(20.0f, 20.0f, Point(60.0f / 120, 24.0f / 152), CPoint(28.0f, 35.0f));
     d->addCtrlSound("sounds/Sprites/Archer/move/00.mp3", 1.044f);
@@ -430,7 +473,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct3, "act3", 6);
     si->prepareAnimation(kAniAct4, "act4", 7);
     si->prepareAnimation(kAniAct5, "act5", 6);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(27.0f, 27.0f, Point(83.0f / 164, 36.0f / 208), CPoint(42.0f, 31.0f));
     u = new CUnit(d);
@@ -460,7 +503,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Artillery/act3", "Sprites/Artillery/act3", 0.1f);
     gc->loadAnimation("Sprites/Artillery/act4", "Sprites/Artillery/act4", 0.1f);
     gc->loadAnimation("Sprites/Artillery/act5", "Sprites/Artillery/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Artillery");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -470,7 +513,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct3, "act3", 2);
     si->prepareAnimation(kAniAct4, "act4", 8);
     si->prepareAnimation(kAniAct5, "act5", 6);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(26.0f, 20.0f, Point(91.0f / 184, 39.0f / 164), CPoint(36.0f, 46.0f));
     u = new CUnit(d);
@@ -497,7 +540,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Elemental/act2", "Sprites/Elemental/act2", 0.1f);
     gc->loadAnimation("Sprites/Elemental/act3", "Sprites/Elemental/act3", 0.1f);
     gc->loadAnimation("Sprites/Elemental/act5", "Sprites/Elemental/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Elemental");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -506,7 +549,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct2, "act2", 4);
     si->prepareAnimation(kAniAct3, "act3", 6);
     si->prepareAnimation(kAniAct5, "act5", 8);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 28.0f, Point(59.0f / 120, 16.0f / 144), CPoint(40.0f, 30.0f));
     u = new CUnit(d);
@@ -535,7 +578,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Oni/act2", "Sprites/Oni/act2", 0.06f);
     gc->loadAnimation("Sprites/Oni/act3", "Sprites/Oni/act3", 0.06f);
     gc->loadAnimation("Sprites/Oni/act5", "Sprites/Oni/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Oni");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -544,7 +587,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct2, "act2", 9);
     si->prepareAnimation(kAniAct3, "act3", 19);
     si->prepareAnimation(kAniAct5, "act5", 6);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(38.0f, 31.0f, Point(130.0f / 256, 33.0f / 224), CPoint(105.0f, 10.0f));
     u = new CUnit(d);
@@ -573,7 +616,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Thor/act2", "Sprites/Thor/act2", 0.05f);
     gc->loadAnimation("Sprites/Thor/act3", "Sprites/Thor/act3", 0.1f);
     gc->loadAnimation("Sprites/Thor/act5", "Sprites/Thor/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Thor");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -584,7 +627,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct2, "act2", 5);
     si->prepareAnimation(kAniAct3, "act3", 4);
     si->prepareAnimation(kAniAct5, "act5", 3, "sounds/Effects/LevelUp.mp3");
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(40.0f, 29.0f, Point(124.0f / 240, 52.0f / 192), CPoint(59.0f, 30.0f));
     d->addCtrlSound("sounds/Sprites/Thor/move/00.mp3", 1.488f);
@@ -609,7 +652,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     u->addActiveAbility(atk);
     d->setBaseMoveSpeed(80.0f);
     addUnit(kThor, u);
-    
+
     // Viking
     gc->loadAnimation("Sprites/Viking/move", "Sprites/Viking/move", 0.08f);
     gc->loadAnimation("Sprites/Viking/die", "Sprites/Viking/die", 0.1f);
@@ -617,7 +660,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Viking/act2", "Sprites/Viking/act2", 0.1f);
     gc->loadAnimation("Sprites/Viking/act3", "Sprites/Viking/act3", 0.1f);
     gc->loadAnimation("Sprites/Viking/act5", "Sprites/Viking/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Viking");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -626,7 +669,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct2, "act2", 7);
     si->prepareAnimation(kAniAct3, "act3", 8);
     si->prepareAnimation(kAniAct5, "act5", 6);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(38.0f, 32.0f, Point(141.0f / 284, 44.0f / 232), CPoint(83.0f, 22.0f));
     u = new CUnit(d);
@@ -655,7 +698,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Lumberjack/act2", "Sprites/Lumberjack/act2", 0.1f);
     gc->loadAnimation("Sprites/Lumberjack/act3", "Sprites/Lumberjack/act3", 0.1f);
     gc->loadAnimation("Sprites/Lumberjack/act5", "Sprites/Lumberjack/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Lumberjack");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -664,7 +707,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct2, "act2", 6);
     si->prepareAnimation(kAniAct3, "act3", 6);
     si->prepareAnimation(kAniAct5, "act5", 6);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(51.0f, 45.0f, Point(91.0f / 180, 31.0f / 220), CPoint(62.0f, 41.0f));
     u = new CUnit(d);
@@ -695,7 +738,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Alric/act3", "Sprites/Alric/act3", 0.05f);
     gc->loadAnimation("Sprites/Alric/act4", "Sprites/Alric/act4", 0.05f);
     gc->loadAnimation("Sprites/Alric/act5", "Sprites/Alric/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Alric");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -705,7 +748,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct3, "act3", 8, "sounds/Effects/hero_alric_flurry.mp3");
     si->prepareAnimation(kAniAct4, "act4", 10);
     si->prepareAnimation(kAniAct5, "act5", 3);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(26.0f, 24.0f, Point(83.0f / 164, 17.0f / 180), CPoint(62.0f, 26.0f));
     u = new CUnit(d);
@@ -734,7 +777,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Soldier/act2", "Sprites/Soldier/act2", 0.1f);
     gc->loadAnimation("Sprites/Soldier/act3", "Sprites/Soldier/act3", 0.1f);
     gc->loadAnimation("Sprites/Soldier/act5", "Sprites/Soldier/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Soldier");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -747,7 +790,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct2, "act2", 3);
     si->prepareAnimation(kAniAct3, "act3", 11);
     si->prepareAnimation(kAniAct4, "act4", 9);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(25.0f, 21.0f, Point(94.0f / 188, 17.0f / 104), CPoint(40.0f, 21.0f));
     u = new CUnit(d);
@@ -777,7 +820,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Templar/act1", "Sprites/Templar/act1", 0.07f);
     gc->loadAnimation("Sprites/Templar/act2", "Sprites/Templar/act2", 0.1f);
     gc->loadAnimation("Sprites/Templar/act3", "Sprites/Templar/act3", 0.1f);
-    
+
     si = new CSpriteInfo("Templar");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -785,7 +828,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct1, "act1", 3);
     si->prepareAnimation(kAniAct2, "act2", 9);
     si->prepareAnimation(kAniAct3, "act3", 2);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(19.0f, 20.0f, Point(74.0f / 144, 16.0f / 84), CPoint(32.0f, 20.0f));
     u = new CUnit(d);
@@ -811,12 +854,12 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     // Arcane
     gc->loadAnimation("Sprites/Arcane/die", "Sprites/Arcane/die", 0.1f);
     gc->loadAnimation("Sprites/Arcane/act1", "Sprites/Arcane/act1", 0.08f);
-    
+
     si = new CSpriteInfo("Arcane");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 9);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(63.0f, 60.0f, Point(120.0f / 240, 44.0f / 184), CPoint(0.0f, 118.0f));
     u = new CUnit(d);
@@ -841,12 +884,12 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     // Tesla
     gc->loadAnimation("Sprites/Tesla/die", "Sprites/Tesla/die", 0.1f);
     gc->loadAnimation("Sprites/Tesla/act1", "Sprites/Tesla/act1", 0.031f);
-    
+
     si = new CSpriteInfo("Tesla");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniDie, "die", 0);
     si->prepareAnimation(kAniAct1, "act1", 17);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(63.0f, 60.0f, Point(120.0f / 240, 44.0f / 184), CPoint(0.0f, 118.0f));
     u = new CUnit(d);
@@ -876,7 +919,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     gc->loadAnimation("Sprites/Wizard/act3", "Sprites/Wizard/act3", 0.1f);
     //gc->loadAnimation("Sprites/Wizard/act4", "Sprites/Wizard/act4", 0.1f);
     gc->loadAnimation("Sprites/Wizard/act5", "Sprites/Wizard/act5", 0.1f);
-    
+
     si = new CSpriteInfo("Wizard");
     si->prepareFrame(kFrmDefault, "default");
     si->prepareAnimation(kAniMove, "move", -1);
@@ -886,7 +929,7 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     si->prepareAnimation(kAniAct3, "act3", 10);
     //si->prepareAnimation(kAniAct4, "act4", 6);
     si->prepareAnimation(kAniAct5, "act5", 6);
-    
+
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 25.0f, Point(72.0f / 144, 37.0f / 156), CPoint(33.0f, 67.0f));
     u = new CUnit(d);
@@ -907,36 +950,6 @@ CUnitLibraryForCC::CUnitLibraryForCC()
     d->setBaseMoveSpeed(50.0f);
     d->setHostilityRange(300.0f);
     addUnit(kWizard, u);
-}
 
-void CUnitLibraryForCC::addUnit(int id, CUnit* u)
-{
-    m_mapUnits.addObject(id, u);
-}
-
-CUnit* CUnitLibraryForCC::copyUnit(int id) const
-{
-    auto it = m_mapUnits.find(id);
-    if (it == m_mapUnits.end())
-    {
-        return nullptr;
-    }
-
-    return DCAST(it->second->copy(), CUnit*);
-}
-
-void CUnitLibraryForCC::addProjectile(int id, CProjectile* p)
-{
-    m_mapProjectiles.addObject(id, p);
-}
-
-CProjectile* CUnitLibraryForCC::copyProjectile(int id) const
-{
-    auto it = m_mapProjectiles.find(id);
-    if (it == m_mapProjectiles.end())
-    {
-        return nullptr;
-    }
-
-    return DCAST(it->second->copy(), CProjectile*);
+    m_bDefLoaded = true;
 }

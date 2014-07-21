@@ -89,12 +89,11 @@ bool CBattleWorld::onInit()
         }
     }
 
-    m_pDragonStrikeBuff = new CStunBuff("DragonStrikeBuff", "DragonStrikeBuff", 5.0f, false);
-    addTemplateAbility(m_pDragonStrikeBuff);
+    //m_pDragonStrikeBuff = new CStunBuff("DragonStrikeBuff", "DragonStrikeBuff", 5.0f, false);
+    //u->addActiveAbility(DCAST(m_pDragonStrikeBuff, CActiveAbility*), false);
 
-    a = new CChangeHpPas("AutoHeal", "AutoHeal", 0.2f, CExtraCoeff(0.001f, 0.0f));
-    id = addTemplateAbility(a);
-    u->addPassiveAbility(id);
+    //a = new CChangeHpPas("AutoHeal", "AutoHeal", 0.2f, CExtraCoeff(0.001f, 0.0f));
+    //u->addPassiveAbility(DCAST(a, CPassiveAbility*), false);
 
     d = DCAST(u->getDraw(), CUnitDrawForCC*);
     d->setPosition(CPoint(800, 600));
@@ -215,11 +214,6 @@ void CBattleWorld::onLuaWorldTick(float dt)
     }
 
     assert(lua_gettop(L) == 0);
-}
-
-CProjectile* CBattleWorld::copyProjectile(int id) const
-{
-    return CUnitLibraryForCC::instance()->copyProjectile(id);
 }
 
 void CBattleWorld::onUnitDying(CUnit* pUnit)
@@ -705,6 +699,10 @@ void BattleSceneLayer::onLoadingProgress()
 
 void BattleSceneLayer::onLoadingDone()
 {
+    CUnitLibrary::instance()->loadDefaultLibrary();
+
+    OBJS_INFO;
+
     removeChildByTag(100);
 
     static Size wsz = Director::getInstance()->getVisibleSize();
@@ -1688,7 +1686,7 @@ void BattleSceneLayer::onDragonStrikeUpdate(Node* pNode)
             {
                 CAttackData* ad = new CAttackData;
                 ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (150 * w->getHero()->getLevel()));
-                ad->addAttackBuff(CAttackBuff(w->getDragonStrikeBuff()->getId(), 1));
+                //ad->addAttackBuff(CAttackBuff(w->getDragonStrikeBuff()->getId(), 1));
                 t->damaged(ad, w->getHero(), CUnit::kMaskAll);
             }
             M_MAP_NEXT;

@@ -239,6 +239,16 @@ int g_setGameSpeed(lua_State* L)
     return 0;
 }
 
+int g_msgBox(lua_State* L)
+{
+    auto msg = lua_tostring(L, 1);
+    auto title = lua_tostring(L, 2);
+
+    MessageBox(msg, title);
+
+    return 0;
+}
+
 luaL_Reg Unit4CC_funcs[] = {
     { "ctor", Unit4CC_ctor },
     { "addBattleTip", Unit4CC_addBattleTip },
@@ -730,6 +740,7 @@ int luaRegCommFuncsForCC(lua_State* L)
     lua_register(L, "getWritablePath", g_getWritablePath);
     lua_register(L, "isFileExist", g_isFileExist);
     lua_register(L, "setGameSpeed", g_setGameSpeed);
+    lua_register(L, "msgBox", g_msgBox);
 
     // TODO: patch global class members
     M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);

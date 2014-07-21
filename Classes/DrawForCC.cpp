@@ -820,10 +820,9 @@ Layer* CWorldForCC::createLayer()
     return m_pLayer;
 }
 
-void CWorldForCC::shutdown()
+void CWorldForCC::onShutDown()
 {
     m_pLayer->removeAllChildrenWithCleanup(true);
-    CWorld::shutdown();
 }
 
 // CUnitPathForCC

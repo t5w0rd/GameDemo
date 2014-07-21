@@ -97,7 +97,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(EngineRoot)\cocos\audio\include;$(EngineRoot)\external;$(EngineRoot)\external\chipmunk\include\chipmunk;$(EngineRoot);..\Classes;..;..\Classes\lua;..\Classes\Logic;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(EngineRoot)\cocos\audio\include;$(EngineRoot)\external;$(EngineRoot)\external\chipmunk\include\chipmunk;$(EngineRoot);..\Classes;..;..\Classes\lua;..\Classes\Logic;E:\Program Files (x86)\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;DEBUG_FOR_CC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -112,7 +112,7 @@
     <Link>
       <AdditionalDependencies>libExtensions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(ProjectName).exe</OutputFile>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);E:\Program Files (x86)\Visual Leak Detector\lib\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -216,7 +216,6 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClCompile Include="..\Classes\Logic\Application.cpp" />
     <ClCompile Include="..\Classes\Logic\Archive.cpp" />
     <ClCompile Include="..\Classes\Logic\Base.cpp" />
-    <ClCompile Include="..\Classes\Logic\BingAbility.cpp" />
     <ClCompile Include="..\Classes\Logic\Draw.cpp" />
     <ClCompile Include="..\Classes\Logic\Item.cpp" />
     <ClCompile Include="..\Classes\Logic\Level.cpp" />
@@ -224,6 +223,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClCompile Include="..\Classes\Logic\LuaScriptEngine.cpp" />
     <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp" />
     <ClCompile Include="..\Classes\Logic\Unit.cpp" />
+    <ClCompile Include="..\Classes\Logic\UnitLibrary.cpp" />
     <ClCompile Include="..\Classes\LogoScene.cpp" />
     <ClCompile Include="..\Classes\LuaBindingForCC.cpp" />
     <ClCompile Include="..\Classes\lua\lapi.c" />
@@ -286,7 +286,6 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClInclude Include="..\Classes\Logic\Application.h" />
     <ClInclude Include="..\Classes\Logic\Archive.h" />
     <ClInclude Include="..\Classes\Logic\Base.h" />
-    <ClInclude Include="..\Classes\Logic\BingAbility.h" />
     <ClInclude Include="..\Classes\Logic\CommDef.h" />
     <ClInclude Include="..\Classes\Logic\CommInc.h" />
     <ClInclude Include="..\Classes\Logic\Draw.h" />
@@ -296,6 +295,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClInclude Include="..\Classes\Logic\LuaScriptEngine.h" />
     <ClInclude Include="..\Classes\Logic\MultiRefObject.h" />
     <ClInclude Include="..\Classes\Logic\Unit.h" />
+    <ClInclude Include="..\Classes\Logic\UnitLibrary.h" />
     <ClInclude Include="..\Classes\LogoScene.h" />
     <ClInclude Include="..\Classes\LuaBindingForCC.h" />
     <ClInclude Include="..\Classes\lua\lapi.h" />

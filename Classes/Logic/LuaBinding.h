@@ -87,8 +87,8 @@ int g_class(lua_State* L);
 int g_cast(lua_State* L);
 int g_addTemplateAbility(lua_State* L);
 
-int g_loadTableFromFile(lua_State* L);
-int g_saveTableToFile(lua_State* L);
+int g_loadValue(lua_State* L);
+int g_saveValue(lua_State* L);
 
 template <typename PTYPE>
 PTYPE luaL_toobjptr(lua_State* L, int idx, PTYPE& ptr);

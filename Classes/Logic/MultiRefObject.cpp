@@ -132,6 +132,20 @@ void CAutoReleasePool::releaseObjects()
 }
 
 // CDbgMutiRefObjectManager
+CDbgMultiRefObjectManager::CDbgMultiRefObjectManager()
+: m_out(stdout)
+{
+}
+
+void CDbgMultiRefObjectManager::setOutFile(FILE* out)
+{
+    if (out == m_out)
+    {
+        return;
+    }
+    m_out = out;
+}
+
 void CDbgMultiRefObjectManager::addObject(CMultiRefObject* pObject)
 {
     m_setObjs.insert(pObject);
@@ -144,10 +158,24 @@ void CDbgMultiRefObjectManager::delObject(CMultiRefObject* pObject)
 
 void CDbgMultiRefObjectManager::printDbgInfo(const char* pFile, int iLine)
 {
-    fprintf(stdout, "ObjectName(Tag)(RefCount) {\n");
+    map<string, int> cur;
+    fprintf(m_out, "ObjectName(Tag)(RefCount) {\n");
     for (auto& obj : m_setObjs)
     {
-        fprintf(stdout, "    %s(%s)(%d)\n", obj->getDbgClassName(), obj->getDbgTag(), obj->getRefCount());
+        fprintf(m_out, "    %s(%s)(%d)\n", obj->getDbgClassName(), obj->getDbgTag(), obj->getRefCount());
+        char sz[64];
+        sprintf(sz, "%s(%s)", obj->getDbgClassName(), obj->getDbgTag());
+        cur[sz] = cur[sz] + 1;
     }
-    fprintf(stdout, "} NumberOfObjects(%zu), %s: %d\n", m_setObjs.size(), pFile, iLine);
+    fprintf(m_out, "} NumberOfObjects(%d), %s: %d\n", (int)m_setObjs.size(), pFile, iLine);
+    
+    for (auto it = cur.begin(); it != cur.end(); ++it)
+    {
+        int dt = it->second - m_last[it->first];
+        fprintf(m_out, "%s(%s%d)\n", it->first.c_str(), dt > 0 ? "+" : "", dt);
+    }
+    fprintf(m_out, "\n");
+    m_last = cur;
+
+    fflush(m_out);
 }
