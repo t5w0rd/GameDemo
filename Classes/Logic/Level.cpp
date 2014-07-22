@@ -18,10 +18,10 @@ CLevelUpdate::CLevelUpdate()
     setDbgClassName("CLevelUpdate");
 }
 
-CLevelUpdate::CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRange, const function<void(CLevelExp* pLevel, int iChanged)>& onChangeLevel, const function<int(int iLevel)>& calcExp)
+CLevelUpdate::CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRange, const function<void(CLevelExp* pLevel, int iChanged)>& onLevelChanged, const function<int(int iLevel)>& calcExp)
 {
     m_updateExpRange = updateExpRange;
-    m_onChangeLevel = onChangeLevel;
+    m_onLevelChanged = onLevelChanged;
     m_calcExp = calcExp;
     setDbgClassName("CLevelUpdate");
 }
@@ -67,11 +67,11 @@ void CLevelUpdate::updateExpRange(CLevelExp* pLevel)
     lua_pop(L, 1);  // pop 'lu'
 }
 
-void CLevelUpdate::onChangeLevel(CLevelExp* pLevel, int iChanged)
+void CLevelUpdate::onLevelChanged(CLevelExp* pLevel, int iChanged)
 {
-    if (m_onChangeLevel)
+    if (m_onLevelChanged)
     {
-        m_onChangeLevel(pLevel, iChanged);
+        m_onLevelChanged(pLevel, iChanged);
         return;
     }
 
@@ -83,7 +83,7 @@ void CLevelUpdate::onChangeLevel(CLevelExp* pLevel, int iChanged)
     lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int lu = luaL_getregistery(L, getScriptHandler());
 
-    lua_getfield(L, lu, "onChangeLevel");
+    lua_getfield(L, lu, "onLevelChanged");
     lua_pushvalue(L, lu);
     luaL_pushobjptr(L, "LevelExp", pLevel);
     lua_pushinteger(L, iChanged);
@@ -180,7 +180,7 @@ void CLevelExp::updateExpRange()
     }
 }
 
-void CLevelExp::onChangeLevel(int32_t iChanged)
+void CLevelExp::onLevelChanged(int32_t iChanged)
 {
 }
 
@@ -203,9 +203,9 @@ void CLevelExp::addExp(int iExp)
         updateExpRange();
         if (m_pUpdate)
         {
-            m_pUpdate->onChangeLevel(this, 1);
+            m_pUpdate->onLevelChanged(this, 1);
         }
-        onChangeLevel(1);
+        onLevelChanged(1);
     }
 
     if (m_iLvl == m_iMaxLvl)
@@ -245,9 +245,9 @@ void CLevelExp::setLevel(int iLvl)
         }
         if (m_pUpdate)
         {
-            m_pUpdate->onChangeLevel(this, iChanged);
+            m_pUpdate->onLevelChanged(this, iChanged);
         }
-        onChangeLevel(iChanged);
+        onLevelChanged(iChanged);
         updateExpRange();
     }
 }

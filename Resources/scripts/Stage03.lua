@@ -9,7 +9,7 @@ local ucs = {}
 uc = UnitCreator:new()
 uc.id = UL.kBarracks
 uc.nm = "Barracks"
-uc.hp = 5000
+uc.hp = 4000
 uc.ms = 80
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -21,13 +21,13 @@ uc.amr.v = 20.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = 80
+uc.pos = 100
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kArcher
 uc.nm = "Archer"
-uc.hp = 3500
+uc.hp = 2500
 uc.ms = 90
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -39,13 +39,13 @@ uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = -80
+uc.pos = 300
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kThor
 uc.nm = "Thor"
-uc.hp = 5500
+uc.hp = 4500
 uc.ms = 75
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -57,13 +57,13 @@ uc.amr.v = 12.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = 90
+uc.pos = 80
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kMalik
 uc.nm = "Malik"
-uc.hp = 5300
+uc.hp = 4300
 uc.ms = 85
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -75,13 +75,13 @@ uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = 92
+uc.pos = 100
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kFrost
 uc.nm = "Frost"
-uc.hp = 3000
+uc.hp = 2000
 uc.ms = 70
 uc.force.index = 1
 uc.atk.t = AttackValue.kMagical
@@ -93,13 +93,13 @@ uc.amr.v = 26.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = -50
+uc.pos = 200
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kMage
 uc.nm = "Mage"
-uc.hp = 3200
+uc.hp = 2200
 uc.ms = 75
 uc.force.index = 1
 uc.atk.t = AttackValue.kMagical
@@ -111,13 +111,13 @@ uc.amr.v = 24.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = -40
+uc.pos = 180
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kArtillery
 uc.nm = "Artillery"
-uc.hp = 3400
+uc.hp = 2700
 uc.ms = 85
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -129,13 +129,13 @@ uc.amr.v = 9.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = -70
+uc.pos = 280
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kElemental
 uc.nm = "Elemental"
-uc.hp = 2500
+uc.hp = 2000
 uc.ms = 85
 uc.force.index = 1
 uc.atk.t = AttackValue.kMagical
@@ -143,17 +143,17 @@ uc.atk.v = 260.0
 uc.atk.i = 1.4
 uc.atk.r = 0.10
 uc.amr.t = ArmorValue.kCrystal
-uc.amr.v = 38.0
+uc.amr.v = 50.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = 70
+uc.pos = 200
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kOni
 uc.nm = "Oni"
-uc.hp = 5500
+uc.hp = 4500
 uc.ms = 75
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -165,13 +165,13 @@ uc.amr.v = 12.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = 85
+uc.pos = 80
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kViking
 uc.nm = "Viking"
-uc.hp = 5000
+uc.hp = 4000
 uc.ms = 85
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -189,7 +189,7 @@ table.insert(ucs, uc)
 uc = UnitCreator:new()
 uc.id = UL.kLumberjack
 uc.nm = "Lumberjack"
-uc.hp = 6000
+uc.hp = 5000
 uc.ms = 60
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -201,13 +201,13 @@ uc.amr.v = 35.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = 200
+uc.pos = 50
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = UL.kAlric
 uc.nm = "Alric"
-uc.hp = 4000
+uc.hp = 3000
 uc.ms = 88
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
@@ -219,13 +219,13 @@ uc.amr.v = 11.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = 20
+uc.pos = 100
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
 uc.id = SUL.kPriest
 uc.nm = "Priest"
-uc.hp = 3000
+uc.hp = 2000
 uc.ms = 60
 uc.force.index = 1
 uc.atk.t = AttackValue.kMagical
@@ -237,7 +237,7 @@ uc.amr.v = 5.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
-uc.pos = -40
+uc.pos = 250
 table.insert(ucs, uc)
 
 
@@ -247,6 +247,13 @@ function Stage03:spawnTeam(ucs, number, template, control, x, y)
 	local us = {}
 	local id
 	local force
+	
+	local maxAngle = 0
+	local dtAngle = 0
+	if number > 1 then
+		maxAngle = math.pi / 2
+		dtAngle = maxAngle / (number - 1)
+	end
 	
 	for i = 1, number do
 		repeat
@@ -270,13 +277,15 @@ function Stage03:spawnTeam(ucs, number, template, control, x, y)
 		if control then
 			u:setForceByIndex(0)
 			u:setAlly(2 ^ 0 + 2 ^ 2)
-			u:setPosition(x + uc.pos, y + math.random(-100, 100))
+			u:setPosition(getDirectionPoint(x, y, -maxAngle / 2 + dtAngle * (i - 1) + math.pi, uc.pos))
+			--u:setPosition(x + uc.pos, y + math.random(-200, 200))
 			table.insert(self.f0, uc.nm)
-			setPortrait(i - 1, u)
+			setPortrait(i, u)
 		else
 			u:setForceByIndex(1)
 			u:setAlly(2 ^ 1 + 2 ^ 2)
-			u:setPosition(x - uc.pos, y + math.random(-100, 100))
+			u:setPosition(getDirectionPoint(x, y, -maxAngle / 2 + dtAngle * (i - 1), uc.pos))
+			--u:setPosition(x - uc.pos, y + math.random(-200, 200))
 			table.insert(self.f1, uc.nm)
 		end
 		
@@ -285,44 +294,50 @@ function Stage03:spawnTeam(ucs, number, template, control, x, y)
 	end
 end
 
+function Stage03:onInitHero()
+	return nil
+end
+
 function Stage03:onInit()
 	--msgBox("test²âÊÔ", "title±êÌâ")
 	setGameSpeed(2.0)
 	showDebug(true)
-	self.hero = initForHero()
-	self.hero:setGhost(self.hero)
+	
 	self.over = false
 	self.fight = {}
 	self.f0 = {}
 	self.f1 = {}
 	self.dur = 0.0
 	self.timeout = 120.0
-	--self.hero:setVisible(false)
-	--self.hero:setLevel(20)
-	--self.hero:addExp(10000)
-	self.hero:setAlly(2 ^ 0 + 2 ^ 1 + 2 ^ 2)
-	self.hero:setPosition(750, 200)
 	
 	local u, uc, us, id
 	local n
 	us = {}
 	
 	local tm = {}
-	tm[1] = {}
-	--tm[2] = {UL.kThor, UL.kElemental, UL.kViking, SUL.kPriest}
-	--tm[3] = {UL.kElemental, UL.kViking, UL.kMage, UL.kArtillery}
-	--tm[3] = {UL.kBarracks, UL.kMalik, UL.kViking, UL.kThor}
+	--tm[#tm + 1] = {UL.kViking, SUL.kPriest}
+	--tm[#tm + 1] = {UL.kAlric}
+	--tm[#tm + 1] = {UL.kMage, UL.kArtillery, UL.kLumberjack, UL.kFrost}
+	--tm[#tm + 1] = {UL.kMage, UL.kViking, UL.kThor, UL.kFrost, UL.kAlric}
+	--tm[#tm + 1] = {UL.kThor, UL.kElemental, UL.kViking, SUL.kPriest}
+	--tm[#tm + 1] = {UL.kElemental, UL.kViking, UL.kMage, UL.kArtillery}
+	--tm[#tm + 1] = {UL.kBarracks, UL.kMalik, UL.kViking, UL.kThor}
 	
-	local rnd = math.random(1, #tm)
-	team = tm[rnd]
-	if rnd == 1 then
-		n = math.random(5)
+	if #tm > 0 then
+		local rnd = math.random(1, #tm)
+		team = tm[rnd]
 	else
-		n = 4
+		team = {}
 	end
 	
-	self:spawnTeam(ucs, n, team, true, 300, 800)
-	self:spawnTeam(ucs, n, team, false, 1200, 800)
+	if #team == 0 then
+		n = math.random(5)
+	else
+		n = #team
+	end
+	
+	self:spawnTeam(ucs, n, team, true, 500, 700)
+	self:spawnTeam(ucs, n, {}, false, 1000, 700)
 	
 	self.res = loadValue("battle.tbl")
 	if not self.res then
@@ -361,7 +376,7 @@ function Stage03:onInit()
 			str = str .. strl .. "\n"
 		end
 		
-		saveValue(str, "rank.str")
+		saveValue("rank.str", str)
 	end
 end
 
@@ -379,9 +394,7 @@ function Stage03:onTick(dt)
 		return
 	end
 	
-	local us = getUnits(function(u)
-		return u:getId() ~= self.hero:getId()
-	end, true)
+	local us = getUnits(nil, true)
 	local f0 = 0
 	local f1 = 0
 	for _, u in ipairs(us) do
@@ -416,9 +429,7 @@ function Stage03:onTick(dt)
 		end
 		
 		local bl = {}
-		us = getUnits(function(u)
-			return u:getId() ~= self.hero:getId()
-	end)
+		us = getUnits()
 	
 		for _, u in ipairs(us) do
 			local nm = u:getName()
@@ -427,7 +438,7 @@ function Stage03:onTick(dt)
 		end
 		table.insert(self.res.log, bl)
 		
-		saveValue(self.res, "battle.tbl")
+		saveValue("battle.tbl", self.res)
 		
 		log("the battle log has been updated! (%d)", #self.res.log)
 		restartStage()

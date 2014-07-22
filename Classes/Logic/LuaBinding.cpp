@@ -195,6 +195,41 @@ int g_cast(lua_State* L)
     return 0;
 }
 
+int g_loadValue(lua_State* L)
+{
+    auto file = lua_tostring(L, 1);
+    
+    CValue* v = nullptr;
+    auto res = CArchive::loadValue(file, v);
+    if (res == false)
+    {
+        lua_pushnil(L);
+
+        return 1;
+    }
+
+    CArchive::luaPushValue(L, v);
+    delete v;
+
+    return 1;
+}
+
+int g_saveValue(lua_State* L)
+{
+    auto file = lua_tostring(L, 1);
+    CValue* v = CArchive::luaToValue(L, 2);
+
+    CArchive::saveValue(file, v);
+    delete v;
+
+    return 0;
+}
+
+int g_onLoadingUserData(lua_State* L)
+{
+    return 0;
+}
+
 int g_addTemplateAbility(lua_State* L)
 {
     int n = lua_gettop(L);
@@ -217,38 +252,7 @@ int g_addTemplateAbility(lua_State* L)
     return 1;
 }
 
-int g_loadValue(lua_State* L)
-{
-    auto file = lua_tostring(L, 1);
-    
-    CValue* v = nullptr;
-    auto res = CArchive::loadValue(file, v);
-    if (res == false)
-    {
-        lua_pushnil(L);
-
-        return 1;
-    }
-
-    CArchive::luaPushValue(L, v);
-    delete v;
-
-    return 1;
-}
-
-int g_saveValue(lua_State* L)
-{
-    CValue* v = CArchive::luaToValue(L, 1);
-    auto file = lua_tostring(L, 2);
-
-    CArchive::saveValue(file, v);
-    delete v;
-
-    return 0;
-}
-
 // game
-
 CUnit* luaL_tounitptr(lua_State* L, int idx)
 {
     if (lua_istable(L, idx))
@@ -418,6 +422,7 @@ int LevelExp_setLevelUpdate(lua_State* L)
     luaL_toobjptr(L, 2, lu);
 
     _p->setLevelUpdate(lu);
+    _p->updateExpRange();
 
     return 0;
 }
@@ -425,7 +430,7 @@ int LevelExp_setLevelUpdate(lua_State* L)
 luaL_Reg LevelUpdate_funcs[] = {
     { "ctor", LevelUpdate_ctor },
     { "updateExpRange", LevelUpdate_updateExpRange },
-    { "onChangeLevel", LevelUpdate_onChangeLevel },
+    { "onLevelChanged", LevelUpdate_onLevelChanged },
     { "calcExp", LevelUpdate_calcExp },
     { nullptr, nullptr }
 };
@@ -454,7 +459,7 @@ int LevelUpdate_updateExpRange(lua_State* L)
     return 0;
 }
 
-int LevelUpdate_onChangeLevel(lua_State* L)
+int LevelUpdate_onLevelChanged(lua_State* L)
 {
     return 0;
 }
@@ -1076,9 +1081,16 @@ int Unit_say(lua_State* L)
 int Unit_setGhost(lua_State* L)
 {
     CUnit* u = luaL_tounitptr(L);
-    int owner = luaL_tounitid(L, 2);
 
-    u->setGhost(owner);
+    if (lua_gettop(L) < 2)
+    {
+        u->setGhost(u->getId());
+    }
+    else
+    {
+        int owner = luaL_tounitid(L, 2);
+        u->setGhost(owner);
+    }
 
     return 0;
 }
@@ -1875,7 +1887,7 @@ int UnitPath_getFirstPoint(lua_State* L)
 
 luaL_Reg UnitAI_funcs[] = {
     { "ctor", UnitAI_ctor },
-    { "onUnitChangeHp", UnitAI_onUnitChangeHp },
+    { "onUnitHpChanged", UnitAI_onUnitHpChanged },
     { "onUnitTick", UnitAI_onUnitTick },
     { "onUnitDamagedDone", UnitAI_onUnitDamagedDone },
     { "onUnitDamageTargetDone", UnitAI_onUnitDamageTargetDone },
@@ -1899,7 +1911,7 @@ int UnitAI_ctor(lua_State* L)
     return 0;
 }
 
-int UnitAI_onUnitChangeHp(lua_State* L)
+int UnitAI_onUnitHpChanged(lua_State* L)
 {
     return 0;
 }
@@ -2319,14 +2331,14 @@ int Projectile_decContactLeft(lua_State* L)
 luaL_Reg Ability_funcs[] = {
     { "ctor", Ability_ctor },
     { "onCopy", Ability_onCopy },
-    { "onChangeLevel", Ability_onChangeLevel },
+    { "onLevelChanged", Ability_onLevelChanged },
     { "onUnitAddAbility", Ability_onUnitAddAbility },
     { "onUnitDelAbility", Ability_onUnitDelAbility },
     { "onUnitAbilityReady", Ability_onUnitAbilityReady },
     { "onUnitRevive", Ability_onUnitRevive },
     { "onUnitDying", Ability_onUnitDying },
     { "onUnitDead", Ability_onUnitDead },
-    { "onUnitChangeHp", Ability_onUnitChangeHp },
+    { "onUnitHpChanged", Ability_onUnitHpChanged },
     { "onUnitTick", Ability_onUnitTick },
     { "onUnitInterval", Ability_onUnitInterval },
     { "onUnitAttackTarget", Ability_onUnitAttackTarget },
@@ -2370,7 +2382,7 @@ int Ability_ctor(lua_State* L)
     return 0;
 }
 
-int Ability_onChangeLevel(lua_State* L)
+int Ability_onLevelChanged(lua_State* L)
 {
     return 0;
 }
@@ -2410,7 +2422,7 @@ int Ability_onUnitDead(lua_State* L)
     return 0;
 }
 
-int Ability_onUnitChangeHp(lua_State* L)
+int Ability_onUnitHpChanged(lua_State* L)
 {
     return 0;
 }
@@ -3578,8 +3590,10 @@ int SplashPas_ctor(lua_State* L)
     float farRange = lua_tonumber(L, 6);
     float exFarA = lua_tonumber(L, 7);
     float exFarB = lua_tonumber(L, 8);
+    uint32_t mask = luaL_tounsigneddef(L, 9, CUnit::kOnAttackTargetTrigger);
+    uint32_t eff = luaL_tounsigneddef(L, 10, CUnitForce::kEnemy);
 
-    CSplashPas* _p = new CSplashPas(name, nearRange, CExtraCoeff(exNearA, exNearB), farRange, CExtraCoeff(exFarA, exFarB));
+    CSplashPas* _p = new CSplashPas(name, nearRange, CExtraCoeff(exNearA, exNearB), farRange, CExtraCoeff(exFarA, exFarB), mask, eff);
     lua_pushlightuserdata(L, _p);
     lua_setfield(L, 1, "_p");
 
@@ -3699,9 +3713,13 @@ int luaRegCommFuncs(lua_State* L)
     // TODO: reg global funcs
     lua_register(L, "class", g_class);
     lua_register(L, "cast", g_cast);
-    lua_register(L, "addTemplateAbility", g_addTemplateAbility);
     lua_register(L, "loadValue", g_loadValue);
     lua_register(L, "saveValue", g_saveValue);
+
+    lua_register(L, "onLoadingUserData", g_onLoadingUserData);
+
+    lua_register(L, "addTemplateAbility", g_addTemplateAbility);
+    
 
     // TODO: reg global classes
     M_LUA_BIND_CLASS_WITH_FUNCS(L, MRObj);
@@ -3756,23 +3774,28 @@ int g_onWorldTick(lua_State* L)
     return 0;
 }
 
-int g_setControlUnit(lua_State* L)
+int g_onUnitDead(lua_State* L)
+{
+    return 0;
+}
+
+int g_setCtrlUnit(lua_State* L)
 {
     auto u = luaL_tounitptr(L, 1);
 
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    w->setControlUnit(u);
+    w->setCtrlUnit(u);
     lua_pop(L, 1);
 
     return 0;
 }
 
-int g_getControlUnit(lua_State* L)
+int g_getCtrlUnit(lua_State* L)
 {
     lua_getglobal(L, "_world");
     CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
-    CUnit* _p = w->getUnit(w->getControlUnit());
+    CUnit* _p = w->getUnit(w->getCtrlUnit());
     lua_pop(L, 1);
 
     if (_p != nullptr)
@@ -3825,6 +3848,11 @@ int g_getUnits(lua_State* L)
     {
         CUnit* u = M_MAP_EACH;
         M_MAP_NEXT;
+
+        if (ghost == false && u->isGhost())
+        {
+            continue;
+        }
 
         if (lua_isfunction(L, matchfunc))
         {
@@ -3895,8 +3923,9 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     // TODO: reg global funcs
     lua_register(L, "onWorldInit", g_onWorldInit);
     lua_register(L, "onWorldTick", g_onWorldTick);
-    lua_register(L, "setControlUnit", g_setControlUnit);
-    lua_register(L, "getControlUnit", g_getControlUnit);
+    lua_register(L, "onUnitDead", g_onUnitDead);
+    lua_register(L, "setCtrlUnit", g_setCtrlUnit);
+    lua_register(L, "getCtrlUnit", g_getCtrlUnit);
     lua_register(L, "getUnit", g_getUnit);
     lua_register(L, "getUnits", g_getUnits);
     lua_register(L, "addUnit", g_addUnit);

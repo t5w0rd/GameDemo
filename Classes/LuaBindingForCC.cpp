@@ -249,6 +249,38 @@ int g_msgBox(lua_State* L)
     return 0;
 }
 
+int g_setStageGrade(lua_State* L)
+{
+    auto index = lua_tointeger(L, 1) - 1;
+    auto grade = lua_tointeger(L, 2);
+
+    auto& sg = CUserData::instance()->m_stageGrades;
+    if (index > (int)sg.size())
+    {
+        lua_pushnil(L);
+        return 1;
+    }
+    else if (index == sg.size())
+    {
+        sg.push_back(grade);
+    }
+    else if (sg[index] < grade)
+    {
+        sg[index] = grade;
+    }
+
+    lua_pushinteger(L, sg[index]);
+
+    return 1;
+}
+
+int g_getCurStageIndex(lua_State* L)
+{
+    lua_pushinteger(L, CUserData::instance()->m_stageSel);
+
+    return 1;
+}
+
 luaL_Reg Unit4CC_funcs[] = {
     { "ctor", Unit4CC_ctor },
     { "addBattleTip", Unit4CC_addBattleTip },
@@ -512,7 +544,7 @@ int Effect_ctor(lua_State* L)
     if (lua_gettop(L) < 7)
     {
         lua_getglobal(L, "_world");
-        CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+        auto w = (CBattleWorld*)lua_touserdata(L, -1);
         lua_pop(L, 1);  // pop _world
         w->getLayer()->addChild(eff); 
     }
@@ -741,6 +773,8 @@ int luaRegCommFuncsForCC(lua_State* L)
     lua_register(L, "isFileExist", g_isFileExist);
     lua_register(L, "setGameSpeed", g_setGameSpeed);
     lua_register(L, "msgBox", g_msgBox);
+    lua_register(L, "setStageGrade", g_setStageGrade);
+    lua_register(L, "getCurStageIndex", g_getCurStageIndex);
 
     // TODO: patch global class members
     M_LUA_PATCH_CLASS_WITH_FUNCS(L, Unit, Unit4CC);
@@ -765,7 +799,7 @@ int luaL_includefile(lua_State* L, const char* file)
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
-        CCLOG("ERR | LuaErr: %s", err);
+        CCLOG("ERR | LuaErr(%s: %d): %s", __FILE__, (int)__LINE__, err);
         lua_pop(L, 1);
     }
 
@@ -805,7 +839,7 @@ int g_createUnit(lua_State* L)
     int id = lua_tointeger(L, 1);
 
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
     CUnit* _p = CUnitLibraryForCC::instance()->copyUnit(id);
@@ -827,7 +861,7 @@ int g_createProjectile(lua_State* L)
     int id = lua_tointeger(L, 1);
 
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
     CProjectile* _p = CUnitLibraryForCC::instance()->copyProjectile(id);
@@ -849,7 +883,7 @@ int g_endWithVictory(lua_State* L)
     int grade = lua_tointeger(L, 1);
 
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
     DCAST(w->getLayer(), BattleSceneLayer*)->endWithVictory(grade);
 
@@ -859,32 +893,20 @@ int g_endWithVictory(lua_State* L)
 int g_endWithDefeat(lua_State* L)
 {
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
     DCAST(w->getLayer(), BattleSceneLayer*)->endWithDefeat();
 
     return 0;
 }
 
-int g_saveUserData(lua_State* L)
-{
-    lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
-    lua_pop(L, 1);  // pop _world
-
-    CUserData::instance()->getHeroSelected()->exp = w->getHero()->getExp();
-    CUserData::instance()->save("");
-
-    return 0;
-}
-
 int g_setPortrait(lua_State* L)
 {
-    int idx = lua_tointeger(L, 1);
+    int idx = lua_tointeger(L, 1) - 1;
     CUnit* u = luaL_tounitptr(L, 2);
 
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
     auto l = DCAST(w->getLayer(), BattleSceneLayer*);
@@ -899,7 +921,7 @@ int g_delPortrait(lua_State* L)
     bool follow = luaL_tobooleandef(L, 2, false);
 
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
     auto l = DCAST(w->getLayer(), BattleSceneLayer*);
@@ -913,7 +935,7 @@ int g_showUnitInfo(lua_State* L)
     auto id = luaL_tounitid(L, 1);
 
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
     auto l = DCAST(w->getLayer(), BattleSceneLayer*);
@@ -925,13 +947,39 @@ int g_showUnitInfo(lua_State* L)
 int g_restartStage(lua_State* L)
 {
     lua_getglobal(L, "_world");
-    CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
     lua_pop(L, 1);  // pop _world
 
     auto l = DCAST(w->getLayer(), BattleSceneLayer*);
     l->onClickRestart(nullptr);
 
     return 0;
+}
+
+int g_setHero(lua_State* L)
+{
+    auto u = luaL_tounitptr(L, 1);
+
+    lua_getglobal(L, "_world");
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+    
+    w->setHero(u);
+
+    return 0;
+}
+
+int g_getHero(lua_State* L)
+{
+    lua_getglobal(L, "_world");
+    auto w = (CBattleWorld*)lua_touserdata(L, -1);
+    lua_pop(L, 1);  // pop _world
+
+    auto u = w->getHero();
+    
+    luaL_pushobjptr(L, "Unit", u);
+
+    return 1;
 }
 
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
@@ -944,11 +992,12 @@ int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld)
     lua_register(L, "createProjectile", g_createProjectile);
     lua_register(L, "endWithVictory", g_endWithVictory);
     lua_register(L, "endWithDefeat", g_endWithDefeat);
-    lua_register(L, "saveUserData", g_saveUserData);
     lua_register(L, "setPortrait", g_setPortrait);
     lua_register(L, "delPortrait", g_delPortrait);
     lua_register(L, "showUnitInfo", g_showUnitInfo);
     lua_register(L, "restartStage", g_restartStage);
+    lua_register(L, "setHero", g_setHero);
+    lua_register(L, "getHero", g_getHero);
 
     return 0;
 }
@@ -963,11 +1012,11 @@ int luaL_includefilelog(lua_State* L, const char* file)
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
-        CCLOG("ERR | LuaErr: %s", err);
+        CCLOG("ERR | LuaErr(%s: %d): %s", __FILE__, (int)__LINE__, err);
         lua_pop(L, 1);
 
         lua_getglobal(L, "_world");
-        CBattleWorld* w = (CBattleWorld*)lua_touserdata(L, -1);
+        auto w = (CBattleWorld*)lua_touserdata(L, -1);
         lua_pop(L, 1);  // pop _world
         if (w != nullptr)
         {

@@ -376,7 +376,6 @@ void HeroRoomSceneLayer::onHideDone(Node* pNode)
     udt->m_heroes.push_back(m_heroInfos[m_selIndex]);
     udt->m_heroSel = 0;
 
-    CUserData::instance()->save("");
     //gc->replaceSceneWithLoading(&StageSceneLayer::scene);
     Director::getInstance()->replaceScene(StageSceneLayer::scene());
     //Director::getInstance()->replaceScene(BattleSceneLayer::scene());

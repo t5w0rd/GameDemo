@@ -35,10 +35,9 @@ uc.reward.e = 500
 Stage01 = class(Battle)
 
 function Stage01:onInit()
-	hero = initForHero()
+	hero = getHero()
 	--hero:setLevel(1)
-	hero:addPassiveAbility(AL.kChangeAttributeAttack:getId())
-	
+		
 	self.u = uc:createUnit()
 	self.u:addPassiveAbility(AL.kRebirth:getId())
 	self.u:setPosition(500, 800)
@@ -50,7 +49,7 @@ end
 
 function Stage01:onTick(dt)
 	if self.u and self.u:isDead() then
-		endWithVictory(math.random(1, 3))
+		stageVictory(math.random(1, 3))
 	end
 end
 

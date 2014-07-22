@@ -115,7 +115,7 @@ int LevelExp_setLevelUpdate(lua_State* L);
 
 int LevelUpdate_ctor(lua_State* L);
 int LevelUpdate_updateExpRange(lua_State* L);
-int LevelUpdate_onChangeLevel(lua_State* L);
+int LevelUpdate_onLevelChanged(lua_State* L);
 int LevelUpdate_calcExp(lua_State* L);
 
 int AttackData_ctor(lua_State* L);
@@ -226,7 +226,7 @@ int UnitPath_addPoint(lua_State* L);
 int UnitPath_getFirstPoint(lua_State* L);
 
 int UnitAI_ctor(lua_State* L);
-int UnitAI_onUnitChangeHp(lua_State* L);
+int UnitAI_onUnitHpChanged(lua_State* L);
 int UnitAI_onUnitTick(lua_State* L);
 int UnitAI_onUnitDamagedDone(lua_State* L);
 int UnitAI_onUnitDamageTargetDone(lua_State* L);
@@ -271,7 +271,7 @@ int Projectile_getContactLeft(lua_State* L);
 int Projectile_decContactLeft(lua_State* L);
 
 int Ability_ctor(lua_State* L);
-int Ability_onChangeLevel(lua_State* L);
+int Ability_onLevelChanged(lua_State* L);
 int Ability_onCopy(lua_State* L);
 int Ability_onUnitAddAbility(lua_State* L);
 int Ability_onUnitDelAbility(lua_State* L);
@@ -279,7 +279,7 @@ int Ability_onUnitAbilityReady(lua_State* L);
 int Ability_onUnitRevive(lua_State* L);
 int Ability_onUnitDying(lua_State* L);
 int Ability_onUnitDead(lua_State* L);
-int Ability_onUnitChangeHp(lua_State* L);
+int Ability_onUnitHpChanged(lua_State* L);
 int Ability_onUnitTick(lua_State* L);
 int Ability_onUnitInterval(lua_State* L);
 int Ability_onUnitAttackTarget(lua_State* L);
@@ -398,8 +398,9 @@ int luaRegCommFuncs(lua_State* L);
 
 int g_onWorldInit(lua_State* L);
 int g_onWorldTick(lua_State* L);
-int g_setControlUnit(lua_State* L);
-int g_getControlUnit(lua_State* L);
+int g_onUnitDead(lua_State* L);
+int g_setCtrlUnit(lua_State* L);
+int g_getCtrlUnit(lua_State* L);
 int g_getUnit(lua_State* L);
 int g_getUnits(lua_State* L);
 int g_addUnit(lua_State* L);

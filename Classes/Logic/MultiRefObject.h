@@ -45,6 +45,8 @@ protected:
 typedef void (CMultiRefObject::*FUNC_CALLFUNC_ND)(CMultiRefObject*, void*);
 typedef void (CMultiRefObject::*FUNC_CALLFUNC_N)(CMultiRefObject*);
 
+typedef function<void(CMultiRefObject*)> FUNC_MRO;
+
 class CAutoReleasePool
 {
 public:

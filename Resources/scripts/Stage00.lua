@@ -175,34 +175,9 @@ function Stage00:onInit()
 	self.healer = 0
 	initAbilityForLevelUp()
 	
-	me = initForHero()
+	me = getHero()
 	--me:setMaxLevel(100)
 	me:addExp(5000)
-	
-
-	
-	
-	
-	--a = me:getActiveAbility("WarCry")
-	--me:delActiveAbility(a)
-
-	--a = me:getActiveAbility("ThunderCap")
-	--me:delActiveAbility(a)
-	
-	--me:addActiveAbility(AL.kMultiSlash:getId())
-	--me:addActiveAbility(AL.kKnockBackEx:getId())
-	--me:addActiveAbility(AL.kThrowHammerEx:getId())
-	--me:addActiveAbility(AL.kBuffMaker:getId())
-	--me:addActiveAbility(AL.kMagicalRain:getId())
-	--me:addActiveAbility(AL.kWarCry:getId())
-	
-	--me:addPassiveAbility(AL.kVampireAttack:getId())
-	--me:addPassiveAbility(AL.kCriticalAttack:getId())
-	--me:addPassiveAbility(AL.kRebirth:getId())
-	--me:addPassiveAbility(AL.kThunderCapAttack:getId())
-	--me:addPassiveAbility(AL.kThrowHammerAttack:getId())
-	--me:addPassiveAbility(AL.kCutterAttack:getId())
-	
 	
 	a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.001, 5, 0, -1)
 	id = addTemplateAbility(a)
@@ -253,11 +228,11 @@ end
 
 function Stage00:onTick(dt)
 	if not getUnit(tower1) then
-		endWithVictory(math.random(1, 3))
+		stageVictory(math.random(1, 3))
 	end
 	
 	if not getUnit(tower2) then
-		endWithDefeat()
+		stageDefeat()
 	end
 	
 	a = ChangeHpBuff:new("MageHeal", "MageHeal", 5, false, 0.3, 0.006, 0, 0, -1)

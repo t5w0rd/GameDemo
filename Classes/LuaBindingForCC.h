@@ -21,6 +21,8 @@ int g_getWritablePath(lua_State* L);
 int g_isFileExist(lua_State* L);
 int g_setGameSpeed(lua_State* L);
 int g_msgBox(lua_State* L);
+int g_setStageGrade(lua_State* L);
+int g_getCurStageIndex(lua_State* L);
 
 int Unit4CC_ctor(lua_State* L);
 int Unit4CC_addBattleTip(lua_State* L);
@@ -66,11 +68,12 @@ int g_createUnit(lua_State* L);
 int g_createProjectile(lua_State* L);
 int g_endWithVictory(lua_State* L);
 int g_endWithDefeat(lua_State* L);
-int g_saveUserData(lua_State* L);
 int g_setPortrait(lua_State* L);
 int g_delPortrait(lua_State* L);
 int g_showUnitInfo(lua_State* L);
 int g_restartStage(lua_State* L);
+int g_setHero(lua_State* L);
+int g_getHero(lua_State* L);
 
 int luaRegWorldFuncsForCC(lua_State* L, CWorld* pWorld);
 

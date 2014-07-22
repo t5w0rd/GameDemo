@@ -54,7 +54,7 @@ public:
 
     // 技能持有者事件响应，只覆被注册的触发器相应的事件函数即可
     // @override
-    virtual void onChangeLevel(int iChanged) override;
+    virtual void onLevelChanged(int iChanged) override;
     virtual void onCopy(CAbility* from);
     virtual void onUnitAddAbility();
     virtual void onUnitDelAbility();
@@ -62,7 +62,7 @@ public:
     virtual void onUnitRevive();
     virtual void onUnitDying();
     virtual void onUnitDead();
-    virtual void onUnitChangeHp(float fChanged);
+    virtual void onUnitHpChanged(float fChanged);
     virtual void onUnitTick(float dt);
     virtual void onUnitInterval();
     virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
@@ -513,16 +513,17 @@ protected:
 class CSplashPas : public CPassiveAbility
 {
 public:
-    CSplashPas(const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage);
+    CSplashPas(const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage, uint32_t dwTriggerMask = CUnit::kOnAttackTargetTrigger, uint32_t dwEffectiveTypeFlags = CUnitForce::kEnemy);
     virtual CSplashPas* copy() override;
 
-    virtual void onUnitDamageTargetDone(float fDamage, CUnit* pTarget) override;
+    virtual void onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget);
 
     M_SYNTHESIZE(float, m_fNearRange, NearRange);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExNearDamage, ExNearDamage);
     M_SYNTHESIZE(float, m_fFarRange, FarRange);
     M_SYNTHESIZE_PASS_BY_REF(CExtraCoeff, m_oExFarDamage, ExFarDamage);
-
+    M_SYNTHESIZE(uint32_t, m_dwTriggerMask, TriggerMask);
+    M_SYNTHESIZE(uint32_t, m_dwEffectiveTypeFlags, EffectiveTypeFlags)
 };
 
 // 击退

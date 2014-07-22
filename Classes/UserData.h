@@ -11,14 +11,11 @@ class CUserData : CMultiRefObject
 public:
     CUserData();
 
+    void load();
     void reset();
-    void load(const char* name);
-    void save(const char* name);
 
     M_SINGLETON(CUserData);
     
-    
-
     struct HERO_INFO
     {
         HERO_INFO() : id(-1), attackSpeed(0.0f), moveSpeed(0.0f), exp(0.0f), energy(0.0f) {}
@@ -43,6 +40,7 @@ public:
     HERO_INFO* getHeroSelected();
 
     vector<int> m_stageGrades;
+    bool onLuaLoadingUserData();
     void newGrades(int stage, int grade);
     void updateGrades(CStageMap* stageMap);
 

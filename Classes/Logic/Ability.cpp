@@ -131,7 +131,7 @@ int CAbility::getCastRandomAnimation() const
     return m_vecCastAnis[rand() % m_vecCastAnis.size()];
 }
 
-void CAbility::onChangeLevel(int iChanged)
+void CAbility::onLevelChanged(int iChanged)
 {
     if (getScriptHandler() == 0)
     {
@@ -141,7 +141,7 @@ void CAbility::onChangeLevel(int iChanged)
     lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
-    lua_getfield(L, a, "onChangeLevel");
+    lua_getfield(L, a, "onLevelChanged");
     lua_pushvalue(L, a);
     lua_pushinteger(L, iChanged);
     if (lua_pcall(L, 2, 0, 0) != LUA_OK)
@@ -325,7 +325,7 @@ void CAbility::onUnitDead()
     lua_pop(L, 1);  // pop 'a'
 }
 
-void CAbility::onUnitChangeHp(float fChanged)
+void CAbility::onUnitHpChanged(float fChanged)
 {
     if (getScriptHandler() == 0)
     {
@@ -335,7 +335,7 @@ void CAbility::onUnitChangeHp(float fChanged)
     lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int a = luaL_getregistery(L, getScriptHandler());
 
-    lua_getfield(L, a, "onUnitChangeHp");
+    lua_getfield(L, a, "onUnitHpChanged");
     lua_pushvalue(L, a);
     lua_pushnumber(L, fChanged);
     if (lua_pcall(L, 2, 0, 0) != LUA_OK)
@@ -2688,25 +2688,27 @@ void CTransitiveBlinkBuff::resumeSourceUnit()
 }
 
 // CSplashPas
-CSplashPas::CSplashPas(const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage)
+CSplashPas::CSplashPas(const char* pName, float fNearRange, const CExtraCoeff& roExNearDamage, float fFarRange, const CExtraCoeff& roExFarDamage, uint32_t dwTriggerMask /*= CUnit::kOnAttackTargetTrigger*/, uint32_t dwEffectiveTypeFlags /*= CUnitForce::kEnemy*/)
 : CPassiveAbility("SplashPas", pName)
 , m_fNearRange(fNearRange)
 , m_oExNearDamage(roExNearDamage)
 , m_fFarRange(fFarRange)
 , m_oExFarDamage(roExFarDamage)
+, m_dwTriggerMask(dwTriggerMask)
+, m_dwEffectiveTypeFlags(dwEffectiveTypeFlags)
 {
-    setTriggerFlags(CUnit::kOnDamageTargetDoneTrigger);
     setDbgClassName("CSplashPas");
+    setTriggerFlags(CUnit::kOnAttackTargetTrigger);
 }
 
 CSplashPas* CSplashPas::copy()
 {
-    CSplashPas* ret = new CSplashPas(getName(), getNearRange(), getExNearDamage(), getFarRange(), getExFarDamage());
+    CSplashPas* ret = new CSplashPas(getName(), getNearRange(), getExNearDamage(), getFarRange(), getExFarDamage(), m_dwTriggerMask, m_dwEffectiveTypeFlags);
 
     return ret;
 }
 
-void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
+void CSplashPas::onUnitAttackTarget(CAttackData* pAttack, CUnit* pTarget)
 {
     CUnit* o = getOwner();
     if (!pTarget || !o)
@@ -2715,7 +2717,6 @@ void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
     }
 
     CUnitDraw2D* td = DCAST(pTarget->getDraw(), CUnitDraw2D*);
-    uint32_t dwTriggerMask = CUnit::kMaskActiveTrigger;
     float fDis;
     CWorld* w = o->getWorld();
     CWorld::MAP_UNITS& units = w->getUnits();
@@ -2724,6 +2725,11 @@ void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
         CUnit* pUnit = M_MAP_EACH;
         M_MAP_NEXT;
 
+        if (pUnit == pTarget)
+        {
+            continue;
+        }
+
         CUnitDraw2D* pDraw = DCAST(pUnit->getDraw(), CUnitDraw2D*);
         if (!pUnit || pUnit->isGhost())
         {
@@ -2731,16 +2737,21 @@ void CSplashPas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
         }
 
         fDis = max(0.0f, pDraw->getPosition().getDistance(td->getPosition()) - pDraw->getHalfOfWidth());
-        if (fDis <= m_fFarRange && CUnitGroup::matchLivingEnemy(o)(pUnit) && pUnit != pTarget)
+        if (fDis <= m_fFarRange && o->canEffect(DCAST(pUnit, CUnitForce*), m_dwEffectiveTypeFlags))
         {
+            auto ad = pAttack->copy();
+            auto& av = ad->getAttackValue();
+
             if (fDis <= m_fNearRange)
             {
-                pUnit->damagedLow(m_oExNearDamage.getValue(fDamage), o, dwTriggerMask);
+                av.setValue(m_oExNearDamage.getValue(av.getValue()));
             }
             else
             {
-                pUnit->damagedLow(m_oExFarDamage.getValue(fDamage), o, dwTriggerMask);
+                av.setValue(m_oExFarDamage.getValue(av.getValue()));
             }
+
+            pUnit->damaged(ad, o, m_dwTriggerMask);
         }
     }
 }
@@ -3070,7 +3081,7 @@ void CChargeJumpBuff::onJumpDone()
 {
     auto o = getOwner();
     auto od = DCAST(o->getDraw(), CUnitDrawForCC*);
-    auto ug = new CUnitGroup(o->getWorld(), od->getPosition(), 100, -1, CUnitGroup::matchLivingEnemy(o));
+    auto ug = new CUnitGroup(o->getWorld(), od->getPosition(), od->getHalfOfWidth() * 2, -1, CUnitGroup::matchLivingEnemy(o));
 
     auto eff = Effect::createWithSpriteFrameName("Effects/Kidnap/Bang.png");
     od->getSprite()->getParent()->addChild(eff);

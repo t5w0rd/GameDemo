@@ -876,6 +876,7 @@ void CUnitDraw2D::onDyingDone()
     if (u->isDead())
     {
         w->delUnit(id, u->isRevivable());
+
     }
 }
 

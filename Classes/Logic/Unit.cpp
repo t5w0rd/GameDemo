@@ -544,7 +544,7 @@ CUnitAI::~CUnitAI()
 {
 }
 
-void CUnitAI::onUnitChangeHp(CUnit* pUnit, float fChanged)
+void CUnitAI::onUnitHpChanged(CUnit* pUnit, float fChanged)
 {
     if (getScriptHandler() == 0)
     {
@@ -554,7 +554,7 @@ void CUnitAI::onUnitChangeHp(CUnit* pUnit, float fChanged)
     lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
     int ai = luaL_getregistery(L, getScriptHandler());
 
-    lua_getfield(L, ai, "onUnitChangeHp");
+    lua_getfield(L, ai, "onUnitHpChanged");
     lua_pushvalue(L, ai);
     luaL_pushobjptr(L, "Unit", pUnit);
     lua_pushnumber(L, fChanged);
@@ -959,7 +959,7 @@ bool CUnit::revive(float fHp)
     if (isDead())
     {
         m_fHp = min(max(fHp, 1.0f), getRealMaxHp());
-        onChangeHp(m_fHp);
+        onHpChanged(m_fHp);
         onRevive();
         return true;
     }
@@ -984,7 +984,7 @@ bool CUnit::setHp(float fHp)
     m_fHp = min(fHp, fMaxHp);
     if (m_fHp != fOldHp)
     {
-        onChangeHp(m_fHp - fOldHp);
+        onHpChanged(m_fHp - fOldHp);
     }
 
     if (m_fHp <= 0)
@@ -1024,11 +1024,11 @@ float CUnit::getRealMaxHp() const
     return m_oExMaxHp.getValue(m_fMaxHp);
 }
 
-void CUnit::onChangeLevel(int iChanged)
+void CUnit::onLevelChanged(int iChanged)
 {
     if (m_pAI != nullptr)
     {
-        m_pAI->onUnitChangeLevel(this, iChanged);
+        m_pAI->onUnitLevelChanged(this, iChanged);
     }
 }
 
@@ -1073,19 +1073,29 @@ void CUnit::onDead()
 {
     triggerOnDead();
 
+    if (!isDead())
+    {
+        return;
+    }
+
     if (m_pAI != nullptr)
     {
         m_pAI->onUnitDead(this);
     }
+
+    if (m_pEventAdapter != nullptr)
+    {
+        m_pEventAdapter->onUnitDead(this);
+    }
 }
 
-void CUnit::onChangeHp(float fChanged)
+void CUnit::onHpChanged(float fChanged)
 {
-    triggerOnChangeHp(fChanged);
+    triggerOnHpChanged(fChanged);
     
     if (m_pAI != nullptr)
     {
-        m_pAI->onUnitChangeHp(this, fChanged);
+        m_pAI->onUnitHpChanged(this, fChanged);
     }
 }
 
@@ -1406,14 +1416,6 @@ void CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
     
     onDamaged(pAttack, pSource, dwTriggerMask);
 
-    //transformDamageByAttribute(pAttack);
-    float fDamage = calcDamage((CAttackValue::ATTACK_TYPE)pAttack->getAttackValue().getType(),
-                               pAttack->getAttackValue().getValue(),
-                               (CArmorValue::ARMOR_TYPE)getBaseArmor().getType(),
-                               getRealArmorValue());
-    
-    damagedLow(fDamage, pSource, dwTriggerMask);
-    
     if (pSource != nullptr)
     {
         M_VEC_FOREACH(pAttack->getAttackBuffs())
@@ -1424,6 +1426,14 @@ void CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
             M_MAP_NEXT;
         }
     }
+
+    //transformDamageByAttribute(pAttack);
+    float fDamage = calcDamage((CAttackValue::ATTACK_TYPE)pAttack->getAttackValue().getType(),
+                               pAttack->getAttackValue().getValue(),
+                               (CArmorValue::ARMOR_TYPE)getBaseArmor().getType(),
+                               getRealArmorValue());
+    
+    damagedLow(fDamage, pSource, dwTriggerMask);
 }
 
 void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
@@ -1827,9 +1837,9 @@ void CUnit::addAbilityToTriggers(CAbility* pAbility)
         m_mapOnDeadTriggerAbilities.addObject(pAbility);
     }
 
-    if (dwTriggerFlags & kOnChangeHpTrigger)
+    if (dwTriggerFlags & kOnHpChangedTrigger)
     {
-        m_mapOnChangeHpTriggerAbilities.addObject(pAbility);
+        m_mapOnHpChangedTriggerAbilities.addObject(pAbility);
     }
     
     if (dwTriggerFlags & kOnTickTrigger)
@@ -1915,9 +1925,9 @@ void CUnit::delAbilityFromTriggers(CAbility* pAbility)
         m_mapOnDeadTriggerAbilities.delObject(id);
     }
 
-    if (dwTriggerFlags & kOnChangeHpTrigger)
+    if (dwTriggerFlags & kOnHpChangedTrigger)
     {
-        m_mapOnChangeHpTriggerAbilities.delObject(id);
+        m_mapOnHpChangedTriggerAbilities.delObject(id);
     }
     
     if (dwTriggerFlags & kOnTickTrigger)
@@ -2049,13 +2059,13 @@ void CUnit::triggerOnDead()
     endTrigger();
 }
 
-void CUnit::triggerOnChangeHp(float fChanged)
+void CUnit::triggerOnHpChanged(float fChanged)
 {
     beginTrigger();
-    M_MAP_FOREACH(m_mapOnChangeHpTriggerAbilities)
+    M_MAP_FOREACH(m_mapOnHpChangedTriggerAbilities)
     {
         CAbility* pAbility = M_MAP_EACH;
-        pAbility->onUnitChangeHp(fChanged);
+        pAbility->onUnitHpChanged(fChanged);
         M_MAP_NEXT;
     }
     endTrigger();
@@ -2552,7 +2562,7 @@ void CAIRetainer::retain(CUnit* u)
 // CWorld
 CWorld::CWorld()
 : m_iScriptHandler(0)
-, m_iControlUnit(0)
+, m_iCtrlUnit(0)
 , m_bShutdown(false)
 {
     setDbgClassName("CWorld");
@@ -2593,15 +2603,15 @@ bool CWorld::init()
     return onInit();
 }
 
-void CWorld::setControlUnit(CUnit* u)
+void CWorld::setCtrlUnit(CUnit* u)
 {
     if (u == nullptr)
     {
-        m_iControlUnit = 0;
+        m_iCtrlUnit = 0;
     }
     else
     {
-        m_iControlUnit = u->getId();
+        m_iCtrlUnit = u->getId();
     }
 
     m_aiRetainer.retain(u);
@@ -2887,12 +2897,11 @@ void CWorld::onShutDown()
 }
 
 // CForceResource
-CForceResource::CForceResource(CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc)
+CForceResource::CForceResource(const FUNC_ONGOLDCHANGED& onGoldChanged)
+: m_iGold(0)
 {
     setDbgClassName("CForceResource");
-    setGold(0);
-    m_pSender = pSender;
-    m_pCallback = pFunc;
+    m_onGoldChanged = onGoldChanged;
 }
 
 void CForceResource::changeGold(int iChange)
@@ -2900,14 +2909,14 @@ void CForceResource::changeGold(int iChange)
     m_iGold += iChange;
     if (iChange)
     {
-        onGoldChange(iChange);
+        onGoldChanged(iChange);
     }
 }
 
-void CForceResource::onGoldChange(int iChange)
+void CForceResource::onGoldChanged(int iChange)
 {
-    if (m_pSender && m_pCallback)
+    if (m_onGoldChanged)
     {
-        (m_pSender->*m_pCallback)(DCAST(this, CMultiRefObject*));
+        m_onGoldChanged(iChange);
     }
 }

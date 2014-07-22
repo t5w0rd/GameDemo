@@ -13,8 +13,8 @@ uc.force.index = 1
 uc.atk.t = AttackValue.kMagical
 uc.atk.v = 10.0
 uc.atk.i = 1.5
-uc.arm.t = ArmorValue.kCrystal
-uc.arm.v = 10.0
+uc.amr.t = ArmorValue.kCrystal
+uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
@@ -28,8 +28,8 @@ uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
 uc.atk.v = 10.0
 uc.atk.i = 1.5
-uc.arm.t = ArmorValue.kHeavy
-uc.arm.v = 10.0
+uc.amr.t = ArmorValue.kHeavy
+uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoHeal:getId()}
@@ -43,8 +43,8 @@ uc.force.index = 0
 uc.atk.t = AttackValue.kPhysical
 uc.atk.v = 10.0
 uc.atk.i = 1.5
-uc.arm.t = ArmorValue.kHeavy
-uc.arm.v = 10.0
+uc.amr.t = ArmorValue.kHeavy
+uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
 uc.pas = {AL.kAutoDamaged:getId()}
@@ -53,7 +53,7 @@ table.insert(ucs, uc)
 
 Stage04 = class(Battle)
 function Stage04:onInit()
-	hero = initForHero()
+	hero = getHero()
 	--hero:setLevel(20)
 	hero:addExp(10000)
 	
@@ -67,8 +67,8 @@ function Stage04:onInit()
 	uc.atk.t = AttackValue.kHoly
 	uc.atk.v = 500.0
 	uc.atk.i = 1.5
-	uc.arm.t = ArmorValue.kWall
-	uc.arm.v = 100.0
+	uc.amr.t = ArmorValue.kWall
+	uc.amr.v = 100.0
 	uc.reward.g = 500
 	uc.reward.e = 500
 	local u = uc:createUnit()

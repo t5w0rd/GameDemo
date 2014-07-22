@@ -12,6 +12,7 @@
 CGameData::CGameData()
 {
     setDbgClassName("CGameData");
+
     auto L = CLuaScriptEngine::instance()->getLuaHandle();
     luaL_insertloader(L, luaModuleLoader4cc);
     luaRegCommFuncs(L);
@@ -19,6 +20,17 @@ CGameData::CGameData()
 
     lua_getglobal(L, "setSearchPath");
     lua_call(L, 0, 0);
+}
+
+void CGameData::load()
+{
+    auto L = CLuaScriptEngine::instance()->getLuaHandle();
+
+    int res = luaL_includefile(L, "LoadGame.lua");
+    if (res != LUA_OK)
+    {
+        return;
+    }
 
     initStageData();
     initAbilityData();

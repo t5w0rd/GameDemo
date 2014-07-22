@@ -16,7 +16,7 @@ public:
     virtual void onUnitAddAbility() override;
     virtual void onUnitDelAbility() override;
 
-    virtual void onUnitChangeHp(float fChanged) override;
+    virtual void onUnitHpChanged(float fChanged) override;
     virtual void onUnitRevive() override;
     virtual void onUnitDying() override;
     virtual void onUnitInterval() override;

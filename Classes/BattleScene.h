@@ -19,24 +19,24 @@ public:
     CBattleWorld();
     virtual ~CBattleWorld();
 
-    virtual bool onInit();
-    virtual void onTick(float dt);
+    virtual bool onInit() override;
+    virtual void onTick(float dt) override;
     bool onLuaWorldInit();
     void onLuaWorldTick(float dt);
+    void onLuaUnitDead(CUnit* pUnit);
     M_SYNTHESIZE_BOOL(LuaWorldTickEnabled);
     
-    virtual void onUnitDying(CUnit* pUnit) override;
+    virtual void onUnitDead(CUnit* pUnit) override;
     virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget) override;
     virtual void onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile, CUnit* pTarget) override;
     virtual void onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) override;
     virtual void onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility) override;
     virtual void onUnitAbilityCD(CUnit* pUnit, CAbility* pAbility) override;
 
-    void onChangeGold(CMultiRefObject* obj);
+    void onGoldChanged(int iChanged);
 
-    void onAniDone(CMultiRefObject* obj, void* data);
-
-    M_SYNTHESIZE(CUnit*, m_pHero, Hero);
+    M_SYNTHESIZE_READONLY(CUnit*, m_pHero, Hero);
+    void setHero(CUnit* hero);
     M_SYNTHESIZE(CStunBuff*, m_pDragonStrikeBuff, DragonStrikeBuff);
 
     M_SYNTHESIZE_STR(ScriptName);

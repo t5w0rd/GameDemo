@@ -17,23 +17,23 @@ class CLevelUpdate : public CMultiRefObject
 {
 public:
     CLevelUpdate();
-    CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRange, const function<void(CLevelExp* pLevel, int iChanged)>& onChangeLevel, const function<int(int iLevel)>& calcExp);
+    CLevelUpdate(const function<void(CLevelExp* pLevel)>& updateExpRange, const function<void(CLevelExp* pLevel, int iChanged)>& onLevelChanged, const function<int(int iLevel)>& calcExp);
     virtual ~CLevelUpdate();
     virtual CLevelUpdate* copy() override;
 
     virtual void updateExpRange(CLevelExp* pLevel);
-    virtual void onChangeLevel(CLevelExp* pLevel, int iChanged);
+    virtual void onLevelChanged(CLevelExp* pLevel, int iChanged);
     virtual int calcExp(int iLevel);
 
 protected:
     function<void(CLevelExp* pLevel)> m_updateExpRange;
-    function<void(CLevelExp* pLevel, int iChanged)> m_onChangeLevel;
+    function<void(CLevelExp* pLevel, int iChanged)> m_onLevelChanged;
     function<int(int iLevel)> m_calcExp;
 };
 
 // 等级经验值，赋予对象等级经验值特性
 // 需要覆盖 updateExpRange，提供等级变化时的最大经验值变更公式
-// 等级变化后触发 onChangeLevel
+// 等级变化后触发 onLevelChanged
 class CLevelExp : public CMultiRefObject
 {
 public:
@@ -42,7 +42,7 @@ public:
     virtual CLevelExp* copy() override;
     
     virtual void updateExpRange(); // @override
-    virtual void onChangeLevel(int iChanged); // @override
+    virtual void onLevelChanged(int iChanged); // @override
     void addLevel(int iLvl);
     void addExp(int iExp);
     

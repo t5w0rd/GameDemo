@@ -37,7 +37,7 @@ function HeroLevelUpdate:calcArmorValue(lv)
 	return 2.0 + (lv - 1) * 1.0
 end
 
-function HeroLevelUpdate:onChangeLevel(u, change)
+function HeroLevelUpdate:onLevelChanged(u, change)
     cast(u, Unit)
 	
 	local lv = u:getLevel()
@@ -86,5 +86,6 @@ function HeroLevelUpdate:onChangeLevel(u, change)
 		u:addPassiveAbility(AL.kPressureBombAttack:getId())
     end
 	--[[]]
-    saveUserData()
+	UD.heroes[1].exp = u:getExp()
+	saveGame()
 end

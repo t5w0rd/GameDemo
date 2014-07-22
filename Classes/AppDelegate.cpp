@@ -51,8 +51,8 @@ bool AppDelegate::applicationDidFinishLaunching()
     auto scene = UnpackSceneLayer::scene();
 #else
     CUnitLibrary::instance(new CUnitLibraryForCC);
-    CGameData::instance();
-    CUserData::instance()->load("");
+    CGameData::instance()->load();
+    CUserData::instance()->load();
     //auto scene = BattleSceneLayer::scene();
     //auto scene = LogoSceneLayer::scene();
     //auto scene = HeroRoomSceneLayer::scene();

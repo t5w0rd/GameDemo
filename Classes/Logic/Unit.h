@@ -251,11 +251,11 @@ public:
     inline virtual ~CUnitEventAdapter() {}
     inline virtual CMultiRefObject* copy() { retain(); return this; }
     
-    inline virtual void onUnitChangeLevel(CUnit* pUnit, int iChanged) {}
+    inline virtual void onUnitLevelChanged(CUnit* pUnit, int iChanged) {}
     inline virtual void onUnitRevive(CUnit* pUnit) {}
     inline virtual void onUnitDying(CUnit* pUnit) {}
     inline virtual void onUnitDead(CUnit* pUnit) {}
-    inline virtual void onUnitChangeHp(CUnit* pUnit, float fChanged) {}
+    inline virtual void onUnitHpChanged(CUnit* pUnit, float fChanged) {}
     inline virtual void onUnitTick(CUnit* pUnit, float dt) {}
     inline virtual void onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget) {}
     inline virtual bool onUnitAttacked(CUnit* pUnit, CAttackData* pAttack, CUnit* pSource) { return true; }
@@ -292,7 +292,7 @@ public:
     CUnitAI();
     virtual ~CUnitAI();
 
-    virtual void onUnitChangeHp(CUnit* pUnit, float fChanged);
+    virtual void onUnitHpChanged(CUnit* pUnit, float fChanged);
     virtual void onUnitTick(CUnit* pUnit, float dt);
     virtual void onUnitDamagedDone(CUnit* pUnit, float fDamage, CUnit* pSource);
     virtual void onUnitDamageTargetDone(CUnit* pUnit, float fDamage, CUnit* pTarget);
@@ -343,7 +343,7 @@ public:
     // @override
     
     // 等级变化时被通知，在通过addExp升级的时候，通常来讲iChanged总是为1，尽管经验有时会足够多以至于连升2级
-    virtual void onChangeLevel(int iChanged);
+    virtual void onLevelChanged(int iChanged);
     // 复活时被通知
     virtual void onRevive();
     // 死亡时被通知
@@ -351,7 +351,7 @@ public:
     // 死亡后被通知
     virtual void onDead();
     // 血量变化时被通知
-    virtual void onChangeHp(float fChanged);
+    virtual void onHpChanged(float fChanged);
     // 每个游戏刻被通知
     virtual void step(float dt);
     virtual void onTick(float dt);
@@ -398,7 +398,7 @@ public:
         kOnReviveTrigger = 1 << 0,
         kOnDyingTrigger = 1 << 1,
         kOnDeadTrigger = 1 << 2,
-        kOnChangeHpTrigger = 1 << 3,
+        kOnHpChangedTrigger = 1 << 3,
         kOnTickTrigger = 1 << 4,
         kOnAttackTargetTrigger = 1 << 5,
         kOnAttackedTrigger = 1 << 6,
@@ -443,7 +443,7 @@ public:
     
     // 底层伤害函数，直接扣除指定量的HP值
     // 触发伤害源的 onDamaeTarget
-    // 调用 setHp，从而会触发 onChangeHp，可能会触发onDying
+    // 调用 setHp，从而会触发 onHpChanged，可能会触发onDying
     void damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
@@ -494,7 +494,7 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDamagedInnerTriggerAbilities, OnDamagedInnerTriggerAbilities);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDamagedDoneTriggerAbilities, OnDamagedDoneTriggerAbilities);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDamageTargetDoneTriggerAbilities, OnDamageTargetDoneTriggerAbilities);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnChangeHpTriggerAbilities, OnChangeHpTriggerAbilities);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnHpChangedTriggerAbilities, OnHpChangedTriggerAbilities);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnReviveTriggerAbilities, OnReviveTriggerAbilities);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDyingTriggerAbilities, OnDyingTriggerAbilities);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_TRIGGER_ABILITIES, m_mapOnDeadTriggerAbilities, OnDeadTriggerAbilities);
@@ -528,7 +528,7 @@ protected:
     void triggerOnRevive();
     void triggerOnDying();
     void triggerOnDead();
-    void triggerOnChangeHp(float fChanged);
+    void triggerOnHpChanged(float fChanged);
     void triggerOnTick(float dt);
     void triggerOnAttackTarget(CAttackData* pAttack, CUnit* pTarget);
     bool triggerOnAttacked(CAttackData* pAttack, CUnit* pSource);
@@ -678,8 +678,8 @@ public:
     bool init();
 
     M_SYNTHESIZE_PASS_BY_REF(CAIRetainer, m_aiRetainer, AIRetainer);
-    M_SYNTHESIZE_READONLY(int, m_iControlUnit, ControlUnit);
-    void setControlUnit(CUnit* u);
+    M_SYNTHESIZE_READONLY(int, m_iCtrlUnit, CtrlUnit);
+    void setCtrlUnit(CUnit* u);
     
     typedef CMultiRefMap<CUnit*> MAP_UNITS;
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_UNITS, m_mapUnits, Units);
@@ -727,14 +727,16 @@ protected:
 class CForceResource : public CMultiRefObject, public CUnitForce
 {
 public:
-    CForceResource(CMultiRefObject* pSender, FUNC_CALLFUNC_N pFunc);
+    typedef function<void(int)> FUNC_ONGOLDCHANGED;
+public:
+    CForceResource(const FUNC_ONGOLDCHANGED& onGoldChanged);
 
     M_SYNTHESIZE(int, m_iGold, Gold);
     void changeGold(int iChange);
-    virtual void onGoldChange(int iChange);
+    virtual void onGoldChanged(int iChange);
 
-    M_SYNTHESIZE(CMultiRefObject*, m_pSender, Sender);
-    M_SYNTHESIZE(FUNC_CALLFUNC_N, m_pCallback, Callback);
+protected:
+    FUNC_ONGOLDCHANGED m_onGoldChanged;
 };
 
 

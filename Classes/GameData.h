@@ -6,6 +6,8 @@ class CGameData : CMultiRefObject
 public:
     CGameData();
 
+    void load();
+
     M_SINGLETON(CGameData)
 
 public:

@@ -169,7 +169,7 @@ function Stage02:onInit()
 	self.healer = 0
 	initAbilityForLevelUp()
 	
-	me = initForHero()
+	me = getHero()
 	me:setMaxLevel(100)
 	
 
@@ -248,11 +248,11 @@ end
 
 function Stage02:onTick(dt)
 	if not getUnit(tower1) then
-		endWithVictory(math.random(1, 3))
+		stageVictory(math.random(1, 3))
 	end
 	
 	if not getUnit(tower2) then
-		endWithDefeat()
+		stageDefeat()
 	end
 	
 	a = ChangeHpBuff:new("MageHeal", "MageHeal", 5, false, 0.3, 0.006, 0, 0, -1)

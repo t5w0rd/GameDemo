@@ -52,40 +52,44 @@ bool CBattleWorld::onInit()
     gc->loadAnimation("Effects/Stun/Small", "Effects/Stun/Small", 0.1f);
 
     // init hero
-    CUserData* udt = CUserData::instance();
-    u = CUnitLibraryForCC::instance()->copyUnit(udt->getHeroSelected()->id);
-    addUnit(u);
-    setControlUnit(u);
-    setHero(u);
-    u->setMaxLevel(20);
-    u->updateExpRange();
-    u->setRevivable();
-    u->setForceByIndex(2);
-    CForceResource* fr = new CForceResource(this, (FUNC_CALLFUNC_N)(&CBattleWorld::onChangeGold)); // 势力资源
-    u->setResource(fr);
+    //CUserData* udt = CUserData::instance();
+    //u = CUnitLibraryForCC::instance()->copyUnit(udt->getHeroSelected()->id);
+    //addUnit(u);
+    setCtrlUnit(0);
+    setHero(nullptr);
+    //u->setMaxLevel(20);
+    //u->updateExpRange();
+    //u->setRevivable();
+    //u->setForceByIndex(2);
+    
 
     // add abilities from SAL(lua)
-    auto& mapAbilities = udt->getHeroSelected()->m_mapAbilitiesEquipped;
-    M_MAP_FOREACH(mapAbilities)
+    auto udt = CUserData::instance();
+    auto hi = udt->getHeroSelected();
+    if (hi != nullptr)
     {
-        auto id = M_MAP_IT->first;
-        auto lv = M_MAP_EACH;
-        M_MAP_NEXT;
-
-        auto a = CAbilityLibrary::instance()->copyAbility(id);
-        assert(a != nullptr);  // Ability id == item.id was not found
-        a->setLevel(lv);
-
-        auto act = DCAST(a, CActiveAbility*);
-        if (act != nullptr)
+        auto& mapAbilities = hi->m_mapAbilitiesEquipped;
+        M_MAP_FOREACH(mapAbilities)
         {
-            u->addActiveAbility(act);
-        }
-        else
-        {
-            auto pas = DCAST(a, CPassiveAbility*);
-            assert(pas != nullptr);
-            u->addPassiveAbility(pas);
+            auto id = M_MAP_IT->first;
+            auto lv = M_MAP_EACH;
+            M_MAP_NEXT;
+
+            auto a = CAbilityLibrary::instance()->copyAbility(id);
+            assert(a != nullptr);  // Ability id == item.id was not found
+            a->setLevel(lv);
+
+            auto act = DCAST(a, CActiveAbility*);
+            if (act != nullptr)
+            {
+                u->addActiveAbility(act);
+            }
+            else
+            {
+                auto pas = DCAST(a, CPassiveAbility*);
+                assert(pas != nullptr);
+                u->addPassiveAbility(pas);
+            }
         }
     }
 
@@ -95,31 +99,33 @@ bool CBattleWorld::onInit()
     //a = new CChangeHpPas("AutoHeal", "AutoHeal", 0.2f, CExtraCoeff(0.001f, 0.0f));
     //u->addPassiveAbility(DCAST(a, CPassiveAbility*), false);
 
-    d = DCAST(u->getDraw(), CUnitDrawForCC*);
-    d->setPosition(CPoint(800, 600));
+    //d = DCAST(u->getDraw(), CUnitDrawForCC*);
+    //d->setPosition(CPoint(800, 600));
     
-    u->setName(udt->getHeroSelected()->name.c_str());
-    u->setMaxHp(udt->getHeroSelected()->hp);
-    u->getActiveAbility(u->getAttackAbilityId())->dcast(atk);
-    atk->setBaseAttack(udt->getHeroSelected()->atkVal);
-    atk->setBaseAttackInterval(1 / udt->getHeroSelected()->attackSpeed);
-    u->setBaseArmor(udt->getHeroSelected()->armVal);
-    d->setBaseMoveSpeed(udt->getHeroSelected()->moveSpeed);
+    //u->setName(udt->getHeroSelected()->name.c_str());
+    //u->setMaxHp(udt->getHeroSelected()->hp);
+    //u->getActiveAbility(u->getAttackAbilityId())->dcast(atk);
+    //atk->setBaseAttack(udt->getHeroSelected()->atkVal);
+    //atk->setBaseAttackInterval(1 / udt->getHeroSelected()->attackSpeed);
+    //u->setBaseArmor(udt->getHeroSelected()->armVal);
+    //d->setBaseMoveSpeed(udt->getHeroSelected()->moveSpeed);
 
     l->m_pp.init(this, l->getCtrlLayer(), 5);
-    l->m_pp.setPortrait(0, getUnit(getControlUnit()), CC_CALLBACK_1(BattleSceneLayer::onClickHeroPortrait, l));
+    //l->m_pp.setPortrait(0, getUnit(getCtrlUnit()), CC_CALLBACK_1(BattleSceneLayer::onClickHeroPortrait, l));
 
     onLuaWorldInit();
-
-    u->addExp(udt->getHeroSelected()->exp);
+    auto hero = getHero();
+    //u->addExp(udt->getHeroSelected()->exp);
     
     l->initTargetInfo();
     l->showTargetInfo(false);
     l->showTargetInfo(true);
-    l->updateTargetInfo(getControlUnit());
+    l->updateTargetInfo(getCtrlUnit());
 
-    l->initResourceInfo();
-    l->updateResourceInfo(fr->getGold());
+    if (hero != nullptr)
+    {
+        l->updateResourceInfo(getHero()->getResource()->getGold());
+    }
 
     l->initHeroAbilityPanel();
     l->updateHeroAbilityPanel();
@@ -183,7 +189,7 @@ bool CBattleWorld::onLuaWorldInit()
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
-        CCLOG("ERR | LuaErr: %s", err);
+        CCLOG("ERR | LuaErr(%s: %d): %s", __FILE__, (int)__LINE__, err);
         lua_pop(L, 1);
         layer->log("%s", err);
 
@@ -206,7 +212,7 @@ void CBattleWorld::onLuaWorldTick(float dt)
     if (res != LUA_OK)
     {
         const char* err = lua_tostring(L, -1);
-        CCLOG("ERR | LuaErr: %s", err);
+        CCLOG("ERR | LuaErr(%s: %d): %s", __FILE__, (int)__LINE__, err);
         lua_pop(L, 1);
         layer->log("%s", err);
 
@@ -216,22 +222,33 @@ void CBattleWorld::onLuaWorldTick(float dt)
     assert(lua_gettop(L) == 0);
 }
 
-void CBattleWorld::onUnitDying(CUnit* pUnit)
+void CBattleWorld::onLuaUnitDead(CUnit* pUnit)
 {
-    static SimpleAudioEngine* ae = SimpleAudioEngine::getInstance();
+    lua_State* L = CLuaScriptEngine::instance()->getLuaHandle();
+    BattleSceneLayer* layer = DCAST(getLayer(), BattleSceneLayer*);
 
+    lua_getglobal(L, "onUnitDead");
+    luaL_pushobjptr(L, "Unit", pUnit);
+    int res = lua_pcall(L, 1, 0, 0);
+    if (res != LUA_OK)
+    {
+        const char* err = lua_tostring(L, -1);
+        CCLOG("ERR | LuaErr(%s: %d): %s", __FILE__, (int)__LINE__, err);
+        lua_pop(L, 1);
+        layer->log("%s", err);
+
+        return;
+    }
+
+    assert(lua_gettop(L) == 0);
+}
+
+void CBattleWorld::onUnitDead(CUnit* pUnit)
+{
     CUnitDrawForCC* d = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
-    if (pUnit == getHero())
-    {
-    }
-    else if (!d->isFixed())
-    {
-    }
-    else
-    {
-    }
+    auto hero = getHero();
 
-    if (pUnit != getHero() && pUnit->getRewardExp() && pUnit->isMyEnemy(getHero()) && M_RAND_HIT(1.0f))
+    if (hero && pUnit != hero && pUnit->getRewardExp() && pUnit->isMyEnemy(hero) && M_RAND_HIT(1.0f))
     {
         // 掉落物品
     }
@@ -275,10 +292,12 @@ void CBattleWorld::onUnitDying(CUnit* pUnit)
         }
     }
 
-    if (pUnit == getHero())
+    if (pUnit == hero)
     {
         //setHero(nullptr);
     }
+
+    onLuaUnitDead(pUnit);
 }
 
 void CBattleWorld::onUnitAttackTarget(CUnit* pUnit, CAttackData* pAttack, CUnit* pTarget)
@@ -332,7 +351,7 @@ void CBattleWorld::onUnitProjectileEffect(CUnit* pUnit, CProjectile* pProjectile
 
 void CBattleWorld::onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
 {
-    auto u = getUnit(getControlUnit());
+    auto u = getUnit(getCtrlUnit());
     if (pUnit != u)
     {
         return;
@@ -344,7 +363,7 @@ void CBattleWorld::onUnitAddActiveAbility(CUnit* pUnit, CActiveAbility* pAbility
 
 void CBattleWorld::onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility)
 {
-    auto u = getUnit(getControlUnit());
+    auto u = getUnit(getCtrlUnit());
     if (pUnit != u)
     {
         return;
@@ -356,7 +375,7 @@ void CBattleWorld::onUnitDelActiveAbility(CUnit* pUnit, CActiveAbility* pAbility
 
 void CBattleWorld::onUnitAbilityCD(CUnit* pUnit, CAbility* pAbility)
 {
-    auto u = getUnit(getControlUnit());
+    auto u = getUnit(getCtrlUnit());
     if (pUnit != u)
     {
         return;
@@ -387,7 +406,7 @@ void CBattleWorld::onUnitAbilityCD(CUnit* pUnit, CAbility* pAbility)
     }
 }
 
-void CBattleWorld::onChangeGold(CMultiRefObject* obj)
+void CBattleWorld::onGoldChanged(int iChanged)
 {
     BattleSceneLayer* l = DCAST(getLayer(), BattleSceneLayer*);
     CUnit* hero = getHero();
@@ -397,9 +416,26 @@ void CBattleWorld::onChangeGold(CMultiRefObject* obj)
     }
 }
 
-void CBattleWorld::onAniDone(CMultiRefObject* obj, void* data)
+void CBattleWorld::setHero(CUnit* hero)
 {
-    getHero()->resume();
+    if (m_pHero == hero)
+    {
+        return;
+    }
+
+    m_pHero = hero;
+
+    if (hero == nullptr)
+    {
+        return;
+    }
+
+    CForceResource* fr = new CForceResource(CC_CALLBACK_1(CBattleWorld::onGoldChanged, this)); // 势力资源
+    hero->setResource(fr);
+    hero->setRevivable();
+    auto l = DCAST(getLayer(), BattleSceneLayer*);
+    l->initResourceInfo();
+    l->updateResourceInfo(fr->getGold());
 }
 
 // BattleScene
@@ -701,7 +737,7 @@ void BattleSceneLayer::onLoadingDone()
 {
     CUnitLibrary::instance()->loadDefaultLibrary();
 
-    OBJS_INFO;
+    //OBJS_INFO;
 
     removeChildByTag(100);
 
@@ -774,7 +810,7 @@ void BattleSceneLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2
     CPoint p(pos.x, pos.y);
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    CUnit* hero = w->getUnit(w->getControlUnit());
+    CUnit* hero = w->getUnit(w->getCtrlUnit());
     if (hero == nullptr)
     {
         //return;
@@ -1042,7 +1078,7 @@ void BattleSceneLayer::updateTargetInfo(int id)
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* pUnit = w->getUnit(m_iTargetInfoUnitId);
-    auto ctrl = w->getUnit(w->getControlUnit());
+    auto ctrl = w->getUnit(w->getCtrlUnit());
     if (pUnit == nullptr)
     {
         if (ctrl == nullptr)
@@ -1277,8 +1313,7 @@ void BattleSceneLayer::updateHeroAbilityPanel()
     }
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
-    //CUnit* hero = w->getHero();
-    CUnit* u = w->getUnit(w->getControlUnit());
+    CUnit* u = w->getUnit(w->getCtrlUnit());
     if (u == nullptr)
     {
         return;
@@ -1343,7 +1378,7 @@ void BattleSceneLayer::cancelAbilityWaiting(int abilityId, int cancelTag)
     }
 
     auto w = DCAST(getWorld(), CBattleWorld*);
-    auto u = w->getUnit(w->getControlUnit());
+    auto u = w->getUnit(w->getCtrlUnit());
     if (u == nullptr)
     {
         return;
@@ -1361,6 +1396,11 @@ void BattleSceneLayer::onClickFist(Ref* btn)
     DCAST(btn, ButtonNormal*)->coolDown();
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     CUnit* u = w->getHero();
+    if (u == nullptr)
+    {
+        return;
+    }
+
     CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
     setMoveEnabled(false);
     Node* sp = d->getSprite();
@@ -1396,7 +1436,7 @@ void BattleSceneLayer::onClickHeroPortrait(Ref* ref)
 
     showTargetInfo();
     updateTargetInfo(pi->unitId);
-    w->setControlUnit(u);
+    w->setCtrlUnit(u);
     updateHeroAbilityPanel();
 }
 
@@ -1407,7 +1447,7 @@ void BattleSceneLayer::onClickAbilityButton(Ref* mi)
 
     auto btn = DCAST(mi, ButtonBase*);
     auto w = DCAST(getWorld(), CBattleWorld*);
-    auto u = w->getUnit(w->getControlUnit());
+    auto u = w->getUnit(w->getCtrlUnit());
     if (u == nullptr)
     {
         btn->setClickRetCode(-1);
@@ -1688,6 +1728,7 @@ void BattleSceneLayer::onDragonStrikeUpdate(Node* pNode)
                 ad->setAttackValue(CAttackValue::kHoly, 100 + rand() % (150 * w->getHero()->getLevel()));
                 //ad->addAttackBuff(CAttackBuff(w->getDragonStrikeBuff()->getId(), 1));
                 t->damaged(ad, w->getHero(), CUnit::kMaskAll);
+                t->addBuffAbility(new CStunBuff("StunBuff", "Stun", 5.0f, true));
             }
             M_MAP_NEXT;
         }
@@ -1851,7 +1892,6 @@ void BattleSceneLayer::endWithVictory(int grade)
     gc->playSound("sounds/Effects/Sound_QuestCompleted.mp3");
 
     CUserData::instance()->newGrades(CUserData::instance()->m_stageSel, grade);
-    CUserData::instance()->save("");
 
     CBattleWorld* w = DCAST(getWorld(), CBattleWorld*);
     w->setLuaWorldTickEnabled(false);

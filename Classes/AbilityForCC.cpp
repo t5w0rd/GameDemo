@@ -25,7 +25,7 @@ CShowStatusPas::CShowStatusPas()
 , m_fFrontDpsDuration(0.0f)
 {
     setDbgClassName("CStatusShowPas");
-    setTriggerFlags(CUnit::kOnChangeHpTrigger | CUnit::kOnReviveTrigger | CUnit::kOnDyingTrigger | CUnit::kOnCalcDamageTargetTrigger);
+    setTriggerFlags(CUnit::kOnHpChangedTrigger | CUnit::kOnReviveTrigger | CUnit::kOnDyingTrigger | CUnit::kOnCalcDamageTargetTrigger);
     setInterval(CONST_INTERVAL);
 }
 
@@ -54,7 +54,7 @@ void CShowStatusPas::onUnitAddAbility()
     m_pHpBar->addChild(m_pHpDecBar, m_pHpBar->m_pPt->getLocalZOrder() - 1);
     m_pHpDecBar->setPosition(m_pHpBar->getAnchorPointInPoints());
     
-    onUnitChangeHp(0.0f);
+    onUnitHpChanged(0.0f);
 
     m_fTotalDamage = 0.0f;
     m_fDpsDuration = 0.0f;
@@ -81,7 +81,7 @@ void CShowStatusPas::onUnitDelAbility()
     m_pDps = nullptr;
 }
 
-void CShowStatusPas::onUnitChangeHp(float fChanged)
+void CShowStatusPas::onUnitHpChanged(float fChanged)
 {
     CUnit* o = getOwner();
     float fPer = o->getHp() / max(FLT_EPSILON, o->getRealMaxHp());

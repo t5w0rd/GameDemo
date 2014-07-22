@@ -76,7 +76,7 @@ Projectile.kFireStraight = 2
 Ability.kOnReviveTrigger = 2 ^ 0
 Ability.kOnDyingTrigger = 2 ^ 1
 Ability.kOnDeadTrigger = 2 ^ 2
-Ability.kOnChangeHpTrigger = 2 ^ 3
+Ability.kOnHpChangedTrigger = 2 ^ 3
 Ability.kOnTickTrigger = 2 ^ 4
 Ability.kOnAttackTargetTrigger = 2 ^ 5
 Ability.kOnAttackedTrigger = 2 ^ 6
@@ -97,61 +97,7 @@ Ability.kRare = 1
 Ability.kEpic = 2
 Ability.kLegend = 3
 
--- Unit Library
-UL = {}
-UL.BASE_ID = 0x100
-UL.kMalik = UL.BASE_ID + 0
-UL.kMage = UL.BASE_ID + 1
-UL.kBarracks = UL.BASE_ID + 2
-UL.kArcher = UL.BASE_ID + 3
-UL.kFrost = UL.BASE_ID + 4
-UL.kArtillery = UL.BASE_ID + 5
-UL.kElemental = UL.BASE_ID + 6
-UL.kOni = UL.BASE_ID + 7
-UL.kThor = UL.BASE_ID + 8
-UL.kViking = UL.BASE_ID + 9
-UL.kLumberjack = UL.BASE_ID + 10
-UL.kAlric = UL.BASE_ID + 11
-UL.kAlien = UL.BASE_ID + 12
-UL.kBeastMaster = UL.BASE_ID + 13
-UL.kCrabman = UL.BASE_ID + 14
-UL.kGiant = UL.BASE_ID + 15
-UL.kMinotaur = UL.BASE_ID + 16
-UL.kMirage = UL.BASE_ID + 17
-UL.kPirate = UL.BASE_ID + 18
-UL.kPriest = UL.BASE_ID + 19
-UL.kVhelsing = UL.BASE_ID + 20
-UL.kSoldier = UL.BASE_ID + 21
-UL.kTemplar = UL.BASE_ID + 22
-UL.kBarrack = UL.BASE_ID + 23
-UL.kTemplars = UL.BASE_ID + 24
-UL.kArcane = UL.BASE_ID + 25
-UL.kTesla = UL.BASE_ID + 26
-UL.kWizard = UL.BASE_ID + 27
 
--- Projectile Library
-PL = {}
-PL.BASE_ID = 0x100
-PL.kMageBolt = PL.BASE_ID + 0
-PL.kFrostBolt = PL.BASE_ID + 1
-PL.kArcherArrow = PL.BASE_ID + 2
-PL.kLightning = PL.BASE_ID + 3
-PL.kThorHammer = PL.BASE_ID + 4
-PL.kLumberjackProy = PL.BASE_ID + 5
-PL.kAlienProy = PL.BASE_ID + 6
-PL.kVoodooProy = PL.BASE_ID + 7
-PL.kGiantProy = PL.BASE_ID + 8
-PL.kMirageProy = PL.BASE_ID + 9
-PL.kKungFuProy = PL.BASE_ID + 10
-PL.kPirateProy = PL.BASE_ID + 11
-PL.kPriestBolt = PL.BASE_ID + 12
-PL.kWizardBolt = PL.BASE_ID + 13
-PL.kWizardLightning = PL.BASE_ID + 14
-PL.kWizardProy = PL.BASE_ID + 15
-PL.kArcaneRay = PL.BASE_ID + 16
-PL.kArcaneRay2 = PL.BASE_ID + 17
-PL.kTeslaRay = PL.BASE_ID + 18
-PL.kArcherArrow2 = PL.BASE_ID + 19
 
 -- Ability Library
 include("AbilityLibrary.lua")
@@ -342,10 +288,37 @@ Battle = class()
 function Battle:ctor()
 end
 
+function Battle:onInitHero()
+	local hero = createUnit(UD.heroes[1].id)
+	hero:setLevelUpdate(HeroLevelUpdate:new())
+	hero:setMaxLevel(20)
+	hero:addExp(UD.heroes[1].exp)
+	hero:setForceByIndex(0)
+	hero:setPosition(1024, 768)
+	setPortrait(1, hero)
+	setCtrlUnit(hero)
+	--hero:setAlly(2 ^ 0 + 2 ^ 2)
+	
+	--local a = TeleportAct:new("TP", 1.0, Sprite.kAniAct6, Sprite.kAniAct7)
+	--a:setImageName("UI/Ability/Ability03.png")
+	--hero:addActiveAbility(a)
+	--hero:addActiveAbility(AL.kBuffMaker:getId())
+	--hero:addActiveAbility(AL.kChangeAttack:getId())
+	--hero:addActiveAbility(AL.kFastMoveToBack:getId())
+	--hero:addActiveAbility(AL.kMissileStorm:getId())
+	--hero:addActiveAbility(AL.kSwordWave:getId())
+	--hero:addActiveAbility(AL.kBouncingFireBall:getId())
+	--hero:addActiveAbility(AL.kArrowWind:getId())
+	return hero
+end
+
 function Battle:onInit()
 end
 
 function Battle:onTick(dt)
+end
+
+function Battle:onUnitDead(u)
 end
 
 Battle.DEFAULT = Battle:new()
@@ -353,14 +326,20 @@ Battle.running = Battle.DEFAULT
 
 function Battle:run()
 	Battle.running = self
+	
 	onWorldInit = function()
 		showDebug(false)
 		math.randomseed(os.time())
+		setHero(Battle.running:onInitHero())
 		Battle.running:onInit()
 	end
 	
 	onWorldTick = function(dt)
 		Battle.running:onTick(dt)
+	end
+	
+	onUnitDead = function(u)
+		Battle.running:onUnitDead(u)
 	end
 end
 
@@ -441,26 +420,5 @@ function addAbilitiesForUnit(u, id)
 		u:addPassiveAbility(AL.kSplashAttack:getId())
 		
 	end
-end
-
-function initForHero()
-	local hero = getControlUnit()
-    hero:setLevelUpdate(HeroLevelUpdate:new())
-	hero:setForceByIndex(0)
-	hero:setAlly(2 ^ 0 + 2 ^ 2)
-	
-	--local a = TeleportAct:new("TP", 1.0, Sprite.kAniAct6, Sprite.kAniAct7)
-	--a:setImageName("UI/Ability/Ability03.png")
-	--hero:addActiveAbility(a)
-	--hero:addActiveAbility(AL.kBuffMaker:getId())
-	--hero:addActiveAbility(AL.kChangeAttack:getId())
-	hero:addActiveAbility(AL.kFastMoveToBack:getId())
-	--hero:addActiveAbility(AL.kMissileStorm:getId())
-	hero:addActiveAbility(AL.kSwordWave:getId())
-	--hero:addActiveAbility(AL.kBouncingFireBall:getId())
-	--hero:addActiveAbility(AL.kArrowWind:getId())
-	
-	
-	return hero
 end
 

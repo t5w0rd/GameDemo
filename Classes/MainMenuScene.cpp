@@ -187,11 +187,11 @@ bool SelectArchiveLayer::init()
 void SelectArchiveLayer::MenuItemCallback1(Ref* sender)
 {
     CUserData* udt = CUserData::instance();
-    udt->load("");
     CUserData::HERO_INFO* hi = udt->getHeroSelected();
 
     M_DEF_GC(gc);
-    gc->replaceSceneWithLoading(hi == nullptr ? &HeroRoomSceneLayer::scene : &StageSceneLayer::scene);
+    //gc->replaceSceneWithLoading(hi == nullptr ? &HeroRoomSceneLayer::scene : &StageSceneLayer::scene);
+    gc->replaceSceneWithLoading(&StageSceneLayer::scene);
 }
 
 void SelectArchiveLayer::MenuItemCallback2(Ref* sender)

@@ -62,7 +62,7 @@ function CurseBuff:ctor(duration, stackable, damage, interval, multiply)
     self:setInterval(0.5)
 end
 
-function CurseBuff:onChangeLevel(changed)
+function CurseBuff:onLevelChanged(changed)
 	--logf("CurseBuff Level Changed: Lv%d", self:getLevel())
 end
 
@@ -162,9 +162,9 @@ function ArmorBuff:onUnitAddAbility()
     --local s = string.format()
     self.change = self.exA * av + self.exB
     o:setExArmorValue(exA, exB + self.change)
-    o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Comic Book.fnt", 18, 0, 0, 0)
 	
-	if self.change < 0 then
+	if self.change < 0 and self:getDuration() > 0 then
+		o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Comic Book.fnt", 18, 0, 0, 0)
 		local eff = SEL.createEffectOnUnit(SEL.kArmorBreak, o)
 		eff:playRelease()
 	end
@@ -244,7 +244,7 @@ end
 BerserkerBloodPas = class(PassiveAbility)
 function BerserkerBloodPas:ctor(name, exMaxHpDeltaA, exMaxHpDeltaB, exMoveSpeedDeltaA, exMoveSpeedDeltaB, exAttackSpeedDeltaA, exAttackSpeedDeltaB, exAttackValueDeltaA, exAttackValueDeltaB)
     self:sctor("BerserkerBloodPas", name)
-    self:setTriggerFlags(Ability.kOnChangeHpTrigger)
+    self:setTriggerFlags(Ability.kOnHpChangedTrigger)
     self.exMaxHpDeltaA = exMaxHpDeltaA
     self.exMaxHpDeltaB = exMaxHpDeltaB
     self.exMoveSpeedDeltaA = exMoveSpeedDeltaA
@@ -258,7 +258,7 @@ end
 
 function BerserkerBloodPas:onUnitAddAbility()
     self.lastLvl = 0
-    self:onUnitChangeHp(0)
+    self:onUnitHpChanged(0)
 end
 
 function BerserkerBloodPas:onUnitDelAbility()
@@ -266,7 +266,7 @@ function BerserkerBloodPas:onUnitDelAbility()
     self.lastLvl = 0
 end
 
-function BerserkerBloodPas:onUnitChangeHp(hp)
+function BerserkerBloodPas:onUnitHpChanged(hp)
     local o = self:getOwner()
     local maxHp = o:getRealMaxHp()
     local lvl = (maxHp - o:getHp()) / (self.exMaxHpDeltaA * maxHp + self.exMaxHpDeltaB)
@@ -895,4 +895,8 @@ function BackStabBuff:onUnitAttackTarget(ad, t)
 	if self.buffForTarget > 0 then
 		ad:addAttackBuff(self.buffForTarget, self:getLevel())
 	end
+	
+	local atk = o:getAttackAbility()
+	atk:resetCD()
+	
 end
