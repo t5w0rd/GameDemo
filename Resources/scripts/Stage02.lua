@@ -49,7 +49,7 @@ function spawnHero(id, force)
 	hero = spawnSoldier(id, force)
 	hero:setMaxHp(me:getRealMaxHp() * 0.4 + 400 + (kill / 1.0) * 150)
 	if me:getLevel() > 15 and math.random() < 0.1 then
-		hero:setExMaxHp(1 + kill / 10, 0.0)
+		hero:setExMaxHp(1 + kill / 20, 0.0)
 	end
 	hero:setRewardGold(50 + kill * 20 / 1.5)
 	hero:setRewardExp(20 + kill * 10 / 1.5)
@@ -57,7 +57,7 @@ function spawnHero(id, force)
 	hero:setBaseArmor(at, av + kill * 0.7)
 	atk = hero:getAttackAbility()
 	t, v = atk:getBaseAttack()
-	atk:setBaseAttack(t, v * (1 + kill / 5.0) + kill * 4)
+	atk:setBaseAttack(t, v * (1 + kill / 10.0) + kill * 4)
 	atk:setExAttackSpeed(1.0 + kill / 30, 0.0)
 	for _, a in ipairs(aaa) do
 		hero:addPassiveAbility(a)
@@ -172,7 +172,10 @@ function Stage02:onInit()
 	me = getHero()
 	me:setMaxLevel(100)
 	
-
+	me:addActiveAbility(SAL.kMultiSlash, 3)
+	me:addActiveAbility(AL.kSerialExplode)
+	me:addActiveAbility(AL.kChargeJump)
+	me:addActiveAbility(AL.kSpeedUp)
 	
 	
 	

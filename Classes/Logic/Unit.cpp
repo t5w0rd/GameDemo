@@ -938,8 +938,13 @@ void CUnit::abilityCD(CAbility* pAbility)
     CWorld* w = getWorld();
     assert(w != nullptr);
 
-    if (!pAbility->isCoolingDown())
+    if (w->isAbilityCD(pAbility->getId()))
     {
+        return;
+    }
+    else if (!pAbility->isCoolingDown())
+    {
+        pAbility->setCoolingDownElapsed(FLT_MAX);
         return;
     }
 
@@ -2690,10 +2695,7 @@ CUnit* CWorld::getUnitToRevive(int id)
 
 void CWorld::addAbilityCD(CAbility* pAbility)
 {
-    if (!pAbility->isCoolingDown())
-    {
-        return;
-    }
+    assert(pAbility->isCoolingDown());
     m_mapAbilitiesCD.addObject(pAbility);
     LOG("%s的%s技能开始冷却(%.1fs)", pAbility->getOwner()->getName(), pAbility->getName(), pAbility->getRealCoolDown());
 }

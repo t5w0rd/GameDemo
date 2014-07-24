@@ -22,15 +22,21 @@ void CDebugLog::Log(const char* pFormat, ...)
     fprintf(stdout, "\n");
 }
 
-// CIdGen 
+// CIdGen
+int CIdGen::m_id = 0;
 int CIdGen::nextId()
 {
-    static int id = 0;
-    if (!id)
+    if (m_id == 0)
     {
         srand(time(nullptr));
-        id = 1000000 + rand() % 9000;
+        m_id = 1000000 + rand() % 9000;
     }
     
-    return ++id;
+    return ++m_id;
 }
+
+void CIdGen::resetId(int id)
+{
+    m_id = id;
+}
+

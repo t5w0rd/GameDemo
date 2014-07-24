@@ -26,7 +26,7 @@ public:
     M_SYNTHESIZE_STR(DbgClassName);
     virtual const char* getDbgTag() const;
     
-    int getId() const;
+    M_SYNTHESIZE(int, m_iId, Id);
     
     template <typename PTYPE>
     PTYPE dcast(PTYPE& rTo);
@@ -36,9 +36,6 @@ private:
 
 protected:
     void copyScriptHandler(int iScriptHandler);
-    
-protected:
-    const int CONST_ID;
     
 };
 

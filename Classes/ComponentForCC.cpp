@@ -806,7 +806,8 @@ void Effect::stop()
 void Effect::setLogicPosition(const CPoint& roPos)
 {
     Sprite::setPosition(Point(roPos.x, roPos.y + m_fLogicHeight));
-    setLocalZOrder(M_BASE_Z - roPos.y + 1.0f);
+    //setLocalZOrder(M_BASE_Z - roPos.y + 1.0f);
+    setLocalZOrder(M_BASE_Z - roPos.y);
 }
 
 CPoint Effect::getLogicPosition() const
@@ -826,7 +827,8 @@ void Effect::setLogicHeight(float fLogicHeight)
     m_fLogicHeight = fLogicHeight;
 
     Sprite::setPosition(Point(p.x, p.y + m_fLogicHeight));
-    setLocalZOrder(M_BASE_Z - p.y + 1.0f);
+    //setLocalZOrder(M_BASE_Z - p.y + 1.0f);
+    setLocalZOrder(M_BASE_Z - p.y);
 }
 
 void Effect::setPosition(const Point& roPos)
@@ -834,12 +836,14 @@ void Effect::setPosition(const Point& roPos)
     if (isLogicPositionMode())
     {
         Sprite::setPosition(Point(roPos.x, roPos.y + m_fLogicHeight));
-        setLocalZOrder(M_BASE_Z - roPos.y + 1.0f);
+        //setLocalZOrder(M_BASE_Z - roPos.y + 1.0f);
+        setLocalZOrder(M_BASE_Z - roPos.y);
         return;
     }
 
     Sprite::setPosition(roPos);
-    setLocalZOrder(M_BASE_Z + m_fLogicHeight - roPos.y + 1.0f);
+    //setLocalZOrder(M_BASE_Z + m_fLogicHeight - roPos.y + 1.0f);
+    setLocalZOrder(M_BASE_Z + m_fLogicHeight - roPos.y);
 }
 
 const Point& Effect::getPosition() const
@@ -1820,7 +1824,7 @@ Image* Utils::nodeToImage(Node* node)
         rsz = node->getContentSize();
         rt = RenderTexture::create(rsz.width, rsz.height, Texture2D::PixelFormat::RGBA8888);
         rt->retain();
-        rt->setKeepMatrix(true);
+        //rt->setKeepMatrix(true);  // for cocos2d-x 3.0
     }
     
     Point pos = node->getPosition();
@@ -1832,7 +1836,7 @@ Image* Utils::nodeToImage(Node* node)
     node->setPosition(pos);
     Director::getInstance()->getRenderer()->render();
 
-    return rt->newImage();
+    return (Image*)rt->newImage()->autorelease();
 }
 
 RenderTexture* Utils::nodeToRenderTexture(Node* node)
@@ -1883,9 +1887,8 @@ Texture2D* Utils::nodeToTexture(Node* node, const FUNC_TRAN& funcTransform)
 
     auto ret = new Texture2D;
     ret->initWithImage(image);
-    delete image;
 
-    return ret;
+    return (Texture2D*)ret->autorelease();
 }
 
 bool Utils::nodeToFile(Node* node, const char* file, const FUNC_TRAN& funcTransform /*= nullptr*/)
@@ -1898,10 +1901,8 @@ bool Utils::nodeToFile(Node* node, const char* file, const FUNC_TRAN& funcTransf
     }
 
     //bool ret = image->saveToFile(FileUtils::getInstance()->fullPathForFilename(file).c_str(), false);
-    bool ret = image->saveToFile(file, false);
-    delete image;
 
-    return ret;
+    return image->saveToFile(file, false);
 }
 
 void Utils::render()

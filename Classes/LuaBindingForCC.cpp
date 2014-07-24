@@ -115,9 +115,20 @@ int g_showDebug(lua_State* L)
     return 0;
 }
 
+int g_playMusic(lua_State* L)
+{
+    auto music = lua_tostring(L, 1);
+    auto loop = luaL_tobooleandef(L, 2, true);
+
+    M_DEF_GC(gc);
+    gc->playMusic(music, loop);
+
+    return 0;
+}
+
 int g_playSound(lua_State* L)
 {
-    const char* sound = lua_tostring(L, 1);
+    auto sound = lua_tostring(L, 1);
     float dur = luaL_tonumberdef(L, 2, 0.0f);
     
     M_DEF_GC(gc);
@@ -241,10 +252,12 @@ int g_setGameSpeed(lua_State* L)
 
 int g_msgBox(lua_State* L)
 {
-    auto msg = lua_tostring(L, 1);
-    auto title = lua_tostring(L, 2);
+    char msgu[1024];
+    char titleu[1024];
+    auto msg = luaL_toutf8string(L, 1, msgu);
+    auto title = luaL_toutf8string(L, 2, titleu);
 
-    MessageBox(msg, title);
+    MessageBox(msgu, titleu); vector<char>v;
 
     return 0;
 }
@@ -253,6 +266,11 @@ int g_setStageGrade(lua_State* L)
 {
     auto index = lua_tointeger(L, 1) - 1;
     auto grade = lua_tointeger(L, 2);
+
+    if (index < 0)
+    {
+        return luaL_throwerror(L, true, "index(%d) must be greater than zero");
+    }
 
     auto& sg = CUserData::instance()->m_stageGrades;
     if (index > (int)sg.size())
@@ -276,7 +294,7 @@ int g_setStageGrade(lua_State* L)
 
 int g_getCurStageIndex(lua_State* L)
 {
-    lua_pushinteger(L, CUserData::instance()->m_stageSel);
+    lua_pushinteger(L, CUserData::instance()->m_stageSel + 1);
 
     return 1;
 }
@@ -762,6 +780,7 @@ int luaRegCommFuncsForCC(lua_State* L)
     lua_register(L, "loadFrames", g_loadFrames);
     lua_register(L, "loadAnimation", g_loadAnimation);
     lua_register(L, "showDebug", g_showDebug);
+    lua_register(L, "playMusic", g_playMusic);
     lua_register(L, "playSound", g_playSound);
     lua_register(L, "isSoundPlaying", g_isSoundPlaying);
     lua_register(L, "setSearchPath", g_setSearchPath);

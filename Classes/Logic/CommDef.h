@@ -221,14 +221,6 @@ protected:
 };
 
 
-
-#ifdef WIN32
-const char* GBKToUTF8(const char* pGBKStr);
-#define UTEXT(str) GBKToUTF8(str)
-#else
-#define UTEXT(str) str
-#endif
-
 #define M_FIX_BASE_X(width0, width1, delta) ((width0 + width1) * 0.5 + delta)
 
 #define M_BIT_32U(index) ((uint32_t)(1 << index))

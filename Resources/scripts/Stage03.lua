@@ -28,7 +28,7 @@ uc = UnitCreator:new()
 uc.id = UL.kArcher
 uc.nm = "Archer"
 uc.hp = 2500
-uc.ms = 90
+uc.ms = 100
 uc.force.index = 1
 uc.atk.t = AttackValue.kPhysical
 uc.atk.v = 180.0
@@ -263,6 +263,8 @@ function Stage03:spawnTeam(ucs, number, template, control, x, y)
 		
 		local uc = ucs[id]
 		local u = uc:createUnit()
+		u:setMaxLevel(20)
+		u:setLevel(20)
 		u:setAI(LuaAI:new(true))
 		addAbilitiesForUnit(u, uc.id)
 		u:setHostilityRange(200)
@@ -294,13 +296,13 @@ function Stage03:spawnTeam(ucs, number, template, control, x, y)
 	end
 end
 
-function Stage03:onInitHero()
+function Stage03:onHeroInit()
 	return nil
 end
 
 function Stage03:onInit()
 	--msgBox("test≤‚ ‘", "title±ÍÃ‚")
-	setGameSpeed(2.0)
+	--setGameSpeed(2.0)
 	showDebug(true)
 	
 	self.over = false
@@ -338,8 +340,10 @@ function Stage03:onInit()
 	
 	self:spawnTeam(ucs, n, team, true, 500, 700)
 	self:spawnTeam(ucs, n, {}, false, 1000, 700)
+	--self:spawnTeam(ucs, 1, {UL.kLumberjack}, true, 500, 700)
+	--self:spawnTeam(ucs, 1, {UL.kFrost}, false, 1000, 700)
 	
-	self.res = loadValue("battle.tbl")
+	self.res = loadValue(F("battle.tbl"))
 	if not self.res then
 		self.res = {}
 		self.res.fight = {}
@@ -376,7 +380,7 @@ function Stage03:onInit()
 			str = str .. strl .. "\n"
 		end
 		
-		saveValue("rank.str", str)
+		saveValue(F("rank.str"), str)
 	end
 end
 
@@ -438,7 +442,7 @@ function Stage03:onTick(dt)
 		end
 		table.insert(self.res.log, bl)
 		
-		saveValue("battle.tbl", self.res)
+		saveValue(F("battle.tbl"), self.res)
 		
 		log("the battle log has been updated! (%d)", #self.res.log)
 		restartStage()

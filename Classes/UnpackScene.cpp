@@ -269,8 +269,6 @@ bool UnpackSceneLayer::saveToPng(const char* name, const char* path, SpriteFrame
     
     preparePath(full);
     bool res = Utils::nodeToFile(m_sp, full);
-    //bool res = img->saveToFile(full, false);
-    //delete img;
 
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
     static HANDLE h = GetCurrentProcess();

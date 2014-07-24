@@ -89,7 +89,7 @@ void EmptySceneLayer::lab00()
     addChild(bp);
     bp->setPosition(Point(wsz.width * 0.5, wsz.height * 0.5));
 
-    auto sp = Sprite::create("UI/Ability/Ability00.png");
+    auto sp = Sprite::create("UI/Ability/ArmorUp.png");
 
     auto orgScale = sp->getScale();
     sp->setScale(0.95f);
@@ -101,7 +101,7 @@ void EmptySceneLayer::lab00()
     for (auto i = 0; i < 4; ++i)
     {
         auto btn = ButtonNormal::create(
-            Sprite::create("UI/Ability/Ability00.png"),
+            Sprite::create("UI/Ability/ArmorUp.png"),
             Sprite::createWithTexture(txSel),
             Sprite::createWithTexture(txDis),
             Sprite::create("UI/Ability/AbilityBlink2.png"),
@@ -114,7 +114,7 @@ void EmptySceneLayer::lab00()
             nullptr);
         bp->addButtonEx(btn);
     }
-
+    return;
     auto nd = Node::create();
     nd->setAnchorPoint(Point(0.5f, 0.5f));
     nd->setContentSize(bp->getContentSize());
@@ -136,8 +136,8 @@ bool EmptySceneLayer::init()
 {
     //////////////////////////////
     // 1. super init first
-    if (!LayerColor::initWithColor(Color4B(0, 0, 0, 0)))
-    //if (!LayerColor::initWithColor(Color4B(153, 100, 00, 128)))
+    //if (!LayerColor::initWithColor(Color4B(0, 0, 0, 0)))
+    if (!LayerColor::initWithColor(Color4B(153, 100, 00, 128)))
     {
         return false;
     }
@@ -145,12 +145,7 @@ bool EmptySceneLayer::init()
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
 
-//#if 0
+    lab00();
 
-//#else
-    CGameData::instance();
-    auto L = CLuaScriptEngine::instance()->getLuaHandle();
-    luaL_includefilelog(L, "Empty.lua");
-//#endif
     return true;
 }

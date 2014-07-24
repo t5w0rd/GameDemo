@@ -51,6 +51,10 @@ class CIdGen
 {
 public:
     static int nextId();
+    static void resetId(int id);
+
+protected:
+    static int m_id;
 };
 
 

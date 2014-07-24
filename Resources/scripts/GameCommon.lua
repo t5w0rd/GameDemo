@@ -106,7 +106,7 @@ AL = {}
 --AL.kCurse = AL.BASE_ID + 0
 loadAbilityLibrary()
 
-function Unit:sayf(self, ...)
+function Unit:sayf(...)
     self:say(string.format(table.unpack({...})))
 end
 
@@ -288,7 +288,7 @@ Battle = class()
 function Battle:ctor()
 end
 
-function Battle:onInitHero()
+function Battle:onHeroInit()
 	local hero = createUnit(UD.heroes[1].id)
 	hero:setLevelUpdate(HeroLevelUpdate:new())
 	hero:setMaxLevel(20)
@@ -330,7 +330,7 @@ function Battle:run()
 	onWorldInit = function()
 		showDebug(false)
 		math.randomseed(os.time())
-		setHero(Battle.running:onInitHero())
+		setHero(Battle.running:onHeroInit())
 		Battle.running:onInit()
 	end
 	
@@ -391,7 +391,7 @@ function addAbilitiesForUnit(u, id)
 		u:addPassiveAbility(AL.kStunAttack:getId())
 		
 	elseif id == UL.kAlric then
-		u:addActiveAbility(SAL.kMultySlash, 3)
+		u:addActiveAbility(SAL.kMultiSlash, 3)
 		u:addActiveAbility(AL.kFastMoveToBack:getId())
 		
 	elseif id == UL.kMalik then

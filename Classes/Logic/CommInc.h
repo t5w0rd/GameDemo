@@ -35,6 +35,11 @@ extern "C"
 #include "utils/strnormalize.h"
 }
 
+#define LIBTSCPDK_SRC
+#include "tscpdk/TSPlatform.h"
+#include "tscpdk/TSUtil.h"
+#include "tscpdk/TSSocket.h"
+USING_NS_TSCPDK;
 
 #include "CommDef.h"
 

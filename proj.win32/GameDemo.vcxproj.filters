@@ -22,6 +22,9 @@
     <Filter Include="Classes\utils">
       <UniqueIdentifier>{d1393f2e-c649-48da-afdb-967a6f925e35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Classes\tscpdk">
+      <UniqueIdentifier>{664727a4-a23f-4332-ba5c-9d6bee78fa1e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -225,6 +228,18 @@
     <ClCompile Include="..\Classes\Logic\UnitLibrary.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\tscpdk\TSSocket.cpp">
+      <Filter>Classes\tscpdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\tscpdk\TSUtil.cpp">
+      <Filter>Classes\tscpdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\tscpdk\TSPlatform.cpp">
+      <Filter>Classes\tscpdk</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Classes\Logic\Network.cpp">
+      <Filter>Classes\Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -416,6 +431,18 @@
     <ClInclude Include="..\Classes\Logic\UnitLibrary.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\tscpdk\TSSocket.h">
+      <Filter>Classes\tscpdk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\tscpdk\TSUtil.h">
+      <Filter>Classes\tscpdk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\tscpdk\TSPlatform.h">
+      <Filter>Classes\tscpdk</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Logic\Network.h">
+      <Filter>Classes\Logic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
@@ -466,6 +493,24 @@
       <Filter>scripts</Filter>
     </None>
     <None Include="..\Resources\scripts\LevelUpdate.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Classes\tscpdk\TSSocket.inl">
+      <Filter>Classes\tscpdk</Filter>
+    </None>
+    <None Include="..\Classes\tscpdk\TSUtil.inl">
+      <Filter>Classes\tscpdk</Filter>
+    </None>
+    <None Include="..\Classes\tscpdk\TSPlatform.inl">
+      <Filter>Classes\tscpdk</Filter>
+    </None>
+    <None Include="..\Resources\scripts\EffectLibrary.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\Empty.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\LoadGame.lua">
       <Filter>scripts</Filter>
     </None>
   </ItemGroup>

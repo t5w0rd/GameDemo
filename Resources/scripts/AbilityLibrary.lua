@@ -143,7 +143,7 @@ function loadAbilityLibrary()
 	AL.kGravitySurf = a
 	
 	-- SpeedUp2
-	a = EvadeBuff:new("SU.EB", "Evade", 3.0, false, 1.00)
+	a = EvadeBuff:new("SU.EB", "闪避", 3.0, false, 1.00)
 	id = addTemplateAbility(a)
 	
 	a = SpeedBuff:new("SU.SB", "SpeedUp", 3.0, false, 4.0, 0.0, 4.0, 0.0)
@@ -875,7 +875,7 @@ a:setLevelUpdate(Update:new())
 SAL.kMassCurse = SAL.add(a)
 
 
--- MultySlash
+-- MultiSlash
 Update = class(LevelUpdate)
 Update.buff = {}
 function Update:onLevelChanged(a, change)
@@ -925,7 +925,7 @@ a = TransitiveBlinkBuff:new("TransitiveBlink", 200, 5, 0, Sprite.kAniAct1, Sprit
 a:setAppendBuff(id)
 id = SAL.addi(a, 011)  -- 011
 
-a = BuffMakerAct:new("幻影斩击", 28.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
+a = BuffMakerAct:new("幻影斩击", 30.0, CommandTarget.kUnitTarget, UnitForce.kEnemy, id)
 a:setCastRange(300)
 a:setImageName("UI/Ability/Slash.png")
 a:setMaxLevel(3)
@@ -938,7 +938,7 @@ a:setLevelInfo(3, 2, "每次斩击可以触发其他技能效果")
 a:setGrade(Ability.kLegend)
 
 a:setLevelUpdate(Update:new())
-SAL.kMultySlash = SAL.add(a)
+SAL.kMultiSlash = SAL.add(a)
 
 
 -- MagicalRain

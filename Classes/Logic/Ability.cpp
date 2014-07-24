@@ -2298,7 +2298,7 @@ bool CEvadeBuff::onUnitAttacked(CAttackData* pAttack, CUnit* pSource)
         {
             char sz[64];
             sprintf(sz, "%s!", getName());
-            ccd->addBattleTip(sz, "", 18, Color3B(250, 104, 16));
+            ccd->addBattleTip(sz, "", 18, Color3B(220, 40, 40));
             
             auto sp = Sprite::createWithSpriteFrame(ccd->getSprite()->getSpriteFrame());
             sp->setAnchorPoint(ccd->getSprite()->getAnchorPoint());

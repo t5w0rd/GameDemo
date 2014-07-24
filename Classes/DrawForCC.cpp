@@ -157,16 +157,17 @@ void UnitSprite::setPosition(const Point& roPos)
             CUnitDraw2D* d = DCAST(getDraw(), CUnitDraw2D*);
             int z = M_BASE_Z + d->getHeight() - roPos.y;
             setLocalZOrder(z);
-            getShadow()->setLocalZOrder(z + 1);
+            //getShadow()->setLocalZOrder(z + 1);
+            getShadow()->setLocalZOrder(z);
             //layer->reorderChild(this, z);
             //layer->reorderChild(getShadow(), z);
         }
     }
 }
 
-void UnitSprite::draw(Renderer *renderer, const kmMat4& transform, bool transformUpdated)
+void UnitSprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 {
-    Sprite::draw(renderer, transform, transformUpdated);
+    Sprite::draw(renderer, transform, flags);
     if (!Director::getInstance()->isDisplayStats())
     {
         return;
@@ -616,9 +617,10 @@ void CUnitDrawForCC::say(const char* words)
     sp->setInsetBottom(30);
 
     char sz[1024];
-    auto lbl = Label::createWithBMFont(
-        "fonts/Comic Book.fnt",
-        gbk_to_utf8(words, sz));
+    auto lbl = Label::createWithTTF(
+        gbk_to_utf8(words, sz),
+        "fonts/msyhbd.ttf",
+        32);
     sp->addChild(lbl, 2);
     lbl->setMaxLineWidth(400);
     lbl->setColor(Color3B::BLACK);

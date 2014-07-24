@@ -43,7 +43,9 @@ void CGameData::initStageData()
     STAGE_INFO stage;
 
     CValue* stages = nullptr;
-    if (CArchive::loadValue(CONST_STAGE_MAP_NAME, stages) == true)
+    char path[256];
+    sprintf(path, "%s/%s", CCFileUtils::getInstance()->getWritablePath().c_str(), CONST_STAGE_MAP_NAME);
+    if (CArchive::loadValue(path, stages) == true)
     {
         int num = vmg_int(stages, "num");
         for (auto i = 1; i <= num; ++i)
@@ -171,7 +173,7 @@ void CGameData::initStageData()
         vms_v(stages, i + 1, st);
     }
 
-    CArchive::saveValue(CONST_STAGE_MAP_NAME, stages);
+    CArchive::saveValue(path, stages);
     delete stages;
 }
 

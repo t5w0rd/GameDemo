@@ -36,14 +36,14 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         glview->setFrameZoomFactor(zoom);
     }
 
-    FILE* dbg = fopen("MRef.log", "w+");
-    CDbgMultiRefObjectManager::instance()->setOutFile(dbg);
-    
+    WSADATA WSAData = {};
+    WSAStartup(MAKEWORD(2, 2), &WSAData);
+
     // create the application instance
     AppDelegate app;
     auto res = Application::getInstance()->run();
     
-    fclose(dbg);
+    WSACleanup();
 
     return res;
 }

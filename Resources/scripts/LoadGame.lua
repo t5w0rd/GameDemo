@@ -9,7 +9,7 @@ SAVE_VERSION = 1
 UD = nil
 
 function onLoadingUserData()
-	UD = loadValue("save.dat")
+	UD = loadValue(F("save.dat"))
 	if not UD then
 		UD = {}
 		UD.version = SAVE_VERSION
@@ -23,7 +23,7 @@ function onLoadingUserData()
 		UD.heroes[1] = hero
 		
 		-- for test
-		local sm = loadValue("StageMap.tbl")
+		local sm = loadValue(F("StageMap.tbl"))
 		for i, _ in ipairs(sm) do
 			local stage = {}
 			stage.grade = math.random(1, 3)
@@ -40,7 +40,7 @@ function onLoadingUserData()
 end
 
 function saveGame()
-	saveValue("save.dat", UD)
+	saveValue(F("save.dat"), UD)
 end
 
 function stageVictory(grade)
@@ -58,5 +58,9 @@ end
 function stageDefeat()
 	saveGame()
 	endWithDefeat()
+end
+
+function F(name)
+	return getWritablePath() .. "/" .. name
 end
 

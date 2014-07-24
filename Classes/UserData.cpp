@@ -6,6 +6,7 @@
 #include "LuaScriptEngine.h"
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
+#include "UnitLibraryForCC.h"
 
 
 // CUserData
@@ -20,6 +21,16 @@ void CUserData::load()
 {
     reset();
     onLuaLoadingUserData();
+    HERO_INFO hero;
+    hero.id = CUnitLibraryForCC::kBarracks;
+    m_heroes.push_back(hero);
+    CTcpSocket s;
+    
+    CSockAddrIn sa(nullptr, 2888);
+    s.Bind(&sa, true);
+    s.Listen();
+    CTcpSocket c;
+    //s.Accept(&c);
 }
 
 void CUserData::reset()

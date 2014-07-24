@@ -66,7 +66,7 @@ bool CBattleWorld::onInit()
     // add abilities from SAL(lua)
     auto udt = CUserData::instance();
     auto hi = udt->getHeroSelected();
-    if (hi != nullptr)
+    if (hi != nullptr && u != nullptr)
     {
         auto& mapAbilities = hi->m_mapAbilitiesEquipped;
         M_MAP_FOREACH(mapAbilities)
@@ -729,7 +729,7 @@ void BattleSceneLayer::onLoadingProgress()
     pb->setPercentage(per);
     if (per >= 1.0f)
     {
-        pb->runAction(Sequence::createWithTwoActions(DelayTime::create(1.0f), CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onLoadingDone, this))));
+        pb->runAction(Sequence::createWithTwoActions(DelayTime::create(0.5f), CallFunc::create(CC_CALLBACK_0(BattleSceneLayer::onLoadingDone, this))));
     }
 }
 
@@ -968,11 +968,11 @@ void BattleSceneLayer::initTargetInfo()
     float fW0 = 0;
     float fW1 = 100;
     float fBaseX = M_FIX_BASE_X(fW0, fW1, 80);
-    m_pNameSel = Label::createWithTTF("", FONT_COMIC_BOOK, fFontSize);
+    m_pNameSel = Label::createWithTTF("", "fonts/DFYuanW7-GB2312.ttf", fFontSize);
     m_pNameSel->setAnchorPoint(Point(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pNameSel);
     m_pNameSel->setHorizontalAlignment(TextHAlignment::LEFT);
-    m_pNameSel->setPosition(Point(fBaseX, fBaseY));
+    m_pNameSel->setPosition(Point(fBaseX, fBaseY + 2.0f));
 
     // 等级
     fW0 = fW1;
@@ -1121,7 +1121,7 @@ void BattleSceneLayer::updateTargetInfo(int id)
         sf = fc->getSpriteFrameByName("UI/status/portrait_sel.png");
     }
     m_pPortraitSel->setSpriteFrame(sf);
-    m_pNameSel->setString(pUnit->getName());
+    m_pNameSel->setString(gbk_to_utf8(pUnit->getName(), szBuf));
     
     // 等级
     uint32_t dwLevel = pUnit->getLevel();

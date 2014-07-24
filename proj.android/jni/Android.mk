@@ -2,6 +2,10 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+$(call import-add-path,$(LOCAL_PATH)/../../cocos2d)
+$(call import-add-path,$(LOCAL_PATH)/../../cocos2d/external)
+$(call import-add-path,$(LOCAL_PATH)/../../cocos2d/cocos)
+
 LOCAL_MODULE := cocos2dcpp_shared
 
 LOCAL_MODULE_FILENAME := libcocos2dcpp
@@ -40,6 +44,9 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/lua/lvm.c \
 ../../Classes/lua/lzio.c \
 ../../Classes/utils/strnormalize.c \
+../../Classes/tscpdk/TSPlatform.cpp \
+../../Classes/tscpdk/TSSocket.cpp \
+../../Classes/tscpdk/TSUtil.cpp \
 ../../Classes/Logic/Ability.cpp \
 ../../Classes/Logic/AbilityLibrary.cpp \
 ../../Classes/Logic/Action.cpp \
@@ -52,6 +59,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/Logic/LuaBinding.cpp \
 ../../Classes/Logic/LuaScriptEngine.cpp \
 ../../Classes/Logic/MultiRefObject.cpp \
+../../Classes/Logic/Network.cpp \
 ../../Classes/Logic/Unit.cpp \
 ../../Classes/Logic/UnitLibrary.cpp \
 ../../Classes/AbilityForCC.cpp \
@@ -76,6 +84,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../Classes \
 $(LOCAL_PATH)/../../Classes/Logic \
 $(LOCAL_PATH)/../../Classes/lua \
+$(LOCAL_PATH)/../../Classes/tscpdk \
 $(LOCAL_PATH)/../../cocos2d
 
 LOCAL_WHOLE_STATIC_LIBRARIES := cocos2dx_static
@@ -86,7 +95,6 @@ LOCAL_WHOLE_STATIC_LIBRARIES += cocos_extension_static
 
 include $(BUILD_SHARED_LIBRARY)
 
-$(call import-module,2d)
+$(call import-module,.)
 $(call import-module,audio/android)
-$(call import-module,Box2D)
 $(call import-module,extensions)

@@ -372,7 +372,8 @@ void AbilityDetails::updateContent(CAbility* ability)
                 // upgrade button
                 if (m_aUpBtn == nullptr)
                 {
-                    m_aUpBtn = MenuItemFont::create("Upgrade", CC_CALLBACK_1(AbilityDetails::onClickUpgrade, this));
+                    gbk_to_utf8("Ç¿»¯", sz);
+                    m_aUpBtn = MenuItemLabel::create(Label::createWithTTF(sz, "fonts/DFYuanW7-GB2312.ttf", 32), CC_CALLBACK_1(AbilityDetails::onClickUpgrade, this));
                     m_mn->addChild(m_aUpBtn);
                     m_aUpBtn->setColor(Color3B::YELLOW);
                 }
@@ -494,7 +495,7 @@ bool AbilitySceneLayer::init()
 
     // test data
     auto hero = CUserData::instance()->getHeroSelected();
-    hero->energy = 120;
+    hero->energy = 30;
 
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);

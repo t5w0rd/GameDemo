@@ -97,8 +97,8 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(EngineRoot)\cocos\audio\include;$(EngineRoot)\external;$(EngineRoot)\external\chipmunk\include\chipmunk;$(EngineRoot);..\Classes;..;..\Classes\lua;..\Classes\Logic;E:\Program Files (x86)\Visual Leak Detector\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;DEBUG_FOR_CC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(EngineRoot)\cocos\audio\include;$(EngineRoot)\external;$(EngineRoot)\external\chipmunk\include\chipmunk;$(EngineRoot);..\Classes;..;..\Classes\lua;..\Classes\Logic;..\Classes\tscpdk;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USE_MATH_DEFINES;GL_GLEXT_PROTOTYPES;CC_ENABLE_CHIPMUNK_INTEGRATION=1;COCOS2D_DEBUG=1;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;DEBUG_FOR_CC;TSCPDK_MSVC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -222,6 +222,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClCompile Include="..\Classes\Logic\LuaBinding.cpp" />
     <ClCompile Include="..\Classes\Logic\LuaScriptEngine.cpp" />
     <ClCompile Include="..\Classes\Logic\MultiRefObject.cpp" />
+    <ClCompile Include="..\Classes\Logic\Network.cpp" />
     <ClCompile Include="..\Classes\Logic\Unit.cpp" />
     <ClCompile Include="..\Classes\Logic\UnitLibrary.cpp" />
     <ClCompile Include="..\Classes\LogoScene.cpp" />
@@ -261,6 +262,9 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClCompile Include="..\Classes\MainMenuScene.cpp" />
     <ClCompile Include="..\Classes\Stage.cpp" />
     <ClCompile Include="..\Classes\StageScene.cpp" />
+    <ClCompile Include="..\Classes\tscpdk\TSPlatform.cpp" />
+    <ClCompile Include="..\Classes\tscpdk\TSSocket.cpp" />
+    <ClCompile Include="..\Classes\tscpdk\TSUtil.cpp" />
     <ClCompile Include="..\Classes\UnitLibraryForCC.cpp" />
     <ClCompile Include="..\Classes\UnpackScene.cpp" />
     <ClCompile Include="..\Classes\UserData.cpp" />
@@ -294,6 +298,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClInclude Include="..\Classes\Logic\LuaBinding.h" />
     <ClInclude Include="..\Classes\Logic\LuaScriptEngine.h" />
     <ClInclude Include="..\Classes\Logic\MultiRefObject.h" />
+    <ClInclude Include="..\Classes\Logic\Network.h" />
     <ClInclude Include="..\Classes\Logic\Unit.h" />
     <ClInclude Include="..\Classes\Logic\UnitLibrary.h" />
     <ClInclude Include="..\Classes\LogoScene.h" />
@@ -326,6 +331,9 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClInclude Include="..\Classes\MainMenuScene.h" />
     <ClInclude Include="..\Classes\Stage.h" />
     <ClInclude Include="..\Classes\StageScene.h" />
+    <ClInclude Include="..\Classes\tscpdk\TSPlatform.h" />
+    <ClInclude Include="..\Classes\tscpdk\TSSocket.h" />
+    <ClInclude Include="..\Classes\tscpdk\TSUtil.h" />
     <ClInclude Include="..\Classes\UnitLibraryForCC.h" />
     <ClInclude Include="..\Classes\UnpackScene.h" />
     <ClInclude Include="..\Classes\UserData.h" />
@@ -348,14 +356,20 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ResourceCompile Include="game.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Classes\tscpdk\TSPlatform.inl" />
+    <None Include="..\Classes\tscpdk\TSSocket.inl" />
+    <None Include="..\Classes\tscpdk\TSUtil.inl" />
     <None Include="..\Resources\scripts\Ability.lua" />
     <None Include="..\Resources\scripts\AbilityLibrary.lua" />
     <None Include="..\Resources\scripts\AI.lua" />
     <None Include="..\Resources\scripts\AI2.lua" />
     <None Include="..\Resources\scripts\Common.lua" />
+    <None Include="..\Resources\scripts\EffectLibrary.lua" />
+    <None Include="..\Resources\scripts\Empty.lua" />
     <None Include="..\Resources\scripts\GameCommon.lua" />
     <None Include="..\Resources\scripts\Init.lua" />
     <None Include="..\Resources\scripts\LevelUpdate.lua" />
+    <None Include="..\Resources\scripts\LoadGame.lua" />
     <None Include="..\Resources\scripts\Stage00.lua" />
     <None Include="..\Resources\scripts\Stage01.lua" />
     <None Include="..\Resources\scripts\Stage02.lua" />

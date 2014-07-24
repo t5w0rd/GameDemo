@@ -62,7 +62,7 @@ public:
     M_SYNTHESIZE(Node*, m_pShadow, Shadow);
     Node* createShadow();
     virtual void setPosition(const Point& roPos) override;
-    virtual void draw(Renderer *renderer, const kmMat4& transform, bool transformUpdated) override;
+    virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
 
 };
 

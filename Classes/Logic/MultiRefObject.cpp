@@ -16,7 +16,7 @@
 CMultiRefObject::CMultiRefObject()
 : m_iRefCount(0)
 , m_iScriptHandler(0)
-, CONST_ID(CIdGen::nextId())
+, m_iId(CIdGen::nextId())
 {
     setDbgClassName("CMutiRefObject");
     CDbgMultiRefObjectManager::instance()->addObject(this);
@@ -102,11 +102,6 @@ CMultiRefObject* CMultiRefObject::copy()
 const char* CMultiRefObject::getDbgTag() const
 {
     return "";
-}
-
-int CMultiRefObject::getId() const
-{
-    return CONST_ID;
 }
 
 // CAutoReleasePool

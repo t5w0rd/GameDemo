@@ -177,7 +177,13 @@ function Stage00:onInit()
 	
 	me = getHero()
 	--me:setMaxLevel(100)
-	me:addExp(5000)
+	if me:getLevel() < 5 then
+		me:addExp(1000)
+	end
+	me:addActiveAbility(SAL.kMultiSlash, 3)
+	me:addActiveAbility(AL.kFastMoveToBack)
+	me:addActiveAbility(AL.kChargeJump)
+	me:addActiveAbility(AL.kSpeedUp)
 	
 	a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.001, 5, 0, -1)
 	id = addTemplateAbility(a)

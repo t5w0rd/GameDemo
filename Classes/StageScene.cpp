@@ -105,7 +105,7 @@ void StageSceneLayer::onLoadingProgress()
     pb->setPercentage(per);
     if (per >= 1.0f)
     {
-        pb->runAction(Sequence::createWithTwoActions(DelayTime::create(1.0f), CallFunc::create(CC_CALLBACK_0(StageSceneLayer::onLoadingDone, this))));
+        pb->runAction(Sequence::createWithTwoActions(DelayTime::create(0.5f), CallFunc::create(CC_CALLBACK_0(StageSceneLayer::onLoadingDone, this))));
     }
 }
 
@@ -289,8 +289,8 @@ void StageSceneLayer::onClickPanelBattle(Ref* pObj)
     CUserData::instance()->m_stageSel = m_selIndex;
     
     //gc->replaceSceneWithLoading(&BattleSceneLayer::scene);
-    Director::getInstance()->replaceScene(BattleSceneLayer::scene());
-    //Director::getInstance()->replaceScene(AbilitySceneLayer::scene());
+    //Director::getInstance()->replaceScene(BattleSceneLayer::scene());
+    Director::getInstance()->replaceScene(AbilitySceneLayer::scene());
     //Director::getInstance()->replaceScene(HeroRoomSceneLayer::scene());
 }
 
