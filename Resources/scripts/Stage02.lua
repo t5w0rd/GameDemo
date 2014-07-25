@@ -173,9 +173,9 @@ function Stage02:onInit()
 	me:setMaxLevel(100)
 	
 	me:addActiveAbility(SAL.kMultiSlash, 3)
-	me:addActiveAbility(AL.kSerialExplode)
-	me:addActiveAbility(AL.kChargeJump)
-	me:addActiveAbility(AL.kSpeedUp)
+	me:addActiveAbility(AL.kSerialExplode:getId())
+	me:addActiveAbility(AL.kChargeJump:getId())
+	me:addActiveAbility(AL.kSpeedUp:getId())
 	
 	
 	

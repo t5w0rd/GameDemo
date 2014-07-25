@@ -181,9 +181,9 @@ function Stage00:onInit()
 		me:addExp(1000)
 	end
 	me:addActiveAbility(SAL.kMultiSlash, 3)
-	me:addActiveAbility(AL.kFastMoveToBack)
-	me:addActiveAbility(AL.kChargeJump)
-	me:addActiveAbility(AL.kSpeedUp)
+	me:addActiveAbility(AL.kFastMoveToBack:getId())
+	me:addActiveAbility(AL.kChargeJump:getId())
+	me:addActiveAbility(AL.kSpeedUp:getId())
 	
 	a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.001, 5, 0, -1)
 	id = addTemplateAbility(a)
