@@ -4,7 +4,7 @@ __COMMON__ = true
 
 -- Unit Library
 UL = {}
-UL.BASE_ID = 0x100
+UL.BASE_ID = 0x1
 UL.kMalik = UL.BASE_ID + 0
 UL.kMage = UL.BASE_ID + 1
 UL.kBarracks = UL.BASE_ID + 2
@@ -36,7 +36,7 @@ UL.kWizard = UL.BASE_ID + 27
 
 -- Projectile Library
 PL = {}
-PL.BASE_ID = 0x100
+PL.BASE_ID = 0x1
 PL.kMageBolt = PL.BASE_ID + 0
 PL.kFrostBolt = PL.BASE_ID + 1
 PL.kArcherArrow = PL.BASE_ID + 2

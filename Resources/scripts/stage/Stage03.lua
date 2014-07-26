@@ -1,4 +1,4 @@
-include("Init.lua")
+include("WorldCommon.lua")
 
 
 -- control unit
@@ -20,7 +20,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 20.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 100
 table.insert(ucs, uc)
 
@@ -38,7 +38,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 300
 table.insert(ucs, uc)
 
@@ -56,7 +56,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 12.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 80
 table.insert(ucs, uc)
 
@@ -74,7 +74,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 100
 table.insert(ucs, uc)
 
@@ -92,7 +92,7 @@ uc.amr.t = ArmorValue.kCrystal
 uc.amr.v = 26.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 200
 table.insert(ucs, uc)
 
@@ -110,7 +110,7 @@ uc.amr.t = ArmorValue.kCrystal
 uc.amr.v = 24.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 180
 table.insert(ucs, uc)
 
@@ -128,7 +128,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 9.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 280
 table.insert(ucs, uc)
 
@@ -146,7 +146,7 @@ uc.amr.t = ArmorValue.kCrystal
 uc.amr.v = 50.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 200
 table.insert(ucs, uc)
 
@@ -164,7 +164,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 12.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 80
 table.insert(ucs, uc)
 
@@ -182,7 +182,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 5.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 50
 table.insert(ucs, uc)
 
@@ -200,7 +200,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 35.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 50
 table.insert(ucs, uc)
 
@@ -218,12 +218,12 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 11.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 100
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
-uc.id = SUL.kPriest
+uc.id = ULx.kPriest
 uc.nm = "Priest"
 uc.hp = 2000
 uc.ms = 60
@@ -236,12 +236,12 @@ uc.amr.t = ArmorValue.kCrystal
 uc.amr.v = 5.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 uc.pos = 250
 table.insert(ucs, uc)
 
 
-Stage03 = class(Battle)
+Stage03 = class(World)
 
 function Stage03:spawnTeam(ucs, number, template, control, x, y)
 	local us = {}
@@ -317,11 +317,11 @@ function Stage03:onInit()
 	us = {}
 	
 	local tm = {}
-	--tm[#tm + 1] = {UL.kViking, SUL.kPriest}
+	--tm[#tm + 1] = {UL.kViking, ULx.kPriest}
 	--tm[#tm + 1] = {UL.kAlric}
 	--tm[#tm + 1] = {UL.kMage, UL.kArtillery, UL.kLumberjack, UL.kFrost}
 	--tm[#tm + 1] = {UL.kMage, UL.kViking, UL.kThor, UL.kFrost, UL.kAlric}
-	--tm[#tm + 1] = {UL.kThor, UL.kElemental, UL.kViking, SUL.kPriest}
+	--tm[#tm + 1] = {UL.kThor, UL.kElemental, UL.kViking, ULx.kPriest}
 	--tm[#tm + 1] = {UL.kElemental, UL.kViking, UL.kMage, UL.kArtillery}
 	--tm[#tm + 1] = {UL.kBarracks, UL.kMalik, UL.kViking, UL.kThor}
 	

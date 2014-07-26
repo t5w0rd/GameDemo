@@ -1,7 +1,8 @@
 if __EFFECT_LIBRARY__ then return end
 __EFFECT_LIBRARY__ = true
 
-include("GameCommon.lua")
+include("lib/ObjectLibrary.lua")
+
 
 EffectCreator = class()
 function EffectCreator:ctor(epath, delay, ax, ay, sound)
@@ -26,19 +27,13 @@ function EffectCreator:createEffectAtPosition(x, y, h)
 	return eff
 end
 
-SEL = {}
-SEL.effs = {}
-SEL.STEP = 1
-SEL.id = SEL.STEP
-function SEL.add(eff)
-	local id = SEL.id
-	SEL.effs[id] = eff
-	SEL.id = SEL.id + SEL.STEP
-	return id
-end
+EL = ObjectLibrary:new(1, function(self, id, obj)
+	self.effs[id] = obj
+end)
+EL.effs = {}
 
-function SEL.createEffectOnUnit(id, unit)
-	local ec = SEL.effs[id]
+function EL:createEffectOnUnit(id, unit)
+	local ec = self.effs[id]
 	if not ec then
 		return nil
 	end
@@ -46,8 +41,8 @@ function SEL.createEffectOnUnit(id, unit)
 	return ec:createEffectOnUnit(unit)
 end
 
-function SEL.createEffectAtPosition(id, x, y, h)
-	local ec = SEL.effs[id]
+function EL:createEffectAtPosition(id, x, y, h)
+	local ec = self.effs[id]
 	if not ec then
 		return nil
 	end
@@ -59,34 +54,34 @@ end
 local eff
 
 eff = EffectCreator:new("Effects/Fire/Big", 0.1, 0.5, 50 / 92, nil)
-SEL.kFireBig = SEL.add(eff)
+EL.kFireBig = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Explosion/Normal", 0.05, 0.5, 42 / 168, "sounds/Effects/Sound_FireballHit.mp3")
-SEL.kExplosionNormal = SEL.add(eff)
+EL.kExplosionNormal = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Explosion/Small", 0.08, 0.5, 10 / 92, nil)
-SEL.kExplosionSmall = SEL.add(eff)
+EL.kExplosionSmall = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Explosion/Short", 0.08, 0.5, 40 / 132, "sounds/Effects/Sound_FireballHit.mp3")
-SEL.kExplosionShort = SEL.add(eff)
+EL.kExplosionShort = EL:add(eff)
 
 eff = EffectCreator:new("Effects/ArmorBreak", 0.08, 0.5, 0.5, nil)
-SEL.kArmorBreak = SEL.add(eff)
+EL.kArmorBreak = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Burn", 0.05, 0.5, 22 / 92, nil)
-SEL.kBurn = SEL.add(eff)
+EL.kBurn = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Rain/Bolt", 0.03, 0.5, 25 / 320, nil)
-SEL.kRainBolt = SEL.add(eff)
+EL.kRainBolt = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Rain/Ice", 0.05, 0.5, 40 / 208, nil)
-SEL.kRainIce = SEL.add(eff)
+EL.kRainIce = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Rain/SharpIce", 0.05, 0.5, 40 / 172, nil)
-SEL.kRainSharpIce = SEL.add(eff)
+EL.kRainSharpIce = EL:add(eff)
 
 eff = EffectCreator:new("Effects/Bleeding/Red/Big", 0.05, 0.5, 60 / 116, nil)
-SEL.kBleedingRedBig = SEL.add(eff)
+EL.kBleedingRedBig = EL:add(eff)
 
 eff = EffectCreator:new("Effects/EarthQuake", 0.05, 0.5, 25 / 132, nil)
-SEL.kEarthQuake = SEL.add(eff)
+EL.kEarthQuake = EL:add(eff)

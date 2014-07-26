@@ -1,5 +1,4 @@
-include("Init.lua")
-
+include("WorldCommon.lua")
 
 
 hero = nil
@@ -39,7 +38,7 @@ end
 
 function spawnHero(id, force)
 	if not id then
-		id = math.random(1, 12) + 0xff
+		id = math.random(1, 12)
 	end
 	
 	if not force then
@@ -68,22 +67,9 @@ function spawnHero(id, force)
 	if force == 1 then
 		hero = u
 		u:addPassiveAbility(OnDyingPas:new())
-		if atk:getCastRange() > 100 then
-			u:setAI(LuaAI:new())
-			--u:addActiveAbility(AL.kReflect:getId())
-			--u:addActiveAbility(AL.kSpeedUp2:getId())
-			--u:addActiveAbility(AL.kKnockBack:getId())
-		else
-			u:setAI(LuaAI:new())
-			--u:addActiveAbility(AL.kThrowHammer:getId())
-			--u:addActiveAbility(AL.kThunderCap:getId())
-			--u:addActiveAbility(AL.kSpeedUp:getId())
-			--u:addActiveAbility(AL.kChargeJump:getId())
-		end
 	else
 		u:setExMaxHp(0.20, 0.0)
 		u:setAI(LuaAI:new())
-		u:addActiveAbility(AL.kKnockBack:getId())
 	end
 	
 	addAbilitiesForUnit(u, id)
@@ -170,7 +156,7 @@ uc = 0
 tower1 = 0
 tower2 = 0
 
-Stage00 = class(Battle)
+Stage00 = class(World)
 function Stage00:onInit()
 	self.healer = 0
 	initAbilityForLevelUp()
@@ -180,10 +166,10 @@ function Stage00:onInit()
 	if me:getLevel() < 5 then
 		me:addExp(1000)
 	end
-	me:addActiveAbility(SAL.kMultiSlash, 3)
-	me:addActiveAbility(AL.kFastMoveToBack:getId())
-	me:addActiveAbility(AL.kChargeJump:getId())
-	me:addActiveAbility(AL.kSpeedUp:getId())
+	me:addActiveAbility(AL.kMultiSlash, 3)
+	me:addActiveAbility(AL.kFastMoveToBack)
+	me:addActiveAbility(AL.kChargeJump)
+	me:addActiveAbility(AL.kSpeedUp)
 	
 	a = ChangeHpBuff:new("TowerHeal", "TowerHeal", 5, false, 0.3, 0.001, 5, 0, -1)
 	id = addTemplateAbility(a)
@@ -199,7 +185,7 @@ function Stage00:onInit()
 	u:setPosition(100, 500)
 	u:addPassiveAbility(taid)
 	u:addPassiveAbility(taid2)
-	u:addPassiveAbility(AL.kAutoHeal:getId())
+	u:addPassiveAbility(AL.kAutoHeal)
 	--u:addPassiveAbility(DamageBackPas:new(1.2, 0))
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
 	id = addTemplateAbility(a)
@@ -219,7 +205,7 @@ function Stage00:onInit()
 	u:setPosition(1900, 500)
 	u:addPassiveAbility(taid)
 	u:addPassiveAbility(taid2)
-	u:addPassiveAbility(AL.kAutoHeal:getId())
+	u:addPassiveAbility(AL.kAutoHeal)
 	--u:addPassiveAbility(DamageBackPas:new(1.0, 0))
 	a = DamageBuff:new("dmg", AttackValue.kMagical, 350.0, 0.0, 0.0, Ability.kMaskActiveTrigger)
 	id = addTemplateAbility(a)
@@ -274,7 +260,7 @@ function Stage00:onTick(dt)
 				atk:setExAttackValue(1.0 + lvl * 0.05, lvl * 2.2)
 				
 				if not getUnit(self.healer) then
-					u = spawnHero(SUL.kPriest, 0)
+					u = spawnHero(ULx.kPriest, 0)
 					self.healer = u:getId()
 					u:setMaxLevel(lvl)
 					u:setLevel(lvl)

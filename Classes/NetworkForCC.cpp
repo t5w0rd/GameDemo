@@ -77,6 +77,7 @@ void CNetwork::waitForConnection(const string& host, int port, const function<vo
                 }
                 this_thread::sleep_for(chrono::seconds(1));
             }
+            CCLOG("MSG | broadcast thread exit");
         });
 
         // µÈ´ýtcp½ÓÈë
@@ -112,6 +113,7 @@ void CNetwork::discoverRemote(const string& host, int port, const function<void(
                 if (res < 0)
                 {
                     CCLOG("MSG | recvfrom err(%d)", ::GetSocketError());
+                    CCLOG("MSG | discovery thread exit");
                     return;
                 }
 
@@ -120,8 +122,8 @@ void CNetwork::discoverRemote(const string& host, int port, const function<void(
                 {
                     m_cocos2dxFunc(bind(onReturn, true, from.GetAddr(), from.GetPort()));
                 }
-
             }
+            CCLOG("MSG | discovery thread exit");
         }).detach();
     });
 }

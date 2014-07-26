@@ -14,7 +14,7 @@ public:
 
     enum ORG_UNIT
     {
-        kMalik = 0x100,
+        kMalik = 0x1,
         kMage,
         kBarracks,
         kArcher,
@@ -51,7 +51,7 @@ public:
 
     enum ORG_PROJECTILE
     {
-        kMageBolt = 0x100,
+        kMageBolt = 0x1,
         kFrostBolt,
         kArcherArrow,
         kLightning,

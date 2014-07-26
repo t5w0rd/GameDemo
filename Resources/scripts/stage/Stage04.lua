@@ -1,4 +1,4 @@
-include("Init.lua")
+include("WorldCommon.lua")
 
 
 -- control unit
@@ -17,7 +17,7 @@ uc.amr.t = ArmorValue.kCrystal
 uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
@@ -32,7 +32,7 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoHeal:getId()}
+uc.pas = {AL.kAutoHeal}
 table.insert(ucs, uc)
 
 uc = UnitCreator:new()
@@ -47,11 +47,11 @@ uc.amr.t = ArmorValue.kHeavy
 uc.amr.v = 10.0
 uc.reward.g = 10
 uc.reward.e = 10
-uc.pas = {AL.kAutoDamaged:getId()}
+uc.pas = {AL.kAutoDamaged}
 table.insert(ucs, uc)
 
 
-Stage04 = class(Battle)
+Stage04 = class(World)
 function Stage04:onInit()
 	hero = getHero()
 	--hero:setLevel(20)

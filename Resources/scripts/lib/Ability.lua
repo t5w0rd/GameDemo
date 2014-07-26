@@ -1,8 +1,12 @@
 if not DEBUG and __ABILITY__ then return end
 __ABILITY__ = true
 
-include("UnitLibrary.lua")
-include("EffectLibrary.lua")
+include("Common.lua")
+include("Extension.lua")
+include("lib/UnitLibrary.lua")
+include("lib/EffectLibrary.lua")
+include("lib/UnitGroup.lua")
+
 
 --do return end
 TestAct = class(ActiveAbility)
@@ -165,7 +169,7 @@ function ArmorBuff:onUnitAddAbility()
 	
 	if self.change < 0 and self:getDuration() > 0 then
 		o:addBattleTip(math.ceil(o:getRealArmorValue() - av), "fonts/Comic Book.fnt", 18, 0, 0, 0)
-		local eff = SEL.createEffectOnUnit(SEL.kArmorBreak, o)
+		local eff = EL:createEffectOnUnit(EL.kArmorBreak, o)
 		eff:playRelease()
 	end
 end
@@ -328,7 +332,7 @@ function PressureBombBuff:buffEffect(per)
     end
     
     local o = self:getOwner()
-	eff = SEL.createEffectOnUnit(SEL.kBurn, o)
+	eff = EL:createEffectOnUnit(EL.kBurn, o)
 	eff:playRelease()
 	
     local ad = AttackData:new()
@@ -512,7 +516,7 @@ function RainAct:onUnitInterval()
 		self.total = self.total + 1
 	
 		local x, y = getDirectionPoint(self.x, self.y, math.random(2 * math.pi), math.random(self:getCastTargetRadius()))
-		eff = SEL.createEffectAtPosition(self.eff, x, y, 0.0)
+		eff = EL:createEffectAtPosition(self.eff, x, y, 0.0)
 		eff:playRelease()
 		
 		local ug = UnitGroup.getEffectiveUnitsInRange(self.x, self.y, o, self:getCastTargetRadius(), self:getEffectiveTypeFlags())
@@ -763,7 +767,7 @@ function SerialExplodeAct:onUnitInterval()
 	self.index = self.index + 1
 	
 	local x, y = getDirectionPoint(self.sx, self.sy, self.angle, self.dis * self.index)
-	eff = SEL.createEffectAtPosition(SEL.kExplosionNormal, x, y, 0.0)
+	eff = EL:createEffectAtPosition(EL.kExplosionNormal, x, y, 0.0)
 	eff:playRelease()
 	
 	local o = self:getOwner()
@@ -859,10 +863,10 @@ function EffectBuff:onUnitAddAbility()
 	local o = self:getOwner()
 	local eff
 	if self.attached then
-		eff = SEL.createEffectOnUnit(self.eff, o)
+		eff = EL:createEffectOnUnit(self.eff, o)
 	else
 		local x, y = o:getPosition()
-		eff = SEL.createEffectAtPosition(self.eff, x, y, 0.0)
+		eff = EL:createEffectAtPosition(self.eff, x, y, 0.0)
 	end
 	
 	eff:playRelease()

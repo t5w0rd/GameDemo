@@ -1,4 +1,4 @@
-include("Init.lua")
+include("WorldCommon.lua")
 
 
 -- control unit
@@ -19,7 +19,7 @@ uc.reward.e = 5
 
 
 uc = UnitCreator:new()
-uc.id = SUL.kPriest
+uc.id = ULx.kPriest
 uc.nm = "T_T"
 uc.hp = 2200
 uc.force.index = 1
@@ -32,18 +32,18 @@ uc.reward.g = 500
 uc.reward.e = 500
 
 
-Stage01 = class(Battle)
+Stage01 = class(World)
 
 function Stage01:onInit()
 	hero = getHero()
 	--hero:setLevel(1)
 		
 	self.u = uc:createUnit()
-	self.u:addPassiveAbility(AL.kRebirth:getId())
+	self.u:addPassiveAbility(AL.kRebirth)
 	self.u:setPosition(500, 800)
 	
 	self.u = uc:createUnit()
-	self.u:addPassiveAbility(AL.kRebirth:getId())
+	self.u:addPassiveAbility(AL.kRebirth)
 	self.u:setPosition(500, 500)
 end
 

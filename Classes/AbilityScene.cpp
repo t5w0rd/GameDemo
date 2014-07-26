@@ -491,7 +491,7 @@ bool AbilitySceneLayer::init()
     }
 
     auto L = CLuaScriptEngine::instance()->getLuaHandle();
-    luaL_includefilelog(L, "Init.lua");
+    luaL_includefilelog(L, "WorldCommon.lua");
 
     // test data
     auto hero = CUserData::instance()->getHeroSelected();

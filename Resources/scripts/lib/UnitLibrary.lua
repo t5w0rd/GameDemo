@@ -1,21 +1,18 @@
 if __UNIT_LIBRARY__ then return end
 __UNIT_LIBRARY__ = true
 
-include("GameCommon.lua")
+include("Common.lua")
+include("Extension.lua")
+include("lib/ObjectLibrary.lua")
 
 --do return end
 
 local sp, p, u, atk
 -- static projectile library
-SPL = {}
-SPL.STEP = 1
-SPL.id = SPL.STEP
-function SPL.add(proj)
-	local id = SPL.id
-	addTemplateProjectile(SPL.id, proj)
-	SPL.id = SPL.id + SPL.STEP
-	return id
-end
+PLx = ObjectLibrary:new(1, function(self, id, obj)
+    addTemplateProjectile(id, obj)
+end)
+PLx:setId(0x100)
 
 -- WizardProy
 loadAnimations("WizardProy", {move = 0.1, die = 0.1})
@@ -29,7 +26,7 @@ p:setMaxHeightDelta(5.0)
 p:setPenaltyFlags(Projectile.kOnDying)
 p:setFireType(Projectile.kFireFollow)
 p:addFireSound("sounds/Effects/MageShot.mp3")
-SPL.kWizardProy = SPL.add(p)
+PLx.kWizardProy = PLx:add(p)
 
 -- PriestBolt
 loadAnimations("PriestBolt", {move = 0.1, die = 0.1})
@@ -43,7 +40,7 @@ p:setMaxHeightDelta(50.0)
 p:setPenaltyFlags(Projectile.kOnDying)
 p:setFireType(Projectile.kFireFollow)
 p:addFireSound("sounds/Effects/MageShot.mp3")
-SPL.kPriestBolt = SPL.add(p)
+PLx.kPriestBolt = PLx:add(p)
 
 -- VoodooProy
 loadAnimations("VoodooProy", {move = 0.1, die = 0.1})
@@ -57,7 +54,7 @@ p:setMaxHeightDelta(0.0)
 p:setPenaltyFlags(Projectile.kOnDying)
 p:setFireType(Projectile.kFireFollow)
 p:addFireSound("sounds/Effects/MageShot.mp3")
-SPL.kVoodooProy = SPL.add(p)
+PLx.kVoodooProy = PLx:add(p)
 
 -- GreenWave
 loadAnimations("GreenWave", {})
@@ -69,7 +66,7 @@ p:setMaxHeightDelta(0.0)
 p:setPenaltyFlags(Projectile.kOnDying)
 p:setFireType(Projectile.kFireFollow)
 --p:addFireSound("sounds/Effects/MageShot.mp3")
-SPL.kGreenWave = SPL.add(p)
+PLx.kGreenWave = PLx:add(p)
 
 -- FireBall
 loadAnimations("FireBall", {move = 0.1})
@@ -82,7 +79,7 @@ p:setMaxHeightDelta(0.0)
 p:setPenaltyFlags(Projectile.kOnDying)
 p:setFireType(Projectile.kFireFollow)
 --p:addFireSound("sounds/Effects/MageShot.mp3")
-SPL.kFireBall = SPL.add(p)
+PLx.kFireBall = PLx:add(p)
 
 -- Missile
 loadAnimations("Missile", {move = 0.1})
@@ -95,18 +92,14 @@ p:setMaxHeightDelta(50.0)
 p:setPenaltyFlags(Projectile.kOnDying)
 p:setFireType(Projectile.kFireFollow)
 --p:addFireSound("sounds/Effects/Sound_RocketLaunt.mp3")
-SPL.kMissile = SPL.add(p)
+PLx.kMissile = PLx:add(p)
 
 -- static unit library
-SUL = {}
-SUL.STEP = 1
-SUL.id = SUL.STEP
-function SUL.add(unit)
-	local id = SUL.id
-	addTemplateUnit(SUL.id, unit)
-	SUL.id = SUL.id + SUL.STEP
-	return id
-end
+ULx = ObjectLibrary:new(1, function(self, id, obj)
+    addTemplateUnit(id, obj)
+end)
+ULx:setId(0x100)
+
 
 -- None
 loadAnimations("None", {move = 1.0, die = 1.0})
@@ -121,7 +114,7 @@ u:setGhost(true)
 u:setBaseArmor(ArmorValue.kHoly, 0.0)
 u:setBaseMoveSpeed(0.0)
 u:setHostilityRange(0.0)
-SUL.kNone = SUL.add(u)
+ULx.kNone = ULx:add(u)
 
 -- Priest
 loadAnimations("Priest", {move = 0.1, die = 0.1, act1 = 0.08, act2 = 0.08, act3 = 0.08, act4 = 0.08, act5 = 0.08, act6 = 0.08, act7 = 0.08})
@@ -146,11 +139,11 @@ u:addCtrlSound("sounds/Sprites/Priest/move/04.mp3", 1.410)
 u:setMaxHp(500.0)
 u:setBaseArmor(ArmorValue.kCrystal, 0.0)
 atk = AttackAct:new("¹¥»÷", 1.75, AttackValue.kMagical, 20.0, 0.15, 0.0, 200.0, false, Sprite.kAniAct1)
-atk:setTemplateProjectile(SPL.kPriestBolt)
+atk:setTemplateProjectile(PLx.kPriestBolt)
 u:addActiveAbility(atk)
 u:setBaseMoveSpeed(50.0)
 u:setHostilityRange(300.0)
-SUL.kPriest = SUL.add(u)
+ULx.kPriest = ULx:add(u)
 
 -- Orb
 sp = Sprite:new("VoodooProy")
@@ -160,7 +153,7 @@ sp:prepareAnimation(Sprite.kAniDie, "die", 0)
 u = Unit:new(sp, "Orb")
 u:setGeometry(16.0, 16.0, 0.5, 0.5, 0, 0);
 u:setFixed()
-SUL.kOrb = SUL.add(u)
+ULx.kOrb = ULx:add(u)
 
 -- Orb2
 loadAnimations("AlienProy", {move = 0.1, die = 0.1})
@@ -171,7 +164,7 @@ sp:prepareAnimation(Sprite.kAniDie, "die", 0)
 u = Unit:new(sp, "Orb2")
 u:setGeometry(16.0, 16.0, 0.5, 0.5, 0, 0);
 u:setFixed()
-SUL.kOrb2 = SUL.add(u)
+ULx.kOrb2 = ULx:add(u)
 
 -- BlackHole
 loadAnimations("BlackHole", {move = 0.1, die = 0.1})
@@ -182,7 +175,4 @@ sp:prepareAnimation(Sprite.kAniDie, "die", 0)
 u = Unit:new(sp, "BlackHole")
 u:setGeometry(0.0, 0.0, 0.5, 0.5, 0, 0);
 u:setFixed()
-SUL.kBlackHole = SUL.add(u)
-
-
-
+ULx.kBlackHole = ULx:add(u)

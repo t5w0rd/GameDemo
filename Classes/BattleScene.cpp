@@ -178,8 +178,10 @@ bool CBattleWorld::onLuaWorldInit()
     luaRegWorldFuncs(L, this);
     luaRegWorldFuncsForCC(L, this);
 
+    char sz[1024];
+    sprintf(sz, "stage/%s", CUserData::instance()->getStageSelected()->script.c_str());
     int res = 0;
-    res = luaL_includefilelog(L, CUserData::instance()->getStageSelected()->script.c_str());
+    res = luaL_includefilelog(L, sz);
     if (res != LUA_OK)
     {
         return false;

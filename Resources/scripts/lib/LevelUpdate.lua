@@ -1,6 +1,10 @@
 if __LEVEL_UPDATE__ then return end
 __LEVEL_UPDATE__ = true
 
+include("Common.lua")
+include("Extension.lua")
+
+
 HeroLevelUpdate = class(LevelUpdate)
 
 function HeroLevelUpdate:calcExp(lv)
@@ -61,29 +65,29 @@ function HeroLevelUpdate:onLevelChanged(u, change)
     
 	--[[]]
 	if lv == 10 then
-        --u:addPassiveAbility(AL.kTransitiveAttack:getId())
+        --u:addPassiveAbility(AL.kTransitiveAttack)
     elseif lv == 11 then
-        u:addPassiveAbility(AL.kLightningAttack:getId())
+        u:addPassiveAbility(AL.kLightningAttack)
     elseif lv == 12 then
-        u:addPassiveAbility(AL.kDamageIncreaceAttack:getId())
+        u:addPassiveAbility(AL.kDamageIncreaceAttack)
     elseif lv == 13 then
-        --u:addPassiveAbility(AL.kPressureBombAttack:getId())
+        --u:addPassiveAbility(AL.kPressureBombAttack)
     elseif lv == 14 then
-        u:addPassiveAbility(AL.kRebirth:getId())
+        u:addPassiveAbility(AL.kRebirth)
     elseif lv == 15 then
-        u:addPassiveAbility(AL.kChangeAttributeAttack:getId())
+        u:addPassiveAbility(AL.kChangeAttributeAttack)
     elseif lv == 16 then
-        u:addPassiveAbility(AL.kCriticalAttack:getId())
+        u:addPassiveAbility(AL.kCriticalAttack)
     elseif lv == 17 then
-        u:addPassiveAbility(AL.kThrowHammerAttack:getId())
+        u:addPassiveAbility(AL.kThrowHammerAttack)
     elseif lv == 18 then
-        u:addPassiveAbility(AL.kBerserkerBlood:getId())
+        u:addPassiveAbility(AL.kBerserkerBlood)
     elseif lv == 19 then
-        u:addPassiveAbility(AL.kCutterAttack:getId())
+        u:addPassiveAbility(AL.kCutterAttack)
     elseif lv == 20 then
-        u:addPassiveAbility(AL.kStrikeBack:getId())
+        u:addPassiveAbility(AL.kStrikeBack)
 	elseif lv == 50 then
-		u:addPassiveAbility(AL.kPressureBombAttack:getId())
+		u:addPassiveAbility(AL.kPressureBombAttack)
     end
 	--[[]]
 	UD.heroes[1].exp = u:getExp()
