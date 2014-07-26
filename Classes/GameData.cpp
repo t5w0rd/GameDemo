@@ -10,6 +10,7 @@
 
 // CGameData
 CGameData::CGameData()
+: m_logo(false)
 {
     setDbgClassName("CGameData");
 
@@ -70,9 +71,13 @@ void CGameData::initStageData()
             m_stages.push_back(stage);
         }
 
+        m_logo = false;
+
         delete stages;
         return;
     }
+
+    m_logo = true;
 
     // stage 0
     stage.name = "The Sunwell";

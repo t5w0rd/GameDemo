@@ -55,7 +55,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     CGameData::instance()->load();
     CUserData::instance()->load();
     //auto scene = BattleSceneLayer::scene();
-    auto scene = LogoSceneLayer::scene();
+    auto scene = CGameData::instance()->m_logo ? LogoSceneLayer::scene() : MainMenuSceneLayer::scene();
     //auto scene = HeroRoomSceneLayer::scene();
     //auto scene = StageSceneLayer::scene();
     //auto scene = MainMenuSceneLayer::scene();

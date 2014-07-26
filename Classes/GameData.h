@@ -28,6 +28,8 @@ public:
 
     void initStageData();
     void initAbilityData();
+
+    bool m_logo;
 };
 
 #endif
