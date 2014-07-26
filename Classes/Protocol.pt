@@ -1,0 +1,4 @@
+stPack = dwMagic + wVersion + wCommand + wDataSize + cData[wDataSize]
+
+stCmdRoomBroadCast = wMapIndex + wStageIndex + wLevel
+

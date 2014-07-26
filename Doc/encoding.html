@@ -1,0 +1,47 @@
+<html> 
+<head> 
+<script> 
+function toChar(ub,ue){ 
+     var cc = ""; 
+     for(i = ub; i <= ue; i++) 
+         cc +=   String.fromCharCode(i) + " "; 
+     document.write(cc); 
+} 
+</script> 
+<script language=vbs> 
+Function toGBK() 
+     For i = &H81 to &Hfe 
+     For j = &H40 to &Hfe 
+         gbk = gbk & Chr(i*256 + j) & " " 
+     Next 
+Next 
+document.write gbk 
+End Function 
+} 
+</script> 
+<head> 
+<body><font face=PMingLiU> 
+<h5><a href="" onClick=toChar(0x4e00,0x9fbf)>4E00-9FBF：CJK 统一表意符号 (CJK Unified Ideographs)</a></h5> 
+<h5><a href="" onClick=toChar(0x2e80,0x2eff)>2E80-2EFF：CJK 部首补充 (CJK Radicals Supplement)</a></h5> 
+<h5><a href="" onClick=toChar(0x2f00,0x2fdf)>2F00-2FDF：康熙字典部首 (Kangxi Radicals)</a></h5> 
+<h5><a href="" onClick=toChar(0x2ff0,0x2fff)>2FF0-2FFF：表意文字描述符 (Ideographic Description Characters)</a></h5> 
+<h5><a href="" onClick=toChar(0x3000,0x303f)>3000-303F：CJK 符号和标点 (CJK Symbols and Punctuation)</a></h5> 
+<h5><a href="" onClick=toChar(0x3040,0x309f)>3040-309F：日文平假名 (Hiragana)</a></h5> 
+<h5><a href="" onClick=toChar(0x30a0,0x30ff)>30A0-30FF：日文片假名 (Katakana)</a></h5> 
+<h5><a href="" onClick=toChar(0x3100,0x312f)>3100-312F：注音字母 (Bopomofo)</a></h5> 
+<h5><a href="" onClick=toChar(0x3130,0x318f)>3130-318F：朝鲜文兼容字母 (Hangul Compatibility Jamo)</a></h5> 
+<h5><a href="" onClick=toChar(0x3190,0x319f)>3190-319F：象形字注释标志 (Kanbun)</a></h5> 
+<h5><a href="" onClick=toChar(0x31a0,0x31bf)>31A0-31BF：注音字母扩展 (Bopomofo Extended)</a></h5> 
+<h5><a href="" onClick=toChar(0x31c0,0x31ef)>31C0-31EF：CJK 笔画 (CJK Strokes)</a></h5> 
+<h5><a href="" onClick=toChar(0x31f0,0x31ff)>31F0-31FF：日文片假名语音扩展 (Katakana Phonetic Extensions)</a></h5> 
+<h5><a href="" onClick=toChar(0x3200,0x32ff)>3200-32FF：封闭式 CJK 文字和月份 (Enclosed CJK Letters and Months)</a></h5> 
+<h5><a href="" onClick=toChar(0x3300,0x33ff)>3300-33FF：CJK 兼容 (CJK Compatibility)</a></h5> 
+<h5><a href="" onClick=toChar(0x3400,0x4dbf)>3400-4DBF：CJK 统一表意符号扩展 A (CJK Unified Ideographs Extension A)</a></h5> 
+<h5><a href="" onClick=toChar(0x4dc0,0x4dff)>4DC0-4DFF：易经六十四卦符号 (Yijing Hexagrams Symbols)</a></h5> 
+<h5><a href="" onClick=toChar(0xac00,0xd7af)>AC00-D7AF：朝鲜文音节 (Hangul Syllables)</a></h5> 
+<h5><a href="" onClick=toChar(0xf900,0xfaff)>F900-FAFF：CJK 兼容象形文字 (CJK Compatibility Ideographs)</a></h5> 
+<h5><a href="" onClick=toChar(0xfe30,0xfe4f)>FE30-FE4F：CJK 兼容形式 (CJK Compatibility Forms)</a></h5> 
+<h5><a href="" onClick=toGBK()>显示GBK/BIG5(与设备设置有关)</a></h5> 
+</font> 
+</body> 
+</html> 
