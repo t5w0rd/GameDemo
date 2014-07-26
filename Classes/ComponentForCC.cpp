@@ -850,7 +850,9 @@ const Point& Effect::getPosition() const
 {
     if (isLogicPositionMode())
     {
-        return Sprite::getPosition() + Point(0.0f, -m_fLogicHeight);
+        Point p = Sprite::getPosition();
+        p.y -= m_fLogicHeight;
+        return p;
     }
 
     return Sprite::getPosition();

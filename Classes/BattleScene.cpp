@@ -17,6 +17,7 @@
 #include "LuaScriptEngine.h"
 #include "UnitLibraryForCC.h"
 #include "AbilityLibrary.h"
+#include "NetworkForCC.h"
 
 
 // CBattleWorld
@@ -792,6 +793,7 @@ void BattleSceneLayer::onLoadingDone()
     mn->addChild(mi, 5);
     mi->setPosition(Point(wsz.width * 0.2, wsz.height * 0.4));
 #endif
+
 }
 
 void BattleSceneLayer::onTouchesEnded(const std::vector<Touch*>& touches, cocos2d::Event* event)
@@ -968,11 +970,11 @@ void BattleSceneLayer::initTargetInfo()
     float fW0 = 0;
     float fW1 = 100;
     float fBaseX = M_FIX_BASE_X(fW0, fW1, 80);
-    m_pNameSel = Label::createWithTTF("", "fonts/DFYuanW7-GB2312.ttf", fFontSize);
+    m_pNameSel = Label::createWithTTF("", FONT_COMIC_BOOK, fFontSize);
     m_pNameSel->setAnchorPoint(Point(0.0, 0.5));
     m_pTargetInfoPanel->addChild(m_pNameSel);
     m_pNameSel->setHorizontalAlignment(TextHAlignment::LEFT);
-    m_pNameSel->setPosition(Point(fBaseX, fBaseY + 2.0f));
+    m_pNameSel->setPosition(Point(fBaseX, fBaseY/* + 2.0f*/));
 
     // µÈ¼¶
     fW0 = fW1;

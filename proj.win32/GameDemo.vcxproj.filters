@@ -240,6 +240,9 @@
     <ClCompile Include="..\Classes\Logic\Network.cpp">
       <Filter>Classes\Logic</Filter>
     </ClCompile>
+    <ClCompile Include="..\Classes\NetworkForCC.cpp">
+      <Filter>Classes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -443,6 +446,12 @@
     <ClInclude Include="..\Classes\Logic\Network.h">
       <Filter>Classes\Logic</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\NetworkForCC.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Classes\Protocol.hpp">
+      <Filter>Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
@@ -513,5 +522,6 @@
     <None Include="..\Resources\scripts\LoadGame.lua">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\Classes\Protocol.pt" />
   </ItemGroup>
 </Project>

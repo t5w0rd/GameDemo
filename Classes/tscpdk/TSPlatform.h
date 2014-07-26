@@ -52,6 +52,7 @@ inline void SleepForMSec(unsigned int dwMSec) { ::Sleep(dwMSec); }
 
 typedef int socklen_t;
 inline void SetNonBlockForSocket(int iFd) { u_long uFlag = 0; ioctlsocket(iFd, FIONBIO, &uFlag); }
+inline int GetSocketError() { return WSAGetLastError(); }
 #include <time.h>
 inline int gettimeofday(struct timeval *tp, void *tzp)
 {
@@ -123,8 +124,9 @@ inline void closesocket(int iFd) { close(iFd); }
 #include <arpa/inet.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
+#include <errno.h>
 inline void SetNonBlockForSocket(int iFd) { int iFlag; (iFlag = fcntl(iFd, F_GETFL, 0)) >= 0 && fcntl(iFd, F_SETFL, iFlag | O_NONBLOCK); }
-
+inline int GetSocketError() { return errno; }
 #include <sys/epoll.h>
 
 #ifndef INFINITE

@@ -619,7 +619,7 @@ void CUnitDrawForCC::say(const char* words)
     char sz[1024];
     auto lbl = Label::createWithTTF(
         gbk_to_utf8(words, sz),
-        "fonts/msyhbd.ttf",
+        FONT_COMIC_BOOK,
         32);
     sp->addChild(lbl, 2);
     lbl->setMaxLineWidth(400);

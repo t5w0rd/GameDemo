@@ -78,12 +78,12 @@ inline CSockAddrIn::operator const struct sockaddr_in*() const
     return (const struct sockaddr_in*)m_pstSockAddr;
 }
 
-inline char* CSockAddrIn::GetAddr()
+inline const char* CSockAddrIn::GetAddr() const
 {
     return m_pstSockAddr ? inet_ntoa(((struct sockaddr_in*)m_pstSockAddr)->sin_addr) : NULL;
 }
 
-inline int CSockAddrIn::GetPort()
+inline int CSockAddrIn::GetPort() const
 {
     return m_pstSockAddr ? ntohs(((struct sockaddr_in*)m_pstSockAddr)->sin_port) : -1;
 }

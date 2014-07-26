@@ -18,6 +18,8 @@ public:
 
     void lab00();
 
+    unordered_map<string, int> m_mapHost;
+
 };
 
 

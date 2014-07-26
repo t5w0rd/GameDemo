@@ -305,6 +305,10 @@ typedef std::function<void()> FUNC_VOID;
 #define M_DEPRECATED_ATTRIBUTE
 #endif
 
+#ifndef MAKEWORD
+#define MAKEWORD(a, b)      ((uint16_t)(((uint8_t)(((uint32_t)(a)) & 0xff)) | ((uint16_t)((uint8_t)(((uint32_t)(b)) & 0xff))) << 8))
+#endif
+
 enum ANI_ID
 {
     kAniMove,

@@ -627,7 +627,8 @@ bool AbilitySceneLayer::init()
     addChild(mn, 10);
     mn->setPosition(Point::ZERO);
     
-    auto mi = MenuItemFont::create("CONFIRM", [](Ref*){
+    auto mi = MenuItemFont::create("CONFIRM", [](Ref*)
+    {
         Director::getInstance()->replaceScene(BattleSceneLayer::scene());
     });
 

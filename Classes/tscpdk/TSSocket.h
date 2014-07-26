@@ -46,8 +46,8 @@ public:
     operator struct sockaddr_in*();
     operator const struct sockaddr_in*() const;
 
-    char* GetAddr();
-    int GetPort();
+    const char* GetAddr() const;
+    int GetPort() const;
 
 };
 

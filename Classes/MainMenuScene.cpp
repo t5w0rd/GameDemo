@@ -7,6 +7,7 @@
 #include "StageScene.h"
 #include "GameData.h"
 #include "UserData.h"
+#include "EmptyScene.h"
 
 
 // MainMenuScene
@@ -191,7 +192,8 @@ void SelectArchiveLayer::MenuItemCallback1(Ref* sender)
 
     M_DEF_GC(gc);
     //gc->replaceSceneWithLoading(hi == nullptr ? &HeroRoomSceneLayer::scene : &StageSceneLayer::scene);
-    gc->replaceSceneWithLoading(&StageSceneLayer::scene);
+    //gc->replaceSceneWithLoading(&StageSceneLayer::scene);
+    gc->replaceSceneWithLoading(&EmptySceneLayer::scene);
 }
 
 void SelectArchiveLayer::MenuItemCallback2(Ref* sender)

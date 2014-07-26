@@ -76,6 +76,7 @@ LOCAL_SRC_FILES := hellocpp/main.cpp \
 ../../Classes/LogoScene.cpp \
 ../../Classes/LuaBindingForCC.cpp \
 ../../Classes/MainMenuScene.cpp \
+../../Classes/NetworkForCC.cpp \
 ../../Classes/Stage.cpp \
 ../../Classes/StageScene.cpp \
 ../../Classes/UnitLibraryForCC.cpp \

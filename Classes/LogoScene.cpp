@@ -564,8 +564,8 @@ void LogoScene2Layer::onEffectUpdate(Node* pNode)
 
     case 12:
         eff = (Effect*)getChildByTag(1102);
-        sp = Sprite::createWithSpriteFrameName("Sprites/ThorHammer/default.png");
-        addChild(sp, 6);
+        sp = Effect::createWithSpriteFrameName("Sprites/ThorHammer/default.png");
+        addChild(sp, M_BASE_Z);
         sp->setPosition(eff->getPosition() + Point(-100.0f, 0.0f));
         sp->setFlippedX(true);
 

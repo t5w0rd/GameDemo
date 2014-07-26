@@ -260,6 +260,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClCompile Include="..\Classes\lua\lvm.c" />
     <ClCompile Include="..\Classes\lua\lzio.c" />
     <ClCompile Include="..\Classes\MainMenuScene.cpp" />
+    <ClCompile Include="..\Classes\NetworkForCC.cpp" />
     <ClCompile Include="..\Classes\Stage.cpp" />
     <ClCompile Include="..\Classes\StageScene.cpp" />
     <ClCompile Include="..\Classes\tscpdk\TSPlatform.cpp" />
@@ -329,6 +330,8 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ClInclude Include="..\Classes\lua\lvm.h" />
     <ClInclude Include="..\Classes\lua\lzio.h" />
     <ClInclude Include="..\Classes\MainMenuScene.h" />
+    <ClInclude Include="..\Classes\NetworkForCC.h" />
+    <ClInclude Include="..\Classes\Protocol.hpp" />
     <ClInclude Include="..\Classes\Stage.h" />
     <ClInclude Include="..\Classes\StageScene.h" />
     <ClInclude Include="..\Classes\tscpdk\TSPlatform.h" />
@@ -356,6 +359,7 @@ xcopy /Y /Q "$(EngineRoot)external\websockets\prebuilt\win32\*.*" "$(OutDir)"</C
     <ResourceCompile Include="game.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Classes\Protocol.pt" />
     <None Include="..\Classes\tscpdk\TSPlatform.inl" />
     <None Include="..\Classes\tscpdk\TSSocket.inl" />
     <None Include="..\Classes\tscpdk\TSUtil.inl" />

@@ -1,5 +1,5 @@
-#ifndef __UNITLIBRARYFORCC_H__
-#define __UNITLIBRARYFORCC_H__
+#ifndef __UNIT_LIBRARY_FOR_CC_H__
+#define __UNIT_LIBRARY_FOR_CC_H__
 
 #include "UnitLibrary.h"
 
@@ -84,5 +84,5 @@ protected:
     bool m_bDefLoaded;
 };
 
-#endif  /* __UNITLIBRARYFORCC_H__ */
+#endif  /* __UNIT_LIBRARY_FOR_CC_H__ */
 

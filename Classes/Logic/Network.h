@@ -8,8 +8,18 @@
 #ifndef __NETWORK_H__
 #define	__NETWORK_H__
 
-#include "MultiRefObject.h"
 
+template <typename TYPE>
+class CSyncQueue : public queue<TYPE>
+{
+public:
+    bool syncPop(TYPE& val);
+    void syncPush(const TYPE& val);
+
+protected:
+    mutex m_mtx;
+    condition_variable m_cv;
+};
 
 class CCommandNode
 {
@@ -40,7 +50,7 @@ public:
     };
 
     typedef vector<CCommandNode> VEC_MTX_CMDS;
-    typedef list<CCommandNode> LIST_SEQ_CMDS;
+    typedef queue<CCommandNode> QUE_SEQ_CMDS;
 
 public:
     CCommandCache();
@@ -51,39 +61,48 @@ public:
 protected:
     //M_SYNTHESIZE(uint32_t, m_dwMtxCmdFlags, MutexCommandFlags);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(VEC_MTX_CMDS, m_mtxCmds, MutexCommands);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(LIST_SEQ_CMDS, m_seqCmds, SequenceCommands);
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(QUE_SEQ_CMDS, m_seqCmds, SequenceCommands);
 
 };
 
-class CNetwork
+
+
+
+
+
+
+
+
+//////////////////////// Inline /////////////////////////////////
+
+// CSyncQueue
+template <typename TYPE>
+inline bool CSyncQueue<TYPE>::syncPop(TYPE& val)
 {
-public:
-    enum ROLE_TYPE
+    unique_lock<mutex> g(m_mtx);
+
+    while (this->empty())
     {
-        kClient,
-        kServer
-    };
+        m_cv.wait(g);
+    }
 
-    enum NET_STATUS
-    {
-        kDisconnected,
-        kConnected,  // to recv
-        kListening  // to accept
-    };
+    val = this->front();
+    this->pop();
 
-public:
-    CNetwork();
+    return true;
+}
 
-    M_SYNTHESIZE(ROLE_TYPE, m_netType, NetType);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(CTcpSocket, m_dataSock, DataSock);
-    M_SYNTHESIZE_READONLY_PASS_BY_REF(CTcpSocket, m_listenSock, ListenSock);
+template <typename TYPE>
+inline void CSyncQueue<TYPE>::syncPush(const TYPE& val)
+{
+    unique_lock<mutex> g(m_mtx);
 
-    void WriteWorldCommand(const CCommandNode& cmd);
-    void WriteUnitCommand(int id, const CCommandNode& cmd);
+    this->push(val);
 
-protected:
+    m_cv.notify_one();
+}
 
-};
+
 
 
 #endif	/* __NETWORK_H__ */

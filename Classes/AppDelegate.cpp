@@ -10,6 +10,7 @@
 #include "GameData.h"
 #include "UnpackScene.h"
 #include "UnitLibraryForCC.h"
+#include "NetworkForCC.h"
 
 
 // AppDelegate
@@ -54,14 +55,15 @@ bool AppDelegate::applicationDidFinishLaunching()
     CGameData::instance()->load();
     CUserData::instance()->load();
     //auto scene = BattleSceneLayer::scene();
-    //auto scene = LogoSceneLayer::scene();
+    auto scene = LogoSceneLayer::scene();
     //auto scene = HeroRoomSceneLayer::scene();
     //auto scene = StageSceneLayer::scene();
-    auto scene = MainMenuSceneLayer::scene();
+    //auto scene = MainMenuSceneLayer::scene();
     //auto scene = AbilitySceneLayer::scene();
     //auto scene = EmptySceneLayer::scene();
 
 #endif
+    CNetwork::instance()->startThread();
 
     // run
     director->runWithScene(scene);

@@ -10,6 +10,9 @@
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
 #include "GameData.h"
+#include "NetworkForCC.h"
+#include "StageScene.h"
+#include "Archive.h"
 
 
 // EmptySceneLayer
@@ -142,10 +145,104 @@ bool EmptySceneLayer::init()
         return false;
     }
 
-    static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
+    auto mn = Menu::create();
+    addChild(mn);
+    mn->setPosition(Point::ZERO);
 
-    lab00();
+    // ¶ÁÈ¡ipÅäÖÃ
+    char path[256];
+    sprintf(path, "%s/%s", CCFileUtils::getInstance()->getWritablePath().c_str(), "ip.cfg");
+    CValue* ipcfg = nullptr;
+    int gamePort = 0;
+    string bcAddr;
+    if (CArchive::loadValue(path, ipcfg) == false)
+    {
+        ipcfg = new CValueMap();
+        vms_int(ipcfg, "port", 2888);
+        vms_str(ipcfg, "bcAddr", "192.168.1.255");
+        CArchive::saveValue(path, ipcfg);
+    }
 
+    gamePort = vmg_int(ipcfg, "port");
+    bcAddr = vmg_str(ipcfg, "bcAddr");
+    delete ipcfg;
+
+    CNetwork::instance()->doNetwork([bcAddr](CNetwork* net)
+    {
+        net->setBroadCastAddress(bcAddr.c_str());
+    });
+
+    auto mi = MenuItemFont::create("test");
+    mi->setFontSize(48);  // fuck
+
+    mi = MenuItemFont::create("SinglePlayer", [this, mn](Ref*)
+    {
+        Director::getInstance()->replaceScene(StageSceneLayer::scene());
+    });
+    mn->addChild(mi);
+    mi->setFontSize(48);
+    mi->setPosition(Point(wsz().width * 0.2, wsz().height * 0.8));
+
+    mi = MenuItemFont::create("CreateNetGame", [this, mn, gamePort](Ref*)
+    {
+        CNetwork::instance()->waitForConnection("0.0.0.0", gamePort, [this, mn](bool res, const string& host, int port)
+        {
+            Director::getInstance()->replaceScene(StageSceneLayer::scene());
+            return;
+            char sz[1024];
+            sprintf(sz, "Connection(%s:%d)", host.c_str(), port);
+            auto mi = MenuItemFont::create(sz, [this](Ref*)
+            {
+                Director::getInstance()->replaceScene(StageSceneLayer::scene());
+            });
+            mn->addChild(mi);
+            mi->setFontSize(48);
+            mi->setPosition(Point(wsz().width * 0.5, wsz().height * 0.5));
+        });
+    });
+    mn->addChild(mi);
+    mi->setFontSize(48);
+    mi->setPosition(Point(wsz().width * 0.5, wsz().height * 0.8));
+
+    mi = MenuItemFont::create("DiscoverNetGame", [this, mn, gamePort](Ref*)
+    {
+        //m_mapHost.clear();
+        CNetwork::instance()->discoverRemote("0.0.0.0", gamePort, [this, mn](bool res, const string& host, int port)
+        {
+            auto it = m_mapHost.find(host);
+            if (it == m_mapHost.end())
+            {
+                char sz[1024];
+                sprintf(sz, "Game(%s:%d)", host.c_str(), 2888);
+                auto mi = MenuItemFont::create(sz, [this, mn, host, port](Ref* ref)
+                {
+                    CNetwork::instance()->connectToRemote(host.c_str(), 2888, [this, ref](bool res)
+                    {
+                        CNetwork::instance()->doNetwork([](CNetwork* net)
+                        {
+                            net->getUdpSock().Close();
+                        }, []()
+                        {
+                            Director::getInstance()->replaceScene(StageSceneLayer::scene());
+                        });
+                    });
+                });
+                mn->addChild(mi);
+                mi->setFontSize(48);
+                mi->setPosition(Point(wsz().width * 0.5, wsz().height * 0.6) - Point(0.0f, mi->getContentSize().height * m_mapHost.size()));
+                m_mapHost.insert(make_pair(host, port));
+            }
+        });
+    });
+    mn->addChild(mi);
+    mi->setFontSize(48);
+    mi->setPosition(Point(wsz().width * 0.8, wsz().height * 0.8));
+
+#if 0
+    
+#else
+    
+#endif
     return true;
 }

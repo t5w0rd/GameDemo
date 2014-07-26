@@ -41,6 +41,6 @@ CCommandNode* CCommandCache::getMutexCommandNodeToWrite(int cmdIndex)
 
 CCommandNode* CCommandCache::getSequenceCommandToWrite()
 {
-    m_seqCmds.push_back(CCommandNode());
+    m_seqCmds.push(CCommandNode());
     return &m_seqCmds.back();
 }

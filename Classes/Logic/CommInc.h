@@ -19,12 +19,19 @@
 #include <float.h>
 #include <time.h>
 #include <math.h>
+#include <errno.h>
 
 #include <string>
 #include <vector>
 #include <set>
 #include <map>
+#include <unordered_map>
+#include <queue>
 #include <functional>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <atomic>
 using namespace std;
 
 extern "C"
