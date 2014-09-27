@@ -21,6 +21,10 @@ public:
     // implement the "static node()" method manually
     CREATE_FUNC(HeroRoomSceneLayer);
 
+    Node* createFirstHeroPanel();
+    Node* createSecondHeroPanel();
+    void updateHeroSprite(int index, Node* panel);
+
     void onClickHeroPortrait(Ref* pNode);
     void onClickButtonDone(Ref* pNode);
     void onHideDone(Node* pNode);

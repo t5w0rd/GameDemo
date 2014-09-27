@@ -25,6 +25,12 @@
     <Filter Include="Classes\tscpdk">
       <UniqueIdentifier>{664727a4-a23f-4332-ba5c-9d6bee78fa1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scripts\lib">
+      <UniqueIdentifier>{fa1abf63-72a5-4487-a477-a4ab8dada64e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts\stage">
+      <UniqueIdentifier>{9ec0df86-3c33-43c8-ba3b-e1ed69660cfe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -459,51 +465,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\scripts\Stage00.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Stage01.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Stage02.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Stage03.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Stage04.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Stage05.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\AbilityLibrary.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Init.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\UnitLibrary.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Ability.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\AI.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\AI2.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\Common.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\GameCommon.lua">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="..\Resources\scripts\LevelUpdate.lua">
-      <Filter>scripts</Filter>
-    </None>
     <None Include="..\Classes\tscpdk\TSSocket.inl">
       <Filter>Classes\tscpdk</Filter>
     </None>
@@ -513,15 +474,72 @@
     <None Include="..\Classes\tscpdk\TSPlatform.inl">
       <Filter>Classes\tscpdk</Filter>
     </None>
-    <None Include="..\Resources\scripts\EffectLibrary.lua">
+    <None Include="..\Classes\Protocol.pt" />
+    <None Include="..\Resources\scripts\Common.lua">
       <Filter>scripts</Filter>
     </None>
     <None Include="..\Resources\scripts\Empty.lua">
       <Filter>scripts</Filter>
     </None>
+    <None Include="..\Resources\scripts\Extension.lua">
+      <Filter>scripts</Filter>
+    </None>
     <None Include="..\Resources\scripts\LoadGame.lua">
       <Filter>scripts</Filter>
     </None>
-    <None Include="..\Classes\Protocol.pt" />
+    <None Include="..\Resources\scripts\WorldCommon.lua">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\Ability.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\AbilityLibrary.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\AI.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\AI2.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\EffectLibrary.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\LevelUpdate.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\ObjectLibrary.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\UnitCreator.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\UnitGroup.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\UnitLibrary.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\lib\World.lua">
+      <Filter>scripts\lib</Filter>
+    </None>
+    <None Include="..\Resources\scripts\stage\Stage00.lua">
+      <Filter>scripts\stage</Filter>
+    </None>
+    <None Include="..\Resources\scripts\stage\Stage01.lua">
+      <Filter>scripts\stage</Filter>
+    </None>
+    <None Include="..\Resources\scripts\stage\Stage02.lua">
+      <Filter>scripts\stage</Filter>
+    </None>
+    <None Include="..\Resources\scripts\stage\Stage03.lua">
+      <Filter>scripts\stage</Filter>
+    </None>
+    <None Include="..\Resources\scripts\stage\Stage04.lua">
+      <Filter>scripts\stage</Filter>
+    </None>
+    <None Include="..\Resources\scripts\stage\Stage05.lua">
+      <Filter>scripts\stage</Filter>
+    </None>
   </ItemGroup>
 </Project>

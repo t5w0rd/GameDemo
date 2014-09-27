@@ -227,6 +227,7 @@ protected:
 #define M_IS_BIT_SET_32U(u32, index) ((uint32_t)(u32) & (uint32_t)(1 << (uint32_t)(index)))
 
 #define M_MAP_FOREACH(mapVar) for (auto it = (mapVar).begin(); it != (mapVar).end();)
+#define M_MAP_EACH_KEY (it->first)
 #define M_MAP_EACH (it->second)
 #define M_MAP_IT it
 

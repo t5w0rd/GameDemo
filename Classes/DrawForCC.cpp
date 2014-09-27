@@ -56,6 +56,7 @@ void CSpriteInfo::prepareAnimation(int id, const char* pName, int iNotifyFrameIn
     Animation* pAni = gc->getAnimation(szName);
     if (pAni == nullptr)
     {
+        assert(false);
         return;
     }
 

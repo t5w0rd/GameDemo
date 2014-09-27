@@ -5,6 +5,7 @@
 
 
 class CStageMap;
+class CValue;
 
 class CUserData : CMultiRefObject
 {
@@ -14,7 +15,12 @@ public:
     void load();
     void reset();
 
+    void loadUserData();
+    void saveUserData();
+
     M_SINGLETON(CUserData);
+
+    CValue* m_ud;
     
     struct HERO_INFO
     {

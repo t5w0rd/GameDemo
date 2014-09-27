@@ -1777,8 +1777,8 @@ void CVampirePas::onUnitDamageTargetDone(float fDamage, CUnit* pTarget)
 
     CUnit* o = getOwner();
     float fDtHp = fDamage * getPercentConversion();
-    o->setHp(o->getHp() + fDtHp);
-    LOG("%s恢复%d点HP", o->getName(), toInt(fDtHp));
+    o->healLow(fDtHp, o);
+    //LOG("%s恢复%d点HP", o->getName(), toInt(fDtHp));
 
 #ifdef DEBUG_FOR_CC
     // for cocos2d
@@ -2139,6 +2139,7 @@ void CChangeHpBuff::onUnitInterval()
     }
     else
     {
+        //o->healLow(fNewHp - fOrgHp, o);  不用heal是因为避免显示过多的绿字，治疗绿字，伤害红字
         o->setHp(fNewHp);
     }
 }

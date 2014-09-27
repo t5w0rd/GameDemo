@@ -303,7 +303,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 30.0f, Point(96.0f / 192, 20.0f / 200), CPoint(40.0f, 26.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -343,7 +343,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(22.0f, 18.0f, Point(61.0f / 120, 21.0f / 152), CPoint(15.0f, 26.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(500.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kCrystal, 0.0f));
@@ -392,7 +392,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
     d->addCtrlSound("sounds/Sprites/Barracks/move/01.mp3", 1.201f);
     d->addCtrlSound("sounds/Sprites/Barracks/move/02.mp3", 1.959f);
     d->addCtrlSound("sounds/Sprites/Barracks/move/03.mp3", 2.115f);
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -436,7 +436,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
     d->addCtrlSound("sounds/Sprites/Archer/move/01.mp3", 2.533f);
     d->addCtrlSound("sounds/Sprites/Archer/move/02.mp3", 2.246f);
     d->addCtrlSound("sounds/Sprites/Archer/move/03.mp3", 1.436f);
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(500.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -476,7 +476,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(27.0f, 27.0f, Point(83.0f / 164, 36.0f / 208), CPoint(42.0f, 31.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(500.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kCrystal, 0.0f));
@@ -516,7 +516,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(26.0f, 20.0f, Point(91.0f / 184, 39.0f / 164), CPoint(36.0f, 46.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -552,7 +552,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 28.0f, Point(59.0f / 120, 16.0f / 144), CPoint(40.0f, 30.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -590,7 +590,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(38.0f, 31.0f, Point(130.0f / 256, 33.0f / 224), CPoint(105.0f, 10.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -634,7 +634,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
     d->addCtrlSound("sounds/Sprites/Thor/move/01.mp3", 2.612f);
     d->addCtrlSound("sounds/Sprites/Thor/move/02.mp3", 2.429f);
     d->addCtrlSound("sounds/Sprites/Thor/move/03.mp3", 1.880f);
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 6.0f));
@@ -672,7 +672,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(38.0f, 32.0f, Point(141.0f / 284, 44.0f / 232), CPoint(83.0f, 22.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -710,7 +710,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(51.0f, 45.0f, Point(91.0f / 180, 31.0f / 220), CPoint(62.0f, 41.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -751,7 +751,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(26.0f, 24.0f, Point(83.0f / 164, 17.0f / 180), CPoint(62.0f, 26.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1000.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 0.0f));
@@ -776,7 +776,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
     gc->loadAnimation("Sprites/Soldier/act1", "Sprites/Soldier/act1", 0.08f);
     gc->loadAnimation("Sprites/Soldier/act2", "Sprites/Soldier/act2", 0.1f);
     gc->loadAnimation("Sprites/Soldier/act3", "Sprites/Soldier/act3", 0.1f);
-    gc->loadAnimation("Sprites/Soldier/act5", "Sprites/Soldier/act5", 0.1f);
+    gc->loadAnimation("Sprites/Soldier/act4", "Sprites/Soldier/act4", 0.1f);
 
     si = new CSpriteInfo("Soldier");
     si->prepareFrame(kFrmDefault, "default");
@@ -793,7 +793,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(25.0f, 21.0f, Point(94.0f / 188, 17.0f / 104), CPoint(40.0f, 21.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(550.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 2.0f));
@@ -831,7 +831,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(19.0f, 20.0f, Point(74.0f / 144, 16.0f / 84), CPoint(32.0f, 20.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(550.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 2.0f));
@@ -862,7 +862,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(63.0f, 60.0f, Point(120.0f / 240, 44.0f / 184), CPoint(0.0f, 118.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1300.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 18.0f));
@@ -892,7 +892,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(63.0f, 60.0f, Point(120.0f / 240, 44.0f / 184), CPoint(0.0f, 118.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(1300.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kHeavy, 18.0f));
@@ -932,7 +932,7 @@ void CUnitLibraryForCC::loadDefaultLibrary()
 
     d = new CUnitDrawForCC(si);
     d->setGeometry(31.0f, 25.0f, Point(72.0f / 144, 37.0f / 156), CPoint(33.0f, 67.0f));
-    u = new CUnit(d);
+    u = new CUnit(si->getName(), d);
     u->setName(si->getName());
     u->setMaxHp(500.0f);
     u->setBaseArmor(CArmorValue(CArmorValue::kCrystal, 0.0f));

@@ -283,7 +283,7 @@ unsigned int CArchive::writeValue(FILE* fp, CValue* data)
             auto& dm = DCAST(data, CValueMap*)->getDataMap();
             M_MAP_FOREACH(dm)
             {
-                auto& eln = M_MAP_IT->first;
+                auto& eln = M_MAP_EACH_KEY;
                 auto elv = M_MAP_EACH;
                 M_MAP_NEXT;
 
@@ -339,7 +339,7 @@ void CArchive::luaPushValue(lua_State* L, CValue* val)
             auto& vm = DCAST(val, CValueMap*)->getDataMap();
             M_MAP_FOREACH(vm)
             {
-                auto& eln = M_MAP_IT->first;
+                auto& eln = M_MAP_EACH_KEY;
                 auto eld = M_MAP_EACH;
                 M_MAP_NEXT;
 

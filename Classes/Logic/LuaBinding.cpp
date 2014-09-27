@@ -336,6 +336,7 @@ luaL_Reg LevelExp_funcs[] = {
     { "addExp", LevelExp_addExp },
     { "setExpRange", LevelExp_setExpRange },
     { "setLevelUpdate", LevelExp_setLevelUpdate },
+    { "canIncreaseExp", LevelExp_canIncreaseExp },
     { nullptr, nullptr }
 };
 
@@ -425,6 +426,16 @@ int LevelExp_setLevelUpdate(lua_State* L)
     _p->updateExpRange();
 
     return 0;
+}
+
+int LevelExp_canIncreaseExp(lua_State* L)
+{
+    CLevelExp* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_pushboolean(L, _p->canIncreaseExp());
+
+    return 1;
 }
 
 luaL_Reg LevelUpdate_funcs[] = {
@@ -614,6 +625,8 @@ luaL_Reg Unit_funcs[] = {
     { "getEnergy", Unit_getEnergy },
     { "setVisible", Unit_setVisible },
     { "isVisible", Unit_isVisible },
+    { "addGold", Unit_addGold },
+    { "getKiller", Unit_getKiller },
 
     { "startDoing", Unit_startDoing },
     { "endDoing", Unit_endDoing },
@@ -676,7 +689,7 @@ int Unit_ctor(lua_State* L)
     assert(false);
 
     CUnitDraw* d = new CUnitDraw;
-    CUnit* u = new CUnit(d);
+    CUnit* u = new CUnit(root, d);
     u->setName(name);
 
     lua_pushlightuserdata(L, u);
@@ -1131,6 +1144,41 @@ int Unit_isVisible(lua_State* L)
 
     CUnitDraw2D* d = DCAST(_p->getDraw(), CUnitDraw2D*);
     lua_pushboolean(L, d->isVisible());
+
+    return 1;
+}
+
+int Unit_addGold(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+    auto gold = lua_tointeger(L, 2);
+
+    auto pRes = _p->getResource();
+    if (pRes != nullptr)
+    {
+        pRes->changeGold(gold);
+    }
+
+    return 0;
+}
+
+int Unit_getKiller(lua_State* L)
+{
+    CUnit* _p = luaL_tounitptr(L);
+
+    auto k = _p->getKiller();
+    if (k == 0)
+    {
+        lua_pushnil(L);
+    }
+    else
+    {
+        lua_getglobal(L, "_world");
+        auto w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+        auto u = w->getUnit(k);
+        lua_pop(L, 1);
+        luaL_pushobjptr(L, "Unit", u);
+    }
 
     return 1;
 }

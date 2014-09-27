@@ -313,7 +313,7 @@ protected:
     const string CONST_ROOT_ID;
 
 public:
-    CUnit(CUnitDraw* draw);
+    CUnit(const char* rootId, CUnitDraw* draw);
     virtual ~CUnit();
     virtual CUnit* copy() override;
     virtual void copyData(const CUnit* from);
@@ -447,7 +447,10 @@ public:
     void damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
     float calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValue, CArmorValue::ARMOR_TYPE eArmorType, float fArmorValue);
+
+    void healLow(float heal, CUnit* pSource, uint32_t dwTriggerMask = kNoMasked);
     
+    M_SYNTHESIZE(int, m_iKiller, Killer)
     
     typedef CMultiRefMap<CActiveAbility*> MAP_ACTIVE_ABILITIES;
     typedef CMultiRefMap<CPassiveAbility*> MAP_PASSIVE_ABILITIES;
@@ -458,6 +461,9 @@ public:
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_PASSIVE_ABILITIES, m_mapPasAbilities, PassiveAbilities);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_BUFF_ABILITIES, m_mapBuffAbilities, BuffAbilities);
     M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_SYSTEM_ABILITIES, m_mapSysAbilities, SystemAbilities);
+    
+    typedef unordered_map<int, float> MAP_HP_CHANGED;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_HP_CHANGED, m_mapHpChanged, HpChanged);
 
 
     M_SYNTHESIZE(int, m_iAttackAbilityId, AttackAbilityId);

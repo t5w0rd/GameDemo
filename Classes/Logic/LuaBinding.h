@@ -112,6 +112,7 @@ int LevelExp_addExp(lua_State* L);
 int LevelExp_getExp(lua_State* L);
 int LevelExp_setExpRange(lua_State* L);
 int LevelExp_setLevelUpdate(lua_State* L);
+int LevelExp_canIncreaseExp(lua_State* L);
 
 int LevelUpdate_ctor(lua_State* L);
 int LevelUpdate_updateExpRange(lua_State* L);
@@ -170,6 +171,8 @@ int Unit_setEnergy(lua_State* L);
 int Unit_getEnergy(lua_State* L);
 int Unit_setVisible(lua_State* L);
 int Unit_isVisible(lua_State* L);
+int Unit_addGold(lua_State* L);
+int Unit_getKiller(lua_State* L);
 
 int Unit_startDoing(lua_State* L);
 int Unit_endDoing(lua_State* L);

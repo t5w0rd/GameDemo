@@ -602,7 +602,7 @@ bool AbilitySceneLayer::init()
     auto& mapAbilities = hero->m_mapAbilitiesEquipped;
     M_MAP_FOREACH(mapAbilities)
     {
-        auto id = M_MAP_IT->first;
+        auto id = M_MAP_EACH_KEY;
         auto lv = M_MAP_EACH;
         M_MAP_NEXT;
 

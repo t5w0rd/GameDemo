@@ -318,7 +318,7 @@ int Unit4CC_ctor(lua_State* L)
     const char* name = lua_tostring(L, 3);
 
     CUnitDrawForCC* d = new CUnitDrawForCC(si);
-    CUnit* u = new CUnit(d);
+    CUnit* u = new CUnit(si->getName(), d);
     u->setName(name);
 
     lua_pushlightuserdata(L, u);

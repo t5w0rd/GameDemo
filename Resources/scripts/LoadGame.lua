@@ -16,11 +16,17 @@ function onLoadingUserData()
 		
 		UD.stages = {}
 		
+		UD.heroesUseNum = 0
 		UD.heroes = {}
-		local hero = {}
-		hero.id = UL.kBarracks
-		hero.exp = 0
-		UD.heroes[1] = hero
+		UD.heroes[1] = {}
+		UD.heroes[1].id = UL.kBarracks
+		UD.heroes[1].exp = 0
+		UD.heroes[1].order = 0
+		UD.heroes[2] = {}
+		UD.heroes[2].id = 0x101
+		UD.heroes[2].exp = 0
+		UD.heroes[2].order = 0
+		
 		
 		-- for test
 		local sm = loadValue(F("StageMap.tbl"))

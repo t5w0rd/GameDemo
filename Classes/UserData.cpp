@@ -7,11 +7,13 @@
 #include "LuaBinding.h"
 #include "LuaBindingForCC.h"
 #include "UnitLibraryForCC.h"
+#include "Archive.h"
 
 
 // CUserData
 CUserData::CUserData()
-: m_heroSel(0)
+: m_ud(nullptr)
+, m_heroSel(0)
 , m_stageSel(0)
 {
     setDbgClassName("CUserData");
@@ -21,6 +23,9 @@ void CUserData::load()
 {
     reset();
     onLuaLoadingUserData();
+
+    loadUserData();
+
     HERO_INFO hero;
     hero.id = CUnitLibraryForCC::kBarracks;
     m_heroes.push_back(hero);
@@ -39,6 +44,28 @@ void CUserData::reset()
     m_heroSel = 0;
     m_stageGrades.clear();
     m_stageSel = 0;
+}
+
+void CUserData::loadUserData()
+{
+    static const auto CONST_SAVE_NAME = "save.dat";
+    char path[256];
+    sprintf(path, "%s/%s", CCFileUtils::getInstance()->getWritablePath().c_str(), CONST_SAVE_NAME);
+    if (m_ud != nullptr)
+    {
+        delete m_ud;
+        m_ud = nullptr;
+    }
+    CArchive::loadValue(path, m_ud);  // !!
+}
+
+void CUserData::saveUserData()
+{
+    static const auto CONST_SAVE_NAME = "save.dat";
+    assert(m_ud != nullptr);
+    char path[256];
+    sprintf(path, "%s/%s", CCFileUtils::getInstance()->getWritablePath().c_str(), CONST_SAVE_NAME);
+    CArchive::saveValue(path, m_ud);  // !!
 }
 
 bool CUserData::onLuaLoadingUserData()

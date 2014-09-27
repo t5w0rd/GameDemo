@@ -241,7 +241,7 @@ function SummonUnitAct:onUnitAbilityEffect(projectile, target)
 	u:doRotateBy(360, 1.0, INFINITE)
 
     u:addBuffAbility(LimitedLifeBuff:new("LimitedLife", "LimitedLife", self.duration))
-	u:addPassiveAbility(AL.kAttractAura:getId())
+	u:addPassiveAbility(AL.kAttractAura)
     
 end
 

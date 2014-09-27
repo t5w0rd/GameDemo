@@ -73,6 +73,7 @@ bool StageSceneLayer::init()
     ts.push_back("Heroes3");
     ts.push_back("Heroes4");
     ts.push_back("Heroes5");
+    
     ts.push_back("Projectiles0");
     ts.push_back("Battle0");
 
@@ -290,8 +291,8 @@ void StageSceneLayer::onClickPanelBattle(Ref* pObj)
     
     //gc->replaceSceneWithLoading(&BattleSceneLayer::scene);
     //Director::getInstance()->replaceScene(BattleSceneLayer::scene());
-    Director::getInstance()->replaceScene(AbilitySceneLayer::scene());
-    //Director::getInstance()->replaceScene(HeroRoomSceneLayer::scene());
+    //Director::getInstance()->replaceScene(AbilitySceneLayer::scene());
+    Director::getInstance()->replaceScene(HeroRoomSceneLayer::scene());
 }
 
 void StageSceneLayer::onClickPanelClose(Ref* pObj)

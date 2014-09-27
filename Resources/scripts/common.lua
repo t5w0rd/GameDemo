@@ -90,6 +90,10 @@ function getForwardPoint(x0, y0, x1, y1, dis)
     return getDirectionPoint(x0, y0, a, dis)
 end
 
+function randValue(base, range)
+	return ((math.random() - 0.5) * range + 1) * base
+end
+
 
 
 INFINITE = -1

@@ -72,7 +72,7 @@ bool CBattleWorld::onInit()
         auto& mapAbilities = hi->m_mapAbilitiesEquipped;
         M_MAP_FOREACH(mapAbilities)
         {
-            auto id = M_MAP_IT->first;
+            auto id = M_MAP_EACH_KEY;
             auto lv = M_MAP_EACH;
             M_MAP_NEXT;
 
@@ -248,6 +248,7 @@ void CBattleWorld::onLuaUnitDead(CUnit* pUnit)
 
 void CBattleWorld::onUnitDead(CUnit* pUnit)
 {
+#if 0
     CUnitDrawForCC* d = DCAST(pUnit->getDraw(), CUnitDrawForCC*);
     auto hero = getHero();
 
@@ -299,7 +300,7 @@ void CBattleWorld::onUnitDead(CUnit* pUnit)
     {
         //setHero(nullptr);
     }
-
+#endif
     onLuaUnitDead(pUnit);
 }
 
@@ -781,17 +782,17 @@ void BattleSceneLayer::onLoadingDone()
 
 #if 0  // Ó¢ÐÛÂúÑª£¬µ÷ÊÔÓÃ
     CUnit* hero = DCAST(getWorld(), CBattleWorld*)->getHero();
-    auto mi = MenuItemFont::create("50%", bind([hero](Ref*)
+    auto mi = MenuItemFont::create("50%", [hero](Ref*)
     {
         hero->setHp(hero->getRealMaxHp() * 0.5);
-    }, placeholders::_1));
+    });
     mn->addChild(mi, 5);
     mi->setPosition(Point(wsz.width * 0.1, wsz.height * 0.4));
 
-    mi = MenuItemFont::create("100%", bind([hero](Ref*)
+    mi = MenuItemFont::create("100%", [hero](Ref*)
     {
         hero->setHp(hero->getRealMaxHp());
-    }, placeholders::_1));
+    });
     mn->addChild(mi, 5);
     mi->setPosition(Point(wsz.width * 0.2, wsz.height * 0.4));
 #endif
@@ -1340,7 +1341,7 @@ void BattleSceneLayer::updateHeroAbilityPanel()
     CUnit::MAP_ACTIVE_ABILITIES& as = u->getActiveAbilities();
     M_MAP_FOREACH(as)
     {
-        auto id = M_MAP_IT->first;
+        auto id = M_MAP_EACH_KEY;
         auto a = M_MAP_EACH;
         M_MAP_NEXT;
 

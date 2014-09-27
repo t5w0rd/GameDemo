@@ -90,6 +90,69 @@ function HeroLevelUpdate:onLevelChanged(u, change)
 		u:addPassiveAbility(AL.kPressureBombAttack)
     end
 	--[[]]
-	UD.heroes[1].exp = u:getExp()
+	World.running:updateHeroUD()
+	saveGame()
+end
+
+
+HeroLevelUpdate2 = class(LevelUpdate)
+
+function HeroLevelUpdate2:calcExp(lv)
+    if lv == 0 then
+        return 0
+    end
+
+    return lv * lv * 9 + lv * 3 + 8;
+end
+
+function HeroLevelUpdate2:calcMaxHp(lv)
+	--return 50 + (lv - 1) * 15
+	return 50 + (lv - 1) * 300
+end
+
+function HeroLevelUpdate2:calcMoveSpeed(lv)
+	return 70.0 + (lv - 1) * 0.8
+end
+
+function HeroLevelUpdate2:calcAttackValue(lv)
+	--return 10.0 + (lv - 1) * 3.6
+	return 10.0 + (lv - 1) * 7.8
+end
+
+function HeroLevelUpdate2:calcAttackSpeed(lv)
+	if lv == 0 then
+		return 0.0
+	end
+	return 0.0 + (lv - 1) * 0.01
+end
+
+function HeroLevelUpdate2:calcArmorValue(lv)
+	--return 2.0 + (lv - 1) * 0.5
+	return 2.0 + (lv - 1) * 1.0
+end
+
+function HeroLevelUpdate2:onLevelChanged(u, change)
+    cast(u, Unit)
+	
+	local lv = u:getLevel()
+
+    u:addBuffAbility(ChangeHpBuff:new("LevelUpHeal", "LevelUpHeal", 5.0, false, 0.2, 0.02, 0.0))
+    u:addBuffAbility(ReflectBuff:new("Reflect", "Reflect", 5.0))
+    
+    u:setMaxHp(self:calcMaxHp(lv))
+    
+    u:setBaseMoveSpeed(self:calcMoveSpeed(lv))
+
+    local atk = u:getAttackAbility()
+    local a, b = atk:getExAttackSpeed()
+    atk:setExAttackSpeed(a + self:calcAttackSpeed(lv) - self:calcAttackSpeed(lv - 1), b)
+
+    local t, v = atk:getBaseAttack()
+    atk:setBaseAttack(t, self:calcAttackValue(lv))
+
+    t, v = u:getBaseArmor()
+    u:setBaseArmor(t, self:calcArmorValue(lv))
+    
+	World.running:updateHeroUD()
 	saveGame()
 end

@@ -836,12 +836,14 @@ void CUnitAI::onUnitAbilityReady(CUnit* pUnit, CAbility* pAbility)
 }
 
 // CUnit
-CUnit::CUnit(CUnitDraw* draw)
-: m_pWorld(nullptr)
+CUnit::CUnit(const char* rootId, CUnitDraw* draw)
+: CONST_ROOT_ID(rootId)
+, m_pWorld(nullptr)
 , m_fHp(1.001f)
 , m_fMaxHp(1.001f)
 , m_pAI(nullptr)
 , m_pEventAdapter(nullptr)
+, m_iKiller(0)
 , m_iAttackAbilityId(0)
 , m_iTriggerRefCount(0)
 , m_iSuspendRef(0)
@@ -870,7 +872,7 @@ CUnit::~CUnit()
 
 CUnit* CUnit::copy()
 {
-    CUnit* ret = new CUnit(getDraw()->copy());
+    CUnit* ret = new CUnit(CONST_ROOT_ID.c_str(), getDraw()->copy());
     ret->copyData(this);
     return ret;
 }
@@ -966,6 +968,7 @@ bool CUnit::revive(float fHp)
         m_fHp = min(max(fHp, 1.0f), getRealMaxHp());
         onHpChanged(m_fHp);
         onRevive();
+        setKiller(0);
         return true;
     }
 
@@ -1111,6 +1114,42 @@ void CUnit::step(float dt)
     updateBuffAbilityElapsed(dt);
     
     onTick(dt);
+
+#ifdef DEBUG_FOR_CC
+    // for cocos2dx
+    CUnitDrawForCC* ccd = nullptr;
+    getDraw()->dcast(ccd);
+
+    if (ccd != nullptr)
+    {
+        M_MAP_FOREACH(m_mapHpChanged)
+        {
+            int id = M_MAP_EACH_KEY;
+            int val = toInt(M_MAP_EACH);
+            M_MAP_NEXT;
+
+            if (val > 0)
+            {
+                char sz[64];
+                if (id == 0)
+                {
+                    // heal
+                    sprintf(sz, "%d", val);
+                    ccd->addBattleTip(sz, "", 18, Color3B(40, 220, 40));
+                }
+                else
+                {
+                    // damage
+                    sprintf(sz, "-%d", val);
+                    ccd->addBattleTip(sz, "", 18, Color3B(220, 40, 40));
+                }
+            }
+        }
+    }
+    
+#endif
+
+    m_mapHpChanged.clear();
 }
 
 void CUnit::onTick(float dt)
@@ -1439,6 +1478,12 @@ void CUnit::damaged(CAttackData* pAttack, CUnit* pSource, uint32_t dwTriggerMask
                                getRealArmorValue());
     
     damagedLow(fDamage, pSource, dwTriggerMask);
+
+    if (pSource != nullptr)
+    {
+        auto& hp = m_mapHpChanged[pSource->getId()];
+        hp += fDamage;
+    }
 }
 
 void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
@@ -1458,8 +1503,9 @@ void CUnit::damagedLow(float fDamage, CUnit* pSource, uint32_t dwTriggerMask)
         pSource = go;
     }
 
-    if (fDamage > m_fHp)
+    if (fDamage >= m_fHp)
     {
+        setKiller(pSource->getId());
         setHp(0);
     }
     else
@@ -1491,6 +1537,15 @@ float CUnit::calcDamage(CAttackValue::ATTACK_TYPE eAttackType, float fAttackValu
     fRet *= fAttackValue;
     
     return fRet;
+}
+
+void CUnit::healLow(float heal, CUnit* pSource, uint32_t dwTriggerMask/* = kNoMasked*/)
+{
+    float newHp = min(getRealMaxHp(), getHp() + heal);
+    auto& hp = m_mapHpChanged[0];
+    hp += newHp - getHp();
+
+    setHp(newHp);
 }
 
 void CUnit::addActiveAbility(CActiveAbility* pAbility, bool bNotify)

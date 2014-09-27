@@ -6,6 +6,9 @@
 #include "StageScene.h"
 #include "BattleScene.h"
 #include "UnitLibraryForCC.h"
+#include "Archive.h"
+#include "LuaScriptEngine.h"
+#include "LuaBindingForCC.h"
 
 
 // HeroRoomSceneLayer
@@ -85,10 +88,6 @@ bool HeroRoomSceneLayer::init()
 
     static Size wsz = Director::getInstance()->getVisibleSize();
     M_DEF_GC(gc);
-    Sprite* sp = nullptr;
-    Sprite* sp2 = nullptr;
-    Label* lbl = nullptr;
-    char szVal[64];
 
     gc->loadFrames("Global0");
     gc->loadFrames("Global1");
@@ -98,10 +97,32 @@ bool HeroRoomSceneLayer::init()
     gc->preloadSound("sounds/Effects/GUITransitionOpen.mp3");
     gc->playMusic("sounds/Backgrounds/MainBackground.mp3");
 
-    m_panel = Sprite::create("UI/PanelBig.png");
-    addChild(m_panel);
-    Size sz = m_panel->getContentSize();
-    m_panel->setPosition(Point(wsz.width * 0.5, wsz.height + sz.height * m_panel->getScaleY() * 0.5));
+    auto L = CLuaScriptEngine::instance()->getLuaHandle();
+    int res = luaL_includefile(L, "lib/UnitLibrary.lua");
+    if (res != LUA_OK)
+    {
+        return false;
+    }
+
+    //m_panel = DCAST(createFirstHeroPanel(), Sprite*);
+    m_panel = DCAST(createSecondHeroPanel(), Sprite*);
+    m_panel->runAction(EaseExponentialOut::create(MoveTo::create(0.8f, Point(wsz.width * 0.5, wsz.height * 0.5))));
+
+    return true;
+}
+
+Node* HeroRoomSceneLayer::createFirstHeroPanel()
+{
+    static Size wsz = Director::getInstance()->getVisibleSize();
+    Sprite* sp = nullptr;
+    Sprite* sp2 = nullptr;
+    Label* lbl = nullptr;
+    char szVal[64];
+
+    Sprite* panel = Sprite::create("UI/PanelBig.png");
+    addChild(panel);
+    Size sz = panel->getContentSize();
+    panel->setPosition(Point(wsz.width * 0.5, wsz.height + sz.height * panel->getScaleY() * 0.5));
 
     // 标题
     sp = Sprite::create("UI/Title.png");
@@ -109,13 +130,13 @@ bool HeroRoomSceneLayer::init()
     lbl->setColor(Color3B(80, 60, 50));
     sp->addChild(lbl);
     lbl->setPosition(sp->getAnchorPointInPoints() + Point(0.0f, 20));
-    m_panel->addChild(sp);
+    panel->addChild(sp);
     sp->setPosition(Point(sz.width * 0.5, sz.height - lbl->getContentSize().height - 100));
-    
+
     // 头像框
     ButtonPanel* bp = ButtonPanel::create(1, 3, Size(156, 164), 11, 11, Sprite::create("UI/HeroInfo/HeroesBorder.png"), 0.0f, 38.0f);
     bp->setTag(3);
-    m_panel->addChild(bp);
+    panel->addChild(bp);
     bp->setPosition(Point(sz.width * 0.05 + bp->getContentSize().width * 0.5, sz.height * 0.5 + 150));
     bp->getBackground()->setLocalZOrder(10);
 
@@ -127,7 +148,7 @@ bool HeroRoomSceneLayer::init()
     m_selSmall = Sprite::createWithSpriteFrameName("UI/Portrait/SelectSmall.png");
     bp->addChild(m_selSmall, 1);
     m_selSmall->setPosition(btn->getPosition());
-    
+
     m_blinkSmall = Sprite::createWithSpriteFrameName("UI/Portrait/BlinkSmall.png");
     m_selSmall->addChild(m_blinkSmall, 1);
     m_blinkSmall->setPosition(m_selSmall->getAnchorPointInPoints());
@@ -141,11 +162,11 @@ bool HeroRoomSceneLayer::init()
 
     // 信息框
     Sprite* info = Sprite::create("UI/HeroInfo/HeroInfo.png");
-    m_panel->addChild(info, 10);
+    panel->addChild(info, 10);
     info->setPosition(Point(sz.width * 0.65, sz.height * 0.5));
 
     m_selBig = Sprite::createWithSpriteFrameName("UI/Portrait/WarriorBig.png");
-    m_panel->addChild(m_selBig);
+    panel->addChild(m_selBig);
     m_selBig->setPosition(info->getPosition() + Point(-275, -30));
 
     m_blinkBig = Sprite::createWithSpriteFrameName("UI/Portrait/BlinkBig.png");
@@ -174,7 +195,7 @@ bool HeroRoomSceneLayer::init()
     m_hpLbl->setHorizontalAlignment(TextHAlignment::LEFT);
     info->addChild(m_hpLbl);
     m_hpLbl->setPosition(m_hpBar->getPosition() + Point(m_hpBar->getContentSize().width * 0.5 + 30, 5.0f));
-    
+
     // attack
     offsetY -= sp->getContentSize().height + 10;
     sp = Sprite::createWithSpriteFrameName("UI/HeroInfo/PhysicalAttack.png");
@@ -269,7 +290,7 @@ bool HeroRoomSceneLayer::init()
 
     // 按钮等UI
     Menu* mn = Menu::create();
-    m_panel->addChild(mn);
+    panel->addChild(mn);
     mn->setPosition(Point::ZERO);
 
     btn = ButtonNormal::createWithFile("UI/Button/BtnDoneNor.png", "UI/Button/BtnDoneSel.png", nullptr, nullptr, nullptr, 0.0f, CC_CALLBACK_1(HeroRoomSceneLayer::onClickButtonDone, this), nullptr);
@@ -280,19 +301,191 @@ bool HeroRoomSceneLayer::init()
     m_eff = Effect::create("Sprites/Barracks/move", 0.1f);
     m_eff->addAnimation("Sprites/Barracks/act5", 0.1f);
     m_eff->setAnchorPoint(Point(0.5f, 0.1f));
-    m_panel->addChild(m_eff, 10);
+    panel->addChild(m_eff, 10);
     m_eff->setPosition(Point(bp->getPositionX(), sz.height * 0.5 - 380));
     m_eff->setScale(6.0f);
     m_eff->setOpacity(160);
     m_eff->runAction(Sequence::createWithTwoActions(Spawn::createWithTwoActions(EaseBounceIn::create(ScaleTo::create(0.2f, 2.5f)), FadeTo::create(0.2f, 255)), CallFuncN::create(CC_CALLBACK_1(HeroRoomSceneLayer::onScaleDone, this))));
-    
-    // 缩放panel
-    m_panel->setScale(min(wsz.width / sz.width, wsz.height / sz.height));
-    sz = sz * m_panel->getScale();
-    m_panel->runAction(EaseExponentialOut::create(MoveTo::create(0.8f, Point(wsz.width * 0.5, wsz.height * 0.5))));
 
-    return true;
+    // 缩放panel
+    panel->setScale(min(wsz.width / sz.width, wsz.height / sz.height));
+    sz = sz * panel->getScale();
+
+    return panel;
 }
+
+Node* HeroRoomSceneLayer::createSecondHeroPanel()
+{
+    static Size wsz = Director::getInstance()->getVisibleSize();
+    Sprite* sp2 = nullptr;
+    Label* lbl = nullptr;
+    //char szVal[64];
+
+    CUnitLibrary::instance()->loadDefaultLibrary();
+
+    Sprite* panel = Sprite::create("UI/PanelBig.png");
+    addChild(panel);
+    Size sz = panel->getContentSize();
+    panel->setPosition(Point(wsz.width * 0.5, wsz.height + sz.height * panel->getScaleY() * 0.5));
+
+    Menu* mn = Menu::create();
+    panel->addChild(mn);
+    mn->setTag(101);
+    mn->setPosition(Point::ZERO);
+
+    //CUserData::instance()->loadUserData();
+    CValue* ud = CUserData::instance()->m_ud;
+
+    CValueMap* heroes = vmg_vm(ud, "heroes");
+
+    int num = heroes->getDataMap().size();
+    if (num == 0)
+    {
+        auto lbl = Label::createWithTTF("No Hero", FONT_ARIAL);
+        panel->addChild(lbl);
+        lbl->setPosition(panel->getAnchorPointInPoints());
+    }
+    else
+    {
+        static int index;
+        index = 1;
+
+        auto mi = MenuItemFont::create("Prev", bind([this](Ref*, Node* panel, int num)
+        {
+            if (index == 1)
+            {
+                index = num;
+            }
+            else
+            {
+                --index;
+            }
+
+            updateHeroSprite(index, panel);
+        }, placeholders::_1, panel, num));
+        mn->addChild(mi);
+        mi->setPosition(Point(sz.width * 0.2, sz.height * 0.5));
+
+        mi = MenuItemFont::create("Next", bind([this](Ref*, Node* panel, int num)
+        {
+            if (index == num)
+            {
+                index = 1;
+            }
+            else
+            {
+                ++index;
+            }
+            updateHeroSprite(index, panel);
+        }, placeholders::_1, panel, num));
+        mn->addChild(mi);
+        mi->setPosition(Point(sz.width * 0.8, sz.height * 0.5));
+
+        updateHeroSprite(index, panel);
+    }
+
+    auto mi = MenuItemFont::create("Confirm", [](Ref*)
+    {
+        Director::getInstance()->replaceScene(BattleSceneLayer::scene());
+        CUserData::instance()->saveUserData();
+    });
+    mn->addChild(mi);
+    mi->setPosition(Point(sz.width - mi->getContentSize().width * 0.5 - 50, mi->getContentSize().height * 0.5 + 50));
+
+
+    // 缩放panel
+    panel->setScale(min(wsz.width / sz.width, wsz.height / sz.height));
+    sz = sz * panel->getScale();
+
+    return panel;
+}
+
+void HeroRoomSceneLayer::updateHeroSprite(int index, Node* panel)
+{
+    auto ud = CUserData::instance()->m_ud;
+    auto heroes = vmg_vm(ud, "heroes");
+    auto hero = vmg_vm(heroes, index);
+    auto id = vmg_int(hero, "id");
+    auto u = CUnitLibrary::instance()->copyUnit(id);
+    CUnitDrawForCC* d = DCAST(u->getDraw(), CUnitDrawForCC*);
+
+    auto mn = DCAST(panel->getChildByTag(101), Menu*);
+    auto sp = DCAST(panel->getChildByTag(102), Sprite*);
+    auto spMi = DCAST(mn->getChildByTag(103), MenuItemFont*);
+    
+    if (sp != nullptr)
+    {
+        sp->removeFromParentAndCleanup(true);
+    }
+    sp = d->createSprite();
+    sp->setTag(102);
+    panel->addChild(sp);
+    sp->setPosition(panel->getAnchorPointInPoints());
+
+    if (spMi != nullptr)
+    {
+        spMi->removeFromParentAndCleanup(true);
+    }
+
+    spMi = MenuItemFont::create("[Select]", [ud, index](Ref* ref)
+    {
+        auto heroes = vmg_vm(ud, "heroes");
+        auto hero = vmg_vm(heroes, index);
+        auto order = vmg_int(hero, "order");
+        auto useNum = vmg_int(ud, "heroesUseNum");
+        auto mi = DCAST(ref, MenuItemFont*);
+        if (order > 0)
+        {
+            // 点击卸载英雄
+
+            auto& dm = heroes->getDataMap();
+            auto n = (int)dm.size();
+            for (auto i = 1; i <= n; ++i)
+            {
+                auto _hero = vmg_vm(heroes, i);
+                auto _order = vmg_int(_hero, "order");
+                if (_order > order)
+                {
+                    --_order;
+                    vms_int(_hero, "order", _order);
+                }
+            }
+
+            order = 0;
+            --useNum;
+            vms_int(hero, "order", order);
+            vms_int(ud, "heroesUseNum", useNum);
+            mi->setString("[Select]");
+        }
+        else
+        {
+            // 点击装备英雄
+            ++useNum;
+            order = useNum;
+            char sz[64];
+            sprintf(sz, "[%d]", order);
+            mi->setString(sz);
+        }
+        vms_int(hero, "order", order);
+        vms_int(ud, "heroesUseNum", useNum);
+
+    });
+    spMi->setTag(103);
+    mn->addChild(spMi);
+    spMi->setPosition(sp->getPosition() + Point(0, -spMi->getContentSize().height));
+
+    auto order = vmg_int(hero, "order");
+    if (order > 0)
+    {
+        char sz[64];
+        sprintf(sz, "[%d]", order);
+        spMi->setString(sz);
+    }
+    else
+    {
+        spMi->setString("[Select]");
+    }
+};
 
 void HeroRoomSceneLayer::onClickHeroPortrait(Ref* pNode)
 {
