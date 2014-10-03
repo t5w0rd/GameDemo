@@ -16,7 +16,7 @@ function World:onHeroInit()
 	for i = 1, useNum do
 		for _, h in ipairs(UD.heroes) do
 			if i == h.order then
-				hero = createUnit(h.id)
+				local hero = createUnit(h.id)
 				--hero:setLevelUpdate(HeroLevelUpdate:new())
 				
 				h.wid = hero:getId()
@@ -81,7 +81,9 @@ function World:onUnitDead(u)
 		local killer = u:getKiller()
 		if killer and killer:getId() == uu:getId() then
 			uu:addGold(rg)
-			uu:addBattleTip(string.format("+%d Gold", rg), nil, 18, 255, 247, 53)
+			if uu:getForce() == 2 ^ 0 then
+				uu:addBattleTip(string.format("+%d Gold", rg), nil, 18, 255, 247, 53)
+			end
 		end
 		
 		if uu:canIncreaseExp() then
