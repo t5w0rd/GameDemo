@@ -162,6 +162,7 @@ function Stage00:onInit()
 	initAbilityForLevelUp()
 	
 	me = getHero()
+	print(me:getExp())
 	--me:setMaxLevel(100)
 	if me:getLevel() < 5 then
 		me:addExp(1000)

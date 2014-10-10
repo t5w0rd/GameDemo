@@ -399,6 +399,7 @@ int FastMoveToBackBuff_ctor(lua_State* L);
 
 int luaRegCommFuncs(lua_State* L);
 
+
 int g_onWorldInit(lua_State* L);
 int g_onWorldTick(lua_State* L);
 int g_onUnitDead(lua_State* L);
@@ -408,6 +409,8 @@ int g_getUnit(lua_State* L);
 int g_getUnits(lua_State* L);
 int g_addUnit(lua_State* L);
 int g_addProjectile(lua_State* L);
+int g_retainMRObj(lua_State* L);
+int g_releaseMRObj(lua_State* L);
 
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld);
 

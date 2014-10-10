@@ -706,6 +706,9 @@ public:
     void updateAbilityCD(int id);
     virtual void onAddNormalAttributes(CUnit* pUnit);
     virtual void onDelNormalAttributes(CUnit* pUnit);
+
+    typedef CMultiRefMap<CMultiRefObject*> MAP_MROBJS;
+    M_SYNTHESIZE_READONLY_PASS_BY_REF(MAP_MROBJS, m_mapMRObjs, MRObjsKeeper);
     
 protected:
     void cleanAbilitiesCD(CUnit* pUnit);

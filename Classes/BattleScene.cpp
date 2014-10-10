@@ -442,6 +442,13 @@ void CBattleWorld::setHero(CUnit* hero)
     l->updateResourceInfo(fr->getGold());
 }
 
+void CBattleWorld::onShutDown()
+{
+    CUserData::instance()->loadUserData();
+    CUserData::instance()->saveUserData();
+    CWorldForCC::onShutDown();
+}
+
 // BattleScene
 BattleScene::BattleScene()
 : m_pWorld(nullptr)

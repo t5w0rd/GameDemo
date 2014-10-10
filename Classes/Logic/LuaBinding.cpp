@@ -3962,6 +3962,43 @@ int g_addProjectile(lua_State* L)
     return 0;
 }
 
+int g_retainMRObj(lua_State* L)
+{
+    CMultiRefObject* _p = nullptr;
+    luaL_toobjptr(L, 1, _p);
+
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    lua_pop(L, 1);
+
+    w->getMRObjsKeeper().addObject(_p);
+
+    return 0;
+}
+
+int g_releaseMRObj(lua_State* L)
+{
+    int id = 0;
+    if (lua_istable(L, 1))
+    {
+        CMultiRefObject* _p = nullptr;
+        luaL_toobjptr(L, 1, _p);
+        id = _p->getId();
+    }
+    else
+    {
+        id = lua_tointeger(L, 1);
+    }
+
+    lua_getglobal(L, "_world");
+    CWorld* w = (CWorld*)lua_touserdata(L, lua_gettop(L));
+    lua_pop(L, 1);
+
+    w->getMRObjsKeeper().delObject(id);
+
+    return 0;
+}
+
 int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
 {
     // TODO: reg global vars
@@ -3978,6 +4015,8 @@ int luaRegWorldFuncs(lua_State* L, CWorld* pWorld)
     lua_register(L, "getUnits", g_getUnits);
     lua_register(L, "addUnit", g_addUnit);
     lua_register(L, "addProjectile", g_addProjectile);
+    lua_register(L, "retainMRObj", g_retainMRObj);
+    lua_register(L, "releaseMRObj", g_releaseMRObj);
 
     return 0;
 }

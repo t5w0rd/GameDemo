@@ -4,6 +4,7 @@ __WORLD_COMMON__ = true
 include("Common.lua")
 include("Extension.lua")
 include("lib/World.lua")
+include("lib/Rush.lua")
 include("lib/AbilityLibrary.lua")
 include("lib/AI.lua")
 include("lib/UnitGroup.lua")

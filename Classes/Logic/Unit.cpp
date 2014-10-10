@@ -2660,6 +2660,7 @@ void CWorld::onDelProjectile(CProjectile* pProjectile)
 bool CWorld::init()
 {
     m_aiRetainer.init(this);
+    m_mapMRObjs.delAllObjects();
     return onInit();
 }
 

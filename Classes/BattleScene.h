@@ -40,6 +40,8 @@ public:
     M_SYNTHESIZE(CStunBuff*, m_pDragonStrikeBuff, DragonStrikeBuff);
 
     M_SYNTHESIZE_STR(ScriptName);
+
+    virtual void onShutDown() override;
     
 };
 
