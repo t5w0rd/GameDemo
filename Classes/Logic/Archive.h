@@ -1,16 +1,41 @@
 #ifndef __ARCHIVE_H__
 #define	__ARCHIVE_H__
 
+/*
+* 
+* [FILE]
+*   Value
+* 
+* Value
+*   dwValueType + dwValueSize + acValueData[dwValueSize]
+* 
+* dwValueType
+*   kVtRaw = 0
+*   kVtStr = 1
+*   kVtFlt = 2
+*   kVtInt = 3
+*   kVtUint = 4
+*   kVtBool = 5
+*   kVtMap = 6
+* 
+* acValueData[dwValueSize]
+*   dwValueType(kVtMap): Name + Value [+ Name2 + Value2 + ...]
+*   dwValueType(default): acValueData[dwValueSize]
+* 
+* Name
+*   cNameSize + acNameData[cNameSize]
+* 
+*/
 
 enum VALUE_TYPE
 {
     kVtRaw,
     kVtStr,
-    kVtFLT,
-    kVtINT,
-    kVtUINT,
-    kVtBOOL,
-    kVtMAP
+    kVtFlt,
+    kVtInt,
+    kVtUint,
+    kVtBool,
+    kVtMap
 };
 
 enum VALUE_TYPE_FLAG
@@ -66,7 +91,7 @@ public:
     typedef unordered_map<string, CValue*> MAP_VALUE;
 
 public:
-    CValueMap(int type = kVtMAP);
+    CValueMap(int type = kVtMap);
     virtual ~CValueMap();
 
     void setMapValue(const string& name, CValue* data);

@@ -44,7 +44,7 @@ CValueBase::CValueBase(const string& s)
 }
 
 CValueBase::CValueBase(double f)
-: CValue(kVtFLT)
+: CValue(kVtFlt)
 {
     char buf[32];
     sprintf(buf, "%.14g", f);
@@ -52,7 +52,7 @@ CValueBase::CValueBase(double f)
 }
 
 CValueBase::CValueBase(int n)
-: CValue(kVtINT)
+: CValue(kVtInt)
 {
     char buf[32];
     sprintf(buf, "%d", n);
@@ -60,7 +60,7 @@ CValueBase::CValueBase(int n)
 }
 
 CValueBase::CValueBase(bool b)
-: CValue(kVtBOOL)
+: CValue(kVtBool)
 , m_baseData(string(1, b ? kVtbTrue : kVtbFalse))
 {
 }
@@ -103,7 +103,7 @@ const string& CValueBase::getData() const
 }
 
 // CValueMap
-CValueMap::CValueMap(int type /*= kVtMAP*/)
+CValueMap::CValueMap(int type /*= kVtMap*/)
 : CValue(type)
 {
 }
@@ -227,7 +227,7 @@ unsigned int CArchive::readValue(FILE* fp, CValue*& val)
         }
         break;
 
-    case kVtMAP:
+    case kVtMap:
         {
             CValueMap* v = new CValueMap(type);
 
@@ -278,7 +278,7 @@ unsigned int CArchive::writeValue(FILE* fp, CValue* data)
         }
         break;
 
-    case kVtMAP:
+    case kVtMap:
         {
             auto& dm = DCAST(data, CValueMap*)->getDataMap();
             M_MAP_FOREACH(dm)
@@ -316,23 +316,23 @@ void CArchive::luaPushValue(lua_State* L, CValue* val)
         }
         break;
 
-    case kVtFLT:
-    case kVtINT:
-    case kVtUINT:
+    case kVtFlt:
+    case kVtInt:
+    case kVtUint:
         {
             auto& d = DCAST(val, CValueBase*)->getData();
             lua_pushnumber(L, lua_str2number(d.c_str(), nullptr));
         }
         break;
 
-    case kVtBOOL:
+    case kVtBool:
         {
             auto& d = DCAST(val, CValueBase*)->getData();
             lua_pushboolean(L, d.at(0) == kVtbFalse ? false : true);
         }
         break;
 
-    case kVtMAP:
+    case kVtMap:
         {
             lua_newtable(L);
 
@@ -381,7 +381,7 @@ CValue* CArchive::luaToValue(lua_State* L, int index)
             auto num = lua_tonumber(L, index);
             char buf[32];
             lua_number2str(buf, num);
-            return new CValueBase((lua_Number)(lua_Integer)num == num ? kVtINT : kVtFLT, buf);
+            return new CValueBase((lua_Number)(lua_Integer)num == num ? kVtInt : kVtFlt, buf);
         }
         break;
 
