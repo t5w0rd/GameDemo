@@ -165,11 +165,7 @@ bool CArchive::loadValue(const char* file, CValue*& val)
         return false;
     }
 
-    fseek(fp, 0, SEEK_END);
-    auto fsz = (unsigned int)ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-
-    auto size = readValue(fp, val);
+    readValue(fp, val);
 
     fclose(fp);
 
@@ -184,9 +180,7 @@ bool CArchive::saveValue(const char* file, CValue* val)
         return false;
     }
 
-    auto size = writeValue(fp, val);
-
-    auto fsz = ftell(fp);
+    writeValue(fp, val);
 
     fclose(fp);
 
@@ -400,17 +394,17 @@ CValue* CArchive::luaToValue(lua_State* L, int index)
             while (lua_next(L, index) != 0)
             {
                 /* uses 'key' (at index -2) and 'value' (at index -1) */
-                if (lua_isnumber(L, -2))
+                int ktype = lua_type(L, -2);
+                if (ktype == LUA_TNUMBER)
                 {
                     int k = (int)lua_tonumber(L, -2);
                     auto v = luaToValue(L, lua_gettop(L));
                     if (v != nullptr)
                     {
-                        v->setType(v->getType() | kVtfArrayElement);
                         val->setArrayValue(k, v);
                     }
                 }
-                else if (lua_isstring(L, -2))
+                else if (ktype == LUA_TSTRING)
                 {
                     size_t len = 0;
                     auto k = lua_tolstring(L, -2, &len);
