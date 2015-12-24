@@ -25,9 +25,9 @@ function World:onHeroInit()
 					hero:setLevelUpdate(HeroLevelUpdate:new())
 					setCtrlUnit(hero)
 				else
-					--addAbilitiesForUnit()
-					hero:setLevelUpdate(HeroLevelUpdate2:new())
 					hero:setAI(LuaAI:new())
+					addAbilitiesForUnit(hero, ULx.kPriest)
+					hero:setLevelUpdate(HeroLevelUpdate2:new())
 				end
 				
 				hero:setMaxLevel(20)

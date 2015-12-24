@@ -26,7 +26,7 @@ end
 
 function HeroLevelUpdate:calcAttackValue(lv)
 	--return 10.0 + (lv - 1) * 3.6
-	return 10.0 + (lv - 1) * 7.8
+	return 10.0 + (lv - 1) * 9.8
 end
 
 function HeroLevelUpdate:calcAttackSpeed(lv)
@@ -67,9 +67,9 @@ function HeroLevelUpdate:onLevelChanged(u, change)
 	if lv == 10 then
         --u:addPassiveAbility(AL.kTransitiveAttack)
     elseif lv == 11 then
-        u:addPassiveAbility(AL.kLightningAttack)
+        u:addPassiveAbility(AL.kBerserkerBlood)
     elseif lv == 12 then
-        u:addPassiveAbility(AL.kDamageIncreaceAttack)
+        u:addPassiveAbility(AL.kLightningAttack)
     elseif lv == 13 then
         --u:addPassiveAbility(AL.kPressureBombAttack)
     elseif lv == 14 then
@@ -81,7 +81,7 @@ function HeroLevelUpdate:onLevelChanged(u, change)
     elseif lv == 17 then
         u:addPassiveAbility(AL.kThrowHammerAttack)
     elseif lv == 18 then
-        u:addPassiveAbility(AL.kBerserkerBlood)
+        u:addPassiveAbility(AL.kDamageIncreaceAttack)
     elseif lv == 19 then
         u:addPassiveAbility(AL.kCutterAttack)
     elseif lv == 20 then
