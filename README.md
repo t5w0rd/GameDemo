@@ -4,13 +4,13 @@
 > 感谢暴雪的《Warcraft III》地图编辑器给我带来的设计灵感。<br>
 > 底层渲染引擎为cocos2dx 3.x，另有Unity支持联机的版本移植工程进行中…
 
-## 开发语言
+## 1.开发语言
 * C++
 * Lua
 
-## 抽象
+## 2.抽象
 
-### 抽象树
+### 2.1.抽象树
 ```
 抽象树(仅列举了部分核心元素)
 ├─单位
@@ -84,7 +84,7 @@
         └─瞬移至背后
 ```
 
-### 抽象应用举例
+### 2.2.抽象应用举例
 * Dota谜团大招技能黑洞
 ```
 主动技能·召唤单位(
@@ -130,7 +130,7 @@
 )
 ```
 
-## 视频演示
+## 3.视频演示
 * [开篇小剧场，最早的一版](https://v.youku.com/v_show/id_XNjkwNjI5NjQ4.html "We Are the TorchWood!")
 * [改良后的战斗引擎演示，包含几种不同关卡的演示](https://v.youku.com/v_show/id_XNzQxMzc3MTIw.html "新版引擎战斗演示")
 * [AI演示，远程风筝近战](https://v.youku.com/v_show/id_XNzQ1Mzk0Nzg0.html "AI演示 - 远程吊打近战")
